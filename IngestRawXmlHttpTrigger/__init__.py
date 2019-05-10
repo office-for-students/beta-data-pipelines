@@ -1,21 +1,20 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 """ IngestRawXmlHttpTrigger: Request and ingest the raw HESA XML into an Azure Storage Account BLOB Container """
 
-__author__ = "Jillur Quddus"
-__copyright__ = "Copyright 2019 Methods BDT Ltd"
-__credits__ = ["Jillur Quddus"]
+import azure.functions as func
+import logging
+import os
+
+from azure.storage.blob import BlockBlobService
+from datetime import datetime
+
+__author__ = "Jillur Quddus, Nathan Shumoogum"
+__credits__ = ["Jillur Quddus", "Nathan Shumoogum"]
 __version__ = "0.1"
 _maintainer__ = "Jillur Quddus"
 __email__ = "jillur.quddus@methods.co.uk"
 __status__ = "Development"
-
-import os
-import logging
-from datetime import datetime
-
-import azure.functions as func
-from azure.storage.blob import BlockBlobService
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('IngestRawXmlHttpTrigger Python HTTP trigger function processed a request.')
