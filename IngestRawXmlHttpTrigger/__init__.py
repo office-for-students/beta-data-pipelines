@@ -74,7 +74,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         # Return an OK HTTP Response
         return func.HttpResponse(
              "Raw HESA XML successfully ingested into the landing BLOB container.",
-             status_code=400)
+             status_code=200)
 
     except Exception:
 
