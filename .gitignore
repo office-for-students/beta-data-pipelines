@@ -128,4 +128,7 @@ obj
 appsettings.json
 local.settings.json
 .python_packages
-beta-data-pipeline.zip
+beta-data-pipelines.zip
+
+# Visual Studio Code
+.vscode/
