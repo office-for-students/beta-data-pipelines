@@ -23,6 +23,7 @@ __status__ = "Development"
 # Load the relevant XPaths from Application Settings
 xpath_institution = os.environ['XPathInstitution']
 
+master_key = 'masterKey'
 
 def load_json_documents(
     cosmosdb_uri, cosmosdb_key, cosmosdb_database_id, cosmosdb_collection_id, 
@@ -30,15 +31,15 @@ def load_json_documents(
 
     """ For the purposes of the INITIAL end-to-end skeleton ETL pipeline ONLY and
     demonstrating how to load JSON documents into the CosmosDB Document Database, 
-    this simply parses the raw HESA XML, and generates and loads INSTITUTION JSOON 
+    this simply parses the raw HESA XML, and generates and loads INSTITUTION JSON 
     documents. This will need to be updated with the full set of collection types 
-    and logic as per the data model and required query/access patterns. """ 
+    and logic as per the data model and required query/access patterns. """
 
     # Create a CosmosDB Client
     cosmosdb_client = cosmos_client.CosmosClient(
-        url_connection=cosmosdb_uri, auth={'masterKey': cosmosdb_key})
+        url_connection=cosmosdb_uri, auth={master_key: cosmosdb_key})
     logging.debug("Created a CosmosDB client connection to %s", cosmosdb_uri)
-
+    
     # Define a link to the relevant CosmosDB Container/Document Collection
     collection_link = 'dbs/' + cosmosdb_database_id + '/colls/' + cosmosdb_collection_id
 
@@ -60,7 +61,7 @@ def load_json_documents(
         json_document = json.dumps(list(yahoo.data(institution).values())[0])
 
         # Load the JSON Document into the CosmosDB Database
-        # TO DO - Investigate more efficient bulk/batch load, and refactor accordingly
+        # TODO - Investigate more efficient bulk/batch load, and refactor accordingly
         cosmosdb_client.CreateItem(collection_link, json.loads(json_document))
         document_counter += 1
 

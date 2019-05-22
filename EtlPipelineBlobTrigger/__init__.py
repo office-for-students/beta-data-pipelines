@@ -29,7 +29,7 @@ def main(xmlblob: func.InputStream, context: func.Context):
     Azure Functions chained/integrated and orchestrated using Azure Data Factory 
     and/or Function App. """
 
-    logging.info(f"EtlPipelineBlobTrigger Python BLOB trigger function processed BLOB \n"
+    logging.info(f"EtlPipelineBlobTrigger Python BLOB trigger function processing BLOB \n"
                  f"Name: {xmlblob.name}\n"
                  f"Blob Size: {xmlblob.length} bytes")
 
@@ -48,6 +48,10 @@ def main(xmlblob: func.InputStream, context: func.Context):
         cosmosdb_collection_id = os.environ['AzureCosmosDbCollectionId']
         xsd_filename = os.environ['XsdFilename']
         xsd_path = os.path.join(context.function_directory, xsd_filename)
+
+        logging.info(f"EtlPipelineBlobTrigger configuration values \n"
+                 f"XsdFilename: {xsd_filename}\n"
+                 f"XsdPath: {xsd_path}")
 
         # Read the XML BLOB Input Stream
         xml_string = xmlblob.read().decode('utf-8')
