@@ -8,6 +8,9 @@ As the pipeline azure functions are written in Python using the Azure Python SDK
 
 1) Install [.NET Core SDK 2.2](https://dotnet.microsoft.com/download)
 
+* Continue with [Macbook setup](https://github.com/office-for-students/beta-data-pipelines/tree/feature/fix-xml-validation#macbook-setup)
+* Continue with [Windows setup](https://github.com/office-for-students/beta-data-pipelines/tree/feature/fix-xml-validation#windows-setup)
+
 #### Macbook setup
 
 2) Install Python 3.6.8 (current latest stable version that works with Azure client)
@@ -55,10 +58,17 @@ Azure Cosmos DB
 ```
 * Sign into Azure within Visual Studio Code prior to building first azure function, follow from [Sign in to Azure](https://code.visualstudio.com/docs/python/tutorial-azure-functions#_sign-in-to-azure)
 
- 
-#### TODO -Database Setup
+7) [Continue with Database set up](https://github.com/office-for-students/beta-data-pipelines/tree/feature/fix-xml-validation#database-setup)
 
-Setup local Cosmos DB instance and update `local.settings.json` blurb
+#### Windows setup
+
+TODO
+
+7) [Continue with Database set up](https://github.com/office-for-students/beta-data-pipelines/tree/feature/fix-xml-validation#database-setup)
+
+#### Database Setup
+
+TODO - Setup local Cosmos DB instance and update `local.settings.json` blurb
 
 ### Configuration
 
@@ -70,26 +80,25 @@ Create or edit `local.settings.json`:
   "IsEncrypted": false,
   "Values": {
         "FUNCTIONS_WORKER_RUNTIME": "python",
-        "AzureCosmosDbUri": <cosmos db uri>,
-        "AzureCosmosDbKey": <account key value>, 
-        "AzureCosmosDbConnectionString": "AccountEndpoint={cosmos db uri};AccountKey={account key}", 
-        "AzureCosmosDbDatabaseId": <name of database>, 
-        "AzureCosmosDbCollectionId": "institutions", 
-        "AzureStorageAccountName": <storage account name>,
-        "AzureStorageAccountKey": <storage account key>,
+        "AzureCosmosDbUri": "{cosmos db uri}",
+        "AzureCosmosDbKey": "{account key value}",
+        "AzureCosmosDbConnectionString": "AccountEndpoint={cosmos db uri};AccountKey={account key}",
+        "AzureCosmosDbDatabaseId": "{name of database}",
+        "AzureCosmosDbCollectionId": "institutions",
+        "AzureStorageAccountName": "{storage account name}",
+        "AzureStorageAccountKey": "{storage account key}",
         "AzureStorageAccountConnectionString": "DefaultEndpointsProtocol=https;AccountName={storage account name};AccountKey={storage account key};EndpointSuffix=core.windows.net",
-        "AzureStorageAccountOutputContainerName": <storage container name, e.g. hesa-raw-xml-ingest>,
+        "AzureStorageAccountOutputContainerName": "{storage container name, e.g. hesa-raw-xml-ingest}",
         "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName={storage account name};AccountKey={storage account key};EndpointSuffix=core.windows.net",
         "OutputBlobNamePrefix": "hesa-raw-xml-",
         "DummyAzureStorageAccountInputContainerName": "hesa-raw-xml-dummy-source",
         "DummyInputBlobName": "kis20190507140855-test.xml",
-        "DummyInputBlobUrl": "https://{storage account name}.blob.core.windows.net/hesa-raw-xml-dummy-source/kis20190507140855-test.xml", 
+        "DummyInputBlobUrl": "https://{storage account name}.blob.core.windows.net/hesa-raw-xml-dummy-source/kis20190507140855-test.xml",
         "StopEtlPipelineOnWarning": "false",
-        "XsdFilename": "unistatsoutputschema_leo.xsd", 
+        "XsdFilename": "unistatsoutputschema_leo.xsd",
         "XPathInstitution": "INSTITUTION"
   }
 }
-
 ```
 
 #### Running Service
@@ -99,9 +108,19 @@ To run function on a virtual environment, using terminal do the following:
 cd ~/{PATH to workspace}
 python3.6 -m venv .env
 source .env/bin/activate
-cd {function name}
 func host start
 ```
+
+If you would like to run a single function, using the terminal do the following:
+```
+cd ~/{PATH to workspace}
+python3.6 -m venv .env
+source .env/bin/activate
+cd {function name}
+fun host start
+```
+
+Use `ctrl c` to close function and `deactivate` to exit virtual environment
 
 #### Running tests
 
