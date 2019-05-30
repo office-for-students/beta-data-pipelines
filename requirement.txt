@@ -1,5 +1,6 @@
 azure-cosmos==3.1.0
 azure-functions-worker==1.0.0b6
 azure-storage==0.36.0
+azure-storage-blob==2.0.1
 xmljson==0.2.0
 xmlschema==1.0.11
