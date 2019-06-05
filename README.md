@@ -70,6 +70,12 @@ TODO
 
 TODO - Setup local Cosmos DB instance and update `local.settings.json` blurb
 
+#### Blob Setup
+
+TODO - Info on Setting up Blob storage containers
+The XML in test-data/kis20190507140855-test.xml can be used as HESA dummy
+source during development and testing by uploading to the hesa-raw-xml-dummy-source container.
+
 ### Configuration
 
 Create or edit `local.settings.json`:
