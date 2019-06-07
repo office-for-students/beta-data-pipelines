@@ -5,6 +5,9 @@
 import azure.functions as func
 import logging
 import os
+import json
+
+from .utils import get_url_from_req, OfsMissingUrlError
 
 from azure.storage.blob import BlockBlobService
 from datetime import datetime
@@ -42,6 +45,15 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         dummy_input_container_name = os.environ['DummyAzureStorageAccountInputContainerName']
         dummy_input_blob_name = os.environ['DummyInputBlobName']
         dummy_input_blob_url = os.environ['DummyInputBlobUrl']
+        
+
+        # TODO: Uncomment the line below to get the resource_url sent by HESA.
+        # I'm leaving this call commented out for now so can still trigger this Azure Function
+        # easily from the browser while testing. When we do add the call in, remember to
+        # also remove the get HTTP verb from function.json file as we should only accept post
+        # requests. 
+
+        # hesa_url = get_url_from_req(req)
 
         # For the purposes of simulating retreiving the raw HESA XML in the absence of
         # the HESA HTTP/REST endpoint, we will simply read from the dummy BLOB container.
@@ -76,10 +88,20 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
              "Raw HESA XML successfully ingested into the landing BLOB container.",
              status_code=200)
 
-    except Exception:
+    except OfsMissingUrlError:
+        # Return a Bad Request HTTP Response
+        logging.error(
+            "A URL to retrieve the raw XML data from HESA was not found in the POST request", exc_info=True)
+        error_data = {
+            'errors': [
+                {'resource_url': 'The URL to fetch the XML was not provided.'},
+            ]
+        }
+        return func.HttpResponse(json.dumps(error_data), status_code=400)
 
+    except Exception:
         # Return an Internal Server Error HTTP Response
         logging.error("Raw HESA XML could not be ingested", exc_info=True)
         return func.HttpResponse(
-             "Raw HESA XML could not be ingested",
-             status_code=500)
+            "Raw HESA XML could not be ingested",
+            status_code=500)

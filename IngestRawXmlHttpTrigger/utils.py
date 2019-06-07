@@ -7,11 +7,11 @@ def get_url_from_req(req):
         req_body = req.get_json()
         url = req_body['resource_url']
     except (ValueError, KeyError):
-        raise MissingUrlError
+        raise OfsMissingUrlError
 
     return url
 
 
-class MissingUrlError(Exception):
-   """Raised when the POST body does not contain a JSON encoded URL value"""
+class OfsMissingUrlError(Exception):
+   """Raised when the POST body does not contain the expected resource URL value"""
    pass
