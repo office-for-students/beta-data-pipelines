@@ -5,7 +5,7 @@ def get_url_from_req(req):
     """Returns the value of resource_url from the HTTP request"""
     try:
         req_body = req.get_json()
-        url = req_body["resource_url"]
+        url = req_body['resource_url']
     except (ValueError, KeyError):
         raise MissingUrlError
 
