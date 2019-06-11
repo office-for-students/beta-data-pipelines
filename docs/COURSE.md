@@ -8,53 +8,71 @@
     "created_at": "date",
     "version": "integer",
     "course": {
+        "accreditation": [
+            {
+                "accreditor_url": "string",
+                "dependent_on": {
+                    "code": "string",
+                    "label": "string"
+                },
+                "text": {
+                    "english": "string",
+                    "welsh": "string"
+                },
+                "type": "string",
+                "url": {
+                    "english": "string",
+                    "welsh": "string"
+                }
+            }
+        ],
         "application_provider": "string",
         "country": {
             "code": "string",
             "name": "string"
         },
-    "distance_learning": {
-        "code": "integer",
-        "label": "string"
-    },
-    "foundation_year_availability": {
-        "code": "integer",
-        "label": "string"
-    },
-    "honours_award_provision": "boolean",
-    "institution": {
-        "public_ukprn_name": "string",
-        "public_ukprn": "string",
-        "ukprn_name": "string",
-        "ukprn": "string"
-    },
-    "kis_course_id": "string",
-    "length_of_course": {
-        "code": "integer",
-        "label": "string"
-    },
-    "links": {
-        "accommodation": {
-            "english": "string",
-            "welsh": "string"
+        "distance_learning": {
+            "code": "integer",
+            "label": "string"
         },
-        "assessment_method": {
-            "english": "string",
-            "welsh": "string"
+        "foundation_year_availability": {
+            "code": "integer",
+            "label": "string"
         },
-        "course_page": {
-            "english": "string",
-            "welsh": "string"
+        "honours_award_provision": "boolean",
+        "institution": {
+            "public_ukprn_name": "string",
+            "public_ukprn": "string",
+            "ukprn_name": "string",
+            "ukprn": "string"
         },
-        "employment_details": {
-            "english": "string",
-            "welsh": "string"
+        "kis_course_id": "string",
+        "length_of_course": {
+            "code": "integer",
+            "label": "string"
         },
-        "financial_support_details": {
-            "english": "string",
-            "welsh": "string"
-        },
-        "institution": "string",
+        "links": {
+            "accommodation": {
+                "english": "string",
+                "welsh": "string"
+            },
+            "assessment_method": {
+                "english": "string",
+                "welsh": "string"
+            },
+            "course_page": {
+                "english": "string",
+                "welsh": "string"
+            },
+            "employment_details": {
+                "english": "string",
+                "welsh": "string"
+            },
+            "financial_support_details": {
+                "english": "string",
+                "welsh": "string"
+            },
+            "institution": "string",
             "learning_and_teaching_methods": {
                 "english": "string",
                 "welsh": "string"
@@ -175,54 +193,55 @@
                     }
                 ],
                 "unavailable": {
-                "code": "integer",
-                "reason": "string"
-            }
+                    "code": "integer",
+                    "reason": "string"
+                }
+            },
+            "leo": [
+                {
+                    "aggregation_level": "integer",
+                    "higher_quartile_range": "integer",
+                    "lower_quartile_range": "integer",
+                    "median": "integer",
+                    "number_of_graduates": "integer",
+                    "subject": {
+                        "code": "string",
+                        "name": "string"
+                    },
+                    "unavailable": {
+                        "code": "integer",
+                        "reason": "string"
+                    }
+                }
+            ],
+            "salary": [
+                {
+                    "aggregation_level": "integer",
+                    "higher_quartile_range": "integer",
+                    "lower_quartile_range": "integer",
+                    "median": "integer",
+                    "number_of_graduates": "integer",
+                    "response_rate": "integer",
+                    "subject": {
+                        "code": "string",
+                        "name": "string"
+                    },
+                    "unavailable": {
+                        "code": "integer",
+                        "reason": "string"
+                    }
+                }
+            ]
         },
-        "leo": [
-            {
-                "aggregation_level": "integer",
-                "higher_quartile_range": "integer",
-                "lower_quartile_range": "integer",
-                "median": "integer",
-                "number_of_graduates": "integer",
-                "subject": {
-                    "code": "string",
-                    "name": "string"
-                },
-                "unavailable": {
-                    "code": "integer",
-                    "reason": "string"
-                }
-            }
-        ],
-        "salary": [
-            {
-                "aggregation_level": "integer",
-                "higher_quartile_range": "integer",
-                "lower_quartile_range": "integer",
-                "median": "integer",
-                "number_of_graduates": "integer",
-                "response_rate": "integer",
-                "subject": {
-                    "code": "string",
-                    "name": "string"
-                },
-                "unavailable": {
-                    "code": "integer",
-                    "reason": "string"
-                }
-            }
-        ]
-    },
-    "title": {
-        "english": "string",
-        "welsh": "string"
-    },
-    "ucas_code_id": "string",
-    "year_abroad": {
-        "code": "integer",
-        "label": "Not available"
+        "title": {
+            "english": "string",
+            "welsh": "string"
+        },
+        "ucas_code_id": "string",
+        "year_abroad": {
+            "code": "integer",
+            "label": "Not available"
+        }
     }
 }
 ```
@@ -231,13 +250,21 @@
 
 | JSON field name                            | XML Path                                      | XML field name   |
 |--------------------------------------------|-----------------------------------------------|------------------|
+| accreditation.[].accreditor_url            | KIS.ACCREDITATIONTABLE.ACCURL                 | ACCURL           |
+| accreditation.[].dependent_on.code         | KIS.ACCREDITATIONTABLE.ACCDEPEND              | ACCDEPEND        |
+| accreditation.[].dependent_on.label        | See Accreditation Code values                 | N/A              |
+| accreditation.[].text.english              | KIS.ACCREDITATIONTABLE.ACCTEXT                | ACCTEXT          |
+| accreditation.[].text.welsh                | KIS.ACCREDITATIONTABLE.ACCTEXTW               | ACCTEXTW         |
+| accreditation.[].type                      | KIS.INSTITUTIOM.KISCOURSE.ACCTYPE             | ACCTYPE          |
+| accreditation.[].url.english               | KIS.INSTITUTIOM.KISCOURSE.ACCDEPENDURL        | ACCDEPENDURL     |
+| accreditation.[].url.welsh                 | KIS.INSTITUTIOM.KISCOURSE.ACCDEPENDURLW       | ACCDEPENDURLW    |
 | application_provider                       | KIS.INSTITUTION.KISCOURSE.UKPRNAPPLY          | UKPRNAPPLY       |
 | country.code                               | KIS.INSTITUTION.COUNTRY                       | COUNTRY          |
 | country.name                               | See Country Code values                       | N/A              |
 | distance_learning.code                     | KIS.INSTITUTION.KISCOURSE.DISTANCE            | DISTANCE         |
 | distance_learning.label                    | See Distance Learning Code values             | N/A              |
 | foundation_year_availability.code          | KIS.INSTITUTION.KISCOURSE.FOUNDATION          | FOUNDATION       |
-| foundation_year_availability.label         | See Distance Learning Code values             | N/A              |
+| foundation_year_availability.label         | See Foundation Year Availability Code values  | N/A              |
 | honours_award_provision                    | KIS.INSTITUTION.KISCOURSE.HONOURS             | HONOURS          |
 | institution.public_ukprn_name              | Retreive data from UKPRN API                  | N/A              |
 | institution.public_ukprn                   | KIS.INSTITUTION.PUBUKPRN                      | PUBUKPRN         |
@@ -286,6 +313,23 @@
 | year_abroad.code                           | KIS.INSTITUTION.KISCOURSE.YEARABROAD          | YEARABROAD       |
 | year_abroad.label                          | See Year Abroad Code values                   | N/A              |
 
+### Notes: 
+
+#### Accreditation
+
+Use the `ACCTYPE` value to match fields accross `KISCOURSE.ACCREDITATION` and `ACCREDITATIONTABLE`.
+
+#### Location
+
+Use the `LOCID` value to match fields accross `KISCOURSE.COURSELOCATION` to `LOCATION`
+
+### Accreditation Code Values
+
+| accreditation.[].dependent_on.code value | accreditation.[].dependent_on.label value        |
+|------------------------------------------|--------------------------------------------------|
+| 0                                        | Accreditation is not dependent on student choice |
+| 1                                        | Accreditation is dependent on student choice     |
+
 ### Country Codes Values
 
 | country.code value | country.name value |
@@ -315,9 +359,13 @@
 
 | length_of_course.code value | length_of_course.label value |
 |-----------------------------|------------------------------|
-| 0                           | Not available                |
-| 1                           | Optional                     |
-| 2                           | Compulsory                   |
+| 1                           | 1 stage                      |
+| 2                           | 2 stages                     |
+| 3                           | 3 stages                     |
+| 4                           | 4 stages                     |
+| 5                           | 5 stages                     |
+| 6                           | 6 stages                     |
+| 7                           | 7 stages                     |
 
 ### Mode Code Values
 
