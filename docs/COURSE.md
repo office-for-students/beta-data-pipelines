@@ -83,15 +83,17 @@
                 "welsh": "string"
             }
         },
-        "location": {
-            "changes": true,
-            "latitude": "string",
-            "longitude": "string",
-            "name": {
-                "english": "string",
-                "welsh": "string"
+        "location_changes": "boolean",
+        "locations": [
+            {
+                "latitude": "string",
+                "longitude": "string",
+                "name": {
+                    "english": "string",
+                    "welsh": "string"
+                }
             }
-        },
+        ],
         "mode": {
             "code": "integer",
             "label": "string"
@@ -174,11 +176,11 @@
 | links.self.welsh                           | Dynamically built                                     | N/A              |
 | links.student_union.english                | KIS.INSTITUTION.SUURL                                 | SUURL            |
 | links.student_union.welsh                  | KIS.INSTITUTION.SUURLW                                | SUURLW           |
-| location.changes                           | KIS.INSTITUTION.KISCOURSE.LOCCHANGE                   | LOCCHANGE        |
-| location.latitude                          | KIS.LOCATION.LATITUDE                                 | LATITUDE         |
-| location.longitude                         | KIS.LOCATION.LONGITUDE                                | LONGITUDE        |
-| location.name.english                      | KIS.LOCATION.LOCNAME                                  | LOCNAME          |
-| location.name.welsh                        | KIS.LOCATION.LOCNAMEW                                 | LOCNAMEW         |
+| location_changes                           | KIS.INSTITUTION.KISCOURSE.LOCCHANGE                   | LOCCHANGE        |
+| locations.[].latitude                      | KIS.LOCATION.LATITUDE                                 | LATITUDE         |
+| locations.[].longitude                     | KIS.LOCATION.LONGITUDE                                | LONGITUDE        |
+| locations.[].name.english                  | KIS.LOCATION.LOCNAME                                  | LOCNAME          |
+| locations.[].name.welsh                    | KIS.LOCATION.LOCNAMEW                                 | LOCNAMEW         |
 | mode.code                                  | KIS.INSTITUTION.KISCOURSE.KISMODE                     | KISMODE          |
 | mode.label                                 | See Mode Code values                                  | N/A              |
 | nhs_funded.code                            | KIS.INSTITUTION.KISCOURSE.NHS                         | NHS              |
@@ -205,7 +207,7 @@ Use the `ACCTYPE` value to match fields accross `KISCOURSE.ACCREDITATION` and `A
 
 #### Location
 
-Use the `LOCID` value to match fields accross `KISCOURSE.COURSELOCATION` to `LOCATION`
+Use the `COURSELOCATION.LOCID` and `UKPRN` values to match fields accross `KISCOURSE` to `LOCATION`
 
 ### Accreditation Code Values
 
