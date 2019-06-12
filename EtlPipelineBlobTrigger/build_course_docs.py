@@ -97,7 +97,7 @@ def get_locids(raw_course_data):
                 locids.append(val['LOCID'])
             except KeyError:
                 # Handle COURSELOCATION without LOCID - see KISCOURSEID BADE for an example
-                # Distant learning my provide a UCASCOURSEID
+                # Distant learning may provide a UCASCOURSEID under COURSELOCATION
                 pass
     else:
         try:
@@ -107,7 +107,8 @@ def get_locids(raw_course_data):
             pass
     return locids
 
-def build_accomodation(locations, locids):
+
+def build_accomodation_links(locations, locids):
     """Needs to return a list"""
     accom = []
     for locid in locids:
@@ -121,7 +122,8 @@ def build_accomodation(locations, locids):
             accom.append(accom_dict)
     return accom
 
-def build_assessment_method(raw_course_data):
+
+def build_assesment_method_links(raw_course_data):
     assessment_method = {}
     if 'ASSURL' in raw_course_data:
         assessment_method['english'] = raw_course_data['ASSURL']
@@ -129,37 +131,41 @@ def build_assessment_method(raw_course_data):
         assessment_method['welsh'] = raw_course_data['ASSURLW']
     return assessment_method
 
-def build_course_page(raw_course_data):
-    course_page = {}
-    if 'CRSEURL' in raw_course_data:
-        course_page['english'] = raw_course_data['CRSEURL']
-    if 'CRSEURLW' in raw_course_data:
-        course_page['welsh'] = raw_course_data['CRSEURLW']
-    return course_page
 
-def build_employment_details(raw_course_data):
-    employment_details = {}
-    if 'EMPLOYURL' in raw_course_data:
-        employment_details['english'] = raw_course_data['EMPLOYURL']
-    if 'EMPLOYURLW' in raw_course_data:
-        employment_details['welsh'] = raw_course_data['EMPLOYURLW']
-    return employment_details
+def build_link_item(key, raw_course_data):
+    links = {}
+    keyw = key + 'W'
+    if key in raw_course_data:
+        links['english'] = raw_course_data[key]
+    if keyw in raw_course_data:
+        links['welsh'] = raw_course_data[keyw]
+    return links
+
 
 def build_links(locations, locids, raw_inst_data, raw_course_data):
     links = {}
     if locids:
-        accomodation = build_accomodation(locations, locids)
+        accomodation = build_accomodation_links(locations, locids)
         links['accomodation'] = accomodation
-    assessment_method = build_assessment_method(raw_course_data)
+    assessment_method = build_assesment_method_links(raw_course_data)
     if assessment_method:
         links['assessment_method'] = assessment_method
-    course_page = build_course_page(raw_course_data)
-    if course_page:
-        links['course_page'] = course_page
-    employment_details = build_employment_details(raw_course_data)
-    if employment_details:
-        links['employment_details'] = employment_details
+
+    item_details = [('CRSEURL','course_page'),
+            ('EMPLOYURL', 'employment_details'),
+            ('SUPPORTURL','financial_support_details'),
+            ('LTURL', 'learning_and_teaching_methods')]
+
+    for item_detail in item_details:
+        link_item = build_link_item(item_detail[0], raw_course_data)
+        if link_item:
+            links[item_detail[1]] = link_item
+
+    #seld will be dynamically added here
+
+
     return links
+
 
 def build_course_entry(locations, locids, raw_inst_data, raw_course_data):
     outer_wrapper = {}
@@ -191,8 +197,9 @@ def build_course_entry(locations, locids, raw_inst_data, raw_course_data):
     outer_wrapper['course'] = course_entry
     return outer_wrapper
 
-#fname = "../test-data/test-3-inst.xml"
-fname = "kis.xml"
+
+fname = "test-3-inst.xml"
+#fname = "kis.xml"
 tree = ET.parse(fname)
 root = tree.getroot()
 
