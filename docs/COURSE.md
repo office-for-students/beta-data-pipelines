@@ -104,9 +104,7 @@
         },
         "qualification": {
             "code": "string",
-            "label": "string",
-            "level": "string",
-            "name": "string"
+            "label": "string"
         },
         "sandwich_year": {
             "code": "string",
@@ -186,9 +184,7 @@
 | nhs_funded.code                            | KIS.INSTITUTION.KISCOURSE.NHS                         | NHS              |
 | nhs_funded.label                           | See NHS Code values                                   | N/A              |
 | qualification.code                         | KIS.INSTITUTION.KISCOURSE.KISAIMCODE                  | KISAIMCODE       |
-| qualification.label                        | See [qualifications file](qualifications.txt)         | N/A              |
-| qualification.level                        | See [qualifications file](qualifications.txt)         | N/A              |
-| qualification.name                         | See [qualifications file](qualifications.txt)         | N/A              |
+| qualification.label                        | KIS.KISAIM.KISAIMLABEL                                | KISAIMLABEL      |
 | sandwich_year.code                         | KIS.INSTITUTION.KISCOURSE.SANDWICH                    | SANDWICH         |
 | sandwich_year.label                        | See Sandwich Years Code values                        | N/A              |
 | statistics.*                               | See [STATISTICS](STATISTICS.md)                       | N/A              |
@@ -208,6 +204,10 @@ Use the `ACCTYPE` value to match fields accross `KISCOURSE.ACCREDITATION` and `A
 #### Location
 
 Use the `COURSELOCATION.LOCID` and `UKPRN` values to match fields accross `KISCOURSE` to `LOCATION`
+
+#### Qualification
+
+Use the `KISAIMCODE` value to find `KISAIMLABEL` in the `KISAIM` section
 
 ### Accreditation Code Values
 
