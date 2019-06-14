@@ -1,12 +1,12 @@
-import logging
-
 
 def get_url_from_req(req):
     """Returns the value of resource_url from the HTTP request"""
+
+    # TODO Update when we have finalised details on POST format
     try:
-        req_body = req.get_json()
-        url = req_body['resource_url']
-    except (ValueError, KeyError):
+        req_json = req.get_json()
+        url = req_json['resource_url']
+    except (AttributeError, TypeError, ValueError, KeyError):
         raise OfsMissingUrlError
 
     return url
