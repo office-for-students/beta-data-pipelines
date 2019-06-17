@@ -358,7 +358,7 @@
 
 ### Question Number mappings
 
-| question_<n>| question_<n>.question value                                                                                               |
+| question_n| question_n.question value                                                                                               |
 |-------------|---------------------------------------------------------------------------------------------------------------------------|
 | 1           | Staff are good at explaining things                                                                                       |
 | 2           | Staff have made the subject interesting                                                                                   |

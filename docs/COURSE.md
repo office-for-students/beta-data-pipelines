@@ -52,10 +52,6 @@
             "label": "string"
         },
         "links": {
-            "accommodation": {
-                "english": "string",
-                "welsh": "string"
-            },
             "assessment_method": {
                 "english": "string",
                 "welsh": "string"
@@ -72,12 +68,18 @@
                 "english": "string",
                 "welsh": "string"
             },
-            "institution": "string",
+            "institution": {
+                "english": "string",
+                "welsh": "string"
+            },
             "learning_and_teaching_methods": {
                 "english": "string",
                 "welsh": "string"
             },
-            "self": "string",
+            "self": {
+                "english": "string",
+                "welsh": "string"
+            },
             "student_union": {
                 "english": "string",
                 "welsh": "string"
@@ -87,11 +89,22 @@
         "locations": [
             {
                 "latitude": "string",
+                "links": {
+                    "accommodation": {
+                        "english": "string",
+                        "welsh": "string"
+                    },
+                    "student_union": {
+                        "english": "string",
+                        "welsh": "string"
+                    }
+                },
                 "longitude": "string",
                 "name": {
                     "english": "string",
                     "welsh": "string"
-                }
+                },
+                "ucas_course_id": "string"
             }
         ],
         "mode": {
@@ -117,10 +130,7 @@
             "english": "string",
             "welsh": "string"
         },
-        "ucas": {
-            "course_id": "string",
-            "programme_id": "string"
-        },
+        "ucas_programme_id": "string",
         "year_abroad": {
             "code": "integer",
             "label": "Not available"
@@ -156,8 +166,6 @@
 | kis_course_id                              | KIS.INSTITUTIOM.KISCOURSE.KISCOURSEID                 | KISCOURSEID      |
 | length_of_course.code                      | KIS.INSTITUTIOM.KISCOURSE.NUMSTAGE                    | NUMSTAGE         |
 | length_of_course.label                     | See Length of Course Code values                      | N/A              |
-| links.accommodation.english                | KIS.LOCATION.ACCOMURL                                 | ACCOMURL         |
-| links.accommodation.welsh                  | KIS.LOCATION.ACCOMURLW                                | ACCOMURLW        |
 | links.assessment_method.english            | KIS.INSTITUTION.KISCOURSE.ASSURL                      | ASSURL           |
 | links.assessment_method.welsh              | KIS.INSTITUTION.KISCOURSE.ASSMURLW                    | ASSURLW          |
 | links.course_page.english                  | KIS.INSTITUTION.KISCOURSE.CRSEURL                     | CRSEURL          |
@@ -176,9 +184,14 @@
 | links.student_union.welsh                  | KIS.INSTITUTION.SUURLW                                | SUURLW           |
 | location_changes                           | KIS.INSTITUTION.KISCOURSE.LOCCHANGE                   | LOCCHANGE        |
 | locations.[].latitude                      | KIS.LOCATION.LATITUDE                                 | LATITUDE         |
+| locations.[].links.accommodation.english   | KIS.LOCATION.ACCOMURL                                 | ACCOMURL         |
+| locations.[].links.accommodation.welsh     | KIS.LOCATION.ACCOMURLW                                | ACCOMURLW        |
+| locations.[].links.student_union.english   | KIS.LOCATION.SUURL                                    | SUURL            |
+| locations.[].links.student_union.welsh     | KIS.LOCATION.SUURLW                                   | SUURLW           |
 | locations.[].longitude                     | KIS.LOCATION.LONGITUDE                                | LONGITUDE        |
 | locations.[].name.english                  | KIS.LOCATION.LOCNAME                                  | LOCNAME          |
 | locations.[].name.welsh                    | KIS.LOCATION.LOCNAMEW                                 | LOCNAMEW         |
+| locations.[].ucas_course_id                | KIS.INSTITUTION.KISCOURSE.COURSELOCATION.UCASCOURSEID | UCASCOURSEID     |
 | mode.code                                  | KIS.INSTITUTION.KISCOURSE.KISMODE                     | KISMODE          |
 | mode.label                                 | See Mode Code values                                  | N/A              |
 | nhs_funded.code                            | KIS.INSTITUTION.KISCOURSE.NHS                         | NHS              |
@@ -190,7 +203,6 @@
 | statistics.*                               | See [STATISTICS](STATISTICS.md)                       | N/A              |
 | title.english                              | KIS.INSTITUTION.KISCOURSE.TITLE                       | TITLE            |
 | title.welsh                                | KIS.INSTITUTION.KISCOURSE.TITLEW                      | TITLEW           |
-| ucas.course_id                             | KIS.INSTITUTION.KISCOURSE.COURSELOCATION.UCASCOURSEID | UCASCOURSEID     |
 | ucas.programme_id                          | KIS.INSTITUTION.KISCOURSE.UCASPROGID                  | UCASPROGID       |
 | year_abroad.code                           | KIS.INSTITUTION.KISCOURSE.YEARABROAD                  | YEARABROAD       |
 | year_abroad.label                          | See Year Abroad Code values                           | N/A              |
