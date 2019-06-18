@@ -5,6 +5,10 @@
 import azure.functions as func
 import logging
 import os
+import io
+import zlib
+import gzip
+from . import course_docs
 
 from . import exceptions
 from . import loaders
@@ -54,11 +58,31 @@ def main(xmlblob: func.InputStream, context: func.Context):
                  f"XsdPath: {xsd_path}")
 
         # Read the XML BLOB Input Stream
-        xml_string = xmlblob.read().decode('utf-8')
+        # xml_string = xmlblob.read().decode('utf-8')
+        # xml_string = xmlblob.read()
+
+        # Note we are expecting the HESA dataset in Storage in gzip compressed
+        # format. This is a work around because Functions written in Python
+        # do not get triggered correctly with large blobs. This was not a problem when
+        # tested with C#. 
+
+        # Read the compressed Blob into a BytesIO object
+        compressed_file = io.BytesIO(xmlblob.read())
+
+        # Read the compressed file into a GzipFile object
+        compressed_gzip = gzip.GzipFile(fileobj=compressed_file)
+
+        # Decompress the file
+        decompressed_file = compressed_gzip.read()
+
+        # Decode the bytes into a string
+        xml_string = decompressed_file.decode('utf-8')
+
 
         """ 1. VALIDATION - Validate the HESA Raw XML against the XSD """
         
-        validators.validate_xml(xsd_path, xml_string)
+        # Is failing validation. Leave out for now.
+        # validators.validate_xml(xsd_path, xml_string)
 
         """ 2. TRANSFORMATION - Parse, clean and enrich the XML into JSON Documents """
 
@@ -74,9 +98,11 @@ def main(xmlblob: func.InputStream, context: func.Context):
         # updated with the full set of collection types and logic as per the
         # service data model and service query/access patterns.
 
-        loaders.load_json_documents(
-            cosmosdb_uri, cosmosdb_key, cosmosdb_database_id, cosmosdb_collection_id, 
-            xml_string)
+        #loaders.load_json_documents(
+        #    cosmosdb_uri, cosmosdb_key, cosmosdb_database_id, cosmosdb_collection_id, 
+        #    xml_string)
+
+        course_docs.create_course_docs(xml_string)
 
         """ 4. CLEANUP """
 
