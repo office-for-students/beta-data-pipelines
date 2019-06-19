@@ -1,6 +1,10 @@
 """
 This module extracts course information from the HESA
-XML dataset and writes it in JSON format to Cosmo DB.
+XML dataset and writes it in JSON format to Cosmos DB.
+To fit with the recent architecure update this will
+require considerable refactoring. For this reason and
+time constraints to get the end to end pipeline running
+tests will be added later.
 """
 import datetime
 import json
@@ -230,14 +234,23 @@ def get_cosmos_client():
 
     return cosmos_client.CosmosClient(url_connection=cosmosdb_uri, auth={master_key: cosmosdb_key})
 
-def create_course_docs(xml_string):
 
+def create_course_docs(xml_string):
+    """Parse HESA XML passed in and create JSON course docs in Cosmos DB."""
+
+    # TODO Invetigate writing docs to CosmosDB in bulk. Have seen some network
+    # timeouts during limited testing and bulk upload could help mitigate 
+    # this. Also look at retries around network issues and refactoring into
+    # classes. 
     cosmosdb_client = get_cosmos_client()
 
-    # Define a link to the relevant CosmosDB Container/Document Collection
+    # Get the relevant properties from Application Settings
     cosmosdb_database_id = os.environ['AzureCosmosDbDatabaseId']
     cosmosdb_collection_id = os.environ['AzureCosmosDbCollectionId']
-    collection_link = 'dbs/' + cosmosdb_database_id + '/colls/' + cosmosdb_collection_id
+
+    # Define a link to the relevant CosmosDB Container/Document Collection
+    collection_link = 'dbs/' + cosmosdb_database_id + \
+        '/colls/' + cosmosdb_collection_id
     logging.info(f"collections_link {collection_link}")
 
     # Import the XML dataset
@@ -259,4 +272,4 @@ def create_course_docs(xml_string):
                 locations, locids, raw_inst_data, raw_course_data, kisaims)
             cosmosdb_client.CreateItem(collection_link, course_entry)
             course_count += 1
-            logging.info(f"Parsed {course_count} courses")
+    logging.info(f"Processed {course_count} courses")
