@@ -55,7 +55,8 @@ def get_locids(raw_course_data, ukprn):
     if type(raw_course_data['COURSELOCATION']) == list:
         for val in raw_course_data['COURSELOCATION']:
             # TODO if UCASCOURSEIDs present, then process accordingly
-            # For example, check distant learning is set True.
+            # For example, check distant learning is set True. May
+            # also need to change function name and return type.
             try:
                 locids.append(f"{val['LOCID']}{ukprn}")
             except KeyError:
@@ -215,7 +216,7 @@ def build_course_entry(locations, locids, raw_inst_data, raw_course_data, kisaim
     if title:
         course['title'] = title
     if 'UCASPROGID' in raw_course_data:
-        course['ucas_code_id'] = raw_course_data['UCASPROGID']
+        course['ucas_programme_id'] = raw_course_data['UCASPROGID']
     year_abroad = build_code_label_entry(
         raw_course_data, lookup.year_abroad, 'YEARABROAD')
     if year_abroad:
@@ -239,9 +240,9 @@ def create_course_docs(xml_string):
     """Parse HESA XML passed in and create JSON course docs in Cosmos DB."""
 
     # TODO Invetigate writing docs to CosmosDB in bulk. Have seen some network
-    # timeouts during limited testing and bulk upload could help mitigate 
+    # timeouts during limited testing and bulk upload could help mitigate
     # this. Also look at retries around network issues and refactoring into
-    # classes. 
+    # classes.
     cosmosdb_client = get_cosmos_client()
 
     # Get the relevant properties from Application Settings

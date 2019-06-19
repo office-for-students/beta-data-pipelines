@@ -35,18 +35,18 @@ mode = {
 }
 
 nhs_funded = {
-    '0':	'None',
-    '1':	'Any',
+    '0': 'None',
+    '1': 'Any',
 }
 
 sandwich_year = {
-    '0':	'Not available',
-    '1':	'Optional',
-    '2':    'Compulsory',
+    '0': 'Not available',
+    '1': 'Optional',
+    '2': 'Compulsory',
 }
 
 year_abroad = {
-    '0':	'Not available',
-    '1':	'Optional',
-    '2':	'Compulsory',
+    '0': 'Not available',
+    '1': 'Optional',
+    '2': 'Compulsory',
 }
