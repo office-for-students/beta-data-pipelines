@@ -144,5 +144,4 @@ See [LICENSE](LICENSE.md) for details.
 
 See [COURSE](docs/COURSE.md) for mappings of course data
 See [COURSE STATISTICS](doc/STATISTICS.md) for mappings for course statistics
-
-TODO [INSTITUTION](docs/INSTITUTION.md) for mappings of institution data
+See [INSTITUTION](docs/INSTITUTION.md) for mappings of institution data
