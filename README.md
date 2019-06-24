@@ -139,3 +139,9 @@ See [CONTRIBUTING](CONTRIBUTING.md) for details.
 ### License
 
 See [LICENSE](LICENSE.md) for details.
+
+### Data mappings (XML to JSON)
+
+See [COURSE](docs/COURSE.md) for mappings of course data
+See [COURSE STATISTICS](doc/STATISTICS.md) for mappings for course statistics
+See [INSTITUTION](docs/INSTITUTION.md) for mappings of institution data
