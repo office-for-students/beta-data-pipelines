@@ -135,7 +135,7 @@ Use `ctrl c` to close function and `deactivate` to exit virtual environment
 To run the test suite, run the following commands
 
 ```
-pip install pytest 
+pip install pytest (if you haven't already installed dependencies using the requirements.txt file)
 pytest -v
 ```
 
