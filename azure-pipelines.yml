@@ -32,7 +32,7 @@ steps:
 # Execute Python Tests
 - script: |
     pip install pytest pytest-azurepipelines
-    pytest -v
+    python setup.py test -v
   displayName: 'pytest'
 
 # Archive the Azure Python Function into a ZIP package for deployment
