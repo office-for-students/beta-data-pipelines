@@ -30,10 +30,10 @@ steps:
   displayName: 'Install Python Dependencies'
 
 # Execute Python Tests
-#- script: |
-#    pip install pytest pytest-azurepipelines
-#    pytest
-#  displayName: 'pytest'
+- script: |
+    pip install pytest pytest-azurepipelines
+    pytest
+  displayName: 'pytest'
 
 # Archive the Azure Python Function into a ZIP package for deployment
 - task: ArchiveFiles@2
