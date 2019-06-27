@@ -1,12 +1,14 @@
 import requests
 import pprint
 import xmltodict
+import os
 
 class UkrlpClient:
+    """ Responsible for requesting data from UKRLP and returning data"""
 
     @staticmethod
     def get_soap_req(ukprn):
-        """Creates and returns a SOAP request to query UKRLP for a ukprn entry"""
+        """Returns a SOAP request to query a specific UKRLP for a ukprn entry"""
 
         soap_req = f"""
         <soapenv:Envelope
@@ -34,27 +36,24 @@ class UkrlpClient:
 
     @staticmethod
     def get_matching_provider_records(ukprn):
-        url = 'http://testws.ukrlp.co.uk:80/UkrlpProviderQueryWS5/ProviderQueryServiceV5'
+
+        url = os.environ['UkRlpUrl']
+
         headers = {'Content-Type': 'text/xml'}
-        pp = pprint.PrettyPrinter(indent=4)
 
         soap_req = UkrlpClient.get_soap_req(ukprn)
-        r = requests.post(url, data = soap_req, headers=headers)
-        #provider_contact = enrichment_data_dict['S:Envelope']['S:Body']['ns4:ProviderQueryResponse']['MatchingProviderRecords']['ProviderContent']
         r = requests.post(url, data=soap_req, headers=headers)
         status_code = r.status_code
+        if status_code != 200:
+            return None
 
-        print(f"status code {status_code}")
-        print(f"ukprn {ukprn}")
         decoded_content = r.content.decode('utf-8')
         enrichment_data_dict = xmltodict.parse(decoded_content)
-        pp.pprint(enrichment_data_dict)
+
         try:
             provider_records = enrichment_data_dict['S:Envelope']['S:Body']['ns4:ProviderQueryResponse']['MatchingProviderRecords']
         except KeyError:
             return None
 
 
-        #pp.pprint(provider_records)
         return provider_records
-        #enrichment_data_json = json.dumps(enrichment_data_dict)
