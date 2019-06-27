@@ -29,7 +29,7 @@ steps:
     python3.6 -m pip install --upgrade pip
     python3.6 -m pip install -r requirements.txt
     pwd
-    ls .env
+    ls .env/lib/python3.6/site-packages
   displayName: 'Install Python Dependencies'
 
 # Execute Python Tests
