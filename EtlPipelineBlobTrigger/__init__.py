@@ -10,9 +10,7 @@ import logging
 import io
 import gzip
 from . import course_docs
-
 from . import exceptions
-from . import loaders
 from . import validators
 
 from datetime import datetime
