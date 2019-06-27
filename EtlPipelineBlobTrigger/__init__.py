@@ -2,9 +2,11 @@
 
 """ EtlPipelineBlobTrigger: Execute the ETL pipeline based on a BLOB trigger """
 
+import os, sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '../.env/lib/python3.6/site-packages')))
+
 import azure.functions as func
 import logging
-import os
 import io
 import gzip
 from . import course_docs
