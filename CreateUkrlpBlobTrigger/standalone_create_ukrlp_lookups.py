@@ -1,13 +1,15 @@
 import datetime
 import json
+import logging
+import os
 import pprint
+import sys
 import uuid
 import xml.etree.ElementTree as ET
 import xmltodict
 
 from ukrlp_client import UkrlpClient
-
-
+from ..SharedCode import utils
 
 # TODO move to common area as other functions use this
 def get_uuid():
@@ -29,17 +31,15 @@ def get_address_entry(address):
 
 
 def get_contact_details(matching_provider_records):
-    """Returns the contact details"""
+    """Returns the contact details element"""
 
     contact_details = {}
 
-    # We use the first contact from the list
     try:
         provider_contact = matching_provider_records['ProviderContact'][0]
     except KeyError:
         return contact_details
 
-    # Spec defines one address so just take the first
     address = provider_contact['ContactAddress']
 
     contact_details['address'] = get_address_entry(address)
@@ -48,7 +48,7 @@ def get_contact_details(matching_provider_records):
 
 
 def get_lookup_entry(ukprn, matching_provider_records):
-    """Returns the lookup entry"""
+    """Returns the UKRLP lookup entry"""
 
     lookup_item = {}
     lookup_item['id'] = get_uuid()
@@ -62,10 +62,23 @@ def get_lookup_entry(ukprn, matching_provider_records):
 def create_ukrlp_docs():
     """Parse HESA XML passed in and create JSON lookup table for  UKRLP data."""
 
-    with open('../../kis.xml', 'r') as file:
-    #with open('../test-data/institutions.xml', 'r') as file:
+    #with open('../../kis.xml', 'r') as file:
+    with open('../test-data/institutions.xml', 'r') as file:
         xml_string = file.read()
 
+    cosmosdb_client = utils.get_cosmos_client()
+
+    # Get the relevant properties from Application Settings
+    cosmosdb_database_id = os.environ['AzureCosmosDbDatabaseId']
+    cosmosdb_collection_id = os.environ['AzureCosmosDbUkRlpCollectionId']
+
+    # Define a link to the relevant CosmosDB Container/Document Collection
+    collection_link = 'dbs/' + cosmosdb_database_id + \
+        '/colls/' + cosmosdb_collection_id
+    logging.info(f"collections_link {collection_link}")
+
+
+    # Import the XML dataset
     root = ET.fromstring(xml_string)
 
     institution_count = 0
@@ -83,7 +96,7 @@ def create_ukrlp_docs():
             failed_to_find_count += 1
         else:
             lookup_entry = get_lookup_entry(ukprn, matching_provider_records)
-            print(json.dumps(lookup_entry, indent=4))
+            cosmosdb_client.CreateItem(collection_link, lookup_entry)
             institution_count+=1
 
     print(f'processed {institution_count} institutions')
