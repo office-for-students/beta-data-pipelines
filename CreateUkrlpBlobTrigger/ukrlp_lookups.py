@@ -4,17 +4,14 @@ import logging
 import os
 import pprint
 import sys
-import uuid
+
 import xml.etree.ElementTree as ET
 import xmltodict
 
 from ukrlp_client import UkrlpClient
 from SharedCode import utils
 
-# TODO move to common area as other functions use this
-def get_uuid():
-    id = uuid.uuid1()
-    return str(id.hex)
+
 
 def get_address_entry(address):
     """Returns the address element"""
@@ -51,7 +48,7 @@ def get_lookup_entry(ukprn, matching_provider_records):
     """Returns the UKRLP lookup entry"""
 
     lookup_item = {}
-    lookup_item['id'] = get_uuid()
+    lookup_item['id'] = utils.get_uuid()
     lookup_item['created_at'] = datetime.datetime.utcnow().isoformat()
     lookup_item['ukprn'] = ukprn
     lookup_item['ukprn_name'] = matching_provider_records['ProviderName']
@@ -59,19 +56,33 @@ def get_lookup_entry(ukprn, matching_provider_records):
 
     return lookup_item
 
-def process_ukprn(cosmosdb_client, collection_link, ukprn):
-    
+def entry_exists(cosmosdb_client, collection_link, ukprn):
+    """Check if the entry for a specific ukprn exists"""
+    query = {'query': f"SELECT * FROM c where c.ukprn = '{ukprn}'"}
 
+    options = {}
+    options['enableCrossPartitionQuery'] = True
+
+    print(f'query: {query}')
+    res = list(cosmosdb_client.QueryItems(collection_link, query, options))
+
+    if not res:
+        return False:
+
+    return True
+
+def process_ukprn(cosmosdb_client, collection_link, ukprn):
     # For this to work correctly the contaoner must be setup with ukprn being unique
+
     matching_provider_records = UkrlpClient.get_matching_provider_records(ukprn)
+
     if not matching_provider_records:
-        print(f'did not find record for {ukprn}')
+        logging.erro('UKRLP did not return the data for {ukprn}')
         return False
-    else:
-        lookup_entry = get_lookup_entry(ukprn, matching_provider_records)
-        if not cosmosdb_client.CreateItem(collection_link, lookup_entry):
-            logging.info('Cosmos DB did not create item for {ukprn}')
-            return False
+
+    lookup_entry = get_lookup_entry(ukprn, matching_provider_records)
+
+    cosmosdb_client.CreateItem(collection_link, lookup_entry)
     return True
 
 def create_ukrlp_lookups(xml_string):
@@ -100,17 +111,13 @@ def create_ukrlp_lookups(xml_string):
         ukprn = raw_inst_data.get('UKPRN')
         pubukprn = raw_inst_data.get('PUBUKPRN')
 
-        if ukprn:
+        if ukprn and not entry_exists(cosmosdb_client, collection_link, ukprn):
             if process_ukprn(cosmosdb_client, collection_link, ukprn):
                 institution_count+=1
-        else:
-            logging.error('INSTITUTION without a UKPRN')
 
-        if pubukprn:
+        if pubukprn and not entry_exists(cosmosdb_client, collection_link, ukprn):
             if process_ukprn(cosmosdb_client, collection_link, pubukprn):
                 institution_count+=1
-        else:
-            logging.error('INSTITUTION without a PUBUKPRN')
 
 
     print(f'processed {institution_count} institutions')
