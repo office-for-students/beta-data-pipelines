@@ -247,7 +247,7 @@ def create_course_docs(xml_string):
 
     # Get the relevant properties from Application Settings
     cosmosdb_database_id = os.environ['AzureCosmosDbDatabaseId']
-    cosmosdb_collection_id = os.environ['AzureCosmosDbCollectionId']
+    cosmosdb_collection_id = os.environ['AzureCosmosDbCoursesCollectionId']
 
     # Define a link to the relevant CosmosDB Container/Document Collection
     collection_link = 'dbs/' + cosmosdb_database_id + \
