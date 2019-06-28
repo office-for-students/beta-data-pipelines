@@ -2,9 +2,11 @@
 
 """ IngestRawXmlHttpTrigger: Request and ingest the raw HESA XML into an Azure Storage Account BLOB Container """
 
+import os, sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '../.env/lib/python3.6/site-packages')))
+
 import azure.functions as func
 import logging
-import os
 import json
 
 from .utils import get_url_from_req, OfsMissingUrlError

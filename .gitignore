@@ -135,3 +135,6 @@ beta-data-pipelines.zip
 
 # Local setup files
 setup_env_vars.sh
+
+# Test files
+test-output.xml
