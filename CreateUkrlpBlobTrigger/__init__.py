@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging
 import os
 import io
@@ -6,18 +7,17 @@ import traceback
 
 import azure.functions as func
 
-from .ukrlp_lookups import create_ukrlp_lookups
-
+from .lookup_creator import LookupCreator 
 
 def main(xmlblob: func.InputStream):
-    """Creates the UKRLP lookup tables for later enrichment
-    
+    """Creates the UKRLP lookup tables for later use
+
 
     This Azure Function carries out the following steps:
-    *. Decompresses the XML HESA DataSet
-    *. Parses the INSTITUTION data from the DataSet
-    *. Retrieves enrichment data from the UKRLP API for each institution
-    *. Creates a lookup item for each Institution and writes it to CosmosDB 
+    * Decompresses the XML HESA DataSet
+    * Parses the INSTITUTION data from the DataSet
+    * Retrieves enrichment data from the UKRLP API for each institution
+    * Creates a lookup item for each Institution and writes it to CosmosDB
 
     """
 
@@ -25,6 +25,9 @@ def main(xmlblob: func.InputStream):
         logging.info(f"CreateUkrlpBlobTrigger creating UKRLP lookups\n"
                      f"Name: {xmlblob.name}\n"
                      f"Blob Size: {xmlblob.length} bytes")
+
+        pipeline_start_datetime = datetime.today().strftime('%Y%m%d %H%M%S')
+        logging.info('CreateUkrlp function started on ' + pipeline_start_datetime)
 
         # Read the compressed Blob into a BytesIO object
         compressed_file = io.BytesIO(xmlblob.read())
@@ -41,7 +44,11 @@ def main(xmlblob: func.InputStream):
         # TODO Validate the HESA XML
 
         # Parse the xml and create the lookups
-        create_ukrlp_lookups(xml_string)
+        lookup_creator = LookupCreator(xml_string)
+        lookup_creator.create_ukrlp_lookups()
+
+        pipeline_end_datetime = datetime.today().strftime('%Y%m%d %H%M%S')
+        logging.info('CreateUkrlp successfully finished on ' + pipeline_end_datetime)
 
     except Exception as e:
         # Unexpected exception
