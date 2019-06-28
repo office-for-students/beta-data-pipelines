@@ -5,8 +5,8 @@
       "name": "myblob",
       "type": "blobTrigger",
       "direction": "in",
-      "path": "samples-workitems/{name}",
-      "connection": "datapipeline9d08_STORAGE"
+      "path": "hesa-raw-xml-ingest/{name}",
+      "connection": "AzureStorageAccountConnectionString"
     }
   ]
 }
