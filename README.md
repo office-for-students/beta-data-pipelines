@@ -125,7 +125,7 @@ cd ~/{PATH to workspace}
 python3.6 -m venv .env
 source .env/bin/activate
 cd {function name}
-fun host start
+func host start
 ```
 
 Use `ctrl c` to close function and `deactivate` to exit virtual environment
