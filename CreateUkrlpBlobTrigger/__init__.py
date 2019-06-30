@@ -1,3 +1,5 @@
+"""Contains the entry point for Create UKRLP lookups Azure Function implementation"""
+
 from datetime import datetime
 import logging
 import os
@@ -7,7 +9,7 @@ import traceback
 
 import azure.functions as func
 
-from .lookup_creator import LookupCreator 
+from .lookup_creator import LookupCreator
 
 def main(xmlblob: func.InputStream):
     """Creates the UKRLP lookup tables for later use
