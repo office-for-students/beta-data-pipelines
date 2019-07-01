@@ -41,7 +41,7 @@ class LookupCreator:
         return address_item
 
     @staticmethod
-    def get_contact_details(matching_provider_records):
+    def get_contact_details(ukprn, matching_provider_records):
         """Returns the contact details element"""
 
         contact_details = {}
@@ -49,7 +49,7 @@ class LookupCreator:
         try:
             provider_contact = matching_provider_records['ProviderContact'][0]
         except KeyError:
-            logging.error('No ProviderContact from UKRLP')
+            logging.error(f'No ProviderContact from UKRLP for {ukprn}')
             return contact_details
 
         address = provider_contact['ContactAddress']
@@ -67,7 +67,7 @@ class LookupCreator:
         lookup_item['created_at'] = datetime.datetime.utcnow().isoformat()
         lookup_item['ukprn'] = ukprn
         lookup_item['ukprn_name'] = matching_provider_records['ProviderName']
-        lookup_item['contact_details'] = LookupCreator.get_contact_details(
+        lookup_item['contact_details'] = LookupCreator.get_contact_details(ukprn,
             matching_provider_records)
 
         return lookup_item
@@ -125,7 +125,6 @@ class LookupCreator:
             ukprn = raw_inst_data.get('UKPRN')
             pubukprn = raw_inst_data.get('PUBUKPRN')
 
-            logging.info(f'read {ukprn} and {pubukprn} from XML')
             if ukprn and not self.entry_exists(ukprn):
                 if self.create_ukrlp_lookup(ukprn):
                     self.lookups_created.append(ukprn)
@@ -134,7 +133,6 @@ class LookupCreator:
                 if self.create_ukrlp_lookup(pubukprn):
                     self.lookups_created.append(ukprn)
 
-            logging.debug(f'lookups_created = {len(self.lookups_created)}')
         logging.info(f'lookups_created = {len(self.lookups_created)}')
 
         if self.ukrlp_no_info_list:
