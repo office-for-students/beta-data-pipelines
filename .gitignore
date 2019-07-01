@@ -132,3 +132,6 @@ beta-data-pipelines.zip
 
 # Visual Studio Code
 .vscode/
+
+# Test files
+test-output.xml

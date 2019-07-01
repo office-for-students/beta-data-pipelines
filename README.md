@@ -2,6 +2,8 @@ OfS Beta Serverless Data Pipelines
 ==================
 OfS Beta Serverless Data Ingestion and ETL Pipelines using Azure Functions and the Azure Python SDK
 
+[![Build Status](https://dev.azure.com/nathanshumoogum/pre-prod/_apis/build/status/office-for-students.beta-data-pipelines?branchName=develop)](https://dev.azure.com/nathanshumoogum/pre-prod/_build/latest?definitionId=1&branchName=develop)
+
 ### Installation
 
 As the pipeline azure functions are written in Python using the Azure Python SDK and relevant python package dependencies, install python version 3.6.*, the Azure Python SDK currently does not work the version 3.7*.
@@ -123,14 +125,19 @@ cd ~/{PATH to workspace}
 python3.6 -m venv .env
 source .env/bin/activate
 cd {function name}
-fun host start
+func host start
 ```
 
 Use `ctrl c` to close function and `deactivate` to exit virtual environment
 
 #### Running tests
 
-TODO
+To run the test suite, run the following commands
+
+```
+pip install pytest (if you haven't already installed dependencies using the requirements.txt file)
+pytest -v
+```
 
 ### Contributing
 

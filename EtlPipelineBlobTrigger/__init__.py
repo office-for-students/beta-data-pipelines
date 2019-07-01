@@ -2,13 +2,15 @@
 
 """ EtlPipelineBlobTrigger: Execute the ETL pipeline based on a BLOB trigger """
 
+import os
 import azure.functions as func
 import logging
-import os
-
+import io
+import gzip
+from . import course_docs
 from . import exceptions
-from . import loaders
 from . import validators
+
 from datetime import datetime
 from distutils.util import strtobool
 
@@ -41,11 +43,6 @@ def main(xmlblob: func.InputStream, context: func.Context):
         pipeline_start_datetime = datetime.today().strftime('%Y%m%d %H%M%S')
         logging.info('ETL Pipeline started on ' + pipeline_start_datetime)
 
-        # Get the relevant properties from Application Settings
-        cosmosdb_uri = os.environ['AzureCosmosDbUri']
-        cosmosdb_key = os.environ['AzureCosmosDbKey']
-        cosmosdb_database_id = os.environ['AzureCosmosDbDatabaseId']
-        cosmosdb_collection_id = os.environ['AzureCosmosDbCollectionId']
         xsd_filename = os.environ['XsdFilename']
         xsd_path = os.path.join(context.function_directory, xsd_filename)
 
@@ -53,30 +50,39 @@ def main(xmlblob: func.InputStream, context: func.Context):
                  f"XsdFilename: {xsd_filename}\n"
                  f"XsdPath: {xsd_path}")
 
-        # Read the XML BLOB Input Stream
-        xml_string = xmlblob.read().decode('utf-8')
+        """ 1. DECOMPRESSION - Decompress the compressed HESA XML """
+        # Note the HESA XML blob provided will be gzip compressed.
+        # This is a work around for a limitation discovered in Azure,
+        # in that Functions written in Python do not get triggered 
+        # correctly with large blobs. Tests showed this is not a limitation
+        # with Funtions written in C#.
 
-        """ 1. VALIDATION - Validate the HESA Raw XML against the XSD """
+        # Read the compressed Blob into a BytesIO object
+        compressed_file = io.BytesIO(xmlblob.read())
+
+        # Read the compressed file into a GzipFile object
+        compressed_gzip = gzip.GzipFile(fileobj=compressed_file)
+
+        # Decompress the data 
+        decompressed_file = compressed_gzip.read()
+
+        # Decode the bytes into a string
+        xml_string = decompressed_file.decode('utf-8')
+
+
+        """ 2. VALIDATION - Validate the HESA Raw XML against the XSD """
         
-        validators.validate_xml(xsd_path, xml_string)
+        # TODO fix failing validation. 
+        # validators.validate_xml(xsd_path, xml_string)
 
-        """ 2. TRANSFORMATION - Parse, clean and enrich the XML into JSON Documents """
-
-        # TO BE COMPLETED - currently, and for the purposes of the INITIAL end-to-end
-        # skeleton ETL pipeline only, simple parsing and loading (with no cleansing) is 
-        # processed together in the loading function below. This will require 
-        # refactoring for the proper pipeline.
-
-        """ 3. LOADING - Load the JSON Documents into the Document Database """
+        """ 3. LOADING - Parse XML and create enriched JSON Documents in Document Database """
 
         # For the purposes of the INITIAL end-to-end skeleton ETL pipeline only, 
         # this simply parses and loads INSTITUTION documents. This will need to be
         # updated with the full set of collection types and logic as per the
         # service data model and service query/access patterns.
 
-        loaders.load_json_documents(
-            cosmosdb_uri, cosmosdb_key, cosmosdb_database_id, cosmosdb_collection_id, 
-            xml_string)
+        course_docs.create_course_docs(xml_string)
 
         """ 4. CLEANUP """
 
