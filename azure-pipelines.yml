@@ -31,6 +31,7 @@ steps:
 
 # Execute Python Tests
 - script: |
+    python3.6 -m pip install -r requirements.txt
     pytest -v
   displayName: 'pytest'
 
