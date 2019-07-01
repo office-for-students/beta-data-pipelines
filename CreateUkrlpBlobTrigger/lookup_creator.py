@@ -1,15 +1,15 @@
-import datetime
-import json
-import logging
-import os
-import pprint
-import sys
+"""Contains the class responsibe for creating UKRLP lookups"""
 
+import datetime
+import logging
 import xml.etree.ElementTree as ET
+
 import xmltodict
 
-from .ukrlp_client import UkrlpClient
 from SharedCode import utils
+
+from .ukrlp_client import UkrlpClient
+
 
 class LookupCreator:
     """Creates lookups for UKRLP data in Cosmos DB"""
@@ -137,7 +137,7 @@ class LookupCreator:
             logging.debug(f'lookups_created = {len(self.lookups_created)}')
         logging.info(f'lookups_created = {len(self.lookups_created)}')
 
-        if len(self.ukrlp_no_info_list):
+        if self.ukrlp_no_info_list:
             logging.info(
                 f'UKRLP did not return info for the following {len(self.ukrlp_no_info_list)} ukprn(s)'
             )
@@ -145,5 +145,4 @@ class LookupCreator:
                 logging.info(f'{ukprn}')
 
         logging.info(
-            f'DB entries existed for {len(self.db_entries_list)} ukprns tried'
-        )
+            f'DB entries existed for {len(self.db_entries_list)} ukprns tried')
