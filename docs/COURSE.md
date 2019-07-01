@@ -76,10 +76,7 @@
                 "english": "string",
                 "welsh": "string"
             },
-            "self": {
-                "english": "string",
-                "welsh": "string"
-            },
+            "self": "string",
             "student_union": {
                 "english": "string",
                 "welsh": "string"
@@ -183,8 +180,7 @@
 | links.institution.welsh                    | Dynamically built                                     | N/A              |
 | links.learning_and_teaching_method.english | KIS.INSTITUTION.KISCOURSE.LTURL                       | LTURL            |
 | links.learning_and_teaching_method.welsh   | KIS.INSTITUTION.KISCOURSE.LTURLW                      | LTURLW           |
-| links.self.english                         | Dynamically built                                     | N/A              |
-| links.self.welsh                           | Dynamically built                                     | N/A              |
+| links.self                                 | Dynamically built                                     | N/A              |
 | links.student_union.english                | KIS.INSTITUTION.SUURL                                 | SUURL            |
 | links.student_union.welsh                  | KIS.INSTITUTION.SUURLW                                | SUURLW           |
 | location_changes                           | KIS.INSTITUTION.KISCOURSE.LOCCHANGE                   | LOCCHANGE        |

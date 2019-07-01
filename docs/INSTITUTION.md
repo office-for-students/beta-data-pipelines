@@ -37,10 +37,7 @@
                         "english": "string",
                         "welsh": "string"
                     },
-                    "self": {
-                        "english": "string",
-                        "welsh": "string"
-                    }
+                    "self": "string",
                 },
                 "locations": [
                     {
@@ -71,10 +68,7 @@
         ],
         "links": {
             "institution_homepage": "string",
-            "self": {
-                "english": "string",
-                "welsh": "string"
-            },
+            "self": "string",
             "student_union": [
                 {
                     "english": "string",
@@ -120,8 +114,7 @@
 | institution.courses.[].kis_mode.label            | See Mode Code values                                  | N/A                   |
 | institution.courses.[].links.course_page.english | KIS.INSTITUTION.KISCOURSE.CRSEURL                     | CRSEURL               |
 | institution.courses.[].links.course_page.welsh   | KIS.INSTITUTION.KISCOURSE.CRSEURLW                    | CRSEURLW              |
-| institution.courses.[].links.self.english        | Dynamically built                                     | N/A                   |
-| institution.courses.[].links.self.welsh          | Dynamically built                                     | N/A                   |
+| institution.courses.[].links.self                | Dynamically built                                     | N/A                   |
 | institution.courses.[].locations.[].name.english | KIS.LOCATION.LOCNAME                                  | LOCNAME               |
 | institution.courses.[].locations.[].name.welsh   | KIS.LOCATION.LOCNAMEW                                 | LOCNAMEW              |
 | institution.courses.[].qualification.code        | KIS.INSTITUTION.KISCOURSE.KISAIMCODE                  | KISAIMCODE            |
@@ -133,8 +126,7 @@
 | institution.courses.[].title.english             | KIS.INSTITUTION.KISCOURSE.TITLE                       | TITLE                 |
 | institution.courses.[].title.welsh               | KIS.INSTITUTION.KISCOURSE.TITLEW                      | TITLEW                |
 | institution.links.institution_homepage           | Retreive data from UKPRN API                          | ContactWebsiteAddress |
-| institution.links.self.english                   | Dynamically built                                     | N/A                   |
-| institution.links.self.welsh                     | Dynamically built                                     | N/A                   |
+| institution.links.self                           | Dynamically built                                     | N/A                   |
 | institution.links.[].student_union.english       | LOCATION.SUURL                                        | SUURL                 |
 | institution.links.[].student_union.welsh         | LOCATION.SUURLW                                       | SUURLW                |
 | institution.public_ukprn_name                    | KIS.INSTITUTION.PUBUKPRN                              | PUBUKPRN              |
