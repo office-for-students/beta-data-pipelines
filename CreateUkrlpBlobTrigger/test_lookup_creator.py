@@ -15,8 +15,7 @@ import  lookup_creator
 
 def test_lookup_creator():
 
-    #with open('../../kis.xml', 'r') as file:
-    with open('../test-data/institutions.xml', 'r') as file:
+    with open('path to your test file here', 'r') as file:
         xml_string = file.read()
 
     lc = lookup_creator.LookupCreator(xml_string)
