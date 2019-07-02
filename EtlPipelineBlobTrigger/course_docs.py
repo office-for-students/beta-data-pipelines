@@ -162,7 +162,7 @@ def build_qualification(lookup_table_raw_xml, kisaims):
 
 def build_course_entry(locations, locids, raw_inst_data, raw_course_data, kisaims):
     outer_wrapper = {}
-    outer_wrapper['id'] = get_uuid()
+    outer_wrapper['id'] = utils.get_uuid()
     outer_wrapper['created_at'] = datetime.datetime.utcnow().isoformat()
     outer_wrapper['version'] = '1'
 
