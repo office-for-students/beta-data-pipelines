@@ -1,7 +1,7 @@
 import unittest
 from unittest import mock
-from SharedCode import utils
-from EtlPipelineBlobTrigger import enricher
+
+from EtlPipelineBlobTrigger import ukrlp_enricher
 
 TEST_LOOKUP = {
     '10002863': {
@@ -222,7 +222,7 @@ class TestEnricher(unittest.TestCase):
         """Test a course is updated correctly with lookup data"""
 
         mock_utils.get_ukrlp_lookups.return_value = TEST_LOOKUP
-        ce = enricher.CourseEnricher()
+        ce = ukrlp_enricher.UkRlpCourseEnricher()
         ce.enrich_course(test_course)
         self.assertDictEqual(test_course, EXPECTED_COURSE)
 
