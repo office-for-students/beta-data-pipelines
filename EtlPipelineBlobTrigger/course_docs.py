@@ -18,21 +18,18 @@ import azure.cosmos.cosmos_client as cosmos_client
 import xmltodict
 import xml.etree.ElementTree as ET
 
+from SharedCode import utils
+
 from . import course_lookup_tables as lookup
 
 from .locations import Locations
 from .kisaims import KisAims
 
 
-def get_uuid():
-    id = uuid.uuid1()
-    return str(id.hex)
-
-
 def build_institution(raw_inst_data):
     return {
-        "public_ukprn_name": "n/a",
-        "public_ukprn": raw_inst_data['PUBUKPRN'],
+        "pub_ukprn_name": "n/a",
+        "pub_ukprn": raw_inst_data['PUBUKPRN'],
         "ukprn_name": "n/a",
         "ukprn": raw_inst_data['UKPRN']
     }
@@ -226,16 +223,6 @@ def build_course_entry(locations, locids, raw_inst_data, raw_course_data, kisaim
     outer_wrapper['course'] = course
     return outer_wrapper
 
-
-def get_cosmos_client():
-    # TODO run this over TLS
-    cosmosdb_uri = os.environ['AzureCosmosDbUri']
-    cosmosdb_key = os.environ['AzureCosmosDbKey']
-    master_key = 'masterKey'
-
-    return cosmos_client.CosmosClient(url_connection=cosmosdb_uri, auth={master_key: cosmosdb_key})
-
-
 def create_course_docs(xml_string):
     """Parse HESA XML passed in and create JSON course docs in Cosmos DB."""
 
@@ -243,7 +230,7 @@ def create_course_docs(xml_string):
     # timeouts during limited testing and bulk upload could help mitigate
     # this. Also look at retries around network issues and refactoring into
     # classes.
-    cosmosdb_client = get_cosmos_client()
+    cosmosdb_client = utils.get_cosmos_client()
 
     # Get the relevant properties from Application Settings
     cosmosdb_database_id = os.environ['AzureCosmosDbDatabaseId']
