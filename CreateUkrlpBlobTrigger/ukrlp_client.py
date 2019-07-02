@@ -9,28 +9,28 @@ class UkrlpClient:
     """ Responsible for requesting data from UKRLP and returning data"""
 
     @staticmethod
-    def get_soap_req(ukprn):
+    def get_soap_req(ukprn, ofs_id):
         """Returns a SOAP request to query a specific UKRLP for a ukprn"""
 
         soap_req = f"""
         <soapenv:Envelope
-                xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
-                xmlns:ukr="http://ukrlp.co.uk.server.ws.v3">
-                <soapenv:Header/>
-                <soapenv:Body>
-                        <ukr:ProviderQueryRequest>
-                                <SelectionCriteria>
-                                        <UnitedKingdomProviderReferenceNumberList>
-                                                <UnitedKingdomProviderReferenceNumber>{ukprn}</UnitedKingdomProviderReferenceNumber>
-                                        </UnitedKingdomProviderReferenceNumberList>
-                                        <CriteriaCondition>OR</CriteriaCondition>
-                                        <StakeholderId>9</StakeholderId>
-                                        <ApprovedProvidersOnly>No</ApprovedProvidersOnly>
-                                        <ProviderStatus>A</ProviderStatus>
-                                </SelectionCriteria>
-                                <QueryId>9</QueryId>
-                        </ukr:ProviderQueryRequest>
-                </soapenv:Body>
+            xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+            xmlns:ukr="http://ukrlp.co.uk.server.ws.v3">
+            <soapenv:Header/>
+            <soapenv:Body>
+                <ukr:ProviderQueryRequest>
+                <SelectionCriteria>
+                        <UnitedKingdomProviderReferenceNumberList>
+                        <UnitedKingdomProviderReferenceNumber>{ukprn}</UnitedKingdomProviderReferenceNumber>
+                        </UnitedKingdomProviderReferenceNumberList>
+                        <CriteriaCondition>OR</CriteriaCondition>
+                        <StakeholderId>{ofs_id}</StakeholderId>
+                        <ApprovedProvidersOnly>No</ApprovedProvidersOnly>
+                        <ProviderStatus>A</ProviderStatus>
+                        </SelectionCriteria>
+                        <QueryId>{ofs_id}</QueryId>
+                </ukr:ProviderQueryRequest>
+            </soapenv:Body>
         </soapenv:Envelope>
         """
         return soap_req
@@ -40,10 +40,12 @@ class UkrlpClient:
         """Calls the UKRLP API to get records for the ukprn passed in"""
 
         url = os.environ['UkRlpUrl']
+        ofs_id = os.environ['UkRlpOfsId']
+
 
         headers = {'Content-Type': 'text/xml'}
 
-        soap_req = UkrlpClient.get_soap_req(ukprn)
+        soap_req = UkrlpClient.get_soap_req(ukprn, ofs_id)
         response = requests.post(url, data=soap_req, headers=headers)
         if response.status_code != 200:
             return None

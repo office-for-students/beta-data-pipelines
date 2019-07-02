@@ -21,8 +21,6 @@ def get_cosmos_client():
     cosmosdb_uri = os.environ['AzureCosmosDbUri']
     cosmosdb_key = os.environ['AzureCosmosDbKey']
 
-    # TODO inherited this, but need to check we are setting it correctly
-    # Should it have more entropy for example?
     master_key = 'masterKey'
 
     return cosmos_client.CosmosClient(url_connection=cosmosdb_uri,
