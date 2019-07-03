@@ -226,7 +226,7 @@ class TestEnricher(unittest.TestCase):
         ukrlp_course_enricher.enrich_course(test_course)
         self.assertDictEqual(test_course, EXPECTED_COURSE)
 
-# TODO add more tests
+# TODO add more tests - including test when no lookup available for course
 
 if __name__ == '__main__':
     unittest.main()
