@@ -2,17 +2,16 @@
 
 """ EtlPipelineBlobTrigger: Execute the ETL pipeline based on a BLOB trigger """
 
-import os
-import azure.functions as func
-import logging
-import io
 import gzip
-from . import course_docs
-from . import exceptions
-from . import validators
-
+import io
+import logging
+import os
 from datetime import datetime
 from distutils.util import strtobool
+
+import azure.functions as func
+
+from . import course_docs, exceptions, validators
 
 __author__ = "Jillur Quddus, Nathan Shumoogum"
 __credits__ = ["Jillur Quddus", "Nathan Shumoogum"]
@@ -51,7 +50,7 @@ def main(xmlblob: func.InputStream, context: func.Context):
                  f"XsdPath: {xsd_path}")
 
         """ 1. DECOMPRESSION - Decompress the compressed HESA XML """
-        # Note the HESA XML blob provided will be gzip compressed.
+        # Note the HESA XML blob provided to this function will be gzip compressed.
         # This is a work around for a limitation discovered in Azure,
         # in that Functions written in Python do not get triggered 
         # correctly with large blobs. Tests showed this is not a limitation
@@ -76,11 +75,6 @@ def main(xmlblob: func.InputStream, context: func.Context):
         # validators.validate_xml(xsd_path, xml_string)
 
         """ 3. LOADING - Parse XML and create enriched JSON Documents in Document Database """
-
-        # For the purposes of the INITIAL end-to-end skeleton ETL pipeline only, 
-        # this simply parses and loads INSTITUTION documents. This will need to be
-        # updated with the full set of collection types and logic as per the
-        # service data model and service query/access patterns.
 
         course_docs.create_course_docs(xml_string)
 

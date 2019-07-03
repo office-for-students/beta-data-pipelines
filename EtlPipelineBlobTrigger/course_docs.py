@@ -227,24 +227,13 @@ def build_course_entry(locations, locids, raw_inst_data, raw_course_data,
 def create_course_docs(xml_string):
     """Parse HESA XML passed in and create JSON course docs in Cosmos DB."""
 
-    # TODO Invetigate writing docs to CosmosDB in bulk. Have seen some network
-    # timeouts during limited testing and bulk upload could help mitigate
-    # this. Also look at retries around network issues and refactoring into
-    # classes.
+    # TODO Invetigate writing docs to CosmosDB in bulk to speed things up.
     cosmosdb_client = utils.get_cosmos_client()
-
-    # Get the relevant properties from Application Settings
-    #cosmosdb_database_id = os.environ['AzureCosmosDbDatabaseId']
-    #cosmosdb_collection_id = os.environ['AzureCosmosDbCoursesCollectionId']
-
-    # Define a link to the relevant CosmosDB Container/Document Collection
-    #collection_link = 'dbs/' + cosmosdb_database_id + \
-    #    '/colls/' + cosmosdb_collection_id
-    #logging.info(f"collections_link {collection_link}")
 
     enricher = UkRlpCourseEnricher()
 
-    collection_link = utils.get_collection_link('AzureCosmosDbDatabaseId', 'AzureCosmosDbCoursesCollectionId')
+    collection_link = utils.get_collection_link(
+        'AzureCosmosDbDatabaseId', 'AzureCosmosDbCoursesCollectionId')
 
     # Import the XML dataset
     root = ET.fromstring(xml_string)

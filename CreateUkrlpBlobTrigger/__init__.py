@@ -87,7 +87,7 @@ def main(xmlblob: func.InputStream):
             copy_source = source_url)
 
         create_ukrlp_end_datetime = datetime.today().strftime('%Y%m%d %H%M%S')
-        logging.info(f'CreateUkrlp successfully finished on {create_ukrlp_end_datetime}'')
+        logging.info(f'CreateUkrlp successfully finished on {create_ukrlp_end_datetime}')
 
     except Exception as e:
         # Unexpected exception
