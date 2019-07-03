@@ -8,7 +8,7 @@ TEST_LOOKUP = {
         "id": "d1bf0a06-9cae-11e9-b1d0-8c859021ae2e",
         "created_at": "2019-07-02T09:50:26.871179",
         "ukprn": "10002863",
-        "ukprn_name": "RIVERSIDE COLLEGE HALTON",
+        "ukprn_name": "ACME TESTING COLLEGE",
         "contact_details": {
             "address": {
                 "line_1": "Flat 1",
@@ -63,9 +63,9 @@ EXPECTED_COURSE = {
         },
         "honours_award_provision": "0",
         "institution": {
-            "pub_ukprn_name": "RIVERSIDE COLLEGE HALTON",
+            "pub_ukprn_name": "ACME TESTING COLLEGE",
             "pub_ukprn": "10002863",
-            "ukprn_name": "RIVERSIDE COLLEGE HALTON",
+            "ukprn_name": "ACME TESTING COLLEGE",
             "ukprn": "10002863",
         },
         "kis_course_id": "AB20",
@@ -217,13 +217,13 @@ test_course = {
 
 class TestEnricher(unittest.TestCase):
 
-    @mock.patch('SharedCode.utils')
+    @mock.patch('EtlPipelineBlobTrigger.ukrlp_enricher.utils')
     def test_enrich_course(self, mock_utils):
         """Test a course is updated correctly with lookup data"""
 
         mock_utils.get_ukrlp_lookups.return_value = TEST_LOOKUP
-        ce = ukrlp_enricher.UkRlpCourseEnricher()
-        ce.enrich_course(test_course)
+        ukrlp_course_enricher = ukrlp_enricher.UkRlpCourseEnricher()
+        ukrlp_course_enricher.enrich_course(test_course)
         self.assertDictEqual(test_course, EXPECTED_COURSE)
 
 # TODO add more tests
