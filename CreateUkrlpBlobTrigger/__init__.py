@@ -36,7 +36,8 @@ def main(xmlblob: func.InputStream):
                      f"Blob Size: {xmlblob.length} bytes")
 
         create_ukrlp_start_datetime = datetime.today().strftime('%Y%m%d %H%M%S')
-        logging.info('CreateUkrlp function started on ' + pipeline_start_datetime)
+
+        logging.info(f'CreateUkrlp function started on {create_ukrlp_start_datetime}')
 
         # Read the compressed Blob into a BytesIO object
         compressed_file = io.BytesIO(xmlblob.read())
@@ -60,35 +61,37 @@ def main(xmlblob: func.InputStream):
         #
         # Copy the compressed HESA XML to the Blob storage monitored by Etl pipeline
         #
-
         storage_account_name = os.environ['AzureStorageAccountName']
         storage_account_key = os.environ['AzureStorageAccountKey']
-        output_container_name = os.environ['EtlContainerName']
-        output_blob_name_prefix = os.environ['OutputBlobNamePrefix']
-        source_url = os.environ['UkrlpBlobUrl']
 
         # Instantiate the Block Blob Service
         blob_service = BlockBlobService(
             account_name = storage_account_name, 
             account_key = storage_account_key)
-        logging.info("Created Block Blob Service to Azure Storage Account '%s'", 
-            storage_account_name)
 
-        # Copy the dummy raw HESA XML from the dummy to the landing BLOB container
-        # Prefix the output BLOB name with the datetime it is being ingested
+        logging.info('Created Block Blob Service to Azure Storage Account {storage_account_name}')
+
+        # Copy the dummy HESA XML we've just processed to the ETL input BLOB container
+        output_container_name = os.environ['EtlInputContainerName']
+        dummy_etl_blob_name = os.environ['DummyEtlBlobName']
+        source_url = os.environ['CreateUkrlpSourceUrl']
+
+        source_url += xmlblob.name
+        blob_filename = xmlblob.name.split('/')[1]
+        destination_blob_name = f'{create_ukrlp_start_datetime}-{blob_filename}' 
+        logging.info(f'Copy the XML we have processed to {destination_blob_name}')
 
         blob_service.copy_blob(
             container_name = output_container_name, 
-            blob_name = output_blob_name_prefix + create_ukrlp_start_datetime + '-' + dummy_input_blob_name,
+            blob_name = destination_blob_name,
             copy_source = source_url)
-        logging.info("Ingested raw HESA XML into Azure Storage Account Container '%s'", 
-            output_container_name)
 
-        pipeline_end_datetime = datetime.today().strftime('%Y%m%d %H%M%S')
-        logging.info('CreateUkrlp successfully finished on ' + pipeline_end_datetime)
+        create_ukrlp_end_datetime = datetime.today().strftime('%Y%m%d %H%M%S')
+        logging.info(f'CreateUkrlp successfully finished on {create_ukrlp_end_datetime}'')
 
     except Exception as e:
         # Unexpected exception
+        logging.error('Unexpected extension')
         logging.error(traceback.format_exc())
 
         # Raise to Azure
