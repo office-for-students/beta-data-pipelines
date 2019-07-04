@@ -7,32 +7,23 @@ time constraints to get the end to end pipeline running
 tests will be added later.
 """
 import datetime
-import json
 import logging
-import pprint
-import uuid
-import os
-import sys
-
-import azure.cosmos.cosmos_client as cosmos_client
-import xmltodict
 import xml.etree.ElementTree as ET
 
+import xmltodict
+
+from SharedCode import utils
+
 from . import course_lookup_tables as lookup
-
-from .locations import Locations
 from .kisaims import KisAims
-
-
-def get_uuid():
-    id = uuid.uuid1()
-    return str(id.hex)
+from .locations import Locations
+from .ukrlp_enricher import UkRlpCourseEnricher
 
 
 def build_institution(raw_inst_data):
     return {
-        "public_ukprn_name": "n/a",
-        "public_ukprn": raw_inst_data['PUBUKPRN'],
+        "pub_ukprn_name": "n/a",
+        "pub_ukprn": raw_inst_data['PUBUKPRN'],
         "ukprn_name": "n/a",
         "ukprn": raw_inst_data['UKPRN']
     }
@@ -108,12 +99,14 @@ def build_links(locations, locids, raw_inst_data, raw_course_data):
         accomodation = build_accomodation_links(locations, locids)
         links['accomodation'] = accomodation
 
-    item_details = [('ASSURL', 'assesment_method', raw_course_data),
-                    ('CRSEURL', 'course_page', raw_course_data),
-                    ('EMPLOYURL', 'employment_details', raw_course_data),
-                    ('SUPPORTURL', 'financial_support_details', raw_course_data),
-                    ('LTURL', 'learning_and_teaching_methods', raw_course_data),
-                    ('SUURL', 'student_union', raw_inst_data)]
+    item_details = [
+        ('ASSURL', 'assesment_method', raw_course_data),
+        ('CRSEURL', 'course_page', raw_course_data),
+        ('EMPLOYURL', 'employment_details', raw_course_data),
+        ('SUPPORTURL', 'financial_support_details', raw_course_data),
+        ('LTURL', 'learning_and_teaching_methods', raw_course_data),
+        ('SUURL', 'student_union', raw_inst_data)
+    ]
 
     for item_detail in item_details:
         link_item = build_eng_welsh_item(item_detail[0], item_detail[2])
@@ -163,9 +156,10 @@ def build_qualification(lookup_table_raw_xml, kisaims):
     return entry
 
 
-def build_course_entry(locations, locids, raw_inst_data, raw_course_data, kisaims):
+def build_course_entry(locations, locids, raw_inst_data, raw_course_data,
+                       kisaims):
     outer_wrapper = {}
-    outer_wrapper['id'] = get_uuid()
+    outer_wrapper['id'] = utils.get_uuid()
     outer_wrapper['created_at'] = datetime.datetime.utcnow().isoformat()
     outer_wrapper['version'] = '1'
 
@@ -175,8 +169,9 @@ def build_course_entry(locations, locids, raw_inst_data, raw_course_data, kisaim
     country = build_country(raw_inst_data)
     if country:
         course['country'] = country
-    distance_learning = build_code_label_entry(
-        raw_course_data, lookup.distance_learning_lookup, 'DISTANCE')
+    distance_learning = build_code_label_entry(raw_course_data,
+                                               lookup.distance_learning_lookup,
+                                               'DISTANCE')
     if distance_learning:
         course['distance_learning'] = distance_learning
     foundataion_year = build_code_label_entry(
@@ -187,29 +182,30 @@ def build_course_entry(locations, locids, raw_inst_data, raw_course_data, kisaim
         course['honours_award_provision'] = raw_course_data['HONOURS']
     course['institution'] = build_institution(raw_inst_data)
     course['kis_course_id'] = raw_course_data['KISCOURSEID']
-    length_of_course = build_code_label_entry(
-        raw_course_data, lookup.length_of_course, 'NUMSTAGE')
+    length_of_course = build_code_label_entry(raw_course_data,
+                                              lookup.length_of_course,
+                                              'NUMSTAGE')
     if length_of_course:
         course['length_of_course'] = length_of_course
     links = build_links(locations, locids, raw_inst_data, raw_course_data)
     if links:
         course['links'] = links
-    location_items = build_location_items(
-        locations, locids, raw_inst_data, raw_course_data)
+    location_items = build_location_items(locations, locids, raw_inst_data,
+                                          raw_course_data)
     if location_items:
         course['locations'] = location_items
     mode = build_code_label_entry(raw_course_data, lookup.mode, 'KISMODE')
     if mode:
         course['mode'] = mode
-    nhs_funded = build_code_label_entry(
-        raw_course_data, lookup.nhs_funded, 'NHS')
+    nhs_funded = build_code_label_entry(raw_course_data, lookup.nhs_funded,
+                                        'NHS')
     if nhs_funded:
         course['nhs_funded'] = nhs_funded
     qualification = build_qualification(raw_course_data, kisaims)
     if qualification:
         course['qualification'] = qualification
-    sandwich_year = build_code_label_entry(
-        raw_course_data, lookup.sandwich_year, 'SANDWICH')
+    sandwich_year = build_code_label_entry(raw_course_data,
+                                           lookup.sandwich_year, 'SANDWICH')
     if sandwich_year:
         course['sandwich_year'] = sandwich_year
     title = build_eng_welsh_item('TITLE', raw_course_data)
@@ -217,43 +213,27 @@ def build_course_entry(locations, locids, raw_inst_data, raw_course_data, kisaim
         course['title'] = title
     if 'UCASPROGID' in raw_course_data:
         course['ucas_programme_id'] = raw_course_data['UCASPROGID']
-    year_abroad = build_code_label_entry(
-        raw_course_data, lookup.year_abroad, 'YEARABROAD')
+    year_abroad = build_code_label_entry(raw_course_data, lookup.year_abroad,
+                                         'YEARABROAD')
     if year_abroad:
-        course['year_abroad'] = build_code_label_entry(
-            raw_course_data, lookup.year_abroad, 'YEARABROAD')
+    course['year_abroad'] = build_code_label_entry(
+        raw_course_data, lookup.year_abroad, 'YEARABROAD')
     course['statistics'] = build_statistics(raw_course_data)
 
     outer_wrapper['course'] = course
     return outer_wrapper
 
 
-def get_cosmos_client():
-    # TODO run this over TLS
-    cosmosdb_uri = os.environ['AzureCosmosDbUri']
-    cosmosdb_key = os.environ['AzureCosmosDbKey']
-    master_key = 'masterKey'
-
-    return cosmos_client.CosmosClient(url_connection=cosmosdb_uri, auth={master_key: cosmosdb_key})
-
-
 def create_course_docs(xml_string):
     """Parse HESA XML passed in and create JSON course docs in Cosmos DB."""
 
-    # TODO Invetigate writing docs to CosmosDB in bulk. Have seen some network
-    # timeouts during limited testing and bulk upload could help mitigate
-    # this. Also look at retries around network issues and refactoring into
-    # classes.
-    cosmosdb_client = get_cosmos_client()
+    # TODO Invetigate writing docs to CosmosDB in bulk to speed things up.
+    cosmosdb_client = utils.get_cosmos_client()
 
-    # Get the relevant properties from Application Settings
-    cosmosdb_database_id = os.environ['AzureCosmosDbDatabaseId']
-    cosmosdb_collection_id = os.environ['AzureCosmosDbCoursesCollectionId']
+    enricher = UkRlpCourseEnricher()
 
-    # Define a link to the relevant CosmosDB Container/Document Collection
-    collection_link = 'dbs/' + cosmosdb_database_id + \
-        '/colls/' + cosmosdb_collection_id
-    logging.info(f"collections_link {collection_link}")
+    collection_link = utils.get_collection_link(
+        'AzureCosmosDbDatabaseId', 'AzureCosmosDbCoursesCollectionId')
 
     # Import the XML dataset
     root = ET.fromstring(xml_string)
@@ -270,8 +250,9 @@ def create_course_docs(xml_string):
         for course in institution.findall('KISCOURSE'):
             raw_course_data = xmltodict.parse(ET.tostring(course))['KISCOURSE']
             locids = get_locids(raw_course_data, ukprn)
-            course_entry = build_course_entry(
-                locations, locids, raw_inst_data, raw_course_data, kisaims)
+            course_entry = build_course_entry(locations, locids, raw_inst_data,
+                                              raw_course_data, kisaims)
+            enricher.enrich_course(course_entry)
             cosmosdb_client.CreateItem(collection_link, course_entry)
             course_count += 1
     logging.info(f"Processed {course_count} courses")

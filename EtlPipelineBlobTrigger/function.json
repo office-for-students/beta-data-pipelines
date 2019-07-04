@@ -5,7 +5,7 @@
       "name": "xmlblob",
       "type": "blobTrigger",
       "direction": "in",
-      "path": "hesa-raw-xml-ingest/{name}",
+      "path": "hesa-raw-xml-ingest-etl/{name}",
       "connection": "AzureStorageAccountConnectionString"
     }
   ]
