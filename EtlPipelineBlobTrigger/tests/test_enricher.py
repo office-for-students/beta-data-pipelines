@@ -1,7 +1,16 @@
+import inspect
+import os
+import sys
 import unittest
 from unittest import mock
 
-from EtlPipelineBlobTrigger import ukrlp_enricher
+CURRENTDIR = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+PARENTDIR = os.path.dirname(CURRENTDIR)
+GRANDPARENTDIR = os.path.dirname(PARENTDIR)
+sys.path.insert(0,PARENTDIR)
+sys.path.insert(0,GRANDPARENTDIR)
+
+import ukrlp_enricher
 
 TEST_LOOKUP = {
     '10002863': {
@@ -217,7 +226,7 @@ test_course = {
 
 class TestEnricher(unittest.TestCase):
 
-    @mock.patch('EtlPipelineBlobTrigger.ukrlp_enricher.utils')
+    @mock.patch('ukrlp_enricher.utils')
     def test_enrich_course(self, mock_utils):
         """Test a course is updated correctly with lookup data"""
 
