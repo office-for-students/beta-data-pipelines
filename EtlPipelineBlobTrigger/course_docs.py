@@ -222,6 +222,7 @@ def build_course_entry(locations, locids, raw_inst_data, raw_course_data, kisaim
     if year_abroad:
         course['year_abroad'] = build_code_label_entry(
             raw_course_data, lookup.year_abroad, 'YEARABROAD')
+    course['statistics'] = build_statistics(raw_course_data)
 
     outer_wrapper['course'] = course
     return outer_wrapper
