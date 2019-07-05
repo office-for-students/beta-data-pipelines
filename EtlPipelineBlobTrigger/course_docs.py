@@ -7,10 +7,17 @@ time constraints to get the end to end pipeline running
 tests will be added later.
 """
 import datetime
+import inspect
 import logging
+import os
+import sys
 import xml.etree.ElementTree as ET
 
 import xmltodict
+
+CURRENTDIR = os.path.dirname(
+    os.path.abspath(inspect.getfile(inspect.currentframe())))
+sys.path.insert(0, CURRENTDIR)
 
 import course_lookup_tables as lookup
 from course_stats import CourseStats
@@ -18,6 +25,8 @@ from kisaims import KisAims
 from locations import Locations
 from SharedCode import utils
 from ukrlp_enricher import UkRlpCourseEnricher
+
+
 
 
 def build_institution(raw_inst_data):
