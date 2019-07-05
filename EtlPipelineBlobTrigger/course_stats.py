@@ -75,23 +75,29 @@ class CourseStats:
         return unavailable_reason
 
 
+
     def get_continuation(self, raw_course_data):
 
-        continuation_list = []
+        def get_raw_continuation_list(raw_course_data):
+            """Returns a list containing the continuation elements"""
+            if isinstance(raw_course_data['CONTINUATION'], dict):
+                return [raw_course_data['CONTINUATION']]
+            return raw_course_data['CONTINUATION']
 
-        # TODO Handle multiple continuation elements
-        cont_elem = raw_course_data['CONTINUATION']
-        continuation = {}
-        for xml_key in cont_elem:
-            json_key = self.get_continuation_key(xml_key)
-            if json_key == 'subject':
-                continuation[json_key] = self.get_continuation_subject(cont_elem)
-            elif json_key == 'unavailable':
-                continuation[json_key] = self.get_continuation_unavailable_reason(cont_elem)
-            else:
-                continuation[json_key] = cont_elem[xml_key]
-            ordered_continuation = OrderedDict(sorted(continuation.items()))
-        continuation_list.append(ordered_continuation)
+        continuation_list = []
+        raw_continuation_list = get_raw_continuation_list(raw_course_data)
+        for cont_elem in raw_continuation_list:
+            continuation = {}
+            for xml_key in cont_elem:
+                json_key = self.get_continuation_key(xml_key)
+                if json_key == 'subject':
+                    continuation[json_key] = self.get_continuation_subject(cont_elem)
+                elif json_key == 'unavailable':
+                    continuation[json_key] = self.get_continuation_unavailable_reason(cont_elem)
+                else:
+                    continuation[json_key] = cont_elem[xml_key]
+                ordered_continuation = OrderedDict(sorted(continuation.items()))
+            continuation_list.append(ordered_continuation)
         return continuation_list
 
 
