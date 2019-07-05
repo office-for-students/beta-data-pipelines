@@ -1,3 +1,10 @@
+"""Data transformation code for statistical data.
+
+   Currently, we handle unexpected exceptions by letting them bubble up. This
+   should help flush out problems during development and testing.
+
+"""
+
 import datetime
 import json
 import logging
@@ -9,86 +16,84 @@ import sys
 import azure.cosmos.cosmos_client as cosmos_client
 import xmltodict
 import xml.etree.ElementTree as ET
+import json
 
-logging.basicConfig(level=logging.DEBUG)
+class CourseStats:
 
+    def __init__(self):
+        self.cwd = os.path.dirname(os.path.abspath(__file__))
+        self.subj_code_english = self.read_lookup('subj_code_english.json')
+        self.subj_code_welsh = self.read_lookup('subj_code_welsh.json')
+        self.cont_unavail_reason = self.read_lookup('contunavailreason.json')
 
-def get_continuation_key(xml_key):
+    def get_continuation_key(self,xml_key):
+        return {
+            'CONTUNAVAILREASON':'unavailable',
+            "CONTPOP": 'number_of_students',
+            "CONTAGG": 'aggregation_level',
+            "CONTSBJ": 'subject',
+            "UCONT": 'continuing_with_provider',
+            "UDORMANT": 'dormant',
+            "UGAINED": 'gained',
+            "ULEFT": 'left',
+            "ULOWER": 'lower',
+        }[xml_key]
 
-    return {
-        'CONTUNAVAILREASON':'unavailable',
-        "CONTPOP": 'number_of_students',
-        "CONTAGG": 'aggregation_level',
-        "CONTSBJ": 'subject',
-        "UCONT": 'continuing_with_provider',
-        "UDORMANT": 'dormant',
-        "UGAINED": 'gained',
-        "ULEFT": 'left',
-        "ULOWER": 'lower',
-    }[xml_key]
+    def read_lookup(self, filename):
+        with open(os.path.join(self.cwd, f'lookup_files/{filename}')) as fp:
+            return json.load(fp)
 
-def get_english_contsbj_label(code):
-    pass
+    def get_english_contsbj_label(self, code):
+        return self.subj_code_english[code]
 
-def get_english_contsbj_label(code):
-    pass
+    def get_welsh_contsbj_label(self, code):
+        return self.subj_code_welsh[code]
 
-def get_continuation_subject(xml_dict):
-    subject = {}
-    pp = pprint.PrettyPrinter(indent=4)
-    code = xml_dict['CONTSBJ']
-    subject['code'] = code
-    subject['english_label'] = get_english_label(code)
-    subject['welsh_label'] = get_welsh_label(code)
-    pp.pprint(subject)
+    def get_continuation_subject(self, cont_elem):
+        subject = {}
+        code = cont_elem['CONTSBJ']
+        subject['code'] = code
+        subject['english_label'] = self.get_english_contsbj_label(code)
+        subject['welsh_label'] = self.get_welsh_contsbj_label(code)
+        return subject
 
+    def get_continuation_unavailable_reason(self, cont_elem):
 
+        # TODO: The spreadsheet is incomplete - find out where we get all the reasons from
+        def get_reason(code, agg, has_data):
+            if has_data:
+                return self.cont_unavail_reason['data'][code].get(agg, "No info")
+            return self.cont_unavail_reason['no-data'][code]
 
-def get_continuation(raw_course_data):
-    continuation = {}
-    xml_dict = raw_course_data['CONTINUATION']
-    for xml_key in xml_dict:
-        json_key = get_continuation_key(xml_key)
-        if json_key == 'subject':
-            continuation[json_key] = get_continuation_subject(xml_dict)
-        elif json_key == 'unavailable':
-            continuation[json_key] = {'TODO':'TODO'}
-        else:
-            continuation[json_key] = xml_dict[xml_key]
-    return continuation
-
-
-def build_stats(raw_course_data):
-    stats = {}
-
-    continuation = get_continuation(raw_course_data)
-    stats['continuation'] = continuation
-    return stats
-
-
-def test_build_stats():
-    """Function for testing LookupCreator"""
-
-    # Change the open line as required during test/debug
-    with open('../test-data/kis-short.xml', 'r') as file:
-        xml_string = file.read()
-
-    root = ET.fromstring(xml_string)
-
-    course_count = 0
-    for institution in root.iter('INSTITUTION'):
-        raw_inst_data = xmltodict.parse(
-            ET.tostring(institution))['INSTITUTION']
-        ukprn = raw_inst_data['UKPRN']
-        for course in institution.findall('KISCOURSE'):
-            raw_course_data = xmltodict.parse(ET.tostring(course))['KISCOURSE']
-            stats_entry = build_stats(raw_course_data)
-            course = {}
-            course['stats'] = stats_entry
-            pp = pprint.PrettyPrinter(indent=4)
-            #pp.pprint(course)
-            course_count += 1
-    logging.info(f"Processed {course_count} courses")
+        unavailable_reason = {}
+        code = cont_elem['CONTUNAVAILREASON']
+        agg = cont_elem['CONTAGG']
+        unavailable_reason['code'] = code
+        unavailable_reason['reason'] = get_reason(code, agg, len(cont_elem) > 1)
+        return unavailable_reason
 
 
-test_build_stats()
+    def get_continuation(self, raw_course_data):
+
+        continuation_list = []
+
+        # TODO Handle multiple continuation elements
+        cont_elem = raw_course_data['CONTINUATION']
+        for xml_key in cont_elem:
+            continuation = {}
+            json_key = self.get_continuation_key(xml_key)
+            if json_key == 'subject':
+                continuation[json_key] = self.get_continuation_subject(cont_elem)
+            elif json_key == 'unavailable':
+                continuation[json_key] = self.get_continuation_unavailable_reason(cont_elem)
+            else: continuation[json_key] = cont_elem[xml_key]
+            continuation_list.append(continuation)
+        return continuation_list
+
+
+    def build_stats(self, raw_course_data):
+        stats = {}
+
+        continuation = self.get_continuation(raw_course_data)
+        stats['continuation'] = continuation
+        return stats
