@@ -67,10 +67,11 @@ class CourseStats:
             return self.cont_unavail_reason['no-data'][code]
 
         unavailable_reason = {}
+        has_data = len(cont_elem) > 1
         code = cont_elem['CONTUNAVAILREASON']
-        agg = cont_elem['CONTAGG']
+        agg = cont_elem['CONTAGG'] if has_data else None
         unavailable_reason['code'] = code
-        unavailable_reason['reason'] = get_reason(code, agg, len(cont_elem) > 1)
+        unavailable_reason['reason'] = get_reason(code, agg, has_data)
         return unavailable_reason
 
 
