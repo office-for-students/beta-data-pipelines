@@ -12,12 +12,12 @@ import xml.etree.ElementTree as ET
 
 import xmltodict
 
+import course_lookup_tables as lookup
+from course_stats import CourseStats
+from kisaims import KisAims
+from locations import Locations
 from SharedCode import utils
-
-from . import course_lookup_tables as lookup
-from .kisaims import KisAims
-from .locations import Locations
-from .ukrlp_enricher import UkRlpCourseEnricher
+from ukrlp_enricher import UkRlpCourseEnricher
 
 
 def build_institution(raw_inst_data):
@@ -216,9 +216,13 @@ def build_course_entry(locations, locids, raw_inst_data, raw_course_data,
     year_abroad = build_code_label_entry(raw_course_data, lookup.year_abroad,
                                          'YEARABROAD')
     if year_abroad:
-    course['year_abroad'] = build_code_label_entry(
-        raw_course_data, lookup.year_abroad, 'YEARABROAD')
-    course['statistics'] = build_statistics(raw_course_data)
+        course['year_abroad'] = build_code_label_entry(raw_course_data,
+                                                       lookup.year_abroad,
+                                                       'YEARABROAD')
+
+    course_stats = CourseStats()
+    course_stats.build_stats(raw_course_data)
+    course['statistics'] = course_stats.build_stats(raw_course_data)
 
     outer_wrapper['course'] = course
     return outer_wrapper
