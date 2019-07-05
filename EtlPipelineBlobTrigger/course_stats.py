@@ -5,6 +5,7 @@
 
 """
 
+from collections import OrderedDict
 import datetime
 import json
 import logging
@@ -59,7 +60,7 @@ class CourseStats:
 
     def get_continuation_unavailable_reason(self, cont_elem):
 
-        # TODO: The spreadsheet is incomplete - find out where we get all the reasons from
+        # TODO: find out where we get all the reasons from - spreadsheet not complete
         def get_reason(code, agg, has_data):
             if has_data:
                 return self.cont_unavail_reason['data'][code].get(agg, "No info")
@@ -79,15 +80,17 @@ class CourseStats:
 
         # TODO Handle multiple continuation elements
         cont_elem = raw_course_data['CONTINUATION']
+        continuation = {}
         for xml_key in cont_elem:
-            continuation = {}
             json_key = self.get_continuation_key(xml_key)
             if json_key == 'subject':
                 continuation[json_key] = self.get_continuation_subject(cont_elem)
             elif json_key == 'unavailable':
                 continuation[json_key] = self.get_continuation_unavailable_reason(cont_elem)
-            else: continuation[json_key] = cont_elem[xml_key]
-            continuation_list.append(continuation)
+            else:
+                continuation[json_key] = cont_elem[xml_key]
+            ordered_continuation = OrderedDict(sorted(continuation.items()))
+        continuation_list.append(ordered_continuation)
         return continuation_list
 
 
