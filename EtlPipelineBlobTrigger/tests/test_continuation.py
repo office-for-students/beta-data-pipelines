@@ -11,7 +11,7 @@ CURRENTDIR = os.path.dirname(
 PARENTDIR = os.path.dirname(CURRENTDIR)
 sys.path.insert(0, PARENTDIR)
 
-from course_stats import CourseStats
+from course_stats import Continuation
 
 
 def get_string(filename):
@@ -25,41 +25,49 @@ def get_string(filename):
 
 class TestGetContinuationKey(unittest.TestCase):
     def setUp(self):
-        self.course_stats = CourseStats()
+        self.continuation = Continuation()
 
     def test_with_valid_key(self):
         expected_key = 'number_of_students'
         xml_key = 'CONTPOP'
-        key = self.course_stats.get_continuation_key(xml_key)
+        key = self.continuation.get_continuation_key(xml_key)
         self.assertEqual(expected_key, key)
 
     def test_with_valid_key(self):
         invalid_xml_key = 'invalid_key'
         with self.assertRaises(KeyError):
-            self.course_stats.get_continuation_key(invalid_xml_key)
+            self.continuation.get_continuation_key(invalid_xml_key)
 
 
-class TestCourseStatsGetContinuation(unittest.TestCase):
+class TestGetContinuation(unittest.TestCase):
     def setUp(self):
-        self.course_stats = CourseStats()
+        self.continuation = Continuation()
 
-    def test_course_stats_get_continuation_no_subj(self):
+    def test_get_continuation_no_subj(self):
         raw_course_xml = xmltodict.parse(
             get_string('fixtures/course_no_cont_subj.xml'))['KISCOURSE']
         expected_response = json.loads(
             get_string('fixtures/course_no_cont_subj_resp.json'))
-        continuation = self.course_stats.get_continuation(raw_course_xml)
+        continuation = self.continuation.get_continuation(raw_course_xml)
         self.assertListEqual(continuation, expected_response)
 
-    def test_course_stats_two_continuations_no_subj(self):
+    def test_get_continuation_two_continuations_no_subj(self):
         raw_course_xml = xmltodict.parse(
             get_string('fixtures/course_two_contins.xml'))['KISCOURSE']
         expected_response = json.loads(
             get_string('fixtures/course_two_contins_resp.json'))
-        continuation = self.course_stats.get_continuation(raw_course_xml)
-        print(json.dumps(continuation, indent=2))
+        continuation = self.continuation.get_continuation(raw_course_xml)
         self.assertListEqual(continuation, expected_response)
 
+    def test_get_continuation_subj(self):
+        raw_course_xml = xmltodict.parse(
+            get_string('fixtures/course_cont_subj.xml'))['KISCOURSE']
+        expected_response = json.loads(
+            get_string('fixtures/course_cont_subj_resp.json'))
+        continuation = self.continuation.get_continuation(raw_course_xml)
+        self.assertListEqual(continuation, expected_response)
+
+ # TODO Test more of the functionality - more lookups etc
 
 if __name__ == '__main__':
     unittest.main()
