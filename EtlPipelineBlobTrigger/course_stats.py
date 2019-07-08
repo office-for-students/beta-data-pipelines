@@ -1,9 +1,10 @@
 """Data transformation code for statistical data."""
 
 import json
-import os
-from collections import OrderedDict
 import logging
+import os
+import unicodedata
+from collections import OrderedDict
 
 
 class Continuation:
@@ -70,27 +71,34 @@ class Continuation:
 
     def get_continuation_unavailable(self, cont_elem):
 
-        # TODO: Complete unavailable reason strings.
-        # TODO: Find out where to get all the unavailable reasons and their mappings from;
-        # the information in the spreadsheet is not complete e.g., for contagg
+        def get_reason(code, agg, has_data, cont_elem):
 
-        print(f'cont_element {cont_elem}')
-        def get_reason(code, agg, has_data):
+            if not has_data:
+                return self.cont_unavail_reason['no-data'][code]
 
-            print(f'code: {code}, agg {agg}, has_data {has_data}')
-            print(f'cont_unavail_reason {self.cont_unavail_reason}')
+            reason_str = self.cont_unavail_reason['data'][code].get(
+                agg, "No info")
+            reason_str = unicodedata.normalize("NFKD", reason_str)
+            if reason_str == "No info":
+                logging.error(
+                    "Unexpected error unable to get valid reason string for {cont_elem}"
+                )
+                return reason_str
 
-            if has_data:
-                return self.cont_unavail_reason['data'][code].get(
-                    agg, "No info")
-            return self.cont_unavail_reason['no-data'][code]
+            subj_code = cont_elem.get('CONTSBJ')
+            if subj_code:
+                subj_name = self.get_english_contsbj_label(subj_code)
+            else:
+                subj_name = 'this subject'
+            return reason_str + subj_name + '.'
 
         unavailable_reason = {}
         has_data = len(cont_elem) > 1
         code = cont_elem['CONTUNAVAILREASON']
         agg = cont_elem['CONTAGG'] if has_data else None
         unavailable_reason['code'] = code
-        unavailable_reason['reason'] = get_reason(code, agg, has_data)
+        unavailable_reason['reason'] = get_reason(code, agg, has_data,
+                                                  cont_elem)
         return unavailable_reason
 
     def get_continuation(self, raw_course_data):

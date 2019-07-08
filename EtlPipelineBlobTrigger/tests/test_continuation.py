@@ -49,7 +49,6 @@ class TestGetContinuation(unittest.TestCase):
         expected_response = json.loads(
             get_string('fixtures/course_no_cont_subj_resp.json'))
         continuation = self.continuation.get_continuation(raw_course_xml)
-        print(json.dumps(continuation, sort_keys=True, indent=4))
         self.assertListEqual(continuation, expected_response)
 
     def test_get_continuation_two_continuations_no_subj(self):
@@ -58,6 +57,7 @@ class TestGetContinuation(unittest.TestCase):
         expected_response = json.loads(
             get_string('fixtures/course_two_contins_resp.json'))
         continuation = self.continuation.get_continuation(raw_course_xml)
+        print(json.dumps(continuation, sort_keys=True, indent=4))
         self.assertListEqual(continuation, expected_response)
 
     def test_get_continuation_subj(self):
@@ -66,6 +66,7 @@ class TestGetContinuation(unittest.TestCase):
         expected_response = json.loads(
             get_string('fixtures/course_cont_subj_resp.json'))
         continuation = self.continuation.get_continuation(raw_course_xml)
+        print(json.dumps(continuation, sort_keys=True, indent=4))
         self.assertListEqual(continuation, expected_response)
 
     def test_get_continuation_no_data_bsssf_c606(self):
