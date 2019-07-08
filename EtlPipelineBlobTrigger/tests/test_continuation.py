@@ -49,6 +49,7 @@ class TestGetContinuation(unittest.TestCase):
         expected_response = json.loads(
             get_string('fixtures/course_no_cont_subj_resp.json'))
         continuation = self.continuation.get_continuation(raw_course_xml)
+        print(json.dumps(continuation, sort_keys=True, indent=4))
         self.assertListEqual(continuation, expected_response)
 
     def test_get_continuation_two_continuations_no_subj(self):
@@ -65,6 +66,15 @@ class TestGetContinuation(unittest.TestCase):
         expected_response = json.loads(
             get_string('fixtures/course_cont_subj_resp.json'))
         continuation = self.continuation.get_continuation(raw_course_xml)
+        self.assertListEqual(continuation, expected_response)
+
+    def test_get_continuation_no_data_bsssf_c606(self):
+        raw_course_xml = xmltodict.parse(
+            get_string('fixtures/course_532986.xml'))['KISCOURSE']
+        expected_response = json.loads(
+            get_string('fixtures/course_532986_resp.json'))
+        continuation = self.continuation.get_continuation(raw_course_xml)
+        print(json.dumps(continuation, sort_keys=True, indent=4))
         self.assertListEqual(continuation, expected_response)
 
  # TODO Test more of the functionality - more lookups etc

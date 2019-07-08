@@ -3,6 +3,7 @@
 import json
 import os
 from collections import OrderedDict
+import logging
 
 
 class Continuation:
@@ -51,13 +52,34 @@ class Continuation:
         subject['welsh_label'] = self.get_welsh_contsbj_label(code)
         return subject
 
-    def get_continuation_unavailable_reason(self, cont_elem):
+    def get_aggs_for_code(self, code):
+        return self.cont_unavail_reason['data'][code].keys()
+
+    def need_unavail_element(self, cont_elem):
+        has_data = len(cont_elem) > 1
+        if not has_data:
+            return True
+
+        code = cont_elem['CONTUNAVAILREASON']
+        agg = cont_elem['CONTAGG']
+        agg_codes = self.get_aggs_for_code(code)
+        if agg in agg_codes:
+            return True
+
+        return False
+
+    def get_continuation_unavailable(self, cont_elem):
 
         # TODO: Complete unavailable reason strings.
         # TODO: Find out where to get all the unavailable reasons and their mappings from;
         # the information in the spreadsheet is not complete e.g., for contagg
 
+        print(f'cont_element {cont_elem}')
         def get_reason(code, agg, has_data):
+
+            print(f'code: {code}, agg {agg}, has_data {has_data}')
+            print(f'cont_unavail_reason {self.cont_unavail_reason}')
+
             if has_data:
                 return self.cont_unavail_reason['data'][code].get(
                     agg, "No info")
@@ -87,9 +109,10 @@ class Continuation:
                     continuation[json_key] = self.get_continuation_subject(
                         cont_elem)
                 elif json_key == 'unavailable':
-                    continuation[
-                        json_key] = self.get_continuation_unavailable_reason(
-                            cont_elem)
+                    if self.need_unavail_element(cont_elem):
+                        continuation[
+                            json_key] = self.get_continuation_unavailable(
+                                cont_elem)
                 else:
                     continuation[json_key] = cont_elem[xml_key]
                 ordered_continuation = OrderedDict(sorted(

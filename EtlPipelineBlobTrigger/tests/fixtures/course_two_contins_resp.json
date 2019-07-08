@@ -19,10 +19,6 @@
     "gained": "0",
     "left": "5",
     "lower": "15",
-    "number_of_students": "30",
-    "unavailable": {
-      "code": "0",
-      "reason": "No info"
-    }
+    "number_of_students": "30"
   }
 ]
