@@ -5,22 +5,32 @@ To fit with the recent architecure update this will
 require considerable refactoring. For this reason and
 time constraints to get the end to end pipeline running
 tests will be added later.
+
+Currently, we handle unexpected exceptions by letting
+them bubble up. This should help flush out problems
+during development and testing.
 """
 import datetime
+import inspect
 import logging
+import os
+import sys
 import xml.etree.ElementTree as ET
 
 import xmltodict
 
+CURRENTDIR = os.path.dirname(
+    os.path.abspath(inspect.getfile(inspect.currentframe())))
+sys.path.insert(0, CURRENTDIR)
+
+import course_lookup_tables as lookup
+from course_stats import CourseStats
+from kisaims import KisAims
+from locations import Locations
 from SharedCode import utils
+from ukrlp_enricher import UkRlpCourseEnricher
 
-from . import course_lookup_tables as lookup
-from .kisaims import KisAims
-from .locations import Locations
-from .ukrlp_enricher import UkRlpCourseEnricher
-
-
-def build_institution(raw_inst_data):
+def get_institution(raw_inst_data):
     return {
         "pub_ukprn_name": "n/a",
         "pub_ukprn": raw_inst_data['PUBUKPRN'],
@@ -29,7 +39,7 @@ def build_institution(raw_inst_data):
     }
 
 
-def build_country(raw_inst_data):
+def get_country(raw_inst_data):
     country = {}
     if 'COUNTRY' in raw_inst_data:
         code = raw_inst_data['COUNTRY']
@@ -69,7 +79,7 @@ def get_locids(raw_course_data, ukprn):
     return locids
 
 
-def build_accomodation_links(locations, locids):
+def get_accomodation_links(locations, locids):
     accom = []
     for locid in locids:
         accom_dict = {}
@@ -83,7 +93,7 @@ def build_accomodation_links(locations, locids):
     return accom
 
 
-def build_eng_welsh_item(key, lookup_table):
+def get_eng_welsh_item(key, lookup_table):
     item = {}
     keyw = key + 'W'
     if key in lookup_table:
@@ -93,10 +103,10 @@ def build_eng_welsh_item(key, lookup_table):
     return item
 
 
-def build_links(locations, locids, raw_inst_data, raw_course_data):
+def get_links(locations, locids, raw_inst_data, raw_course_data):
     links = {}
     if locids:
-        accomodation = build_accomodation_links(locations, locids)
+        accomodation = get_accomodation_links(locations, locids)
         links['accomodation'] = accomodation
 
     item_details = [
@@ -109,14 +119,14 @@ def build_links(locations, locids, raw_inst_data, raw_course_data):
     ]
 
     for item_detail in item_details:
-        link_item = build_eng_welsh_item(item_detail[0], item_detail[2])
+        link_item = get_eng_welsh_item(item_detail[0], item_detail[2])
         if link_item:
             links[item_detail[1]] = link_item
 
     return links
 
 
-def build_location_items(locations, locids, raw_inst_data, raw_course_data):
+def get_location_items(locations, locids, raw_inst_data, raw_course_data):
     location_items = []
     for locid in locids:
         location_dict = {}
@@ -136,7 +146,7 @@ def build_location_items(locations, locids, raw_inst_data, raw_course_data):
     return location_items
 
 
-def build_code_label_entry(lookup_table_raw_xml, lookup_table_local, key):
+def get_code_label_entry(lookup_table_raw_xml, lookup_table_local, key):
     entry = {}
     if key in lookup_table_raw_xml:
         code = lookup_table_raw_xml[key]
@@ -145,7 +155,7 @@ def build_code_label_entry(lookup_table_raw_xml, lookup_table_local, key):
     return entry
 
 
-def build_qualification(lookup_table_raw_xml, kisaims):
+def get_qualification(lookup_table_raw_xml, kisaims):
     entry = {}
     if 'KISAIMCODE' in lookup_table_raw_xml:
         code = lookup_table_raw_xml['KISAIMCODE']
@@ -156,8 +166,8 @@ def build_qualification(lookup_table_raw_xml, kisaims):
     return entry
 
 
-def build_course_entry(locations, locids, raw_inst_data, raw_course_data,
-                       kisaims):
+def get_course_entry(locations, locids, raw_inst_data, raw_course_data,
+                     kisaims):
     outer_wrapper = {}
     outer_wrapper['id'] = utils.get_uuid()
     outer_wrapper['created_at'] = datetime.datetime.utcnow().isoformat()
@@ -166,59 +176,63 @@ def build_course_entry(locations, locids, raw_inst_data, raw_course_data,
     course = {}
     if 'UKPRNAPPLY' in raw_course_data:
         course['application_provider'] = raw_course_data['UKPRNAPPLY']
-    country = build_country(raw_inst_data)
+    country = get_country(raw_inst_data)
     if country:
         course['country'] = country
-    distance_learning = build_code_label_entry(raw_course_data,
-                                               lookup.distance_learning_lookup,
-                                               'DISTANCE')
+    distance_learning = get_code_label_entry(raw_course_data,
+                                             lookup.distance_learning_lookup,
+                                             'DISTANCE')
     if distance_learning:
         course['distance_learning'] = distance_learning
-    foundataion_year = build_code_label_entry(
+    foundataion_year = get_code_label_entry(
         raw_course_data, lookup.foundation_year_availability, 'FOUNDATION')
     if foundataion_year:
         course['foundation_year_availability'] = foundataion_year
     if 'HONOURS' in raw_course_data:
         course['honours_award_provision'] = raw_course_data['HONOURS']
-    course['institution'] = build_institution(raw_inst_data)
+    course['institution'] = get_institution(raw_inst_data)
     course['kis_course_id'] = raw_course_data['KISCOURSEID']
-    length_of_course = build_code_label_entry(raw_course_data,
-                                              lookup.length_of_course,
-                                              'NUMSTAGE')
+    length_of_course = get_code_label_entry(raw_course_data,
+                                            lookup.length_of_course,
+                                            'NUMSTAGE')
     if length_of_course:
         course['length_of_course'] = length_of_course
-    links = build_links(locations, locids, raw_inst_data, raw_course_data)
+    links = get_links(locations, locids, raw_inst_data, raw_course_data)
     if links:
         course['links'] = links
-    location_items = build_location_items(locations, locids, raw_inst_data,
-                                          raw_course_data)
+    location_items = get_location_items(locations, locids, raw_inst_data,
+                                        raw_course_data)
     if location_items:
         course['locations'] = location_items
-    mode = build_code_label_entry(raw_course_data, lookup.mode, 'KISMODE')
+    mode = get_code_label_entry(raw_course_data, lookup.mode, 'KISMODE')
     if mode:
         course['mode'] = mode
-    nhs_funded = build_code_label_entry(raw_course_data, lookup.nhs_funded,
-                                        'NHS')
+    nhs_funded = get_code_label_entry(raw_course_data, lookup.nhs_funded,
+                                      'NHS')
     if nhs_funded:
         course['nhs_funded'] = nhs_funded
-    qualification = build_qualification(raw_course_data, kisaims)
+    qualification = get_qualification(raw_course_data, kisaims)
     if qualification:
         course['qualification'] = qualification
-    sandwich_year = build_code_label_entry(raw_course_data,
-                                           lookup.sandwich_year, 'SANDWICH')
+    sandwich_year = get_code_label_entry(raw_course_data, lookup.sandwich_year,
+                                         'SANDWICH')
     if sandwich_year:
         course['sandwich_year'] = sandwich_year
-    title = build_eng_welsh_item('TITLE', raw_course_data)
+    title = get_eng_welsh_item('TITLE', raw_course_data)
     if title:
         course['title'] = title
     if 'UCASPROGID' in raw_course_data:
         course['ucas_programme_id'] = raw_course_data['UCASPROGID']
-    year_abroad = build_code_label_entry(raw_course_data, lookup.year_abroad,
-                                         'YEARABROAD')
+    year_abroad = get_code_label_entry(raw_course_data, lookup.year_abroad,
+                                       'YEARABROAD')
     if year_abroad:
-        course['year_abroad'] = build_code_label_entry(raw_course_data,
-                                                       lookup.year_abroad,
-                                                       'YEARABROAD')
+        course['year_abroad'] = get_code_label_entry(raw_course_data,
+                                                     lookup.year_abroad,
+                                                     'YEARABROAD')
+
+    course_stats = CourseStats()
+    course_stats.get_stats(raw_course_data)
+    course['statistics'] = course_stats.get_stats(raw_course_data)
 
     outer_wrapper['course'] = course
     return outer_wrapper
@@ -250,8 +264,8 @@ def create_course_docs(xml_string):
         for course in institution.findall('KISCOURSE'):
             raw_course_data = xmltodict.parse(ET.tostring(course))['KISCOURSE']
             locids = get_locids(raw_course_data, ukprn)
-            course_entry = build_course_entry(locations, locids, raw_inst_data,
-                                              raw_course_data, kisaims)
+            course_entry = get_course_entry(locations, locids, raw_inst_data,
+                                            raw_course_data, kisaims)
             enricher.enrich_course(course_entry)
             cosmosdb_client.CreateItem(collection_link, course_entry)
             course_count += 1
