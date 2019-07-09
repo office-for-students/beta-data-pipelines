@@ -133,5 +133,8 @@ beta-data-pipelines.zip
 # Visual Studio Code
 .vscode/
 
+# Local setup files
+setup_env_vars.sh
+
 # Test files
 test-output.xml
