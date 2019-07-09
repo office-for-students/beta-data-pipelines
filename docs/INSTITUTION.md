@@ -7,6 +7,7 @@
     "_id": "string",
     "created_at": "date",
     "version": "integer",
+    "institution_id": "string", // institution.publ_ukprn
     "institution": {
         "apr_outcome": "string",
         "contact_details": {
@@ -76,9 +77,9 @@
                 }
             ]
         },
-        "public_ukprn_name" : "string",
-        "public_ukprn" : "string", // doc is unique based on the public_ukprn 
-        "public_ukprn_country": {
+        "publ_ukprn_name" : "string",
+        "publ_ukprn" : "string", // doc is unique based on the public_ukprn 
+        "publ_ukprn_country": {
             "code": "string",
             "label": "string"
         },

@@ -134,6 +134,35 @@
                 }
             }
         ],
+        "nhs_nss": [
+            {
+                "aggregation_level": "integer",
+                "number_of_students": "integer",
+                "question_1": {
+                    "description": "string",
+                    "agree_or_strongly_agree": "integer"
+                },
+                "question_2": {
+                    "description": "string",
+                    "agree_or_strongly_agree": "integer"
+                },
+                ...
+                "question_6": {
+                    "description": "string",
+                    "agree_or_strongly_agree": "integer"
+                },
+                "response_rate": "integer",
+                "subject": {
+                    "code": "string",
+                    "english_label": "string",
+                    "welsh_label": "string"
+                },
+                "unavailable": {
+                    "code": "integer",
+                    "reason": "string"
+                }
+            }
+        ],
         "nss": [
             {
                 "aggregation_level": "integer",
@@ -283,12 +312,22 @@
 | statistics.leo.[].subject.english_label                       | See list of subjects                         | N/A               |
 | statistics.leo.[].subject.welsh_label                         | See list of subjects                         | N/A               |
 | statistics.leo.[].unavailable.code                            | ...KISCOURSE.LEO.LEOUNAVAILREASON            | LEOUNAVAILREASON  |
-| statistics.leo.[].unavailable.reason                          | See aggregation analysis file (DLHE) (LEO)          | N/A               |
+| statistics.leo.[].unavailable.reason                          | See aggregation analysis file (LEO)          | N/A               |
+| statistics.nhs_nss.[].aggregation_level                       | ...KISCOURSE.NHSNSS.NHSAGG                   | NHSAGG            |
+| statistics.nhs_nss.[].number_of_students                      | ...KISCOURSE.NHSNSS.NHSPOP                   | NHSPOP            |
+| statistics.nhs_nss.[].response_rate                           | ...KISCOURSE.NHSNSS.NHSRESP_RATE             | NHSRESP_RATE      |
+| statistics.nhs_nss.[].question_<n>.agree_or_strongly_agree    | ...KISCOURSE.NHSNSS.Q<n>                     | Q1,Q2,...,Q6      |
+| statistics.nhs_nss.[].question_<n>.question                   | See NHS NSS Question Number mappings         | N/A               |
+| statistics.nhs_nss.[].subject.code                            | ...KISCOURSE.NHSNSS.NHSSBJ                   | NHSSBJ            |
+| statistics.nhs_nss.[].subject.english_label                   | See list of subjects                         | N/A               |
+| statistics.nhs_nss.[].subject.welsh_label                     | See list of subjects                         | N/A               |
+| statistics.nhs_nss.[].unavailable.code                        | ...KISCOURSE.NHSNSS.NHSUNAVAILREASON         | NHSUNAVAILREASON  |
+| statistics.nhs_nss.[].unavailable.reason                      | See aggregation analysis file (DLHE)         | N/A               |
 | statistics.nss.[].aggregation_level                           | ...KISCOURSE.NSS.NSSAGG                      | NSSAGG            |
 | statistics.nss.[].number_of_students                          | ...KISCOURSE.NSS.NSSPOP                      | NSSPOP            |
 | statistics.nss.[].response_rate                               | ...KISCOURSE.NSS.NSSRESP_RATE                | NSSRESP_RATE      |
 | statistics.nss.[].question_<n>.agree_or_strongly_agree        | ...KISCOURSE.NSS.Q<n>                        | Q1,Q2,...,Q27     |
-| statistics.nss.[].question_<n>.question                       | See Question Number mappings                 | N/A               |
+| statistics.nss.[].question_<n>.question                       | See NSS Question Number mappings             | N/A               |
 | statistics.nss.[].subject.code                                | ...KISCOURSE.NSS.NSSSBJ                      | NSSSBJ            |
 | statistics.nss.[].subject.english_label                       | See list of subjects                         | N/A               |
 | statistics.nss.[].subject.welsh_label                         | See list of subjects                         | N/A               |
@@ -316,37 +355,48 @@
 | statistics.tariff.[].unavailable.code                         | ...KISCOURSE.TARIFF.TARUNAVAILREASON         | TARUNAVAILREASON  |
 | statistics.tariff.[].unavailable.reason                       | See aggregation analysis file (DLHE)         | N/A               |
 
-### Question Number mappings
+### NSS Question Number mappings
 
-| question_n| question_n.question value                                                                                               |
-|-------------|---------------------------------------------------------------------------------------------------------------------------|
-| 1           | Staff are good at explaining things                                                                                       |
-| 2           | Staff have made the subject interesting                                                                                   |
-| 3           | The course is intellectually stimulating                                                                                  |
-| 4           | My course has challenged me to achieve my best work                                                                       |
-| 5           | My course has provided me with opportunities to explore ideas or concepts in depth                                        |
-| 6           | My course has provided me with opportunities to bring information and ideas together from different topics                |
-| 7           | My course has provided me with opportunities to apply what I have learnt                                                  |
-| 8           | The criteria used in marking have been clear in advance                                                                   |
-| 9           | Marking and assessment has been fair                                                                                      |
-| 10          | Feedback on my work has been timely                                                                                       |
-| 11          | I have received helpful comments on my work                                                                               |
-| 12          | I have been able to contact staff when I needed to                                                                        |
-| 13          | I have received sufficient advice and guidance in relation to my course                                                   |
-| 14          | Good advice was available when I needed to make study choices on my course                                                |
-| 15          | The course is well organised and running smoothly                                                                         |
-| 16          | The timetable works efficiently for me                                                                                    |
-| 17          | Any changes in the course or teaching have been communicated effectively                                                  |
-| 18          | The IT resources and facilities provided have supported my learning well                                                  |
-| 19          | The library resources (e.g. books, online services and learning spaces) have supported my learning well                   |
-| 20          | I have been able to access course-specific resources (e.g. equipment, facilities, software, collections) when I needed to |
-| 21          | I feel part of a community of staff and students                                                                          |
-| 22          | I have had the right opportunities to work with other students as part of my course                                       |
-| 23          | I have had the right opportunities to provide feedback on my course                                                       |
-| 24          | Staff value students' views and opinions about the course                                                                 |
-| 25          | It is clear how students' feedback on the course has been acted on                                                        |
-| 26          | The students' union (association or guild) effectively represents students' academic interests                            |
-| 27          | Overall, I am satisfied with the quality of the course                                                                    |
+| question_n | question_n.question value                                                                                                 |
+|------------|---------------------------------------------------------------------------------------------------------------------------|
+| 1          | Staff are good at explaining things                                                                                       |
+| 2          | Staff have made the subject interesting                                                                                   |
+| 3          | The course is intellectually stimulating                                                                                  |
+| 4          | My course has challenged me to achieve my best work                                                                       |
+| 5          | My course has provided me with opportunities to explore ideas or concepts in depth                                        |
+| 6          | My course has provided me with opportunities to bring information and ideas together from different topics                |
+| 7          | My course has provided me with opportunities to apply what I have learnt                                                  |
+| 8          | The criteria used in marking have been clear in advance                                                                   |
+| 9          | Marking and assessment has been fair                                                                                      |
+| 10         | Feedback on my work has been timely                                                                                       |
+| 11         | I have received helpful comments on my work                                                                               |
+| 12         | I have been able to contact staff when I needed to                                                                        |
+| 13         | I have received sufficient advice and guidance in relation to my course                                                   |
+| 14         | Good advice was available when I needed to make study choices on my course                                                |
+| 15         | The course is well organised and running smoothly                                                                         |
+| 16         | The timetable works efficiently for me                                                                                    |
+| 17         | Any changes in the course or teaching have been communicated effectively                                                  |
+| 18         | The IT resources and facilities provided have supported my learning well                                                  |
+| 19         | The library resources (e.g. books, online services and learning spaces) have supported my learning well                   |
+| 20         | I have been able to access course-specific resources (e.g. equipment, facilities, software, collections) when I needed to |
+| 21         | I feel part of a community of staff and students                                                                          |
+| 22         | I have had the right opportunities to work with other students as part of my course                                       |
+| 23         | I have had the right opportunities to provide feedback on my course                                                       |
+| 24         | Staff value students' views and opinions about the course                                                                 |
+| 25         | It is clear how students' feedback on the course has been acted on                                                        |
+| 26         | The students' union (association or guild) effectively represents students' academic interests                            |
+| 27         | Overall, I am satisfied with the quality of the course                                                                    |
+
+### NHS NSS Question Number mappings
+
+| question_n | question_n.question value                                                                                 |
+|------------|-----------------------------------------------------------------------------------------------------------|
+| NHSQ1      | I received sufficient preparatory information prior to my placement(s)                                    |
+| NHSQ2      | I was allocated placement(s) suitable for my course                                                       |
+| NHSQ3      | I received appropriate supervision on placement(s)                                                        |
+| NHSQ4      | I was given opportunities to meet my required practice learning outcomes/competences                      |
+| NHSQ5      | My contribution during placement(s) as part of a clinical team was valued                                 |
+| NHSQ6      | My practice supervisor(s) understood how my placement(s) related to the broader requirements of my course |
 
 ### Tariff Code values
 

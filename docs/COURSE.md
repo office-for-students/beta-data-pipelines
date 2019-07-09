@@ -7,6 +7,9 @@
     "_id": "string",
     "created_at": "date",
     "version": "integer",
+    "institution_id": "string", // course.institution.pub_ukprn
+    "course_id": "string", // course.kis_course_id
+    "course_mode": "string", // course.mode.code
     "course": {
         "accreditation": [
             {
@@ -41,8 +44,8 @@
         },
         "honours_award_provision": "boolean",
         "institution": {
-            "public_ukprn_name": "string",
-            "public_ukprn": "string",
+            "pub_ukprn_name": "string",
+            "pub_ukprn": "string",
             "ukprn_name": "string",
             "ukprn": "string"
         },
@@ -161,8 +164,8 @@
 | foundation_year_availability.code          | KIS.INSTITUTION.KISCOURSE.FOUNDATION                  | FOUNDATION       |
 | foundation_year_availability.label         | See Foundation Year Availability Code values          | N/A              |
 | honours_award_provision                    | KIS.INSTITUTION.KISCOURSE.HONOURS                     | HONOURS          |
-| institution.public_ukprn_name              | Retreive data from UKPRN API                          | N/A              |
-| institution.public_ukprn                   | KIS.INSTITUTION.PUBUKPRN                              | PUBUKPRN         |
+| institution.pub_ukprn_name                 | Retreive data from UKPRN API                          | N/A              |
+| institution.pub_ukprn                      | KIS.INSTITUTION.PUBUKPRN                              | PUBUKPRN         |
 | institution.ukprn_name                     | Retreive data from UKPRN API                          | N/A              |
 | institution.ukprn                          | KIS.INSTITUTION.UKPRN                                 | UKPRN            |
 | kis_course_id                              | KIS.INSTITUTIOM.KISCOURSE.KISCOURSEID                 | KISCOURSEID      |
