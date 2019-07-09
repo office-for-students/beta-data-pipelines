@@ -23,30 +23,6 @@
                 }
             }
         ],
-        "degree_class": [
-            {
-                "aggregation_level": "integer",
-                "first_class": "integer",
-                "lower_second_class": "integer",
-                "other_honours_degree": "integer",
-                "upper_second_class": "integer",
-                "ordinary_degree": "integer",
-                "distinction": "integer",
-                "merit": "integer",
-                "pass": "integer",
-                "ordinary_degree": "integer",
-                "not_classified_degree": "integer",
-                "subject": {
-                    "code": "string",
-                    "english_label": "string",
-                    "welsh_label": "string"
-                },
-                "unavailable": {
-                    "code": "integer",
-                    "reason": "string"
-                }
-            }
-        ],
         "employment": [
             {
                 "aggregation_level": "integer",
@@ -245,22 +221,6 @@
 | statistics.continuation.[].subject.welsh_label                | See list of subjects                         | N/A               |
 | statistics.continuation.[].unavailable.code                   | ...KISCOURSE.CONTINUATION.CONTUNAVAILREASON  | CONTUNAVAILREASON |
 | statistics.continuation.[].unavailable.reason                 | See aggregation analysis file (DLHE)         | N/A               |
-| statistics.degree_class.[].aggregation_level                  | ...KISCOURSE.DEGREECLASS.DEGAGG              | DEGAGG            |
-| statistics.degree_class.[].number_of_students                 | ...KISCOURSE.DEGREECLASS.DEGPOP              | DEGPOP            |
-| statistics.degree_class.[].first_class                        | ...KISCOURSE.DEGREECLASS.UFIRST              | UFIRST            |
-| statistics.degree_class.[].upper_second_class                 | ...KISCOURSE.DEGREECLASS.UUPPER              | UUPPER            |
-| statistics.degree_class.[].lower_second_class                 | ...KISCOURSE.DEGREECLASS.ULOWER              | ULOWER            |
-| statistics.degree_class.[].other_honours_degree               | ...KISCOURSE.DEGREECLASS.UOTHER              | UOTHER            |
-| statistics.degree_class.[].ordinary_degree                    | ...KISCOURSE.DEGREECLASS.UORDINARY           | UORDINARY         |
-| statistics.degree_class.[].distinction                        | ...KISCOURSE.DEGREECLASS.UDISTINCTION        | UDISTINCTION      |
-| statistics.degree_class.[].merit                              | ...KISCOURSE.DEGREECLASS.UMERIT              | UMERIT            |
-| statistics.degree_class.[].pass                               | ...KISCOURSE.DEGREECLASS.UPASS               | UPASS             |
-| statistics.degree_class.[].not_classified_degree              | ...KISCOURSE.DEGREECLASS.UNA                 | UNA               |
-| statistics.degree_class.[].subject.code                       | ...KISCOURSE.DEGREECLASS.DEGSBJ              | DEGSBJ            |
-| statistics.degree_class.[].subject.english_label              | See list of subjects                         | N/A               |
-| statistics.degree_class.[].subject.welsh_label                | See list of subjects                         | N/A               |
-| statistics.degree_class.[].unavailable.code                   | ...KISCOURSE.DEGREECLASS.DEGUNAVAILREASON    | DEGUNAVAILREASON  |
-| statistics.degree_class.[].unavailable.reason                 | See aggregation analysis file (DLHE)         | N/A               |
 | statistics.employment.[].aggregation_level                    | ...KISCOURSE.EMPLOYMENT.EMPAGG               | EMPAGG            |
 | statistics.employment.[].number_of_students                   | ...KISCOURSE.EMPLOYMENT.EMPPOP               | EMPPOP            |
 | statistics.employment.[].assumed_to_be_unemployed             | ...KISCOURSE.EMPLOYMENT.ASSUNEMP             | ASSUNEMP          |
