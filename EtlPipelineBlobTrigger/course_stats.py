@@ -184,13 +184,13 @@ class Continuation:
             continuation_list.append(ordered_continuation)
         return continuation_list
 
-class Employer:
-    """Extracts and transforms the Employer course element"""
+class Employment:
+    """Extracts and transforms the Employment course element"""
 
     def __init__(self):
         self.shared_utils = SharedUtils()
 
-    def get_employer_key(self, xml_key):
+    def get_key(self, xml_key):
         return {
             "EMPUNAVAILREASON": "unavailable",
             'EMPPOP':'number_of_students',
@@ -213,20 +213,25 @@ class Employer:
                                                  unavail_reason_key)
 
     def get_employment(self, raw_course_data):
+        subj_key = 'EMPSBJ'
+        agg_key = 'EMPAGG'
+        unavail_reason_key = 'EMPUNAVAILREASON'
+        element_key = 'EMPLOYMENT'
+
         json_elem_list = []
-        raw_xml_list = SharedUtils.get_raw_list(raw_course_data, 'EMPLOYMENT')
+        raw_xml_list = SharedUtils.get_raw_list(raw_course_data, element_key)
         for xml_elem in raw_xml_list:
             json_elem = {}
             for xml_key in xml_elem:
-                json_key = self.get_employer_key(xml_key)
+                json_key = self.get_key(xml_key)
                 if json_key == 'subject':
                     json_elem[json_key] = self.shared_utils.get_subject(
-                        xml_elem, 'EMPSBJ')
+                        xml_elem, subj_key)
                 elif json_key == 'unavailable':
                     if self.shared_utils.need_unavailable(
-                            xml_elem, 'EMPUNAVAILREASON', 'EMPAGG'):
-                        json_elem[json_key] = self.get_emp_unavailable(
-                            xml_elem)
+                            xml_elem, unavail_reason_key, agg_key):
+                        json_elem[json_key] = self.shared_utils.get_unavailable(
+                                xml_elem, subj_key, agg_key, unavail_reason_key)
                 else:
                     json_elem[json_key] = xml_elem[xml_key]
                 ordered_json_elem = OrderedDict(sorted(
