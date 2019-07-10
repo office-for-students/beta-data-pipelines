@@ -1,14 +1,22 @@
 #!/usr/bin/env python
 
-""" validators.py: ETL Pipeline Validators """
+""" Validators for the ETL pipeline
 
+    We don't currently throw an exception if we encounter an error, rather we
+    let it bubble up to provide more context.
+
+"""
+
+import inspect
 import logging
 import os
-import xmlschema
-
-from . import exceptions
+import sys
 from distutils.util import strtobool
+
+import xmlschema
 from xmlschema.validators.exceptions import XMLSchemaValidationError
+
+import exceptions
 
 __author__ = "Jillur Quddus, Nathan Shumoogum"
 __credits__ = ["Jillur Quddus", "Nathan Shumoogum"]
@@ -16,7 +24,6 @@ __version__ = "0.1"
 _maintainer__ = "Jillur Quddus"
 __email__ = "jillur.quddus@methods.co.uk"
 __status__ = "Development"
-
 
 
 def validate_xml(xsd_path, xml_path_or_string) -> bool:
@@ -39,3 +46,30 @@ def validate_xml(xsd_path, xml_path_or_string) -> bool:
                 raise exceptions.StopEtlPipelineWarningException
 
     return xml_is_valid
+
+def validate_unavailable_reason_code(unavail_reason_code):
+    """Check the code read from the ????UNAVAILREASON is valid"""
+
+    valid_codes = ['0', '1', '2']
+    if unavail_reason_code not in valid_codes:
+        logging.error(f'The unavailable reason code is invalid {unavail_reason_code}', exc_info=True)
+        raise exceptions.StopEtlPipelineErrorException
+    return True
+
+def validate_agg(unavail_reason_code, data, agg, lookup):
+    """Check the agg is valid if it is to be used to get an unavailble string"""
+
+    # The valid values for agg depends on if there is data availble and the
+    # unavail reason code.
+
+    # First check that we have a valid unavail reason code
+
+    if not validate_unavailable_reason_code(unavail_reason_code):
+        logging.error(f'The unavailable reason code is invalid {unavail_reason_code}', exc_info=True)
+        raise exceptions.StopEtlPipelineErrorException
+    try:
+        reason_str = lookup['data'][unavail_reason_code][agg]
+    except KeyError:
+        logging.error(f'The aggregation value is invalid {agg}', exc_info=True)
+        raise exceptions.StopEtlPipelineErrorException
+    return
