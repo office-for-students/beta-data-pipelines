@@ -19,7 +19,9 @@ class CourseStats:
         stats = {}
 
         continuation = Continuation()
+        employment = Employment()
         stats['continuation'] = continuation.get_continuation(raw_course_data)
+        stats['employment'] = employment.get_employment(raw_course_data)
         return stats
 
 
