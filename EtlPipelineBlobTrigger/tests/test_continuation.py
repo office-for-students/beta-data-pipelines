@@ -69,7 +69,7 @@ class TestGetContinuation(unittest.TestCase):
         print(json.dumps(continuation, sort_keys=True, indent=4))
         self.assertListEqual(continuation, expected_response)
 
-    def test_get_continuation_no_data_bsssf_c606(self):
+    def test_get_continuation_agg_14(self):
         raw_course_xml = xmltodict.parse(
             get_string('fixtures/course_532986.xml'))['KISCOURSE']
         expected_response = json.loads(
