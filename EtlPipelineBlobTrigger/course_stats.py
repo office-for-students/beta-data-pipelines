@@ -80,7 +80,7 @@ class SharedUtils:
 
         has_data = len(elem) > 1
         if not has_data:
-            return self.unavail_reason['no-data'][code]
+            return self.unavail_reason['no-data'][unavail_reason_code]
 
         validate_agg(unavail_reason_code, has_data, agg, self.unavail_reason)
         partial_reason_str = self.unavail_reason['data'][unavail_reason_code][
