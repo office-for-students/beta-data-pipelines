@@ -67,8 +67,6 @@ class LookupCreator:
         lookup_item['id'] = utils.get_uuid()
         lookup_item['created_at'] = datetime.datetime.utcnow().isoformat()
         lookup_item['ukprn'] = ukprn
-        logging.info(f'give example of provider record {str(matching_provider_records)}')
-        
         lookup_item['ukprn_name'] = Helper.get_provider_name(matching_provider_records)
         
         lookup_item['contact_details'] = LookupCreator.get_contact_details(ukprn,

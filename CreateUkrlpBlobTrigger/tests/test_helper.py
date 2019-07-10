@@ -21,7 +21,7 @@ class TestGetProviderName(unittest.TestCase):
 
     def test_when_there_is_only_one_alias(self):
         expected_key = 'Roath College'
-        singleAlias = {'ProviderName': 'University of England',            'ProviderAliases': [{'ProviderAlias': 'Roath College'}]}
+        singleAlias = {'ProviderName': 'University of England', 'ProviderAliases': [{'ProviderAlias': 'Roath College'}]}
 
         key = Helper.get_provider_name(singleAlias)
         self.assertEqual(expected_key, key)

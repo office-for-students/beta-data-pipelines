@@ -18,7 +18,5 @@ class Helper:
         if 'ProviderAliases' in matching_provider_records and matching_provider_records['ProviderAliases'] is not None:
             aliases = Helper.get_list(matching_provider_records['ProviderAliases'])
             return aliases[0]['ProviderAlias']
-        else:
-            return matching_provider_records['ProviderName']
-
         
+        return matching_provider_records['ProviderName']
