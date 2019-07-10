@@ -10,10 +10,9 @@ import xmltodict
 CURRENTDIR = os.path.dirname(
     os.path.abspath(inspect.getfile(inspect.currentframe())))
 PARENTDIR = os.path.dirname(CURRENTDIR)
-
 sys.path.insert(0, PARENTDIR)
 
-from course_stats import Continuation, Employer
+from course_stats import Employment
 
 
 def get_string(filename):
@@ -25,25 +24,25 @@ def get_string(filename):
     return string
 
 
-class TestGetEmployerKey(unittest.TestCase):
+class TestGetEmploymentKey(unittest.TestCase):
     def setUp(self):
-        self.continuation = Continuation()
+        self.employment = Employment()
 
     def test_with_valid_key(self):
         expected_key = 'number_of_students'
         xml_key = 'EMPPOP'
-        key = self.continuation.get_continuation_key(xml_key)
+        key = self.employment.get_key(xml_key)
         self.assertEqual(expected_key, key)
 
-    def test_with_valid_key(self):
+    def test_with_invalid_key(self):
         invalid_xml_key = 'invalid_key'
         with self.assertRaises(KeyError):
-            self.continuation.get_continuation_key(invalid_xml_key)
+            self.employment.get_key(invalid_xml_key)
 
 
-class TestGetEmployer(unittest.TestCase):
+class TestGetEmployment(unittest.TestCase):
     def setUp(self):
-        self.employment = Employer()
+        self.employment = Employment()
 
 
     def test_with_large_file(self):
@@ -53,7 +52,7 @@ class TestGetEmployer(unittest.TestCase):
         for institution in root.iter('INSTITUTION'):
             for course in institution.findall('KISCOURSE'):
                 raw_course_data = xmltodict.parse(ET.tostring(course))['KISCOURSE']
-                employer = self.employment.get_employment(raw_course_data)
+                employment = self.employment.get_employment(raw_course_data)
 
 
     def test_get_employment_no_subj(self):
