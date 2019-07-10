@@ -3,6 +3,7 @@ import json
 import os
 import sys
 import unittest
+import xml.etree.ElementTree as ET
 
 import xmltodict
 
@@ -43,6 +44,16 @@ class TestGetContinuation(unittest.TestCase):
     def setUp(self):
         self.continuation = Continuation()
 
+
+    def test_with_large_file(self):
+        """Initial smoke test"""
+        xml_string = get_string('fixtures/large-test-file.xml')
+        root = ET.fromstring(xml_string)
+        for institution in root.iter('INSTITUTION'):
+            for course in institution.findall('KISCOURSE'):
+                raw_course_data = xmltodict.parse(ET.tostring(course))['KISCOURSE']
+                continuation = self.continuation.get_continuation(raw_course_data)
+
     def test_get_continuation_no_subj(self):
         raw_course_xml = xmltodict.parse(
             get_string('fixtures/course_no_cont_subj.xml'))['KISCOURSE']
@@ -57,7 +68,6 @@ class TestGetContinuation(unittest.TestCase):
         expected_response = json.loads(
             get_string('fixtures/course_two_contins_resp.json'))
         continuation = self.continuation.get_continuation(raw_course_xml)
-        print(json.dumps(continuation, sort_keys=True, indent=4))
         self.assertListEqual(continuation, expected_response)
 
     def test_get_continuation_subj(self):
@@ -66,7 +76,6 @@ class TestGetContinuation(unittest.TestCase):
         expected_response = json.loads(
             get_string('fixtures/course_cont_subj_resp.json'))
         continuation = self.continuation.get_continuation(raw_course_xml)
-        print(json.dumps(continuation, sort_keys=True, indent=4))
         self.assertListEqual(continuation, expected_response)
 
     def test_get_continuation_agg_14(self):
@@ -75,7 +84,6 @@ class TestGetContinuation(unittest.TestCase):
         expected_response = json.loads(
             get_string('fixtures/course_532986_resp.json'))
         continuation = self.continuation.get_continuation(raw_course_xml)
-        print(json.dumps(continuation, sort_keys=True, indent=4))
         self.assertListEqual(continuation, expected_response)
 
  # TODO Test more of the functionality - more lookups etc
