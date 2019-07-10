@@ -184,6 +184,7 @@ class Continuation:
             continuation_list.append(ordered_continuation)
         return continuation_list
 
+
 class Employment:
     """Extracts and transforms the Employment course element"""
 
@@ -193,7 +194,7 @@ class Employment:
     def get_key(self, xml_key):
         return {
             "EMPUNAVAILREASON": "unavailable",
-            'EMPPOP':'number_of_students',
+            'EMPPOP': 'number_of_students',
             'EMPRESP_RATE': 'response_rate',
             "EMPAGG": "aggregation_level",
             "EMPSBJ": "subject",
@@ -230,11 +231,12 @@ class Employment:
                 elif json_key == 'unavailable':
                     if self.shared_utils.need_unavailable(
                             xml_elem, unavail_reason_key, agg_key):
-                        json_elem[json_key] = self.shared_utils.get_unavailable(
-                                xml_elem, subj_key, agg_key, unavail_reason_key)
+                        json_elem[
+                            json_key] = self.shared_utils.get_unavailable(
+                                xml_elem, subj_key, agg_key,
+                                unavail_reason_key)
                 else:
                     json_elem[json_key] = xml_elem[xml_key]
-                ordered_json_elem = OrderedDict(sorted(
-                    json_elem.items()))
+                ordered_json_elem = OrderedDict(sorted(json_elem.items()))
             json_elem_list.append(ordered_json_elem)
         return json_elem_list
