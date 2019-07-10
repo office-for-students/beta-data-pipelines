@@ -54,21 +54,24 @@ class SharedUtils:
         subject['welsh_label'] = self.get_welsh_sbj_label(subj_key)
         return subject
 
-    def get_aggs_for_code(self, unavail_reason_code):
-        return self.cont_unavail_reason['data'][unavail_reason_code].keys()
 
     def get_unavailable_reason_subj(self, sbj_key):
         if sbj_key:
             return self.get_english_sbj_label(sbj_key)
         return 'this subject'
 
-    def need_unavailable(self, cont_elem, unavailreason_key):
+    def get_aggs_for_code(self, unavail_reason_code):
+        return self.unavail_reason['data'][unavail_reason_code].keys()
+
+    def need_unavailable(self, cont_elem, unavailreason_key, agg_key):
         has_data = len(cont_elem) > 1
         if not has_data:
             return True
 
-        code = cont_elem['CONTUNAVAILREASON']
-        agg = cont_elem['CONTAGG']
+        code = cont_elem[unavailreason_key]
+        print(f'unavailreason_key {unavailreason_key}')
+        print(f'code {code}')
+        agg = cont_elem[agg_key]
         agg_codes = self.get_aggs_for_code(code)
         if agg in agg_codes:
             return True
@@ -164,7 +167,7 @@ class Continuation:
                     continuation[json_key] = self.get_cont_subject(
                         cont_elem, 'CONTSBJ')
                 elif json_key == 'unavailable':
-                    if self.need_unavail_element(cont_elem):
+                    if self.shared_utils.need_unavailable(cont_elem, 'CONTUNAVAILREASON', 'CONTAGG'):
                         continuation[json_key] = self.get_cont_unavailable(
                             cont_elem)
                 else:
