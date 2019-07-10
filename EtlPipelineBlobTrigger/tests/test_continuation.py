@@ -56,7 +56,7 @@ class TestGetContinuation(unittest.TestCase):
 
     def test_get_continuation_no_subj(self):
         raw_course_xml = xmltodict.parse(
-            get_string('fixtures/course_no_cont_subj.xml'))['KISCOURSE']
+            get_string('fixtures/course_no_subj_for_most.xml'))['KISCOURSE']
         expected_response = json.loads(
             get_string('fixtures/course_no_cont_subj_resp.json'))
         continuation = self.continuation.get_continuation(raw_course_xml)

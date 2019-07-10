@@ -10,6 +10,7 @@ import xmltodict
 CURRENTDIR = os.path.dirname(
     os.path.abspath(inspect.getfile(inspect.currentframe())))
 PARENTDIR = os.path.dirname(CURRENTDIR)
+
 sys.path.insert(0, PARENTDIR)
 
 from course_stats import Continuation, Employer
@@ -53,8 +54,16 @@ class TestGetEmployer(unittest.TestCase):
             for course in institution.findall('KISCOURSE'):
                 raw_course_data = xmltodict.parse(ET.tostring(course))['KISCOURSE']
                 employer = self.employment.get_employment(raw_course_data)
-                print(json.dumps(employer, indent=4))
 
+
+    def test_get_employment_no_subj(self):
+        raw_course_xml = xmltodict.parse(
+            get_string('fixtures/course_no_subj_for_most.xml'))['KISCOURSE']
+        expected_response = json.loads(
+            get_string('fixtures/course_no_emp_subj_resp.json'))
+        json_obj = self.employment.get_employment(raw_course_xml)
+        print(json.dumps(json_obj, indent=4))
+        self.assertListEqual(json_obj, expected_response)
 
  # TODO Test more of the functionality - more lookups etc
 
