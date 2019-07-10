@@ -22,6 +22,7 @@ class CourseStats:
         stats['continuation'] = continuation.get_continuation(raw_course_data)
         return stats
 
+
 class SharedUtils:
     """Functionality required by several stats related classes"""
 
@@ -54,7 +55,6 @@ class SharedUtils:
         subject['welsh_label'] = self.get_welsh_sbj_label(subj_key)
         return subject
 
-
     def get_unavailable_reason_subj(self, sbj_key):
         if sbj_key:
             return self.get_english_sbj_label(sbj_key)
@@ -69,8 +69,6 @@ class SharedUtils:
             return True
 
         code = cont_elem[unavailreason_key]
-        print(f'unavailreason_key {unavailreason_key}')
-        print(f'code {code}')
         agg = cont_elem[agg_key]
         agg_codes = self.get_aggs_for_code(code)
         if agg in agg_codes:
@@ -78,10 +76,10 @@ class SharedUtils:
         return False
 
     def get_unavailable_reason_str(self, unavail_reason_code, subj_key, agg,
-                                   elem):
+                                   xml_elem):
         validate_unavailable_reason_code(unavail_reason_code)
 
-        has_data = len(elem) > 1
+        has_data = len(xml_elem) > 1
         if not has_data:
             return self.unavail_reason['no-data'][unavail_reason_code]
 
@@ -105,6 +103,14 @@ class SharedUtils:
         unavailable['reason'] = self.get_unavailable_reason_str(
             unavail_reason_code, subj_key, agg, cont_elem)
         return unavailable
+
+    @staticmethod
+    def get_raw_list(raw_course_data, element_key):
+        """Get a list for the element"""
+
+        if isinstance(raw_course_data[element_key], dict):
+            return [raw_course_data[element_key]]
+        return raw_course_data[element_key]
 
 
 class Continuation:
@@ -167,7 +173,8 @@ class Continuation:
                     continuation[json_key] = self.get_cont_subject(
                         cont_elem, 'CONTSBJ')
                 elif json_key == 'unavailable':
-                    if self.shared_utils.need_unavailable(cont_elem, 'CONTUNAVAILREASON', 'CONTAGG'):
+                    if self.shared_utils.need_unavailable(
+                            cont_elem, 'CONTUNAVAILREASON', 'CONTAGG'):
                         continuation[json_key] = self.get_cont_unavailable(
                             cont_elem)
                 else:
@@ -176,3 +183,53 @@ class Continuation:
                     continuation.items()))
             continuation_list.append(ordered_continuation)
         return continuation_list
+
+class Employer:
+    """Extracts and transforms the Employer course element"""
+
+    def __init__(self):
+        self.shared_utils = SharedUtils()
+
+    def get_employer_key(self, xml_key):
+        return {
+            "EMPUNAVAILREASON": "unavailable",
+            'EMPPOP':'number_of_students',
+            'EMPRESP_RATE': 'response_rate',
+            "EMPAGG": "aggregation_level",
+            "EMPSBJ": "subject",
+            'WORKSTUDY': 'in_work_or_study',
+            "STUDY": 'in_study',
+            "ASSUNEMP": 'assumed_to_be_unemeployed',
+            "BOTH": 'in_work_and_study',
+            "NOAVAIL": 'not_available_for_work_or_study',
+            "WORK": 'in_work',
+        }[xml_key]
+
+    def get_emp_unavailable(self, xml_elem):
+        subj_key = 'EMPSBJ'
+        agg_key = 'EMPAGG'
+        unavail_reason_key = 'EMPUNAVAILREASON'
+        return self.shared_utils.get_unavailable(xml_elem, subj_key, agg_key,
+                                                 unavail_reason_key)
+
+    def get_employment(self, raw_course_data):
+        json_elem_list = []
+        raw_xml_list = SharedUtils.get_raw_list(raw_course_data, 'EMPLOYMENT')
+        for xml_elem in raw_xml_list:
+            json_elem = {}
+            for xml_key in xml_elem:
+                json_key = self.get_employer_key(xml_key)
+                if json_key == 'subject':
+                    json_elem[json_key] = self.shared_utils.get_subject(
+                        xml_elem, 'EMPSBJ')
+                elif json_key == 'unavailable':
+                    if self.shared_utils.need_unavailable(
+                            xml_elem, 'EMPUNAVAILREASON', 'EMPAGG'):
+                        json_elem[json_key] = self.get_emp_unavailable(
+                            xml_elem)
+                else:
+                    json_elem[json_key] = xml_elem[xml_key]
+                ordered_json_elem = OrderedDict(sorted(
+                    json_elem.items()))
+            json_elem_list.append(ordered_json_elem)
+        return json_elem_list
