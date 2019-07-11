@@ -24,12 +24,17 @@ class CourseStats:
         stats['employment'] = employment.get_employment(raw_course_data)
         return stats
 
-
 class Continuation:
     """Extracts and transforms the continuation course element"""
 
     def __init__(self):
-        self.shared_utils = SharedUtils()
+        element_key = 'CONTINUATION'
+        subj_key = 'CONTSBJ'
+        agg_key = 'UCONT'
+        unavail_reason_key = 'EMPUNAVAILREASON'
+
+        self.shared_utils = SharedUtils(element_key, subj_key, agg_key, unavail_reason_key)
+
 
     def get_continuation_key(self, xml_key):
         return {
@@ -60,7 +65,7 @@ class Continuation:
         return False
 
     def get_cont_subject(self, cont_elem, subj_key):
-        return self.shared_utils.get_subject(cont_elem, subj_key)
+        return self.shared_utils.get_subject(cont_elem)
 
     def get_cont_unavailable(self, cont_elem):
         subj_key = 'CONTSBJ'
@@ -96,12 +101,16 @@ class Continuation:
             continuation_list.append(ordered_continuation)
         return continuation_list
 
-
 class Employment:
     """Extracts and transforms the Employment course element"""
 
     def __init__(self):
-        self.shared_utils = SharedUtils()
+        element_key = 'EMPLOYMENT'
+        subj_key = 'EMPSBJ'
+        agg_key = 'EMPAGG'
+        unavail_reason_key = 'EMPUNAVAILREASON'
+
+        self.shared_utils = SharedUtils(element_key, subj_key, agg_key, unavail_reason_key)
 
     def get_key(self, xml_key):
         return {
@@ -139,7 +148,7 @@ class Employment:
                 json_key = self.get_key(xml_key)
                 if json_key == 'subject':
                     json_elem[json_key] = self.shared_utils.get_subject(
-                        xml_elem, subj_key)
+                        xml_elem)
                 elif json_key == 'unavailable':
                     if self.shared_utils.need_unavailable(
                             xml_elem, unavail_reason_key, agg_key):
@@ -153,11 +162,16 @@ class Employment:
             json_elem_list.append(ordered_json_elem)
         return json_elem_list
 
-
 class SharedUtils:
     """Functionality required by several stats related classes"""
 
-    def __init__(self):
+    def __init__(self, element_key, subj_key, agg_key, unavail_reason_key):
+
+        self.xml_element_key = element_key
+        self.xml_subj_key = subj_key
+        self.xml_agg_key = agg_key
+        self.xml_unavail_reason = unavail_reason_key
+
         self.cwd = os.path.dirname(os.path.abspath(__file__))
         self.subj_code_english = self.get_lookup('subj_code_english')
         self.subj_code_welsh = self.get_lookup('subj_code_welsh')
@@ -178,8 +192,8 @@ class SharedUtils:
     def get_welsh_sbj_label(self, code):
         return self.subj_code_welsh[code]
 
-    def get_subject(self, elem, raw_subj_key):
-        subj_key = elem[raw_subj_key]
+    def get_subject(self, elem):
+        subj_key = elem[self.xml_subj_key]
         subject = {}
         subject['code'] = subj_key
         subject['english_label'] = self.get_english_sbj_label(subj_key)
@@ -194,13 +208,13 @@ class SharedUtils:
     def get_aggs_for_code(self, unavail_reason_code):
         return self.unavail_reason['data'][unavail_reason_code].keys()
 
-    def need_unavailable(self, cont_elem, unavailreason_key, agg_key):
-        has_data = len(cont_elem) > 1
+    def need_unavailable(self, xml_elem, unavailreason_key, agg_key):
+        has_data = len(xml_elem) > 1
         if not has_data:
             return True
 
-        code = cont_elem[unavailreason_key]
-        agg = cont_elem[agg_key]
+        code = xml_elem[unavailreason_key]
+        agg = xml_elem[agg_key]
         agg_codes = self.get_aggs_for_code(code)
         if agg in agg_codes:
             return True
@@ -242,3 +256,5 @@ class SharedUtils:
         if isinstance(raw_course_data[element_key], dict):
             return [raw_course_data[element_key]]
         return raw_course_data[element_key]
+
+
