@@ -61,7 +61,15 @@ class TestGetEmployment(unittest.TestCase):
         expected_response = json.loads(
             get_string('fixtures/course_no_emp_subj_resp.json'))
         json_obj = self.employment.get_employment(raw_course_xml)
-        print(json.dumps(json_obj, indent=4))
+        self.assertListEqual(json_obj, expected_response)
+
+
+    def test_get_employment_with_subj(self):
+        raw_course_xml = xmltodict.parse(
+            get_string('fixtures/course_with_subj_for_most.xml'))['KISCOURSE']
+        expected_response = json.loads(
+            get_string('fixtures/course_emp_subj_resp.json'))
+        json_obj = self.employment.get_employment(raw_course_xml)
         self.assertListEqual(json_obj, expected_response)
 
  # TODO Test more of the functionality - more lookups etc
