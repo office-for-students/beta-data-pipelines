@@ -67,12 +67,14 @@ class TestGetContinuation(unittest.TestCase):
             get_string('fixtures/course_two_contins.xml'))['KISCOURSE']
         expected_response = json.loads(
             get_string('fixtures/course_two_contins_resp.json'))
+        print(expected_response)
         continuation = self.continuation.get_continuation(raw_course_xml)
+        print(json.dumps(continuation, indent=4))
         self.assertListEqual(continuation, expected_response)
 
     def test_get_continuation_subj(self):
         raw_course_xml = xmltodict.parse(
-            get_string('fixtures/course_cont_subj.xml'))['KISCOURSE']
+            get_string('fixtures/course_with_subj_for_most.xml'))['KISCOURSE']
         expected_response = json.loads(
             get_string('fixtures/course_cont_subj_resp.json'))
         continuation = self.continuation.get_continuation(raw_course_xml)
