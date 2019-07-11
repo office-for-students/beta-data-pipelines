@@ -53,12 +53,6 @@ class Continuation:
     def get_cont_subject(self, cont_elem, subj_key):
         return self.shared_utils.get_subject(cont_elem)
 
-    def get_cont_unavailable(self, cont_elem):
-        subj_key = 'CONTSBJ'
-        agg_key = 'CONTAGG'
-        unavail_reason_key = 'CONTUNAVAILREASON'
-        return self.shared_utils.get_unavailable(cont_elem, subj_key, agg_key,
-                                                 unavail_reason_key)
 
     def get_continuation(self, raw_course_data):
         def get_raw_continuation_list(raw_course_data):
@@ -78,8 +72,8 @@ class Continuation:
                 elif json_key == 'unavailable':
                     if self.shared_utils.need_unavailable(
                             cont_elem):
-                        continuation[json_key] = self.get_cont_unavailable(
-                            cont_elem)
+                        continuation[json_key] = self.shared_utils.get_unavailable(
+                            cont_elem, 'CONTSBJ', 'CONTAGG', 'CONTUNAVAILREASON')
                 else:
                     continuation[json_key] = cont_elem[xml_key]
                 ordered_continuation = OrderedDict(sorted(
@@ -215,18 +209,18 @@ class SharedUtils:
         subj = self.get_unavailable_reason_subj(subj_key)
         return partial_reason_str + subj + '.'
 
-    def get_unavailable(self, cont_elem, raw_subj_key, raw_agg_key,
+    def get_unavailable(self, elem, raw_subj_key, raw_agg_key,
                         raw_unavail_reason_key):
         unavailable = {}
-        has_data = len(cont_elem) > 1
-        subj_key = cont_elem.get(self.xml_subj_key)
-        agg = cont_elem[raw_agg_key] if has_data else None
-        unavail_reason_code = cont_elem[raw_unavail_reason_key]
+        has_data = len(elem) > 1
+        subj_key = elem.get(self.xml_subj_key)
+        agg = elem[raw_agg_key] if has_data else None
+        unavail_reason_code = elem[raw_unavail_reason_key]
         validate_unavailable_reason_code(unavail_reason_code)
 
         unavailable['code'] = unavail_reason_code
         unavailable['reason'] = self.get_unavailable_reason_str(
-            unavail_reason_code, subj_key, agg, cont_elem)
+            unavail_reason_code, subj_key, agg, elem)
         return unavailable
 
     @staticmethod
