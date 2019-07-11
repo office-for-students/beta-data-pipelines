@@ -113,12 +113,6 @@ class Employment:
             "WORK": 'in_work',
         }[xml_key]
 
-    def get_emp_unavailable(self, xml_elem):
-        subj_key = 'EMPSBJ'
-        agg_key = 'EMPAGG'
-        unavail_reason_key = 'EMPUNAVAILREASON'
-        return self.shared_utils.get_unavailable(xml_elem, subj_key, agg_key,
-                                                 unavail_reason_key)
 
     def get_employment(self, raw_course_data):
         subj_key = 'EMPSBJ'
@@ -186,11 +180,6 @@ class SharedUtils:
         subject['welsh_label'] = self.get_welsh_sbj_label(subj_key)
         return subject
 
-    def get_unavailable_reason_subj(self, sbj_key):
-        if sbj_key:
-            return self.get_english_sbj_label(sbj_key)
-        return 'this subject'
-
     def get_aggs_for_code(self, unavail_reason_code):
         return self.unavail_reason['data'][unavail_reason_code].keys()
 
@@ -199,12 +188,17 @@ class SharedUtils:
         if not has_data:
             return True
 
-        code = xml_elem[self.xml_unavail_reason_key]
+        unavail_reason_code = xml_elem[self.xml_unavail_reason_key]
         agg = xml_elem[self.xml_agg_key]
-        agg_codes = self.get_aggs_for_code(code)
+        agg_codes = self.get_aggs_for_code(unavail_reason_code)
         if agg in agg_codes:
             return True
         return False
+
+    def get_unavailable_reason_subj(self, sbj_key):
+        if sbj_key:
+            return self.get_english_sbj_label(sbj_key)
+        return 'this subject'
 
     def get_unavailable_reason_str(self, unavail_reason_code, subj_key, agg,
                                    xml_elem):
@@ -225,7 +219,7 @@ class SharedUtils:
                         raw_unavail_reason_key):
         unavailable = {}
         has_data = len(cont_elem) > 1
-        subj_key = cont_elem.get(raw_subj_key)
+        subj_key = cont_elem.get(self.xml_subj_key)
         agg = cont_elem[raw_agg_key] if has_data else None
         unavail_reason_code = cont_elem[raw_unavail_reason_key]
         validate_unavailable_reason_code(unavail_reason_code)
