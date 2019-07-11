@@ -28,12 +28,12 @@ class Continuation:
     """Extracts and transforms the continuation course element"""
 
     def __init__(self):
-        xml_element_key = 'CONTINUATION'
-        xml_subj_key = 'CONTSBJ'
-        xml_agg_key = 'CONTAGG'
-        xml_unavail_reason_key = 'CONTUNAVAILREASON'
+        self.xml_element_key = 'CONTINUATION'
+        self.xml_subj_key = 'CONTSBJ'
+        self.xml_agg_key = 'CONTAGG'
+        self.xml_unavail_reason_key = 'CONTUNAVAILREASON'
 
-        self.shared_utils = SharedUtils(xml_element_key, xml_subj_key, xml_agg_key, xml_unavail_reason_key)
+        self.shared_utils = SharedUtils(self.xml_element_key, self.xml_subj_key, self.xml_agg_key, self.xml_unavail_reason_key)
 
     def get_continuation_key(self, xml_key):
         return {
@@ -50,29 +50,21 @@ class Continuation:
 
         return self.shared_utils.unavail_reason['data'][code].keys()
 
-    def get_cont_subject(self, cont_elem, subj_key):
-        return self.shared_utils.get_subject(cont_elem)
-
 
     def get_continuation(self, raw_course_data):
-        def get_raw_continuation_list(raw_course_data):
-            if isinstance(raw_course_data['CONTINUATION'], dict):
-                return [raw_course_data['CONTINUATION']]
-            return raw_course_data['CONTINUATION']
 
         continuation_list = []
-        raw_continuation_list = get_raw_continuation_list(raw_course_data)
+        raw_continuation_list = SharedUtils.get_raw_list(raw_course_data, self.xml_element_key)
         for cont_elem in raw_continuation_list:
             continuation = {}
             for xml_key in cont_elem:
                 json_key = self.get_continuation_key(xml_key)
                 if json_key == 'subject':
-                    continuation[json_key] = self.get_cont_subject(
-                        cont_elem, 'CONTSBJ')
+                    continuation[json_key] = self.shared_utils.get_subject(cont_elem)
                 elif json_key == 'unavailable':
                     if self.shared_utils.need_unavailable(
                             cont_elem):
-                        continuation[json_key] = self.shared_utils.get_unavailable( cont_elem)
+                        continuation[json_key] = self.shared_utils.get_unavailable(cont_elem)
                 else:
                     continuation[json_key] = cont_elem[xml_key]
                 ordered_continuation = OrderedDict(sorted(
@@ -84,12 +76,12 @@ class Employment:
     """Extracts and transforms the Employment course element"""
 
     def __init__(self):
-        xml_element_key = 'EMPLOYMENT'
-        xml_subj_key = 'EMPSBJ'
-        xml_agg_key = 'EMPAGG'
-        xml_unavail_reason_key = 'EMPUNAVAILREASON'
+        self.xml_element_key = 'EMPLOYMENT'
+        self.xml_subj_key = 'EMPSBJ'
+        self.xml_agg_key = 'EMPAGG'
+        self.xml_unavail_reason_key = 'EMPUNAVAILREASON'
 
-        self.shared_utils = SharedUtils(xml_element_key, xml_subj_key, xml_agg_key, xml_unavail_reason_key)
+        self.shared_utils = SharedUtils(self.xml_element_key, self.xml_subj_key, self.xml_agg_key, self.xml_unavail_reason_key)
 
     def get_key(self, xml_key):
         return {
@@ -108,13 +100,9 @@ class Employment:
 
 
     def get_employment(self, raw_course_data):
-        subj_key = 'EMPSBJ'
-        agg_key = 'EMPAGG'
-        unavail_reason_key = 'EMPUNAVAILREASON'
-        element_key = 'EMPLOYMENT'
 
         json_elem_list = []
-        raw_xml_list = SharedUtils.get_raw_list(raw_course_data, element_key)
+        raw_xml_list = SharedUtils.get_raw_list(raw_course_data, self.xml_element_key)
         for xml_elem in raw_xml_list:
             json_elem = {}
             for xml_key in xml_elem:
@@ -152,7 +140,7 @@ class SharedUtils:
         filename = {
             'subj_code_english': 'subj_code_english.json',
             'subj_code_welsh': 'subj_code_welsh.json',
-            'unavail_reason': 'contunavailreason.json'
+            'unavail_reason': 'unavailreason.json'
         }[lookup_name]
         with open(os.path.join(self.cwd, f'lookup_files/{filename}')) as fp:
             return json.load(fp)
