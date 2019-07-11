@@ -35,7 +35,7 @@ class Continuation:
 
         self.shared_utils = SharedUtils(self.xml_element_key, self.xml_subj_key, self.xml_agg_key, self.xml_unavail_reason_key)
 
-    def get_continuation_key(self, xml_key):
+    def get_key(self, xml_key):
         return {
             'CONTUNAVAILREASON': 'unavailable',
             "CONTPOP": 'number_of_students',
@@ -48,29 +48,9 @@ class Continuation:
             "ULOWER": 'lower',
         }[xml_key]
 
-        return self.shared_utils.unavail_reason['data'][code].keys()
-
-
     def get_continuation(self, raw_course_data):
+        return self.shared_utils.get_json_list(raw_course_data, self.get_key)
 
-        continuation_list = []
-        raw_continuation_list = SharedUtils.get_raw_list(raw_course_data, self.xml_element_key)
-        for cont_elem in raw_continuation_list:
-            continuation = {}
-            for xml_key in cont_elem:
-                json_key = self.get_continuation_key(xml_key)
-                if json_key == 'subject':
-                    continuation[json_key] = self.shared_utils.get_subject(cont_elem)
-                elif json_key == 'unavailable':
-                    if self.shared_utils.need_unavailable(
-                            cont_elem):
-                        continuation[json_key] = self.shared_utils.get_unavailable(cont_elem)
-                else:
-                    continuation[json_key] = cont_elem[xml_key]
-                ordered_continuation = OrderedDict(sorted(
-                    continuation.items()))
-            continuation_list.append(ordered_continuation)
-        return continuation_list
 
 class Employment:
     """Extracts and transforms the Employment course element"""
@@ -100,26 +80,8 @@ class Employment:
 
 
     def get_employment(self, raw_course_data):
+        return self.shared_utils.get_json_list(raw_course_data, self.get_key)
 
-        json_elem_list = []
-        raw_xml_list = SharedUtils.get_raw_list(raw_course_data, self.xml_element_key)
-        for xml_elem in raw_xml_list:
-            json_elem = {}
-            for xml_key in xml_elem:
-                json_key = self.get_key(xml_key)
-                if json_key == 'subject':
-                    json_elem[json_key] = self.shared_utils.get_subject(
-                        xml_elem)
-                elif json_key == 'unavailable':
-                    if self.shared_utils.need_unavailable(
-                            xml_elem):
-                        json_elem[
-                            json_key] = self.shared_utils.get_unavailable(xml_elem)
-                else:
-                    json_elem[json_key] = xml_elem[xml_key]
-                ordered_json_elem = OrderedDict(sorted(json_elem.items()))
-            json_elem_list.append(ordered_json_elem)
-        return json_elem_list
 
 class SharedUtils:
     """Functionality required by several stats related classes"""
@@ -207,6 +169,28 @@ class SharedUtils:
             unavail_reason_code, subj_key, agg, elem)
         return unavailable
 
+    def get_json_list(self, raw_course_data, get_key):
+        json_elem_list = []
+        raw_xml_list = SharedUtils.get_raw_list(raw_course_data, self.xml_element_key)
+        for xml_elem in raw_xml_list:
+            json_elem = {}
+            for xml_key in xml_elem:
+                json_key = get_key(xml_key)
+                if json_key == 'subject':
+                    json_elem[json_key] = self.get_subject(
+                        xml_elem)
+                elif json_key == 'unavailable':
+                    if self.need_unavailable(
+                            xml_elem):
+                        json_elem[
+                            json_key] = self.get_unavailable(xml_elem)
+                else:
+                    json_elem[json_key] = xml_elem[xml_key]
+                ordered_json_elem = OrderedDict(sorted(json_elem.items()))
+            json_elem_list.append(ordered_json_elem)
+        return json_elem_list
+
+
     @staticmethod
     def get_raw_list(raw_course_data, element_key):
         """Get a list for the element"""
@@ -214,5 +198,3 @@ class SharedUtils:
         if isinstance(raw_course_data[element_key], dict):
             return [raw_course_data[element_key]]
         return raw_course_data[element_key]
-
-

@@ -31,13 +31,13 @@ class TestGetContinuationKey(unittest.TestCase):
     def test_with_valid_key(self):
         expected_key = 'number_of_students'
         xml_key = 'CONTPOP'
-        key = self.continuation.get_continuation_key(xml_key)
+        key = self.continuation.get_key(xml_key)
         self.assertEqual(expected_key, key)
 
     def test_with_valid_key(self):
         invalid_xml_key = 'invalid_key'
         with self.assertRaises(KeyError):
-            self.continuation.get_continuation_key(invalid_xml_key)
+            self.continuation.get_key(invalid_xml_key)
 
 
 class TestGetContinuation(unittest.TestCase):
