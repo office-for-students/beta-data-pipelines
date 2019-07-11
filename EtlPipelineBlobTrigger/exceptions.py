@@ -17,3 +17,7 @@ class Error(Exception):
 class StopEtlPipelineWarningException(Error):
     """ A warning is raised during the ETL Pipeline """
     pass
+
+class StopEtlPipelineErrorException(Error):
+    """ An error is raised during the ETL Pipeline """
+    pass
