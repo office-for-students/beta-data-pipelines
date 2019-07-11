@@ -9,6 +9,7 @@ import xmltodict
 from SharedCode import utils
 
 from .ukrlp_client import UkrlpClient
+from .helper import Helper
 
 
 class LookupCreator:
@@ -66,7 +67,8 @@ class LookupCreator:
         lookup_item['id'] = utils.get_uuid()
         lookup_item['created_at'] = datetime.datetime.utcnow().isoformat()
         lookup_item['ukprn'] = ukprn
-        lookup_item['ukprn_name'] = matching_provider_records['ProviderName']
+        lookup_item['ukprn_name'] = Helper.get_provider_name(matching_provider_records)
+        
         lookup_item['contact_details'] = LookupCreator.get_contact_details(ukprn,
             matching_provider_records)
 
