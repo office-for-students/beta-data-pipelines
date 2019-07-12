@@ -39,3 +39,17 @@ class TestGetEntryKey(unittest.TestCase):
         with self.assertRaises(KeyError):
             self.entry.get_key(invalid_xml_key)
 
+
+class TestGetEntry(unittest.TestCase):
+    def setUp(self):
+        self.entry = Entry()
+
+    def test_with_large_file(self):
+        """Initial smoke test"""
+        xml_string = get_string('fixtures/large-test-file.xml')
+        root = ET.fromstring(xml_string)
+        for institution in root.iter('INSTITUTION'):
+            for course in institution.findall('KISCOURSE'):
+                raw_course_data = xmltodict.parse(ET.tostring(course))['KISCOURSE']
+                entry = self.entry.get_entry(raw_course_data)
+                print(json.dumps(entry, indent=4))
