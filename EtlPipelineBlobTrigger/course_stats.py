@@ -85,7 +85,6 @@ class Employment:
 class Salary:
     """Extracts and transforms the Salary course element"""
 
-    # TODO add additional fields once they are documented
 
     def __init__(self):
         self.xml_element_key = 'SALARY'
@@ -96,6 +95,8 @@ class Salary:
         self.shared_utils = SharedUtils(self.xml_element_key, self.xml_subj_key, self.xml_agg_key, self.xml_unavail_reason_key)
 
     def get_key(self, xml_key):
+        # TODO add additional fields once mappings are completed
+        # and change to }[xml_key] so we'll bubble up any KeyErrors.
         return {
             "SALUNAVAILREASON": "unavailable",
             'SALPOP': 'number_of_graduates',
@@ -108,7 +109,32 @@ class Salary:
         }.get(xml_key)
 
     def get_salary(self, raw_course_data):
-        return self.shared_utils.get_json_list(raw_course_data, self.get_key)
+        # TODO - use shared version when all Salary fields mapped
+        return self.get_json_list(raw_course_data)
+
+
+    def get_json_list(self, raw_course_data):
+        json_elem_list = []
+        raw_xml_list = SharedUtils.get_raw_list(raw_course_data, self.xml_element_key)
+        for xml_elem in raw_xml_list:
+            json_elem = {}
+            for xml_key in xml_elem:
+                json_key = self.get_key(xml_key)
+                if not json_key:
+                    continue
+                if json_key == 'subject':
+                    json_elem[json_key] = self.shared_utils.get_subject(
+                        xml_elem)
+                elif json_key == 'unavailable':
+                    if self.shared_utils.need_unavailable(
+                            xml_elem):
+                        json_elem[
+                            json_key] = self.shared_utils.get_unavailable(xml_elem)
+                else:
+                    json_elem[json_key] = xml_elem[xml_key]
+                ordered_json_elem = OrderedDict(sorted(json_elem.items()))
+            json_elem_list.append(ordered_json_elem)
+        return json_elem_list
 
 class SharedUtils:
     """Functionality required by several stats related classes"""
@@ -203,10 +229,7 @@ class SharedUtils:
         for xml_elem in raw_xml_list:
             json_elem = {}
             for xml_key in xml_elem:
-                # TODO: may be able to get rid of this check when have all mappings for salary
                 json_key = get_key(xml_key)
-                if not json_key:
-                    continue
                 if json_key == 'subject':
                     json_elem[json_key] = self.get_subject(
                         xml_elem)
