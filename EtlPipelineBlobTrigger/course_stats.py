@@ -25,7 +25,7 @@ class CourseStats:
         return stats
 
 class Continuation:
-    """Extracts and transforms the continuation course element"""
+    """Extracts and transforms the Continuation course element"""
 
     def __init__(self):
         self.xml_element_key = 'CONTINUATION'
@@ -82,9 +82,41 @@ class Employment:
     def get_employment(self, raw_course_data):
         return self.shared_utils.get_json_list(raw_course_data, self.get_key)
 
+
+class Entry:
+    """Extracts and transforms the Entry course element"""
+
+    def __init__(self):
+        self.xml_element_key = 'ENTRY'
+        self.xml_subj_key = 'ENTSBJ'
+        self.xml_agg_key = 'ENTAGG'
+        self.xml_unavail_reason_key = 'ENTUNAVAILREASON'
+
+        self.shared_utils = SharedUtils(self.xml_element_key, self.xml_subj_key, self.xml_agg_key, self.xml_unavail_reason_key)
+
+    def get_key(self, xml_key):
+        return {
+            'ENTUNAVAILREASON': 'unavailable',
+            "ENTPOP": 'number_of_students',
+            "ENTAGG": 'aggregation_level',
+            "ENTSBJ": 'subject',
+            "ACCESS": 'access',
+            "ALEVEL": 'a-level',
+            "BACC": 'baccalaureate',
+            "DEGREE": 'degree',
+            "FOUNDTN": 'foundation',
+            "NOQUALS": 'none',
+            "OTHER": 'other_qualifications',
+            "OTHERHE": 'another_higher_education_qualifications',
+        }[xml_key]
+
+    def get_entry(self, raw_course_data):
+        return self.shared_utils.get_json_list(raw_course_data, self.get_key)
+
 class Salary:
     """Extracts and transforms the Salary course element"""
 
+    # TODO add additional fields when remaining mappings availble
 
     def __init__(self):
         self.xml_element_key = 'SALARY'
@@ -96,7 +128,7 @@ class Salary:
 
     def get_key(self, xml_key):
         # TODO add additional fields once mappings are completed
-        # and change to }[xml_key] so we'll bubble up any KeyErrors.
+        # and change back to }[xml_key] so we'll bubble up any KeyErrors.
         return {
             "SALUNAVAILREASON": "unavailable",
             'SALPOP': 'number_of_graduates',
