@@ -82,6 +82,33 @@ class Employment:
     def get_employment(self, raw_course_data):
         return self.shared_utils.get_json_list(raw_course_data, self.get_key)
 
+class Salary:
+    """Extracts and transforms the Salary course element"""
+
+    # TODO add additional fields once they are documented
+
+    def __init__(self):
+        self.xml_element_key = 'SALARY'
+        self.xml_subj_key = 'SALSBJ'
+        self.xml_agg_key = 'SALAGG'
+        self.xml_unavail_reason_key = 'SALUNAVAILREASON'
+
+        self.shared_utils = SharedUtils(self.xml_element_key, self.xml_subj_key, self.xml_agg_key, self.xml_unavail_reason_key)
+
+    def get_key(self, xml_key):
+        return {
+            "SALUNAVAILREASON": "unavailable",
+            'SALPOP': 'number_of_graduates',
+            'SALRESP_RATE': 'response_rate',
+            "SALAGG": "aggregation_level",
+            "SALSBJ": 'subject',
+            "UQ": "higher_quartile",
+            'LQ': 'lower_quartile',
+            "MEDIAN": 'median',
+        }.get(xml_key)
+
+    def get_salary(self, raw_course_data):
+        return self.shared_utils.get_json_list(raw_course_data, self.get_key)
 
 class SharedUtils:
     """Functionality required by several stats related classes"""
@@ -147,7 +174,8 @@ class SharedUtils:
 
         has_data = len(xml_elem) > 1
         if not has_data:
-            return self.unavail_reason['no-data'][unavail_reason_code]
+            reason_str = self.unavail_reason['no-data'][unavail_reason_code]
+            return unicodedata.normalize("NFKD", reason_str)
 
         validate_agg(unavail_reason_code, has_data, agg, self.unavail_reason)
         partial_reason_str = self.unavail_reason['data'][unavail_reason_code][
@@ -175,7 +203,10 @@ class SharedUtils:
         for xml_elem in raw_xml_list:
             json_elem = {}
             for xml_key in xml_elem:
+                # TODO: may be able to get rid of this check when have all mappings for salary
                 json_key = get_key(xml_key)
+                if not json_key:
+                    continue
                 if json_key == 'subject':
                     json_elem[json_key] = self.get_subject(
                         xml_elem)
