@@ -54,22 +54,22 @@ class TestGetSalary(unittest.TestCase):
             for course in institution.findall('KISCOURSE'):
                 raw_course_data = xmltodict.parse(
                     ET.tostring(course))['KISCOURSE']
-                self.salary.get_salary(raw_course_data)
+                self.salary.get_stats(raw_course_data)
 
-    def test_get_salary_no_subj(self):
+    def test_get_stats_no_subj(self):
         raw_course_xml = xmltodict.parse(
             get_string('fixtures/course_no_subj_for_most.xml'))['KISCOURSE']
         expected_response = json.loads(
             get_string('fixtures/course_no_sal_subj_resp.json'))
-        json_obj = self.salary.get_salary(raw_course_xml)
+        json_obj = self.salary.get_stats(raw_course_xml)
         self.assertListEqual(json_obj, expected_response)
 
-    def test_get_salary_with_subj(self):
+    def test_get_stats_with_subj(self):
         raw_course_xml = xmltodict.parse(
             get_string('fixtures/course_sal_subj.xml'))['KISCOURSE']
         expected_response = json.loads(
             get_string('fixtures/course_sal_subj_resp.json'))
-        json_obj = self.salary.get_salary(raw_course_xml)
+        json_obj = self.salary.get_stats(raw_course_xml)
         self.assertListEqual(json_obj, expected_response)
 
 # TODO Test more of the functionality - more lookups etc

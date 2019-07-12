@@ -52,22 +52,22 @@ class TestGetEntry(unittest.TestCase):
             for course in institution.findall('KISCOURSE'):
                 raw_course_data = xmltodict.parse(
                     ET.tostring(course))['KISCOURSE']
-                self.entry.get_entry(raw_course_data)
+                self.entry.get_stats(raw_course_data)
 
-    def test_get_entry_no_subj(self):
+    def test_get_stats_no_subj(self):
         raw_course_xml = xmltodict.parse(
             get_string('fixtures/course_no_subj_for_most.xml'))['KISCOURSE']
         expected_response = json.loads(
             get_string('fixtures/course_no_entry_subj_resp.json'))
-        json_obj = self.entry.get_entry(raw_course_xml)
+        json_obj = self.entry.get_stats(raw_course_xml)
         self.assertListEqual(json_obj, expected_response)
 
-    def test_get_entry_with_subj(self):
+    def test_get_stats_with_subj(self):
         raw_course_xml = xmltodict.parse(
             get_string('fixtures/course_with_subj_for_most.xml'))['KISCOURSE']
         expected_response = json.loads(
             get_string('fixtures/course_entry_subj_resp.json'))
-        json_obj = self.entry.get_entry(raw_course_xml)
+        json_obj = self.entry.get_stats(raw_course_xml)
         self.assertListEqual(json_obj, expected_response)
 
 
