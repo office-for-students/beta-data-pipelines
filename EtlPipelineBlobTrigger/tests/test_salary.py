@@ -35,10 +35,11 @@ class TestGetSalaryKey(unittest.TestCase):
         self.assertEqual(expected_key, key)
 
     def test_with_invalid_key(self):
+        # TODO change this to test for KeyError exception when
+        # all Salary fields mapped.
         invalid_xml_key = 'invalid_key'
-        with self.assertRaises(KeyError):
-            self.salary.get_key(invalid_xml_key)
-
+        key = self.salary.get_key(invalid_xml_key)
+        self.assertIsNone(key)
 
 class TestGetSalary(unittest.TestCase):
     def setUp(self):
