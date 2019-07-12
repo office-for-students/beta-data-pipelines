@@ -50,8 +50,9 @@ class TestGetEntry(unittest.TestCase):
         root = ET.fromstring(xml_string)
         for institution in root.iter('INSTITUTION'):
             for course in institution.findall('KISCOURSE'):
-                raw_course_data = xmltodict.parse(ET.tostring(course))['KISCOURSE']
-                entry = self.entry.get_entry(raw_course_data)
+                raw_course_data = xmltodict.parse(
+                    ET.tostring(course))['KISCOURSE']
+                self.entry.get_entry(raw_course_data)
 
     def test_get_entry_no_subj(self):
         raw_course_xml = xmltodict.parse(
@@ -67,10 +68,10 @@ class TestGetEntry(unittest.TestCase):
         expected_response = json.loads(
             get_string('fixtures/course_entry_subj_resp.json'))
         json_obj = self.entry.get_entry(raw_course_xml)
-        print(json.dumps(json_obj, indent=4))
         self.assertListEqual(json_obj, expected_response)
 
- # TODO Test more of the functionality - more lookups etc
+
+# TODO Test more of the functionality - more lookups etc
 
 if __name__ == '__main__':
     unittest.main()

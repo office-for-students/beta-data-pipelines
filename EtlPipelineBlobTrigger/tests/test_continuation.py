@@ -44,15 +44,15 @@ class TestGetContinuation(unittest.TestCase):
     def setUp(self):
         self.continuation = Continuation()
 
-
     def test_with_large_file(self):
         """Initial smoke test"""
         xml_string = get_string('fixtures/large-test-file.xml')
         root = ET.fromstring(xml_string)
         for institution in root.iter('INSTITUTION'):
             for course in institution.findall('KISCOURSE'):
-                raw_course_data = xmltodict.parse(ET.tostring(course))['KISCOURSE']
-                continuation = self.continuation.get_continuation(raw_course_data)
+                raw_course_data = xmltodict.parse(
+                    ET.tostring(course))['KISCOURSE']
+                self.continuation.get_continuation(raw_course_data)
 
     def test_get_continuation_no_subj(self):
         raw_course_xml = xmltodict.parse(
@@ -67,9 +67,7 @@ class TestGetContinuation(unittest.TestCase):
             get_string('fixtures/course_two_contins.xml'))['KISCOURSE']
         expected_response = json.loads(
             get_string('fixtures/course_two_contins_resp.json'))
-        print(expected_response)
         continuation = self.continuation.get_continuation(raw_course_xml)
-        print(json.dumps(continuation, indent=4))
         self.assertListEqual(continuation, expected_response)
 
     def test_get_continuation_subj(self):
@@ -88,7 +86,8 @@ class TestGetContinuation(unittest.TestCase):
         continuation = self.continuation.get_continuation(raw_course_xml)
         self.assertListEqual(continuation, expected_response)
 
- # TODO Test more of the functionality - more lookups etc
+
+# TODO Test more of the functionality - more lookups etc
 
 if __name__ == '__main__':
     unittest.main()

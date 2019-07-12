@@ -41,10 +41,10 @@ class TestGetSalaryKey(unittest.TestCase):
         key = self.salary.get_key(invalid_xml_key)
         self.assertIsNone(key)
 
+
 class TestGetSalary(unittest.TestCase):
     def setUp(self):
         self.salary = Salary()
-
 
     def test_with_large_file(self):
         """Initial smoke test"""
@@ -52,9 +52,9 @@ class TestGetSalary(unittest.TestCase):
         root = ET.fromstring(xml_string)
         for institution in root.iter('INSTITUTION'):
             for course in institution.findall('KISCOURSE'):
-                raw_course_data = xmltodict.parse(ET.tostring(course))['KISCOURSE']
+                raw_course_data = xmltodict.parse(
+                    ET.tostring(course))['KISCOURSE']
                 self.salary.get_salary(raw_course_data)
-
 
     def test_get_salary_no_subj(self):
         raw_course_xml = xmltodict.parse(
@@ -62,9 +62,7 @@ class TestGetSalary(unittest.TestCase):
         expected_response = json.loads(
             get_string('fixtures/course_no_sal_subj_resp.json'))
         json_obj = self.salary.get_salary(raw_course_xml)
-        print(json.dumps(json_obj, indent=4))
         self.assertListEqual(json_obj, expected_response)
-
 
     def test_get_salary_with_subj(self):
         raw_course_xml = xmltodict.parse(
@@ -72,10 +70,9 @@ class TestGetSalary(unittest.TestCase):
         expected_response = json.loads(
             get_string('fixtures/course_sal_subj_resp.json'))
         json_obj = self.salary.get_salary(raw_course_xml)
-        print(json.dumps(json_obj, indent=4))
         self.assertListEqual(json_obj, expected_response)
 
- # TODO Test more of the functionality - more lookups etc
+# TODO Test more of the functionality - more lookups etc
 
 if __name__ == '__main__':
     unittest.main()

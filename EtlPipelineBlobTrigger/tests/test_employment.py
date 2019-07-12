@@ -44,16 +44,15 @@ class TestGetEmployment(unittest.TestCase):
     def setUp(self):
         self.employment = Employment()
 
-
     def test_with_large_file(self):
         """Initial smoke test"""
         xml_string = get_string('fixtures/large-test-file.xml')
         root = ET.fromstring(xml_string)
         for institution in root.iter('INSTITUTION'):
             for course in institution.findall('KISCOURSE'):
-                raw_course_data = xmltodict.parse(ET.tostring(course))['KISCOURSE']
-                employment = self.employment.get_employment(raw_course_data)
-
+                raw_course_data = xmltodict.parse(
+                    ET.tostring(course))['KISCOURSE']
+                self.employment.get_employment(raw_course_data)
 
     def test_get_employment_no_subj(self):
         raw_course_xml = xmltodict.parse(
@@ -63,7 +62,6 @@ class TestGetEmployment(unittest.TestCase):
         json_obj = self.employment.get_employment(raw_course_xml)
         self.assertListEqual(json_obj, expected_response)
 
-
     def test_get_employment_with_subj(self):
         raw_course_xml = xmltodict.parse(
             get_string('fixtures/course_with_subj_for_most.xml'))['KISCOURSE']
@@ -72,7 +70,7 @@ class TestGetEmployment(unittest.TestCase):
         json_obj = self.employment.get_employment(raw_course_xml)
         self.assertListEqual(json_obj, expected_response)
 
- # TODO Test more of the functionality - more lookups etc
+# TODO Test more of the functionality - more lookups etc
 
 if __name__ == '__main__':
     unittest.main()
