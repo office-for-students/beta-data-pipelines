@@ -1,17 +1,18 @@
 """Data transformation code for statistical data."""
 
-import json
 import inspect
+import json
 import os
 import sys
 import unicodedata
 from collections import OrderedDict
 
+from validators import validate_agg, validate_unavailable_reason_code
+
 CURRENTDIR = os.path.dirname(
     os.path.abspath(inspect.getfile(inspect.currentframe())))
 sys.path.insert(0, CURRENTDIR)
 
-from validators import validate_unavailable_reason_code, validate_agg
 
 
 class CourseStats:
@@ -177,20 +178,19 @@ class SharedUtils:
         self.xml_subj_key = xml_subj_key
         self.xml_agg_key = xml_agg_key
         self.xml_unavail_reason_key = xml_unavail_reason_key
-
-        self.cwd = os.path.dirname(os.path.abspath(__file__))
         self.subj_code_english = self.get_lookup('subj_code_english')
         self.subj_code_welsh = self.get_lookup('subj_code_welsh')
         self.unavail_reason = self.get_lookup('unavail_reason')
 
     def get_lookup(self, lookup_name):
+        cwd = os.path.dirname(os.path.abspath(__file__))
         filename = {
             'subj_code_english': 'subj_code_english.json',
             'subj_code_welsh': 'subj_code_welsh.json',
             'unavail_reason': 'unavailreason.json'
         }[lookup_name]
-        with open(os.path.join(self.cwd, f'lookup_files/{filename}')) as fp:
-            return json.load(fp)
+        with open(os.path.join(cwd, f'lookup_files/{filename}')) as infile:
+            return json.load(infile)
 
     def get_english_sbj_label(self, code):
         return self.subj_code_english[code]
@@ -209,9 +209,11 @@ class SharedUtils:
     def get_aggs_for_code(self, unavail_reason_code):
         return self.unavail_reason['data'][unavail_reason_code].keys()
 
+    def has_data(self, xml_elem):
+        return len(xml_elem) > 1
+
     def need_unavailable(self, xml_elem):
-        has_data = len(xml_elem) > 1
-        if not has_data:
+        if not self.has_data(xml_elem):
             return True
 
         unavail_reason_code = xml_elem[self.xml_unavail_reason_key]
@@ -230,12 +232,11 @@ class SharedUtils:
                                    xml_elem):
         validate_unavailable_reason_code(unavail_reason_code)
 
-        has_data = len(xml_elem) > 1
-        if not has_data:
+        if not self.has_data(xml_elem):
             reason_str = self.unavail_reason['no-data'][unavail_reason_code]
             return unicodedata.normalize("NFKD", reason_str)
 
-        validate_agg(unavail_reason_code, has_data, agg, self.unavail_reason)
+        validate_agg(unavail_reason_code, self.has_data(xml_elem), agg, self.unavail_reason)
         partial_reason_str = self.unavail_reason['data'][unavail_reason_code][
             agg]
         partial_reason_str = unicodedata.normalize("NFKD", partial_reason_str)
@@ -244,9 +245,8 @@ class SharedUtils:
 
     def get_unavailable(self, elem):
         unavailable = {}
-        has_data = len(elem) > 1
         subj_key = elem.get(self.xml_subj_key)
-        agg = elem[self.xml_agg_key] if has_data else None
+        agg = elem[self.xml_agg_key] if self.has_data(elem) else None
         unavail_reason_code = elem[self.xml_unavail_reason_key]
         validate_unavailable_reason_code(unavail_reason_code)
 
