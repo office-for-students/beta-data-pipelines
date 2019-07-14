@@ -1,7 +1,7 @@
 [
     {
         "aggregation_level": "14",
-        "assumed_to_be_unemeployed": "0",
+        "assumed_to_be_unemployed": "0",
         "in_study": "40",
         "in_work": "30",
         "in_work_and_study": "35",
