@@ -82,7 +82,7 @@ class Employment:
             "EMPSBJ": "subject",
             'WORKSTUDY': 'in_work_or_study',
             "STUDY": 'in_study',
-            "ASSUNEMP": 'assumed_to_be_unemeployed',
+            "ASSUNEMP": 'assumed_to_be_unemployed',
             "BOTH": 'in_work_and_study',
             "NOAVAIL": 'not_available_for_work_or_study',
             "WORK": 'in_work',
@@ -128,7 +128,7 @@ class Entry:
 class Salary:
     """Extracts and transforms the Salary course element"""
 
-    # TODO add additional fields when remaining mappings availble
+    # TODO add additional fields when remaining mappings available
 
     def __init__(self):
         self.xml_element_key = 'SALARY'
@@ -229,7 +229,7 @@ class SharedUtils:
         return len(xml_elem) > 1
 
     def need_unavailable(self, xml_elem):
-        """Returns True if we need to include an unavailble object otherwise False"""
+        """Returns True if we need to include an unavailable object otherwise False"""
         if not self.has_data(xml_elem):
             return True
 
@@ -274,7 +274,7 @@ class SharedUtils:
         return unavailable
 
     def get_json_list(self, raw_course_data, get_key):
-        """Returns a list of JSON objects (as dicts) for the Statistics elemement"""
+        """Returns a list of JSON objects (as dicts) for the Statistics element"""
 
         json_elem_list = []
         raw_xml_list = SharedUtils.get_raw_list(raw_course_data,
