@@ -3,13 +3,6 @@ import os
 import sys
 import unittest
 from unittest import mock
-
-CURRENTDIR = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-PARENTDIR = os.path.dirname(CURRENTDIR)
-GRANDPARENTDIR = os.path.dirname(PARENTDIR)
-sys.path.insert(0,PARENTDIR)
-sys.path.insert(0,GRANDPARENTDIR)
-
 import ukrlp_enricher
 
 TEST_LOOKUP = {
