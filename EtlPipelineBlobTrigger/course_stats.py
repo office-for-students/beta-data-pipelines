@@ -25,8 +25,8 @@ class CourseStats:
 
         stats['continuation'] = continuation.get_stats(raw_course_data)
         stats['employment'] = employment.get_stats(raw_course_data)
-        stats['salary'] = salary.get_stats(raw_course_data)
         stats['entry'] = entry.get_stats(raw_course_data)
+        stats['salary'] = salary.get_stats(raw_course_data)
         return stats
 
 
