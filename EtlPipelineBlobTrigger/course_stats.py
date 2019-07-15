@@ -142,22 +142,14 @@ class JobType:
 
     def get_key(self, xml_key):
         return {
-            'JOBUNAVAILREASON':
-            'unavailable',
-            "JOBPOP":
-            'number_of_students',
-            "JOBAGG":
-            'aggregation_level',
-            "JOBSBJ":
-            'subject',
-            'JOBRESP_RATE':
-            'resp_rate',
-            "PROFMAN":
-            'professional_or_managerial_jobs',
-            "OTHERJOB":
-            'non_professional_or_managerial_jobs',
-            "UNKWN":
-            'unknown_professions',
+            'JOBUNAVAILREASON': 'unavailable',
+            "JOBPOP": 'number_of_students',
+            "JOBAGG": 'aggregation_level',
+            "JOBSBJ": 'subject',
+            'JOBRESP_RATE': 'resp_rate',
+            "PROFMAN": 'professional_or_managerial_jobs',
+            "OTHERJOB": 'non_professional_or_managerial_jobs',
+            "UNKWN": 'unknown_professions',
         }[xml_key]
 
     def get_stats(self, raw_course_data):
