@@ -1,9 +1,10 @@
 [
     {
         "aggregation_level": 14,
+        "non_professional_or_managerial_jobs": 20,
         "number_of_students": 10,
-        "proportion_of_students_in_non_professional_or_managerial_jobs": 0,
-        "proportion_of_students_in_professional_or_managerial_jobs": 80,
-        "resp_rate": 70
+        "professional_or_managerial_jobs": 80,
+        "resp_rate": 70,
+        "unknown_professions": 0
     }
 ]
