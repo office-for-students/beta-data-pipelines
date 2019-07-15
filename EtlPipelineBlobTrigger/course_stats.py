@@ -153,11 +153,11 @@ class JobType:
             'JOBRESP_RATE':
             'resp_rate',
             "PROFMAN":
-            'proportion_of_students_in_professional_or_managerial_jobs',
+            'professional_or_managerial_jobs',
             "OTHERJOB":
-            'proportion_of_students_in_non_professional_or_managerial_jobs',
+            'non_professional_or_managerial_jobs',
             "UNKWN":
-            'proportion_of_students_in_non_professional_or_managerial_jobs',
+            'unknown_professions',
         }[xml_key]
 
     def get_stats(self, raw_course_data):
