@@ -177,7 +177,7 @@ class Salary:
                             json_key] = self.shared_utils.get_unavailable(
                                 xml_elem)
                 else:
-                    json_elem[json_key] = xml_elem[xml_key]
+                    json_elem[json_key] = self.shared_utils.get_json_value(xml_elem[xml_key])
                 ordered_json_elem = OrderedDict(sorted(json_elem.items()))
             json_elem_list.append(ordered_json_elem)
         return json_elem_list
@@ -273,6 +273,11 @@ class SharedUtils:
             unavail_reason_code, subj_key, agg, elem)
         return unavailable
 
+    def get_json_value(self, xml_value):
+        if xml_value.isdigit():
+            xml_value = int(xml_value)
+        return xml_value
+
     def get_json_list(self, raw_course_data, get_key):
         """Returns a list of JSON objects (as dicts) for the Statistics element"""
 
@@ -289,7 +294,7 @@ class SharedUtils:
                     if self.need_unavailable(xml_elem):
                         json_elem[json_key] = self.get_unavailable(xml_elem)
                 else:
-                    json_elem[json_key] = xml_elem[xml_key]
+                    json_elem[json_key] = self.get_json_value(xml_elem[xml_key])
                 ordered_json_elem = OrderedDict(sorted(json_elem.items()))
             json_elem_list.append(ordered_json_elem)
         return json_elem_list

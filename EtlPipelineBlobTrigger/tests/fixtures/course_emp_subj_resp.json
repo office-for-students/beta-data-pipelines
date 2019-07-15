@@ -1,14 +1,14 @@
 [
     {
-        "aggregation_level": "13",
-        "assumed_to_be_unemployed": "0",
-        "in_study": "15",
-        "in_work": "75",
-        "in_work_and_study": "10",
-        "in_work_or_study": "100",
-        "not_available_for_work_or_study": "0",
-        "number_of_students": "20",
-        "response_rate": "88",
+        "aggregation_level": 13,
+        "assumed_to_be_unemployed": 0,
+        "in_study": 15,
+        "in_work": 75,
+        "in_work_and_study": 10,
+        "in_work_or_study": 100,
+        "not_available_for_work_or_study": 0,
+        "number_of_students": 20,
+        "response_rate": 88,
         "subject": {
             "code": "CAH06-01-01",
             "english_label": "Animal science",

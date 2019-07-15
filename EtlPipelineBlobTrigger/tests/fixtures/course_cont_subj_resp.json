@@ -1,12 +1,12 @@
 [
     {
-        "aggregation_level": "13",
-        "continuing_with_provider": "0",
-        "dormant": "0",
-        "gained": "100",
-        "left": "0",
-        "lower": "0",
-        "number_of_students": "15",
+        "aggregation_level": 13,
+        "continuing_with_provider": 0,
+        "dormant": 0,
+        "gained": 100,
+        "left": 0,
+        "lower": 0,
+        "number_of_students": 15,
         "subject": {
             "code": "CAH06-01-01",
             "english_label": "Animal science",
