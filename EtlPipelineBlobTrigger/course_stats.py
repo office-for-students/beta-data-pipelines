@@ -177,7 +177,7 @@ class Salary:
                             json_key] = self.shared_utils.get_unavailable(
                                 xml_elem)
                 else:
-                    json_elem[json_key] = xml_elem[xml_key]
+                    json_elem[json_key] = self.shared_utils.get_json_value(xml_elem[xml_key])
                 ordered_json_elem = OrderedDict(sorted(json_elem.items()))
             json_elem_list.append(ordered_json_elem)
         return json_elem_list
