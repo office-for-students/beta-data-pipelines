@@ -273,6 +273,11 @@ class SharedUtils:
             unavail_reason_code, subj_key, agg, elem)
         return unavailable
 
+    def get_json_value(self, xml_value):
+        if xml_value.isdigit():
+            xml_value = int(xml_value)
+        return xml_value
+
     def get_json_list(self, raw_course_data, get_key):
         """Returns a list of JSON objects (as dicts) for the Statistics element"""
 
