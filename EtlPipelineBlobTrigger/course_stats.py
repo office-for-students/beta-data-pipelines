@@ -294,7 +294,7 @@ class SharedUtils:
                     if self.need_unavailable(xml_elem):
                         json_elem[json_key] = self.get_unavailable(xml_elem)
                 else:
-                    json_elem[json_key] = xml_elem[xml_key]
+                    json_elem[json_key] = self.get_json_value(xml_elem[xml_key])
                 ordered_json_elem = OrderedDict(sorted(json_elem.items()))
             json_elem_list.append(ordered_json_elem)
         return json_elem_list
