@@ -169,7 +169,7 @@ def get_course_entry(locations, locids, raw_inst_data, raw_course_data,
     outer_wrapper = {}
     outer_wrapper['id'] = utils.get_uuid()
     outer_wrapper['created_at'] = datetime.datetime.utcnow().isoformat()
-    outer_wrapper['version'] = '1'
+    outer_wrapper['version'] = 1
     outer_wrapper['institution_id'] = raw_inst_data['PUBUKPRN']
     outer_wrapper['course_id'] = raw_course_data['KISCOURSEID']
     outer_wrapper['course_mode'] = raw_course_data['KISMODE']
