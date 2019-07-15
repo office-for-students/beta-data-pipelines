@@ -20,12 +20,14 @@ class CourseStats:
 
         continuation = Continuation()
         employment = Employment()
-        salary = Salary()
         entry = Entry()
+        job_type = JobType()
+        salary = Salary()
 
         stats['continuation'] = continuation.get_stats(raw_course_data)
         stats['employment'] = employment.get_stats(raw_course_data)
         stats['entry'] = entry.get_stats(raw_course_data)
+        stats['job_type'] = job_type.get_stats(raw_course_data)
         stats['salary'] = salary.get_stats(raw_course_data)
         return stats
 
@@ -125,6 +127,35 @@ class Entry:
         return self.shared_utils.get_json_list(raw_course_data, self.get_key)
 
 
+class JobType:
+    """Extracts and transforms the JobType course element"""
+
+    def __init__(self):
+        self.xml_element_key = 'JOBTYPE'
+        self.xml_subj_key = 'JOBSBJ'
+        self.xml_agg_key = 'JOBAGG'
+        self.xml_unavail_reason_key = 'JOBUNAVAILREASON'
+
+        self.shared_utils = SharedUtils(self.xml_element_key,
+                                        self.xml_subj_key, self.xml_agg_key,
+                                        self.xml_unavail_reason_key)
+
+    def get_key(self, xml_key):
+        return {
+            'JOBUNAVAILREASON': 'unavailable',
+            "JOBPOP": 'number_of_students',
+            "JOBAGG": 'aggregation_level',
+            "JOBSBJ": 'subject',
+            'JOBRESP_RATE': 'resp_rate',
+            "PROFMAN": 'professional_or_managerial_jobs',
+            "OTHERJOB": 'non_professional_or_managerial_jobs',
+            "UNKWN": 'unknown_professions',
+        }[xml_key]
+
+    def get_stats(self, raw_course_data):
+        return self.shared_utils.get_json_list(raw_course_data, self.get_key)
+
+
 class Salary:
     """Extracts and transforms the Salary course element"""
 
@@ -177,7 +208,8 @@ class Salary:
                             json_key] = self.shared_utils.get_unavailable(
                                 xml_elem)
                 else:
-                    json_elem[json_key] = self.shared_utils.get_json_value(xml_elem[xml_key])
+                    json_elem[json_key] = self.shared_utils.get_json_value(
+                        xml_elem[xml_key])
                 ordered_json_elem = OrderedDict(sorted(json_elem.items()))
             json_elem_list.append(ordered_json_elem)
         return json_elem_list
@@ -285,6 +317,7 @@ class SharedUtils:
         raw_xml_list = SharedUtils.get_raw_list(raw_course_data,
                                                 self.xml_element_key)
         for xml_elem in raw_xml_list:
+
             json_elem = {}
             for xml_key in xml_elem:
                 json_key = get_key(xml_key)
@@ -294,7 +327,8 @@ class SharedUtils:
                     if self.need_unavailable(xml_elem):
                         json_elem[json_key] = self.get_unavailable(xml_elem)
                 else:
-                    json_elem[json_key] = self.get_json_value(xml_elem[xml_key])
+                    json_elem[json_key] = self.get_json_value(
+                        xml_elem[xml_key])
                 ordered_json_elem = OrderedDict(sorted(json_elem.items()))
             json_elem_list.append(ordered_json_elem)
         return json_elem_list
