@@ -1,10 +1,8 @@
 """
 This module extracts course information from the HESA
 XML dataset and writes it in JSON format to Cosmos DB.
-To fit with the recent architecure update this will
-require considerable refactoring. For this reason and
-time constraints to get the end to end pipeline running
-tests will be added later.
+To fit with the recent architecture update this will
+require considerable refactoring.
 
 Currently, we handle unexpected exceptions by letting
 them bubble up. This should help flush out problems
@@ -79,7 +77,7 @@ def get_locids(raw_course_data, ukprn):
     return locids
 
 
-def get_accomodation_links(locations, locids):
+def get_accommodation_links(locations, locids):
     accom = []
     for locid in locids:
         accom_dict = {}
@@ -106,11 +104,11 @@ def get_eng_welsh_item(key, lookup_table):
 def get_links(locations, locids, raw_inst_data, raw_course_data):
     links = {}
     if locids:
-        accomodation = get_accomodation_links(locations, locids)
-        links['accomodation'] = accomodation
+        accommodation = get_accommodation_links(locations, locids)
+        links['accommodation'] = accommodation
 
     item_details = [
-        ('ASSURL', 'assesment_method', raw_course_data),
+        ('ASSURL', 'assessment_method', raw_course_data),
         ('CRSEURL', 'course_page', raw_course_data),
         ('EMPLOYURL', 'employment_details', raw_course_data),
         ('SUPPORTURL', 'financial_support_details', raw_course_data),
@@ -171,7 +169,7 @@ def get_course_entry(locations, locids, raw_inst_data, raw_course_data,
     outer_wrapper = {}
     outer_wrapper['id'] = utils.get_uuid()
     outer_wrapper['created_at'] = datetime.datetime.utcnow().isoformat()
-    outer_wrapper['version'] = '1'
+    outer_wrapper['version'] = 1
     outer_wrapper['institution_id'] = raw_inst_data['PUBUKPRN']
     outer_wrapper['course_id'] = raw_course_data['KISCOURSEID']
     outer_wrapper['course_mode'] = raw_course_data['KISMODE']
@@ -244,7 +242,7 @@ def get_course_entry(locations, locids, raw_inst_data, raw_course_data,
 def create_course_docs(xml_string):
     """Parse HESA XML passed in and create JSON course docs in Cosmos DB."""
 
-    # TODO Invetigate writing docs to CosmosDB in bulk to speed things up.
+    # TODO Investigate writing docs to CosmosDB in bulk to speed things up.
     cosmosdb_client = utils.get_cosmos_client()
 
     enricher = UkRlpCourseEnricher()
