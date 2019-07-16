@@ -155,6 +155,31 @@ class JobType:
     def get_stats(self, raw_course_data):
         return self.shared_utils.get_json_list(raw_course_data, self.get_key)
 
+class Nss:
+    """Extracts and transforms the NSS course element"""
+
+    def __init__(self):
+        self.xml_element_key = 'NSSTYPE'
+        self.xml_subj_key = 'NSSSBJ'
+        self.xml_agg_key = 'NSSAGG'
+        self.xml_unavail_reason_key = 'NSSUNAVAILREASON'
+
+        self.shared_utils = SharedUtils(self.xml_element_key,
+                                        self.xml_subj_key, self.xml_agg_key,
+                                        self.xml_unavail_reason_key)
+        self.unavail_reason = self.shared_utils.get_lookup('nss_question_number')
+
+    def get_key(self, xml_key):
+        return {
+            'NSSUNAVAILREASON': 'unavailable',
+            "NSSPOP": 'number_of_students',
+            "NSSAGG": 'aggregation_level',
+            "NSSSBJ": 'subject',
+            'NSSRESP_RATE': 'resp_rate',
+        }[xml_key]
+
+    def get_stats(self, raw_course_data):
+        return self.shared_utils.get_json_list(raw_course_data, self.get_key)
 
 class Salary:
     """Extracts and transforms the Salary course element"""
@@ -234,7 +259,8 @@ class SharedUtils:
         filename = {
             'subj_code_english': 'subj_code_english.json',
             'subj_code_welsh': 'subj_code_welsh.json',
-            'unavail_reason': 'unavailreason.json'
+            'unavail_reason': 'unavailreason.json',
+            'nss_question_number': 'nss_question_number.json'
         }[lookup_name]
         with open(os.path.join(cwd, f'lookup_files/{filename}')) as infile:
             return json.load(infile)
