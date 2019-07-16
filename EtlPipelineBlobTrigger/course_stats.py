@@ -202,6 +202,17 @@ class Nss:
         question['agree_or_strongly_agree'] = xml_elem[xml_key]
         return question
 
+    def get_sort_key(self, key):
+        sort_order = OrderedDict([('aggregation_level',0), ('number_of_students',1)])
+        q_start = 2
+        n_questions = 27
+        q_end = q_start + 27
+        order_of_questions = OrderedDict({f'question_{i}':i + q_start for i in range(1, 28)})
+        sort_order.update(order_of_questions)
+        sort_order['resp_rate'] = q_end + 1
+        sort_order['subject'] = q_end + 2
+        sort_order['unavailable'] = q_end + 3
+        return sort_order[key[0]]
 
     def get_json_list(self, raw_course_data, get_key):
         """Returns a list of JSON objects (as dicts) for the Statistics element"""
@@ -224,8 +235,8 @@ class Nss:
                 else:
                     json_elem[json_key] = self.shared_utils.get_json_value(
                         xml_elem[xml_key])
-                #sorted_json_elem = OrderedDict(sorted(json_elem.items(), key=lambda t:get_key(t[0])))
-            json_elem_list.append(json_elem)
+                sorted_json_elem = OrderedDict(sorted(json_elem.items(), key=self.get_sort_key))
+            json_elem_list.append(sorted_json_elem)
         return json_elem_list
 
 
