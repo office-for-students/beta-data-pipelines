@@ -159,7 +159,7 @@ class Nss:
     """Extracts and transforms the NSS course element"""
 
     def __init__(self):
-        self.xml_element_key = 'NSSTYPE'
+        self.xml_element_key = 'NSS'
         self.xml_subj_key = 'NSSSBJ'
         self.xml_agg_key = 'NSSAGG'
         self.xml_unavail_reason_key = 'NSSUNAVAILREASON'
@@ -167,19 +167,64 @@ class Nss:
         self.shared_utils = SharedUtils(self.xml_element_key,
                                         self.xml_subj_key, self.xml_agg_key,
                                         self.xml_unavail_reason_key)
-        self.unavail_reason = self.shared_utils.get_lookup('nss_question_number')
+        self.question_lookup = self.shared_utils.get_lookup('nss_question_number')
+        self.nss_key_lookup_table = self.get_nss_key_lookup_table()
 
-    def get_key(self, xml_key):
-        return {
+    def get_nss_key_lookup_table(self):
+        lookup = {
             'NSSUNAVAILREASON': 'unavailable',
             "NSSPOP": 'number_of_students',
             "NSSAGG": 'aggregation_level',
             "NSSSBJ": 'subject',
             'NSSRESP_RATE': 'resp_rate',
-        }[xml_key]
+        }
+        questions = {f'Q{i}':f'question_{i}' for i in range(1, 28)}
+        lookup.update(questions)
+        return lookup
+
+
+    def get_key(self, xml_key):
+        return self.nss_key_lookup_table[xml_key]
 
     def get_stats(self, raw_course_data):
         return self.shared_utils.get_json_list(raw_course_data, self.get_key)
+
+    def is_question(self, xml_key):
+        return self.shared_utils.get_json_list(raw_course_data, self.get_key)
+
+    def get_question(self, xml_elem, xml_key):
+        question = {}
+
+        question['description'] = self.question_lookup[xml_key]
+        question['agree_or_strongly_agree'] = xml_elem[xml_key]
+
+
+
+    def get_json_list(self, raw_course_data, get_key):
+        """Returns a list of JSON objects (as dicts) for the Statistics element"""
+
+        json_elem_list = []
+        raw_xml_list = SharedUtils.get_raw_list(raw_course_data,
+                                                self.xml_element_key)
+        for xml_elem in raw_xml_list:
+
+            json_elem = {}
+            for xml_key in xml_elem:
+                json_key = get_key(xml_key)
+                if self.is_question(json_key):
+                    json_elem[json_key] = self.get_question(xml_elem, xml_key)
+                if json_key == 'subject':
+                    json_elem[json_key] = self.get_subject(xml_elem)
+                elif json_key == 'unavailable':
+                    if self.need_unavailable(xml_elem):
+                        json_elem[json_key] = self.get_unavailable(xml_elem)
+                elif is_question(json_key):
+                    json_elem[json_key] = self.get_json_value(
+                        xml_elem[xml_key])
+                ordered_json_elem = OrderedDict(sorted(json_elem.items()))
+            json_elem_list.append(ordered_json_elem)
+        return json_elem_list
+
 
 class Salary:
     """Extracts and transforms the Salary course element"""
