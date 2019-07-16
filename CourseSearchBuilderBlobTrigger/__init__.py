@@ -15,13 +15,15 @@ def main(dataset: func.InputStream):
 
     api_key = os.environ['SearchAPIKey']
     search_url = os.environ['SearchURL']
+    api_version = os.environ['AzureSearchAPIVersion']
 
     logging.info(f'config?\nAPI_KEY: {api_key}\nSearch_URL: {search_url}')
 
     headers = {'Content-Type': 'application/json',
-        'api-key': api_key }
+        'api-key': api_key,
+        'odata': 'verbose' }
 
-    api_version = '?api-version=2019-05-06'
+    query_string = '?api-version=' + api_version
 
     # Get version number
     split_path_name = dataset.name.split('/')
@@ -29,12 +31,18 @@ def main(dataset: func.InputStream):
 
     logging.info(f'what is split_name: {split_name}')
     version = split_name[2]
-    index_name = f'courses-{version}'
-
-    index_schema = search.get_index_schema(index_name)
+    index_name = f"courses-{version}"
+    
+    # Delete search index if it already exists
+    delete_url = search_url + "/indexes/" + index_name + query_string
+    delete_index_response = requests.delete(delete_url, headers=headers)
+    deletion_response = delete_index_response.json()
+    logging.info(f"deleting index result: {deletion_response}\nindex-name: {index_name}\n")
 
     # Create search index
-    url = search_url + "/indexes" + api_version
+    index_schema = search.get_index_schema(index_name)
+    url = search_url + "/indexes" + query_string
+
     response  = requests.post(url, headers=headers, json=index_schema)
     index = response.json()
     logging.info(f"index result: {index}")
@@ -45,24 +53,29 @@ def main(dataset: func.InputStream):
     logging.info(f"number_of_courses: {number_of_courses}")
 
     # TODO Add course document to search index
-    course_url = search_url + "/indexes/" + index_name + "/docs" + api_version
+    course_url = search_url + "/indexes/" + index_name + "/docs/index" + query_string
+    logging.info(f"what is my url ====================== url: {course_url}")
 
     course_count = 0
     bulk_course_count = 500
-    outer_wrapper = {}
+    documents = {}
     search_courses = []
     for course in courses:
         course_count += 1
+        logging.info(f"got course: {course_count}")
 
         search_course = models.build_course_search_doc(course)
         search_courses.append(search_course)
 
         if course_count % bulk_course_count == 0 or course_count == number_of_courses:
-            outer_wrapper['value'] = courses
-            response  = requests.post(course_url, headers=headers, json=outer_wrapper)
+            logging.info(f"about to make request to azure search, number of courses to be uploaded: {course_count}")
+            documents['value'] = search_courses
+            logging.info(f"check documents before loading, documents: {documents}")
+            bulk_response = requests.post(course_url, headers=headers, json=documents)
+            logging.info(f"bulk_response: {bulk_response.json()}")
 
             # Empty variables
-            outer_wrapper = {}
+            documents = {}
             search_courses = []
         
         

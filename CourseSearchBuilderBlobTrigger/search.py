@@ -1,4 +1,3 @@
-
 def get_index_schema(index):
     course_schema = {
 	"name": f'{index}',
