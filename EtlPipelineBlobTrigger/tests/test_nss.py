@@ -33,6 +33,21 @@ class TestGetNssKey(unittest.TestCase):
         with self.assertRaises(KeyError):
             self.nss.get_key(invalid_xml_key)
 
+class TestNss(unittest.TestCase):
+    def setUp(self):
+        self.nss = Nss()
+
+    def test_with_large_file(self):
+        """Initial smoke test"""
+        xml_string = get_string('fixtures/large-test-file.xml')
+        root = ET.fromstring(xml_string)
+        for institution in root.iter('INSTITUTION'):
+            for course in institution.findall('KISCOURSE'):
+                raw_course_data = xmltodict.parse(
+                    ET.tostring(course))['KISCOURSE']
+                self.nss.get_stats(raw_course_data)
+
+
 # TODO Test more of the functionality - more lookups etc
 
 if __name__ == '__main__':
