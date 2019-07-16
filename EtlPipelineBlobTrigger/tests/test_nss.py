@@ -48,6 +48,16 @@ class TestNss(unittest.TestCase):
                 self.nss.get_stats(raw_course_data)
 
 
+    def test_NSS_get_stats_no_subj(self):
+        raw_course_xml = xmltodict.parse(
+            get_string('fixtures/course_nss_questions.xml'))['KISCOURSE']
+        expected_response = json.loads(
+            get_string('fixtures/course_nss_questions_resp.json'))
+        json_obj = self.nss.get_stats(raw_course_xml)
+        print('json_dumps', json.dumps(json_obj, indent=4))
+        self.assertListEqual(json_obj, expected_response)
+
+
 # TODO Test more of the functionality - more lookups etc
 
 if __name__ == '__main__':
