@@ -1,0 +1,12 @@
+{
+  "scriptFile": "__init__.py",
+  "bindings": [
+    {
+      "name": "dataset",
+      "type": "blobTrigger",
+      "direction": "in",
+      "path": "course-search-blobs/{name}",
+      "connection": "AzureStorageAccountConnectionString"
+    }
+  ]
+}

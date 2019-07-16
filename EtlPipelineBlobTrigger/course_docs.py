@@ -259,12 +259,20 @@ def create_course_docs(xml_string):
     kisaims = KisAims(root)
     locations = Locations(root)
 
+    # Remove limit on the number of courses iterated
+    iterateion_limit = 5
     course_count = 0
     for institution in root.iter('INSTITUTION'):
+        if course_count == iterateion_limit:
+            break
+            
         raw_inst_data = xmltodict.parse(
             ET.tostring(institution))['INSTITUTION']
         ukprn = raw_inst_data['UKPRN']
         for course in institution.findall('KISCOURSE'):
+            if course_count == iterateion_limit:
+                break
+
             raw_course_data = xmltodict.parse(ET.tostring(course))['KISCOURSE']
             locids = get_locids(raw_course_data, ukprn)
             course_entry = get_course_entry(locations, locids, raw_inst_data,
