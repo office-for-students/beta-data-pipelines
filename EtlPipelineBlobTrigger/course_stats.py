@@ -305,6 +305,92 @@ class Salary:
         return json_elem_list
 
 
+class Tariff:
+    """Extracts and transforms the Tariff course element"""
+
+    def __init__(self):
+        self.xml_element_key = 'TARIFF'
+        self.xml_subj_key = 'TARSBJ'
+        self.xml_agg_key = 'TARAGG'
+        self.xml_unavail_reason_key = 'TARUNAVAILREASON'
+
+        self.shared_utils = SharedUtils(self.xml_element_key,
+                                        self.xml_subj_key, self.xml_agg_key,
+                                        self.xml_unavail_reason_key)
+        self.tariff_points_lookup = self.shared_utils.get_lookup(
+            'tariff_points_lookup')
+
+    def get_lookup_table(self):
+        lookup = {
+            'TARUNAVAILREASON': 'unavailable',
+            'TARPOP': 'number_of_students',
+            'TARAGG': 'aggregation_level',
+            'TARSBJ': 'subject',
+        }
+        lookup.update(self.tariff_points_lookup)
+        return lookup
+
+    def get_stats(self, raw_course_data):
+        return self.shared_utils.get_json_list(raw_course_data, self.get_key)
+
+
+    def is_tariff(self, xml_key):
+        return xml_key in self.tariff_points_lookup.keys()
+
+
+    def get_tariff_description(self, xml_key):
+        return self.tariff_points_lookup[xml_key]
+
+    def get_tariff(self, xml_elem, xml_key):
+        tariff_list = []
+
+        for xml_key in self.tariff_points_lookup.keys():
+            tariff = {}
+            tariff['code'] = xml_key
+            tariff['description'] = get_tariff_description(xml_key)
+
+        question['description'] = self.question_lookup[xml_key]
+        question['agree_or_strongly_agree'] = int(xml_elem[xml_key])
+        return question
+
+
+    def get_json_list(self, raw_course_data, get_key):
+        """Returns a list of JSON objects (as dicts) for the Statistics element"""
+
+        json_elem_list = []
+        raw_xml_list = SharedUtils.get_raw_list(raw_course_data,
+                                                self.xml_element_key)
+        for xml_elem in raw_xml_list:
+
+            json_elem = {}
+            json_elem['aggregation'] = xml_elem['TARAGG']
+            json_elem['number_of_students'] = xml_elem['TARPOP']
+            if 'TARSBJ' in xml_elem:
+                json_elem['subject'] = self.shared_utils.get_subject(xml_elem, 'TARSBJ')
+            if 'T001' in xml_elem:
+                json_elem['tariffs'] = self.get_tariffs(xml_elem)
+            for xml_key in xml_elem:
+                json_key = get_key(xml_key)
+                if self.is_tariff(xml_key):
+                    json_elem[json_key] = self.get_tariff(xml_elem, xml_key)
+                elif json_key == 'subject':
+                    json_elem[json_key] = self.shared_utils.get_subject(
+                        xml_elem)
+                elif json_key == 'unavailable':
+                    if self.shared_utils.need_unavailable(xml_elem):
+                        json_elem[
+                            json_key] = self.shared_utils.get_unavailable(
+                                xml_elem)
+                else:
+                    json_elem[json_key] = self.shared_utils.get_json_value(
+                        xml_elem[xml_key])
+                sorted_json_elem = OrderedDict(
+                    sorted(json_elem.items(), key=self.get_sort_key))
+            json_elem_list.append(sorted_json_elem)
+        return json_elem_list
+
+
+
 class SharedUtils:
     """Functionality required by several stats related classes"""
 
@@ -325,7 +411,8 @@ class SharedUtils:
             'subj_code_english': 'subj_code_english.json',
             'subj_code_welsh': 'subj_code_welsh.json',
             'unavail_reason': 'unavailreason.json',
-            'nss_question_number': 'nss_question_number.json'
+            'nss_question_number': 'nss_question_number.json',
+            'tariff_points_lookup': 'tariff_points_lookup.json'
         }[lookup_name]
         with open(os.path.join(cwd, f'lookup_files/{filename}')) as infile:
             return json.load(infile)
