@@ -198,7 +198,7 @@ class Nss:
         question = {}
 
         question['description'] = self.question_lookup[xml_key]
-        question['agree_or_strongly_agree'] = xml_elem[xml_key]
+        question['agree_or_strongly_agree'] = int(xml_elem[xml_key])
         return question
 
     def get_sort_key(self, key):
