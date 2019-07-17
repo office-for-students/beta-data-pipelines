@@ -9,10 +9,6 @@ from collections import OrderedDict
 
 from validators import validate_agg, validate_unavailable_reason_code
 
-CURRENTDIR = os.path.dirname(
-    os.path.abspath(inspect.getfile(inspect.currentframe())))
-sys.path.insert(0, CURRENTDIR)
-
 
 class CourseStats:
     def get_stats(self, raw_course_data):
@@ -170,8 +166,12 @@ class Nss:
         self.shared_utils = SharedUtils(self.xml_element_key,
                                         self.xml_subj_key, self.xml_agg_key,
                                         self.xml_unavail_reason_key)
-        self.question_lookup = self.shared_utils.get_lookup('nss_question_number')
-        self.q_number_string_lookup = {f'Q{i}':f'question_{i}' for i in range(1, 28)}
+        self.question_lookup = self.shared_utils.get_lookup(
+            'nss_question_number')
+        self.q_number_string_lookup = {
+            f'Q{i}': f'question_{i}'
+            for i in range(1, 28)
+        }
         self.nss_key_lookup_table = self.get_nss_key_lookup_table()
 
     def get_nss_key_lookup_table(self):
@@ -184,7 +184,6 @@ class Nss:
         }
         lookup.update(self.q_number_string_lookup)
         return lookup
-
 
     def get_key(self, xml_key):
         return self.nss_key_lookup_table[xml_key]
@@ -203,11 +202,14 @@ class Nss:
         return question
 
     def get_sort_key(self, key):
-        sort_order = OrderedDict([('aggregation_level',0), ('number_of_students',1)])
+        sort_order = OrderedDict([('aggregation_level', 0),
+                                  ('number_of_students', 1)])
         q_start = 2
         n_questions = 27
         q_end = q_start + 27
-        order_of_questions = OrderedDict({f'question_{i}':i + q_start for i in range(1, 28)})
+        order_of_questions = OrderedDict(
+            {f'question_{i}': i + q_start
+             for i in range(1, 28)})
         sort_order.update(order_of_questions)
         sort_order['resp_rate'] = q_end + 1
         sort_order['subject'] = q_end + 2
@@ -228,14 +230,18 @@ class Nss:
                 if self.is_question(xml_key):
                     json_elem[json_key] = self.get_question(xml_elem, xml_key)
                 elif json_key == 'subject':
-                    json_elem[json_key] = self.shared_utils.get_subject(xml_elem)
+                    json_elem[json_key] = self.shared_utils.get_subject(
+                        xml_elem)
                 elif json_key == 'unavailable':
                     if self.shared_utils.need_unavailable(xml_elem):
-                        json_elem[json_key] = self.shared_utils.get_unavailable(xml_elem)
+                        json_elem[
+                            json_key] = self.shared_utils.get_unavailable(
+                                xml_elem)
                 else:
                     json_elem[json_key] = self.shared_utils.get_json_value(
                         xml_elem[xml_key])
-                sorted_json_elem = OrderedDict(sorted(json_elem.items(), key=self.get_sort_key))
+                sorted_json_elem = OrderedDict(
+                    sorted(json_elem.items(), key=self.get_sort_key))
             json_elem_list.append(sorted_json_elem)
         return json_elem_list
 
