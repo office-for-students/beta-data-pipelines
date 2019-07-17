@@ -1,8 +1,10 @@
+import logging
 
 def build_course_search_doc(course):
     sort_pub_ukprn_name = createSortableName(course['course']['institution']['pub_ukprn_name'])
-    locations = buildLocations(course['course']['locations'])
-    title = buildTitle(course['course']['title'])
+    locations = buildLocations(course['course'])
+    title = buildTitle(course['course'])
+    length_of_course = buildLengthOfCourse(course['course'])
 
     json = {
         "@search.action": "upload",
@@ -27,10 +29,7 @@ def build_course_search_doc(course):
                 "pub_ukprn": course['course']['institution']['pub_ukprn']
             },
             "kis_course_id": course['course']['kis_course_id'],
-            "length_of_course": {
-                "code": course['course']['length_of_course']['code'],
-                "label": course['course']['length_of_course']['label']
-            },
+            "length_of_course": length_of_course,
             "locations": locations,
             "mode": {
                 "code": course['course']['mode']['code'],
@@ -55,45 +54,66 @@ def build_course_search_doc(course):
     return json
 
 def createSortableName(name):
-    # TODO rip out logic from go search api for sortable name
-    sortable_name = name
+    # lowercase institution name
+    sortable_name = name.lower()
+
+    # remove unwanted prefixes
+    sortable_name = sortable_name.replace('the university of ','')
+    sortable_name = sortable_name.replace('university of ','')
+
+    # remove unwanted commas
+    sortable_name = sortable_name.replace(',','')
+
     return sortable_name
 
-def buildLocations(locations):
+def buildLocations(course):
     
     search_locations = []
+    if 'locations' in course:
 
-    for location in locations:
-        location_names = {}
-        if 'english' in location['name']:
-            location_names['english'] = location['name']['english']
-        if 'welsh' in location['name']:
-            location_names['welsh'] = location['name']['welsh']
+        for location in course['locations']:
+            location_names = {}
+            if 'english' in location['name']:
+                location_names['english'] = location['name']['english']
+            if 'welsh' in location['name']:
+                location_names['welsh'] = location['name']['welsh']
         
-        longitude = float(location['longitude'])
-        latitude = float(location['latitude'])
+            longitude = float(location['longitude'])
+            latitude = float(location['latitude'])
 
-        search_location = {
-            "name": location_names,
-            "geo": {
-                "type": "Point",
-                "coordinates": [
-                    longitude,
-                    latitude
-                ]
+            search_location = {
+                "name": location_names,
+                "geo": {
+                    "type": "Point",
+                    "coordinates": [
+                        longitude,
+                        latitude
+                    ]
+                }
             }
-        }
 
-        search_locations.append(search_location)
+            search_locations.append(search_location)
 
     return search_locations
 
-def buildTitle(title):
+def buildTitle(course):
     
     search_title = {}
-    if 'english' in title:
-        search_title['english'] = title['english']
-    if 'welsh' in title:
-        search_title['welsh'] = title['welsh']
+    if "title" in course:
+        if 'english' in course['title']:
+            search_title['english'] = course['title']['english']
+        if 'welsh' in course['title']:
+            search_title['welsh'] = course['title']['welsh']
+    else:
+        logging.warn(f"course title missing\n course_id: {course['kis_course_id']}\n course_mode: {course['mode']['code']}\n institution_id: {course['institution']['pub_ukprn']}\n")
 
     return search_title
+
+def buildLengthOfCourse(course):
+
+    search_length_of_course = {}
+    if 'length_of_course' in course and 'code' in course['length_of_course']:
+        search_length_of_course['code'] = course['length_of_course']['code']
+        search_length_of_course['label'] = course['length_of_course']['label']
+
+    return search_length_of_course

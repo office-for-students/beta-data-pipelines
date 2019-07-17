@@ -46,13 +46,13 @@ def get_ukrlp_lookups():
     return {lookup['ukprn']:lookup for lookup in lookup_list}
 
 def get_courses_by_version(version):
-    """Returns a dictionary of UKRLP lookups"""
+    """Returns a dictionary of courses for a version of the dataset"""
 
     cosmos_client = get_cosmos_client()
     collection_link = get_collection_link(
                 'AzureCosmosDbDatabaseId', 'AzureCosmosDbCoursesCollectionId')
 
-    query = ( f'SELECT * from c WHERE c.version = "{version}"')
+    query = ( f'SELECT * from c WHERE c.version = {version}')
 
     options = {'enableCrossPartitionQuery': True}
 
