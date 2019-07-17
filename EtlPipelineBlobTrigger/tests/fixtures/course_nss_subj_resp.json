@@ -1,0 +1,124 @@
+[
+    {
+        "aggregation_level": 13,
+        "number_of_students": 16,
+        "question_1": {
+            "description": "Staff are good at explaining things",
+            "agree_or_strongly_agree": "100"
+        },
+        "question_2": {
+            "description": "Staff have made the subject interesting",
+            "agree_or_strongly_agree": "88"
+        },
+        "question_3": {
+            "description": "The course is intellectually stimulating",
+            "agree_or_strongly_agree": "81"
+        },
+        "question_4": {
+            "description": "My course has challenged me to achieve my best work",
+            "agree_or_strongly_agree": "81"
+        },
+        "question_5": {
+            "description": "My course has provided me with opportunities to explore ideas or concepts in depth",
+            "agree_or_strongly_agree": "81"
+        },
+        "question_6": {
+            "description": "My course has provided me with opportunities to bring information and ideas together from different topics",
+            "agree_or_strongly_agree": "88"
+        },
+        "question_7": {
+            "description": "My course has provided me with opportunities to apply what I have learnt",
+            "agree_or_strongly_agree": "69"
+        },
+        "question_8": {
+            "description": "The criteria used in marking have been clear in advance",
+            "agree_or_strongly_agree": "81"
+        },
+        "question_9": {
+            "description": "Marking and assessment has been fair",
+            "agree_or_strongly_agree": "75"
+        },
+        "question_10": {
+            "description": "Feedback on my work has been timely",
+            "agree_or_strongly_agree": "88"
+        },
+        "question_11": {
+            "description": "I have received helpful comments on my work",
+            "agree_or_strongly_agree": "94"
+        },
+        "question_12": {
+            "description": "I have been able to contact staff when I needed to",
+            "agree_or_strongly_agree": "88"
+        },
+        "question_13": {
+            "description": "I have received sufficient advice and guidance in relation to my course",
+            "agree_or_strongly_agree": "69"
+        },
+        "question_14": {
+            "description": "Good advice was available when I needed to make study choices on my course",
+            "agree_or_strongly_agree": "69"
+        },
+        "question_15": {
+            "description": "The course is well organised and running smoothly",
+            "agree_or_strongly_agree": "44"
+        },
+        "question_16": {
+            "description": "The timetable works efficiently for me",
+            "agree_or_strongly_agree": "75"
+        },
+        "question_17": {
+            "description": "Any changes in the course or teaching have been communicated effectively",
+            "agree_or_strongly_agree": "69"
+        },
+        "question_18": {
+            "description": "The IT resources and facilities provided have supported my learning well",
+            "agree_or_strongly_agree": "88"
+        },
+        "question_19": {
+            "description": "The library resources (e.g. books, online services and learning spaces) have supported my learning well",
+            "agree_or_strongly_agree": "69"
+        },
+        "question_20": {
+            "description": "I have been able to access course-specific resources (e.g. equipment, facilities, software, collections) when I needed to",
+            "agree_or_strongly_agree": "80"
+        },
+        "question_21": {
+            "description": "I feel part of a community of staff and students",
+            "agree_or_strongly_agree": "81"
+        },
+        "question_22": {
+            "description": "I have had the right opportunities to work with other students as part of my course",
+            "agree_or_strongly_agree": "88"
+        },
+        "question_23": {
+            "description": "I have had the right opportunities to provide feedback on my course",
+            "agree_or_strongly_agree": "75"
+        },
+        "question_24": {
+            "description": "Staff value students' views and opinions about the course",
+            "agree_or_strongly_agree": "81"
+        },
+        "question_25": {
+            "description": "It is clear how students' feedback on the course has been acted on",
+            "agree_or_strongly_agree": "63"
+        },
+        "question_26": {
+            "description": "The students' union (association or guild) effectively represents students' academic interests",
+            "agree_or_strongly_agree": "19"
+        },
+        "question_27": {
+            "description": "Overall, I am satisfied with the quality of the course",
+            "agree_or_strongly_agree": "88"
+        },
+        "resp_rate": 94,
+        "subject": {
+            "code": "CAH06-01-01",
+            "english_label": "Animal science",
+            "welsh_label": "Gwyddorau anifeiliaid"
+        },
+        "unavailable": {
+            "code": "1",
+            "reason": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in Animal science."
+        }
+    }
+]
