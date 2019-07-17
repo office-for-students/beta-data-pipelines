@@ -206,7 +206,7 @@ class Nss:
                                   ('number_of_students', 1)])
         q_start = 2
         n_questions = 27
-        q_end = q_start + 27
+        q_end = q_start + n_questions
         order_of_questions = OrderedDict(
             {f'question_{i}': i + q_start
              for i in range(1, 28)})
