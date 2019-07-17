@@ -54,7 +54,6 @@ class TestNss(unittest.TestCase):
         expected_response = json.loads(
             get_string('fixtures/course_nss_questions_resp.json'))
         json_obj = self.nss.get_stats(raw_course_xml)
-        print('json_dumps', json.dumps(json_obj, indent=4))
         self.assertListEqual(json_obj, expected_response)
 
 
