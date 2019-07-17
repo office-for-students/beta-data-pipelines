@@ -18,7 +18,7 @@ def get_string(filename):
     return string
 
 
-class TestGetLookupTable(unittest.TestCase):
+class TestVariousHelperMethods(unittest.TestCase):
     def setUp(self):
         self.tariff = Tariff()
 
@@ -26,7 +26,10 @@ class TestGetLookupTable(unittest.TestCase):
         self.assertTrue(self.tariff.is_tariff('T001'))
         self.assertTrue(self.tariff.is_tariff('T048'))
         self.assertFalse(self.tariff.is_tariff('T999'))
-        print(self.tariff.tariff_points_lookup.keys())
+
+    def test_get_tariff_description(self):
+        self.assertEqual(self.tariff.get_tariff_description('T001'), 'less than 48 tariff points')
+
 
 
 
