@@ -232,7 +232,6 @@ def get_json(filename):
     """Reads json file in test dir into a string and return"""
 
     cwd = os.path.dirname(os.path.abspath(__file__))
-    print(f'filepath: {cwd}\n filename: {filename}')
     with open(os.path.join(cwd, filename)) as json_file:
         jsn = json.load(json_file)
     return jsn

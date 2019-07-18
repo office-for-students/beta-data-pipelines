@@ -109,7 +109,6 @@ def build_title(course):
         if 'welsh' in course['title']:
             search_title['welsh'] = course['title']['welsh']
     else:
-        print(f'{course}')
         logging.warning(f"course title missing\n course_id: {course['kis_course_id']}\n course_mode: {course['mode']['code']}\n institution_id: {course['institution']['pub_ukprn']}\n")
 
     return search_title

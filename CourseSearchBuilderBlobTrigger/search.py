@@ -12,7 +12,6 @@ def delete_index(url, headers, index_name):
 		raise exceptions.StopEtlPipelineErrorException(e)
 		
 	if response.status_code == 204:
-		logging.info('got here')
 		logging.warn(f'course search index already exists, successful deletion prior to recreation\n\
 			index: {index_name}')
 	elif response.status_code != 404:
@@ -75,7 +74,7 @@ def bulk_create_courses(course_url, headers, documents, index_name):
 
 def get_index_schema(index):
     course_schema = {
-		"name": f'{index}',
+		"name": index,
 		"fields": [{
 			"name": "id",
 			"type": "Edm.String",
