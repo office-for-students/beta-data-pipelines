@@ -422,5 +422,6 @@
 | T160                  | between 160 and 175 tariff points |
 | T176                  | between 176 and 191 tariff points |
 | T192                  | between 192 and 207 tariff points |
-| T208                  | between 208 and 239 tariff points |
-| T240                  | more than 240 tariff points       |
+| T208                  | between 208 and 223 tariff points |
+| T224                  | between 224 and 239 tariff points |
+| T240                  | 240 or more tariff points         |
