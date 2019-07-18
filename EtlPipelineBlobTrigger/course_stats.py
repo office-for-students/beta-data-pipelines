@@ -19,6 +19,7 @@ class CourseStats:
         job_type = JobType()
         nss = Nss()
         salary = Salary()
+        tariff = Tariff()
 
         stats['continuation'] = continuation.get_stats(raw_course_data)
         stats['employment'] = employment.get_stats(raw_course_data)
@@ -26,6 +27,7 @@ class CourseStats:
         stats['job_type'] = job_type.get_stats(raw_course_data)
         stats['nss'] = nss.get_stats(raw_course_data)
         stats['salary'] = salary.get_stats(raw_course_data)
+        stats['tariff'] = tariff.get_stats(raw_course_data)
         return stats
 
 
@@ -320,26 +322,13 @@ class Tariff:
         self.tariff_description_lookup = self.shared_utils.get_lookup(
             'tariff_description_lookup')
 
-    def get_lookup_table(self):
-        lookup = {
-            'TARUNAVAILREASON': 'unavailable',
-            'TARPOP': 'number_of_students',
-            'TARAGG': 'aggregation_level',
-            'TARSBJ': 'subject',
-        }
-        lookup.update(self.tariff_description_lookup)
-        return lookup
-
     def get_stats(self, raw_course_data):
-        return self.shared_utils.get_json_list(raw_course_data, self.get_key)
-
-    def is_tariff(self, xml_key):
-        return xml_key in self.tariff_description_lookup.keys()
+        return self.get_json_list(raw_course_data)
 
     def get_tariff_description(self, xml_key):
         return self.tariff_description_lookup[xml_key]
 
-    def get_tariff_list(self, xml_elem):
+    def get_tariffs_list(self, xml_elem):
         return [{
             'code': xml_key,
             'description': self.get_tariff_description(xml_key),
@@ -348,13 +337,15 @@ class Tariff:
 
 
     def get_json_data(self, xml_elem):
-        json_elem['aggregation'] = xml_elem[self.xml_agg_key]
-        json_elem['number_of_students'] = xml_elem[self.xml_pop_key]
+        json_data = {}
+        json_data['aggregation'] = xml_elem[self.xml_agg_key]
+        json_data['number_of_students'] = xml_elem[self.xml_pop_key]
         if self.xml_subj_key in xml_elem:
-            json_elem['subject'] = self.shared_utils.get_subject(xml_elem)
-        json_elem['tariffs'] = self.get_tariffs(xml_elem)
+            json_data['subject'] = self.shared_utils.get_subject(xml_elem)
+        json_data['tariffs'] = self.get_tariffs_list(xml_elem)
+        return json_data
 
-    def get_json_list(self, raw_course_data, get_key):
+    def get_json_list(self, raw_course_data):
         """Returns a list of JSON objects (as dicts) for this statistics element"""
 
         json_elem_list = []
@@ -363,10 +354,10 @@ class Tariff:
         for xml_elem in raw_xml_list:
             json_elem = {}
             if self.shared_utils.has_data(xml_elem):
-               json_elem.update(get_json_data)
+               json_elem.update(self.get_json_data(xml_elem))
             if self.shared_utils.need_unavailable(xml_elem):
                 json_elem['unavailable'] = self.shared_utils.get_unavailable(xml_elem)
-            sorted_json_elem = OrderedDict(sorted(json_elem.items(), key=self.get_sort_key))
+            sorted_json_elem = OrderedDict(sorted(json_elem.items()))
             json_elem_list.append(sorted_json_elem)
         return json_elem_list
 
