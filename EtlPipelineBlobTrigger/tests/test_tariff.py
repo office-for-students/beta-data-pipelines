@@ -6,11 +6,11 @@ import unittest
 import xml.etree.ElementTree as ET
 
 import xmltodict
-from course_stats import Tariff
 
+from course_stats import SharedUtils, Tariff
 
 def get_string(filename):
-    """Reads file in test dir into a string and returns"""
+    """Reads file into a string and returns"""
 
     cwd = os.path.dirname(os.path.abspath(__file__))
     with open(os.path.join(cwd, filename)) as fp:
@@ -29,8 +29,18 @@ class TestVariousHelperMethods(unittest.TestCase):
 
     def test_get_tariff_description(self):
         self.assertEqual(self.tariff.get_tariff_description('T001'), 'less than 48 tariff points')
+        self.assertEqual(self.tariff.get_tariff_description('T208'), 'between 208 and 239 tariff points')
 
-
+    def test_get_tariff_list(self):
+        raw_course_xml = xmltodict.parse(
+            get_string('fixtures/course_tariff_with_subj.xml'))['KISCOURSE']
+        raw_xml_list = SharedUtils.get_raw_list(raw_course_xml, 'TARIFF')
+        tariff_xml_elem = raw_xml_list[0]
+        tariff_list = self.tariff.get_tariff_list(tariff_xml_elem)
+        expected_result = json.loads(
+            get_string('fixtures/course_tariff_with_subj.json'))
+        self.assertListEqual(tariff_list, expected_result)
+        print(json.dumps(tariff_list, indent=4))
 
 
 # TODO Test more of the functionality - more lookups etc
