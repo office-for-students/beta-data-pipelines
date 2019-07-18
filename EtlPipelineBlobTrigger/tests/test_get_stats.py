@@ -28,7 +28,7 @@ class TestGetStats(unittest.TestCase):
                     ET.tostring(course))['KISCOURSE']
                 course_stats.get_stats(raw_course_data)
 
-# TODO Test more of the functionality - more lookups etc
+# TODO Test more of the functionality
 
 if __name__ == '__main__':
     unittest.main()
