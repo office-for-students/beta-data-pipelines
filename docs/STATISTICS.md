@@ -119,8 +119,8 @@
         "leo": [
             {
                 "aggregation_level": "integer",
-                "higher_quartile_range": "integer",
-                "lower_quartile_range": "integer",
+                "higher_quartile": "integer",
+                "lower_quartile": "integer",
                 "median": "integer",
                 "number_of_graduates": "integer",
                 "subject": {
@@ -197,6 +197,12 @@
                 "aggregation_level": "integer",
                 "number_of_students": "integer",
                 "response_rate": "integer",
+                "higher_quartile": "integer",
+                "lower_quartile": "integer",
+                "median": "integer",
+                "sector_higher_quartile": "integer",
+                "sector_lower_quartile": "integer",
+                "sector_median": "integer",
                 "subject": {
                     "code": "string",
                     "english_label": "string",
@@ -335,9 +341,12 @@
 | statistics.nss.[].unavailable.reason                          | See aggregation analysis file (DLHE)         | N/A               |
 | statistics.salary.[].aggregation_level                        | ...KISCOURSE.SALARY.SALAGG                   | SALAGG            |
 | statistics.salary.[].number_of_graduates                      | ...KISCOURSE.SALARY.SALPOP                   | SALPOP            |
-| statistics.salary.[].higher_quartile                          | ...KISCOURSE.SALARY.UQ                       | UQ                |
-| statistics.salary.[].lower_quartile                           | ...KISCOURSE.SALARY.LQ                       | LQ                |
-| statistics.salary.[].median                                   | ...KISCOURSE.SALARY.MED                      | LEOMED            |
+| statistics.salary.[].sector_higher_quartile                   | ...KISCOURSE.SALARY.UQ                       | UQ                |
+| statistics.salary.[].sector_lower_quartile                    | ...KISCOURSE.SALARY.LQ                       | LQ                |
+| statistics.salary.[].sector_median                            | ...KISCOURSE.SALARY.MED                      | MED               |
+| statistics.salary.[].higher_quartile                          | ...KISCOURSE.SALARY.INSTUQ                   | INSTUQ            |
+| statistics.salary.[].lower_quartile                           | ...KISCOURSE.SALARY.INSTLQ                   | INSTLQ            |
+| statistics.salary.[].median                                   | ...KISCOURSE.SALARY.INSTMED                  | INSTMED           |
 | statistics.salary.[].response_rate                            | ...KISCOURSE.SALARY.SALRESP_RATE             | SALRESP_RATE      |
 | statistics.salary.[].subject.code                             | ...KISCOURSE.SALARY.SALSBJ                   | SALSBJ            |
 | statistics.salary.[].subject.english_label                    | See list of subjects                         | N/A               |
