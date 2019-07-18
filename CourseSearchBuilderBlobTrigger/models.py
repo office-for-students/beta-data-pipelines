@@ -1,10 +1,10 @@
 import logging
 
 def build_course_search_doc(course):
-    sort_pub_ukprn_name = createSortableName(course['course']['institution']['pub_ukprn_name'])
-    locations = buildLocations(course['course'])
-    title = buildTitle(course['course'])
-    length_of_course = buildLengthOfCourse(course['course'])
+    sort_pub_ukprn_name = create_sortable_name(course['course']['institution']['pub_ukprn_name'])
+    locations = build_locations(course['course'])
+    title = build_title(course['course'])
+    length_of_course = build_length_of_course(course['course'])
 
     json = {
         "@search.action": "upload",
@@ -53,7 +53,7 @@ def build_course_search_doc(course):
 
     return json
 
-def createSortableName(name):
+def create_sortable_name(name):
     # lowercase institution name
     sortable_name = name.lower()
 
@@ -66,37 +66,41 @@ def createSortableName(name):
 
     return sortable_name
 
-def buildLocations(course):
-    
+def build_locations(course):
+
     search_locations = []
     if 'locations' in course:
 
         for location in course['locations']:
-            location_names = {}
-            if 'english' in location['name']:
-                location_names['english'] = location['name']['english']
-            if 'welsh' in location['name']:
-                location_names['welsh'] = location['name']['welsh']
-        
-            longitude = float(location['longitude'])
-            latitude = float(location['latitude'])
+            search_location = {}
 
-            search_location = {
-                "name": location_names,
-                "geo": {
+            if 'name' in location:
+                location_names = {}
+
+                if 'english' in location['name']:
+                    location_names['english'] = location['name']['english']
+                if 'welsh' in location['name']:
+                    location_names['welsh'] = location['name']['welsh']
+        
+                search_location['name'] = location_names
+
+            if 'longitude' in location and 'latitude' in location:
+                longitude = float(location['longitude'])
+                latitude = float(location['latitude'])
+
+                search_location['geo'] = {
                     "type": "Point",
                     "coordinates": [
                         longitude,
                         latitude
                     ]
                 }
-            }
 
             search_locations.append(search_location)
 
     return search_locations
 
-def buildTitle(course):
+def build_title(course):
     
     search_title = {}
     if "title" in course:
@@ -105,15 +109,18 @@ def buildTitle(course):
         if 'welsh' in course['title']:
             search_title['welsh'] = course['title']['welsh']
     else:
-        logging.warn(f"course title missing\n course_id: {course['kis_course_id']}\n course_mode: {course['mode']['code']}\n institution_id: {course['institution']['pub_ukprn']}\n")
+        print(f'{course}')
+        logging.warning(f"course title missing\n course_id: {course['kis_course_id']}\n course_mode: {course['mode']['code']}\n institution_id: {course['institution']['pub_ukprn']}\n")
 
     return search_title
 
-def buildLengthOfCourse(course):
+def build_length_of_course(course):
 
     search_length_of_course = {}
-    if 'length_of_course' in course and 'code' in course['length_of_course']:
-        search_length_of_course['code'] = course['length_of_course']['code']
-        search_length_of_course['label'] = course['length_of_course']['label']
+    if 'length_of_course' in course:
+
+        if 'label' in course['length_of_course'] and 'code' in course['length_of_course']:
+            search_length_of_course['code'] = course['length_of_course']['code']
+            search_length_of_course['label'] = course['length_of_course']['label']
 
     return search_length_of_course
