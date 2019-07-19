@@ -18,9 +18,9 @@ def get_string(filename):
 
 class TestGetStats(unittest.TestCase):
 
-    def test_with_large_file(self):
+    def test_with_25_courses(self):
         """Initial smoke test"""
-        xml_string = get_string('fixtures/large-test-file.xml')
+        xml_string = get_string('fixtures/25_courses.xml')
         root = ET.fromstring(xml_string)
         for institution in root.iter('INSTITUTION'):
             for course in institution.findall('KISCOURSE'):
