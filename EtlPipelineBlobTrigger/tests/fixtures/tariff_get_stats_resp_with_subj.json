@@ -1,6 +1,6 @@
 [
     {
-        "aggregation": "22",
+        "aggregation_level": "22",
         "number_of_students": "10",
         "subject": {
             "code": "CAH17-01",
