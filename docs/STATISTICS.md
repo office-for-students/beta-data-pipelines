@@ -9,8 +9,8 @@
                 "continuing_with_provider": "integer",
                 "dormant": "integer",
                 "gained": "integer",
-                "lower": "integer",
                 "left": "integer",
+                "lower": "integer",
                 "number_of_students": "integer",
                 "subject": {
                     "code": "string",
@@ -26,13 +26,13 @@
         "employment": [
             {
                 "aggregation_level": "integer",
-                "number_of_students": "integer",
                 "assumed_to_be_unemployed": "integer",
                 "in_study": "integer",
                 "in_work": "integer",
                 "in_work_and_study": "integer",
                 "in_work_or_study": "integer",
                 "not_available_for_work_or_study": "integer",
+                "number_of_students": "integer",
                 "response_rate": "integer",
                 "subject": {
                     "code": "string",
@@ -48,7 +48,6 @@
         "entry": [
             {
                 "aggregation_level": "integer",
-                "number_of_students": "integer",
                 "a-level": "integer",
                 "access": "integer",
                 "another_higher_education_qualifications": "integer",
@@ -56,6 +55,7 @@
                 "degree": "integer",
                 "foundation": "integer",
                 "none": "integer",
+                "number_of_students": "integer",
                 "other_qualifications": "integer",
                 "subject": {
                     "code": "string",
@@ -71,10 +71,9 @@
         "job_type": [
             {
                 "aggregation_level": "integer",
+                "non_professional_or_managerial_jobs": "integer",
                 "number_of_students": "integer",
-                "proportion_of_students_in_professional_or_managerial_jobs": "integer",
-                "proportion_of_students_in_non_professional_or_managerial_jobs": "integer",
-                "proportion_of_students_in_unknown_professions": "integer",
+                "professional_or_managerial_jobs": "integer",
                 "response_rate": "integer",
                 "subject": {
                     "code": "string",
@@ -84,7 +83,8 @@
                 "unavailable": {
                     "code": "integer",
                     "reason": "string"
-                }
+                },
+                "unknown_professions": "integer"
             }
         ],
         "job_list": {
@@ -195,11 +195,11 @@
         "salary": [
             {
                 "aggregation_level": "integer",
-                "number_of_students": "integer",
-                "response_rate": "integer",
                 "higher_quartile": "integer",
                 "lower_quartile": "integer",
                 "median": "integer",
+                "number_of_graduates": "integer",
+                "response_rate": "integer",
                 "sector_higher_quartile": "integer",
                 "sector_lower_quartile": "integer",
                 "sector_median": "integer",
@@ -287,9 +287,9 @@
 | statistics.entry.[].unavailable.reason                        | See aggregation analysis file (DLHE)         | N/A               |
 | statistics.job_type.[].aggregation_level                      | ...KISCOURSE.JOBTYPE.JOBAGG                  | JOBAGG            |
 | statistics.job_type.[].number_of_students                     | ...KISCOURSE.JOBTYPE.JOBPOP                  | JOBPOP            |
-| statistics.job_type.[].in_professional_or_managerial_jobs     | ...KISCOURSE.JOBTYPE.PROFMAN                 | PROFMAN           |
-| statistics.job_type.[].in_non_professional_or_managerial_jobs | ...KISCOURSE.JOBTYPE.OTHERJOB                | OTHERJOB          |
-| statistics.job_type.[].in_unknown_professions                 | ...KISCOURSE.JOBTYPE.UNKWN                   | UNKWN             |
+| statistics.job_type.[].professional_or_managerial_jobs        | ...KISCOURSE.JOBTYPE.PROFMAN                 | PROFMAN           |
+| statistics.job_type.[].non_professional_or_managerial_jobs    | ...KISCOURSE.JOBTYPE.OTHERJOB                | OTHERJOB          |
+| statistics.job_type.[].unknown_professions                    | ...KISCOURSE.JOBTYPE.UNKWN                   | UNKWN             |
 | statistics.job_type.[].response_rate                          | ...KISCOURSE.JOBTYPE.JOBRESP_RATE            | JOBRESP_RATE      |
 | statistics.job_type.[].subject.code                           | ...KISCOURSE.JOBTYPE.JOBSBJ                  | JOBSBJ            |
 | statistics.job_type.[].subject.english_label                  | See list of subjects                         | N/A               |
