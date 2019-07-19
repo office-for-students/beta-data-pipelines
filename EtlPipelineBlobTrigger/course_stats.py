@@ -1,33 +1,32 @@
 """Data transformation code for statistical data."""
 
-import inspect
 import json
 import os
-import sys
 import unicodedata
 from collections import OrderedDict
 
 from validators import validate_agg, validate_unavailable_reason_code
 
 
-class CourseStats:
-    def get_stats(self, raw_course_data):
-        stats = {}
+def get_stats(raw_course_data):
 
-        continuation = Continuation()
-        employment = Employment()
-        entry = Entry()
-        job_type = JobType()
-        nss = Nss()
-        salary = Salary()
+    continuation = Continuation()
+    employment = Employment()
+    entry = Entry()
+    job_type = JobType()
+    nss = Nss()
+    salary = Salary()
+    tariff = Tariff()
 
-        stats['continuation'] = continuation.get_stats(raw_course_data)
-        stats['employment'] = employment.get_stats(raw_course_data)
-        stats['entry'] = entry.get_stats(raw_course_data)
-        stats['job_type'] = job_type.get_stats(raw_course_data)
-        stats['nss'] = nss.get_stats(raw_course_data)
-        stats['salary'] = salary.get_stats(raw_course_data)
-        return stats
+    stats = {}
+    stats['continuation'] = continuation.get_stats(raw_course_data)
+    stats['employment'] = employment.get_stats(raw_course_data)
+    stats['entry'] = entry.get_stats(raw_course_data)
+    stats['job_type'] = job_type.get_stats(raw_course_data)
+    stats['nss'] = nss.get_stats(raw_course_data)
+    stats['salary'] = salary.get_stats(raw_course_data)
+    stats['tariff'] = tariff.get_stats(raw_course_data)
+    return stats
 
 
 class Continuation:
@@ -217,7 +216,7 @@ class Nss:
         return sort_order[key[0]]
 
     def get_json_list(self, raw_course_data, get_key):
-        """Returns a list of JSON objects (as dicts) for the Statistics element"""
+        """Returns a list of JSON objects (as dicts) for this stats element"""
 
         json_elem_list = []
         raw_xml_list = SharedUtils.get_raw_list(raw_course_data,
@@ -305,6 +304,62 @@ class Salary:
         return json_elem_list
 
 
+class Tariff:
+    """Extracts and transforms the Tariff course element"""
+
+    def __init__(self):
+        self.xml_element_key = 'TARIFF'
+        self.xml_subj_key = 'TARSBJ'
+        self.xml_agg_key = 'TARAGG'
+        self.xml_pop_key = 'TARPOP'
+        self.xml_unavail_reason_key = 'TARUNAVAILREASON'
+
+        self.shared_utils = SharedUtils(self.xml_element_key,
+                                        self.xml_subj_key, self.xml_agg_key,
+                                        self.xml_unavail_reason_key)
+        self.tariff_description_lookup = self.shared_utils.get_lookup(
+            'tariff_description_lookup')
+
+    def get_stats(self, raw_course_data):
+        return self.get_json_list(raw_course_data)
+
+    def get_tariff_description(self, xml_key):
+        return self.tariff_description_lookup[xml_key]
+
+    def get_tariffs_list(self, xml_elem):
+        return [{
+            'code': xml_key,
+            'description': self.get_tariff_description(xml_key),
+            'entrants': xml_elem[xml_key],
+        } for xml_key in self.tariff_description_lookup.keys()]
+
+    def get_json_data(self, xml_elem):
+        json_data = {}
+        json_data['aggregation'] = xml_elem[self.xml_agg_key]
+        json_data['number_of_students'] = xml_elem[self.xml_pop_key]
+        if self.xml_subj_key in xml_elem:
+            json_data['subject'] = self.shared_utils.get_subject(xml_elem)
+        json_data['tariffs'] = self.get_tariffs_list(xml_elem)
+        return json_data
+
+    def get_json_list(self, raw_course_data):
+        """Returns a list of JSON objects (as dicts) for this stats element"""
+
+        json_elem_list = []
+        raw_xml_list = SharedUtils.get_raw_list(raw_course_data,
+                                                self.xml_element_key)
+        for xml_elem in raw_xml_list:
+            json_elem = {}
+            if self.shared_utils.has_data(xml_elem):
+                json_elem.update(self.get_json_data(xml_elem))
+            if self.shared_utils.need_unavailable(xml_elem):
+                json_elem['unavailable'] = self.shared_utils.get_unavailable(
+                    xml_elem)
+            sorted_json_elem = OrderedDict(sorted(json_elem.items()))
+            json_elem_list.append(sorted_json_elem)
+        return json_elem_list
+
+
 class SharedUtils:
     """Functionality required by several stats related classes"""
 
@@ -325,7 +380,8 @@ class SharedUtils:
             'subj_code_english': 'subj_code_english.json',
             'subj_code_welsh': 'subj_code_welsh.json',
             'unavail_reason': 'unavailreason.json',
-            'nss_question_number': 'nss_question_number.json'
+            'nss_question_number': 'nss_question_number.json',
+            'tariff_description_lookup': 'tariff_description.json'
         }[lookup_name]
         with open(os.path.join(cwd, f'lookup_files/{filename}')) as infile:
             return json.load(infile)
@@ -348,11 +404,11 @@ class SharedUtils:
         return self.unavail_reason['data'][unavail_reason_code].keys()
 
     def has_data(self, xml_elem):
-        """Returns True if the statistical XML element has data otherwise False"""
+        """Returns True if the stats XML element has data otherwise False"""
         return len(xml_elem) > 1
 
     def need_unavailable(self, xml_elem):
-        """Returns True if we need to include an unavailable object otherwise False"""
+        """Returns True if unavailable is needed otherwise False"""
         if not self.has_data(xml_elem):
             return True
 
@@ -402,7 +458,7 @@ class SharedUtils:
         return xml_value
 
     def get_json_list(self, raw_course_data, get_key):
-        """Returns a list of JSON objects (as dicts) for the Statistics element"""
+        """Returns a list of JSON objects (as dicts) for this stats element"""
 
         json_elem_list = []
         raw_xml_list = SharedUtils.get_raw_list(raw_course_data,

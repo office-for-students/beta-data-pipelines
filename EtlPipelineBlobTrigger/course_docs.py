@@ -22,7 +22,7 @@ CURRENTDIR = os.path.dirname(
 sys.path.insert(0, CURRENTDIR)
 
 import course_lookup_tables as lookup
-from course_stats import CourseStats
+from course_stats import get_stats
 from kisaims import KisAims
 from locations import Locations
 from SharedCode import utils
@@ -231,9 +231,7 @@ def get_course_entry(locations, locids, raw_inst_data, raw_course_data,
                                                      lookup.year_abroad,
                                                      'YEARABROAD')
 
-    course_stats = CourseStats()
-    course_stats.get_stats(raw_course_data)
-    course['statistics'] = course_stats.get_stats(raw_course_data)
+    course['statistics'] = get_stats(raw_course_data)
 
     outer_wrapper['course'] = course
     return outer_wrapper
