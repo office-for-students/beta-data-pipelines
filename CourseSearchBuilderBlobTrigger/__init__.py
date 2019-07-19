@@ -1,15 +1,14 @@
 import os
 import logging
-import requests
 import traceback
 
-from datetime import datetime
-
 import azure.functions as func
-from SharedCode import utils, exceptions
-from . import search, models, helpers
+from SharedCode import utils
+from . import search, helpers
+
 
 def main(dataset: func.InputStream):
+
     logging.info(f"Python blob trigger function processed blob \n"
                  f"Name: {dataset.name}\n"
                  f"Blob Size: {dataset.length} bytes\n")
@@ -20,8 +19,8 @@ def main(dataset: func.InputStream):
 
     try:
         headers = {'Content-Type': 'application/json',
-            'api-key': api_key,
-            'odata': 'verbose' }
+                   'api-key': api_key,
+                   'odata': 'verbose'}
 
         query_string = '?api-version=' + api_version
 
@@ -29,11 +28,11 @@ def main(dataset: func.InputStream):
         version = helpers.get_version(dataset.name)
 
         index_name = f"courses-{version}"
-    
+
         # Delete search index if it already exists
         delete_url = search_url + "/indexes/" + index_name + query_string
 
-        search.delete_index(delete_url, headers, index_name)
+        search.delete_index_if_exists(delete_url, headers, index_name)
 
         # Create search index
         index_schema = search.get_index_schema(index_name)
@@ -42,17 +41,18 @@ def main(dataset: func.InputStream):
 
         # Retrieve all courses for a specific version
         courses = utils.get_courses_by_version(version)
-        
+
         number_of_courses = len(courses)
 
         # Add course documents to search index
-        course_url = search_url + "/indexes/" + index_name + "/docs/index" + query_string
+        course_url = search_url + "/indexes/" + index_name + "/docs/index" + \
+            query_string
 
         logging.info(f'attempting to load courses to azure search\n\
                         number_of_courses: {number_of_courses}\n')
 
-        search.load_course_documents(course_url,headers,index_name,courses)
-        
+        search.load_course_documents(course_url, headers, index_name, courses)
+
         logging.info(f'Successfully loaded search documents\n')
 
     except Exception as e:
@@ -62,4 +62,3 @@ def main(dataset: func.InputStream):
 
         # Raise to Azure
         raise e
-        

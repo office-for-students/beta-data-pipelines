@@ -1,7 +1,12 @@
 import logging
 
+
 def build_course_search_doc(course):
-    sort_pub_ukprn_name = create_sortable_name(course['course']['institution']['pub_ukprn_name'])
+
+    sort_pub_ukprn_name = create_sortable_name(
+        course['course']['institution']['pub_ukprn_name']
+    )
+
     locations = build_locations(course['course'])
     title = build_title(course['course'])
     length_of_course = build_length_of_course(course['course'])
@@ -53,18 +58,21 @@ def build_course_search_doc(course):
 
     return json
 
+
 def create_sortable_name(name):
+
     # lowercase institution name
     sortable_name = name.lower()
 
     # remove unwanted prefixes
-    sortable_name = sortable_name.replace('the university of ','')
-    sortable_name = sortable_name.replace('university of ','')
+    sortable_name = sortable_name.replace('the university of ', '')
+    sortable_name = sortable_name.replace('university of ', '')
 
     # remove unwanted commas
-    sortable_name = sortable_name.replace(',','')
+    sortable_name = sortable_name.replace(',', '')
 
     return sortable_name
+
 
 def build_locations(course):
 
@@ -81,7 +89,7 @@ def build_locations(course):
                     location_names['english'] = location['name']['english']
                 if 'welsh' in location['name']:
                     location_names['welsh'] = location['name']['welsh']
-        
+
                 search_location['name'] = location_names
 
             if 'longitude' in location and 'latitude' in location:
@@ -100,8 +108,9 @@ def build_locations(course):
 
     return search_locations
 
+
 def build_title(course):
-    
+
     search_title = {}
     if "title" in course:
         if 'english' in course['title']:
@@ -109,16 +118,21 @@ def build_title(course):
         if 'welsh' in course['title']:
             search_title['welsh'] = course['title']['welsh']
     else:
-        logging.warning(f"course title missing\n course_id: {course['kis_course_id']}\n course_mode: {course['mode']['code']}\n institution_id: {course['institution']['pub_ukprn']}\n")
+        logging.warning(f"course title missing\n course_id:{course['kis_course_id']}\n \
+            course_mode: {course['mode']['code']}\n \
+            institution_id: {course['institution']['pub_ukprn']}\n")
 
     return search_title
+
 
 def build_length_of_course(course):
 
     search_length_of_course = {}
     if 'length_of_course' in course:
 
-        if 'label' in course['length_of_course'] and 'code' in course['length_of_course']:
+        if 'label' in course['length_of_course'] and \
+           'code' in course['length_of_course']:
+
             search_length_of_course['code'] = course['length_of_course']['code']
             search_length_of_course['label'] = course['length_of_course']['label']
 
