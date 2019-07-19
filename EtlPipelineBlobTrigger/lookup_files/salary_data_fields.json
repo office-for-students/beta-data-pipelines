@@ -1,5 +1,5 @@
 {
-    "SALPOP": ["number_of_students", "M"],
+    "SALPOP": ["number_of_graduates", "M"],
     "SALRESP_RATE": ["response_rate", "M"],
     "SALAGG": ["aggregation_level", "M"],
     "SALSBJ": ["subject", "O"],
