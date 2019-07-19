@@ -42,7 +42,8 @@ class Continuation:
                                         self.xml_subj_key, self.xml_agg_key,
                                         self.xml_unavail_reason_key)
 
-    def get_key(self, xml_key):
+    @staticmethod
+    def get_key(xml_key):
         return {
             'CONTUNAVAILREASON': 'unavailable',
             "CONTPOP": 'number_of_students',
@@ -72,7 +73,8 @@ class Employment:
                                         self.xml_subj_key, self.xml_agg_key,
                                         self.xml_unavail_reason_key)
 
-    def get_key(self, xml_key):
+    @staticmethod
+    def get_key(xml_key):
         return {
             "EMPUNAVAILREASON": "unavailable",
             'EMPPOP': 'number_of_students',
@@ -104,7 +106,8 @@ class Entry:
                                         self.xml_subj_key, self.xml_agg_key,
                                         self.xml_unavail_reason_key)
 
-    def get_key(self, xml_key):
+    @staticmethod
+    def get_key(xml_key):
         return {
             'ENTUNAVAILREASON': 'unavailable',
             "ENTPOP": 'number_of_students',
@@ -137,7 +140,8 @@ class JobType:
                                         self.xml_subj_key, self.xml_agg_key,
                                         self.xml_unavail_reason_key)
 
-    def get_key(self, xml_key):
+    @staticmethod
+    def get_key(xml_key):
         return {
             'JOBUNAVAILREASON': 'unavailable',
             "JOBPOP": 'number_of_students',
@@ -158,13 +162,10 @@ class Nss:
 
     def __init__(self):
         self.xml_element_key = 'NSS'
-        self.xml_subj_key = 'NSSSBJ'
-        self.xml_agg_key = 'NSSAGG'
-        self.xml_unavail_reason_key = 'NSSUNAVAILREASON'
 
         self.shared_utils = SharedUtils(self.xml_element_key,
-                                        self.xml_subj_key, self.xml_agg_key,
-                                        self.xml_unavail_reason_key)
+                                        'NSSSBJ', 'NSSAGG',
+                                        'NSSUNAVAILREASON')
         self.question_lookup = self.shared_utils.get_lookup(
             'nss_question_number')
         self.q_number_string_lookup = {
@@ -200,7 +201,8 @@ class Nss:
         question['agree_or_strongly_agree'] = int(xml_elem[xml_key])
         return question
 
-    def get_sort_key(self, key):
+    @staticmethod
+    def get_sort_key(key):
         sort_order = OrderedDict([('aggregation_level', 0),
                                   ('number_of_students', 1)])
         q_start = 2
@@ -245,66 +247,6 @@ class Nss:
         return json_elem_list
 
 
-class OldSalary:
-    """Extracts and transforms the Salary course element"""
-
-    # TODO add additional fields when remaining mappings available
-
-    def __init__(self):
-        self.xml_element_key = 'SALARY'
-        self.xml_subj_key = 'SALSBJ'
-        self.xml_agg_key = 'SALAGG'
-        self.xml_unavail_reason_key = 'SALUNAVAILREASON'
-
-        self.shared_utils = SharedUtils(self.xml_element_key,
-                                        self.xml_subj_key, self.xml_agg_key,
-                                        self.xml_unavail_reason_key)
-
-    def get_key(self, xml_key):
-        # TODO add additional fields once mappings are completed
-        # and change back to }[xml_key] so we'll bubble up any KeyErrors.
-        return {
-            "SALUNAVAILREASON": "unavailable",
-            'SALPOP': 'number_of_graduates',
-            'SALRESP_RATE': 'response_rate',
-            "SALAGG": "aggregation_level",
-            "SALSBJ": 'subject',
-            "UQ": "higher_quartile",
-            'LQ': 'lower_quartile',
-            "MEDIAN": 'median',
-        }.get(xml_key)
-
-    def get_stats(self, raw_course_data):
-        # TODO - use shared version when all Salary fields mapped
-        return self.get_json_list(raw_course_data)
-
-    def get_json_list(self, raw_course_data):
-        json_elem_list = []
-        raw_xml_list = SharedUtils.get_raw_list(raw_course_data,
-                                                self.xml_element_key)
-        for xml_elem in raw_xml_list:
-            json_elem = {}
-            for xml_key in xml_elem:
-                json_key = self.get_key(xml_key)
-                if not json_key:
-                    continue
-                if json_key == 'subject':
-                    json_elem[json_key] = self.shared_utils.get_subject(
-                        xml_elem)
-                elif json_key == 'unavailable':
-                    if self.shared_utils.need_unavailable(xml_elem):
-                        json_elem[
-                            json_key] = self.shared_utils.get_unavailable(
-                                xml_elem)
-                else:
-                    json_elem[json_key] = self.shared_utils.get_json_value(
-                        xml_elem[xml_key])
-                ordered_json_elem = OrderedDict(sorted(json_elem.items()))
-            json_elem_list.append(ordered_json_elem)
-        return json_elem_list
-
-
-
 class Salary:
     """Extracts and transforms the Salary course element"""
 
@@ -338,8 +280,9 @@ class Salary:
             else:
                 if xml_key in xml_elem:
                     json_key = lookup[xml_key][0]
-                    if  json_key == 'subject':
-                        json_data[json_key] = self.shared_utils.get_subject(xml_elem)
+                    if json_key == 'subject':
+                        json_data[json_key] = self.shared_utils.get_subject(
+                            xml_elem)
                     else:
                         json_data[json_key] = xml_elem[xml_key]
         return json_data
@@ -360,6 +303,7 @@ class Salary:
             sorted_json_elem = OrderedDict(sorted(json_elem.items()))
             json_elem_list.append(sorted_json_elem)
         return json_elem_list
+
 
 class Tariff:
     """Extracts and transforms the Tariff course element"""
@@ -431,7 +375,8 @@ class SharedUtils:
         self.subj_code_welsh = self.get_lookup('subj_code_welsh')
         self.unavail_reason = self.get_lookup('unavail_reason')
 
-    def get_lookup(self, lookup_name):
+    @staticmethod
+    def get_lookup(lookup_name):
         cwd = os.path.dirname(os.path.abspath(__file__))
         filename = {
             'subj_code_english': 'subj_code_english.json',
