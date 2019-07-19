@@ -245,7 +245,7 @@ class Nss:
         return json_elem_list
 
 
-class Salary:
+class OldSalary:
     """Extracts and transforms the Salary course element"""
 
     # TODO add additional fields when remaining mappings available
@@ -304,6 +304,68 @@ class Salary:
         return json_elem_list
 
 
+
+class Salary:
+    """Extracts and transforms the Salary course element"""
+
+    def __init__(self):
+
+        self.shared_utils = SharedUtils(self.xml_element_key,
+                                        self.xml_subj_key, self.xml_agg_key,
+                                        self.xml_unavail_reason_key)
+
+    def get_stats(self, raw_course_data):
+        return self.get_json_list(raw_course_data)
+
+    def get_tariff_description(self, xml_key):
+        return self.tariff_description_lookup[xml_key]
+
+    def salary_specifc_elements():
+        return (xml_elem for xml_elem in
+
+
+    def get_salary_specific_json_data(self, xml_elem):
+        json_data = {}
+        if 'LDLQ' in xml_elelm:
+            json_data['subject'] = self.shared_utils.get_subject(xml_elem)
+
+    def get_json_data(self, xml_elem):
+
+        # TODO:
+        # Where necessary, use this method for better handling of mandatory
+        # and optional params elsewhere.
+        #
+        json_data = {}
+        for key in lookup:
+            if lookup[key][1] == 'M':
+                json_data[lookup[key][0] = xml_elem
+        json_data['aggregation_level'] = xml_elem['SALAGG']
+        json_data['number_of_students'] = xml_elem['SALPOP']
+        json_data['response_rate'] = xml_elem['SALRESP_RATE']
+        if 'SALSBJ' in xml_elem:
+            json_data['subject'] = self.shared_utils.get_subject(xml_elem)
+        json_data.update(self.get_salary_specific_json_data(xml_elem)
+
+        json_data['tariffs'] = self.get_tariffs_list(xml_elem)
+        return json_data
+
+    def get_json_list(self, raw_course_data):
+        """Returns a list of JSON objects (as dicts) for this stats element"""
+
+        json_elem_list = []
+        raw_xml_list = SharedUtils.get_raw_list(raw_course_data,
+                                                self.xml_element_key)
+        for xml_elem in raw_xml_list:
+            json_elem = {}
+            if self.shared_utils.has_data(xml_elem):
+                json_elem.update(self.get_json_data(xml_elem))
+            if self.shared_utils.need_unavailable(xml_elem):
+                json_elem['unavailable'] = self.shared_utils.get_unavailable(
+                    xml_elem)
+            sorted_json_elem = OrderedDict(sorted(json_elem.items()))
+            json_elem_list.append(sorted_json_elem)
+        return json_elem_list
+
 class Tariff:
     """Extracts and transforms the Tariff course element"""
 
@@ -318,7 +380,7 @@ class Tariff:
                                         self.xml_subj_key, self.xml_agg_key,
                                         self.xml_unavail_reason_key)
         self.tariff_description_lookup = self.shared_utils.get_lookup(
-            'tariff_description_lookup')
+            'tariff_description')
 
     def get_stats(self, raw_course_data):
         return self.get_json_list(raw_course_data)
@@ -335,7 +397,7 @@ class Tariff:
 
     def get_json_data(self, xml_elem):
         json_data = {}
-        json_data['aggregation'] = xml_elem[self.xml_agg_key]
+        json_data['aggregation_level'] = xml_elem[self.xml_agg_key]
         json_data['number_of_students'] = xml_elem[self.xml_pop_key]
         if self.xml_subj_key in xml_elem:
             json_data['subject'] = self.shared_utils.get_subject(xml_elem)
@@ -381,7 +443,8 @@ class SharedUtils:
             'subj_code_welsh': 'subj_code_welsh.json',
             'unavail_reason': 'unavailreason.json',
             'nss_question_number': 'nss_question_number.json',
-            'tariff_description_lookup': 'tariff_description.json'
+            'tariff_description': 'tariff_description.json',
+            'salary_fields': 'salary_fields.json',
         }[lookup_name]
         with open(os.path.join(cwd, f'lookup_files/{filename}')) as infile:
             return json.load(infile)
