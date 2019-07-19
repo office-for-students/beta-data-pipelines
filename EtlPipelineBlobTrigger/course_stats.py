@@ -309,44 +309,35 @@ class Salary:
     """Extracts and transforms the Salary course element"""
 
     def __init__(self):
+        self.xml_element_key = 'SALARY'
+        self.xml_subj_key = 'SALSBJ'
+        self.xml_agg_key = 'SALAGG'
+        self.xml_unavail_reason_key = 'SALUNAVAILREASON'
 
         self.shared_utils = SharedUtils(self.xml_element_key,
                                         self.xml_subj_key, self.xml_agg_key,
                                         self.xml_unavail_reason_key)
 
+        self.salary_data_fields_lookup = self.shared_utils.get_lookup(
+            'salary_data_fields')
+
     def get_stats(self, raw_course_data):
         return self.get_json_list(raw_course_data)
-
-    def get_tariff_description(self, xml_key):
-        return self.tariff_description_lookup[xml_key]
-
-    def salary_specifc_elements():
-        return (xml_elem for xml_elem in
-
-
-    def get_salary_specific_json_data(self, xml_elem):
-        json_data = {}
-        if 'LDLQ' in xml_elelm:
-            json_data['subject'] = self.shared_utils.get_subject(xml_elem)
 
     def get_json_data(self, xml_elem):
 
         # TODO:
-        # Where necessary, use this method for better handling of mandatory
-        # and optional params elsewhere.
+        # Where appropriate, refactor to use this technique for better
+        # handling of params elsewhere.
         #
+        lookup = self.salary_data_fields_lookup
         json_data = {}
-        for key in lookup:
-            if lookup[key][1] == 'M':
-                json_data[lookup[key][0] = xml_elem
-        json_data['aggregation_level'] = xml_elem['SALAGG']
-        json_data['number_of_students'] = xml_elem['SALPOP']
-        json_data['response_rate'] = xml_elem['SALRESP_RATE']
-        if 'SALSBJ' in xml_elem:
-            json_data['subject'] = self.shared_utils.get_subject(xml_elem)
-        json_data.update(self.get_salary_specific_json_data(xml_elem)
-
-        json_data['tariffs'] = self.get_tariffs_list(xml_elem)
+        for xml_key in lookup:
+            if lookup[xml_key][1] == 'M':
+                json_data[lookup[xml_key][0]] = xml_elem[xml_key]
+            else:
+                if xml_key in xml_elem:
+                    json_data[lookup[xml_key][0]] = xml_elem[xml_key]
         return json_data
 
     def get_json_list(self, raw_course_data):
@@ -444,7 +435,7 @@ class SharedUtils:
             'unavail_reason': 'unavailreason.json',
             'nss_question_number': 'nss_question_number.json',
             'tariff_description': 'tariff_description.json',
-            'salary_fields': 'salary_fields.json',
+            'salary_data_fields': 'salary_data_fields.json',
         }[lookup_name]
         with open(os.path.join(cwd, f'lookup_files/{filename}')) as infile:
             return json.load(infile)
