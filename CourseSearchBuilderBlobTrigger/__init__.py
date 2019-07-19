@@ -35,9 +35,8 @@ def main(dataset: func.InputStream):
         search.delete_index_if_exists(delete_url, headers, index_name)
 
         # Create search index
-        index_schema = search.get_index_schema(index_name)
         url = search_url + "/indexes" + query_string
-        search.create_index(url, headers, index_schema, index_name)
+        search.Index().create(url, headers, index_name)
 
         # Retrieve all courses for a specific version
         courses = utils.get_courses_by_version(version)

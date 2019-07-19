@@ -25,21 +25,268 @@ def delete_index_if_exists(url, headers, index_name):
 
         raise exceptions.StopEtlPipelineErrorException
 
+class Index():
+    """Retrieves schema before creating a new index"""
 
-def create_index(url, headers, index_schema, index_name):
+    def get(self, index):
+        self.course_schema = {
+            "name": index,
+            "fields": [{
+                "name": "id",
+                "type": "Edm.String",
+                "key": "true"
+            }, {
+                "name": "course",
+                "type": "Edm.ComplexType",
+                "fields": [{
+                    "name": "country",
+                    "type": "Edm.ComplexType",
+                    "fields": [{
+                        "name": "code",
+                        "type": "Edm.String",
+                        "facetable": "false",
+                        "filterable": "true",
+                        "searchable": "false",
+                        "sortable": "false"
+                    }, {
+                        "name": "label",
+                        "type": "Edm.String",
+                        "facetable": "true",
+                        "filterable": "false",
+                        "searchable": "false",
+                        "sortable": "false"
+                    }]
+                }, {
+                    "name": "distance_learning",
+                    "type": "Edm.ComplexType",
+                    "fields": [{
+                        "name": "code",
+                        "type": "Edm.String",
+                        "facetable": "false",
+                        "filterable": "true",
+                        "searchable": "false",
+                        "sortable": "false"
+                    }, {
+                        "name": "label",
+                        "type": "Edm.String",
+                        "facetable": "true",
+                        "filterable": "false",
+                        "searchable": "false",
+                        "sortable": "false"
+                    }]
+                }, {
+                    "name": "foundation_year_availability",
+                    "type": "Edm.ComplexType",
+                    "fields": [{
+                        "name": "code",
+                        "type": "Edm.String",
+                        "facetable": "false",
+                        "filterable": "true",
+                        "searchable": "false",
+                        "sortable": "false"
+                    }, {
+                        "name": "label",
+                        "type": "Edm.String",
+                        "facetable": "true",
+                        "filterable": "false",
+                        "searchable": "false",
+                        "sortable": "false"
+                    }]
+                }, {
+                    "name": "honours_award_provision",
+                    "type": "Edm.String",
+                    "facetable": "true",
+                    "filterable": "true",
+                    "searchable": "false",
+                    "sortable": "false"
+                }, {
+                    "name": "institution",
+                    "type": "Edm.ComplexType",
+                    "fields": [{
+                        "name": "pub_ukprn_name",
+                        "type": "Edm.String",
+                        "facetable": "true",
+                        "filterable": "true",
+                        "searchable": "true",
+                        "sortable": "false"
+                    }, {
+                        "name": "sort_pub_ukprn_name",
+                        "type": "Edm.String",
+                        "facetable": "false",
+                        "filterable": "false",
+                        "searchable": "false",
+                        "sortable": "true"
+                    }, {
+                        "name": "pub_ukprn",
+                        "type": "Edm.String",
+                        "facetable": "false",
+                        "filterable": "true",
+                        "searchable": "false",
+                        "sortable": "false"
+                    }]
+                }, {
+                    "name": "kis_course_id",
+                    "type": "Edm.String",
+                    "facetable": "false",
+                    "filterable": "false",
+                    "searchable": "false",
+                    "sortable": "false"
+                }, {
+                    "name": "length_of_course",
+                    "type": "Edm.ComplexType",
+                    "fields": [{
+                        "name": "code",
+                        "type": "Edm.String",
+                        "facetable": "true",
+                        "filterable": "true",
+                        "searchable": "false",
+                        "sortable": "false"
+                    }, {
+                        "name": "label",
+                        "type": "Edm.String",
+                        "facetable": "true",
+                        "filterable": "false",
+                        "searchable": "false",
+                        "sortable": "false"
+                    }]
+                }, {
+                    "name": "locations",
+                    "type": "Collection(Edm.ComplexType)",
+                    "fields": [{
+                        "name": "geo",
+                        "type": "Edm.GeographyPoint",
+                        "facetable": "false",
+                        "filterable": "true",
+                        "searchable": "false",
+                        "sortable": "false"
+                    }, {
+                        "name": "name",
+                        "type": "Edm.ComplexType",
+                        "fields": [{
+                            "name": "english",
+                            "type": "Edm.String",
+                            "facetable": "true",
+                            "filterable": "false",
+                            "searchable": "false",
+                            "sortable": "false"
+                        }, {
+                            "name": "welsh",
+                            "type": "Edm.String",
+                            "facetable": "true",
+                            "filterable": "false",
+                            "searchable": "false",
+                            "sortable": "false"
+                        }]
+                    }]
+                }, {
+                    "name": "mode",
+                    "type": "Edm.ComplexType",
+                    "fields": [{
+                        "name": "code",
+                        "type": "Edm.String",
+                        "facetable": "true",
+                        "filterable": "true",
+                        "searchable": "false",
+                        "sortable": "false"
+                    }, {
+                        "name": "label",
+                        "type": "Edm.String",
+                        "facetable": "true",
+                        "filterable": "false",
+                        "searchable": "false",
+                        "sortable": "false"
+                    }]
+                }, {
+                    "name": "qualification",
+                    "type": "Edm.ComplexType",
+                    "fields": [{
+                        "name": "code",
+                        "type": "Edm.String",
+                        "facetable": "true",
+                        "filterable": "true",
+                        "searchable": "false",
+                        "sortable": "false"
+                    }, {
+                        "name": "label",
+                        "type": "Edm.String",
+                        "facetable": "true",
+                        "filterable": "false",
+                        "searchable": "false",
+                        "sortable": "false"
+                    }]
+                }, {
+                    "name": "sandwich_year",
+                    "type": "Edm.ComplexType",
+                    "fields": [{
+                        "name": "code",
+                        "type": "Edm.String",
+                        "facetable": "false",
+                        "filterable": "true",
+                        "searchable": "false",
+                        "sortable": "false"
+                    }, {
+                        "name": "label",
+                        "type": "Edm.String",
+                        "facetable": "true",
+                        "filterable": "false",
+                        "searchable": "false",
+                        "sortable": "false"
+                    }]
+                }, {
+                    "name": "title",
+                    "type": "Edm.ComplexType",
+                    "fields": [{
+                        "name": "english",
+                        "type": "Edm.String",
+                        "facetable": "true",
+                        "filterable": "false",
+                        "searchable": "true",
+                        "sortable": "false"
+                    }, {
+                        "name": "welsh",
+                       "type": "Edm.String",
+                        "facetable": "true",
+                        "filterable": "false",
+                        "searchable": "true",
+                        "sortable": "false"
+                    }]
+                }, {
+                    "name": "year_abroad",
+                    "type": "Edm.ComplexType",
+                    "fields": [{
+                        "name": "code",
+                        "type": "Edm.String",
+                        "facetable": "false",
+                        "filterable": "true",
+                        "searchable": "false",
+                        "sortable": "false"
+                    }, {
+                        "name": "label",
+                        "type": "Edm.String",
+                        "facetable": "true",
+                        "filterable": "false",
+                        "searchable": "false",
+                        "sortable": "false"
+                    }]
+                }]
+            }]
+        }
 
-    try:
-        response = requests.post(url, headers=headers, json=index_schema)
-    except requests.exceptions.RequestException as e:
-        logging.exception('unexpected error creating index', exc_info=True)
-        raise exceptions.StopEtlPipelineErrorException(e)
+    def create(self, url, headers, index_name):
+        self.get(index_name)
 
-    if response.status_code != 201:
-        logging.error(f'failed to create search index\n\
-                        index-name: {index_name}\n\
-                        status: {response.status_code}')
+        try:
+            response = requests.post(url, headers=headers, json=self.course_schema)
+        except requests.exceptions.RequestException as e:
+            logging.exception('unexpected error creating index', exc_info=True)
+            raise exceptions.StopEtlPipelineErrorException(e)
 
-        raise exceptions.StopEtlPipelineErrorException
+        if response.status_code != 201:
+            logging.error(f'failed to create search index\n\
+                            index-name: {index_name}\n\
+                            status: {response.status_code}')
+
+            raise exceptions.StopEtlPipelineErrorException
 
 
 def load_course_documents(course_url, headers, index_name, docs):
@@ -85,248 +332,3 @@ def bulk_create_courses(course_url, headers, documents, index_name):
         raise exceptions.StopEtlPipelineErrorException
 
 
-def get_index_schema(index):
-    course_schema = {
-        "name": index,
-        "fields": [{
-            "name": "id",
-            "type": "Edm.String",
-            "key": "true"
-        }, {
-            "name": "course",
-            "type": "Edm.ComplexType",
-            "fields": [{
-                "name": "country",
-                "type": "Edm.ComplexType",
-                "fields": [{
-                    "name": "code",
-                    "type": "Edm.String",
-                    "facetable": "false",
-                    "filterable": "true",
-                    "searchable": "false",
-                    "sortable": "false"
-                }, {
-                    "name": "label",
-                    "type": "Edm.String",
-                    "facetable": "true",
-                    "filterable": "false",
-                    "searchable": "false",
-                    "sortable": "false"
-                }]
-            }, {
-                "name": "distance_learning",
-                "type": "Edm.ComplexType",
-                "fields": [{
-                    "name": "code",
-                    "type": "Edm.String",
-                    "facetable": "false",
-                    "filterable": "true",
-                    "searchable": "false",
-                    "sortable": "false"
-                }, {
-                    "name": "label",
-                    "type": "Edm.String",
-                    "facetable": "true",
-                    "filterable": "false",
-                    "searchable": "false",
-                    "sortable": "false"
-                }]
-            }, {
-                "name": "foundation_year_availability",
-                "type": "Edm.ComplexType",
-                "fields": [{
-                    "name": "code",
-                    "type": "Edm.String",
-                    "facetable": "false",
-                    "filterable": "true",
-                    "searchable": "false",
-                    "sortable": "false"
-                }, {
-                    "name": "label",
-                    "type": "Edm.String",
-                    "facetable": "true",
-                    "filterable": "false",
-                    "searchable": "false",
-                    "sortable": "false"
-                }]
-            }, {
-                "name": "honours_award_provision",
-                "type": "Edm.String",
-                "facetable": "true",
-                "filterable": "true",
-                "searchable": "false",
-                "sortable": "false"
-            }, {
-                "name": "institution",
-                "type": "Edm.ComplexType",
-                "fields": [{
-                    "name": "pub_ukprn_name",
-                    "type": "Edm.String",
-                    "facetable": "true",
-                    "filterable": "true",
-                    "searchable": "true",
-                    "sortable": "false"
-                }, {
-                    "name": "sort_pub_ukprn_name",
-                    "type": "Edm.String",
-                    "facetable": "false",
-                    "filterable": "false",
-                    "searchable": "false",
-                    "sortable": "true"
-                }, {
-                    "name": "pub_ukprn",
-                    "type": "Edm.String",
-                    "facetable": "false",
-                    "filterable": "true",
-                    "searchable": "false",
-                    "sortable": "false"
-                }]
-            }, {
-                "name": "kis_course_id",
-                "type": "Edm.String",
-                "facetable": "false",
-                "filterable": "false",
-                "searchable": "false",
-                "sortable": "false"
-            }, {
-                "name": "length_of_course",
-                "type": "Edm.ComplexType",
-                "fields": [{
-                    "name": "code",
-                    "type": "Edm.String",
-                    "facetable": "true",
-                    "filterable": "true",
-                    "searchable": "false",
-                    "sortable": "false"
-                }, {
-                    "name": "label",
-                    "type": "Edm.String",
-                    "facetable": "true",
-                    "filterable": "false",
-                    "searchable": "false",
-                    "sortable": "false"
-                }]
-            }, {
-                "name": "locations",
-                "type": "Collection(Edm.ComplexType)",
-                "fields": [{
-                    "name": "geo",
-                    "type": "Edm.GeographyPoint",
-                    "facetable": "false",
-                    "filterable": "true",
-                    "searchable": "false",
-                    "sortable": "false"
-                }, {
-                    "name": "name",
-                    "type": "Edm.ComplexType",
-                    "fields": [{
-                        "name": "english",
-                        "type": "Edm.String",
-                        "facetable": "true",
-                        "filterable": "false",
-                        "searchable": "false",
-                        "sortable": "false"
-                    }, {
-                        "name": "welsh",
-                        "type": "Edm.String",
-                        "facetable": "true",
-                        "filterable": "false",
-                        "searchable": "false",
-                        "sortable": "false"
-                    }]
-                }]
-            }, {
-                "name": "mode",
-                "type": "Edm.ComplexType",
-                "fields": [{
-                    "name": "code",
-                    "type": "Edm.String",
-                    "facetable": "true",
-                    "filterable": "true",
-                    "searchable": "false",
-                    "sortable": "false"
-                }, {
-                    "name": "label",
-                    "type": "Edm.String",
-                    "facetable": "true",
-                    "filterable": "false",
-                    "searchable": "false",
-                    "sortable": "false"
-                }]
-            }, {
-                "name": "qualification",
-                "type": "Edm.ComplexType",
-                "fields": [{
-                    "name": "code",
-                    "type": "Edm.String",
-                    "facetable": "true",
-                    "filterable": "true",
-                    "searchable": "false",
-                    "sortable": "false"
-                }, {
-                    "name": "label",
-                    "type": "Edm.String",
-                    "facetable": "true",
-                    "filterable": "false",
-                    "searchable": "false",
-                    "sortable": "false"
-                }]
-            }, {
-                "name": "sandwich_year",
-                "type": "Edm.ComplexType",
-                "fields": [{
-                    "name": "code",
-                    "type": "Edm.String",
-                    "facetable": "false",
-                    "filterable": "true",
-                    "searchable": "false",
-                    "sortable": "false"
-                }, {
-                    "name": "label",
-                    "type": "Edm.String",
-                    "facetable": "true",
-                    "filterable": "false",
-                    "searchable": "false",
-                    "sortable": "false"
-                }]
-            }, {
-                "name": "title",
-                "type": "Edm.ComplexType",
-                "fields": [{
-                    "name": "english",
-                    "type": "Edm.String",
-                    "facetable": "true",
-                    "filterable": "false",
-                    "searchable": "true",
-                    "sortable": "false"
-                }, {
-                    "name": "welsh",
-                    "type": "Edm.String",
-                    "facetable": "true",
-                    "filterable": "false",
-                    "searchable": "true",
-                    "sortable": "false"
-                }]
-            }, {
-                "name": "year_abroad",
-                "type": "Edm.ComplexType",
-                "fields": [{
-                    "name": "code",
-                    "type": "Edm.String",
-                    "facetable": "false",
-                    "filterable": "true",
-                    "searchable": "false",
-                    "sortable": "false"
-                }, {
-                    "name": "label",
-                    "type": "Edm.String",
-                    "facetable": "true",
-                    "filterable": "false",
-                    "searchable": "false",
-                    "sortable": "false"
-                }]
-            }]
-        }]
-    }
-
-    return course_schema
