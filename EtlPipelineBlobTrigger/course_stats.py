@@ -337,7 +337,11 @@ class Salary:
                 json_data[lookup[xml_key][0]] = xml_elem[xml_key]
             else:
                 if xml_key in xml_elem:
-                    json_data[lookup[xml_key][0]] = xml_elem[xml_key]
+                    json_key = lookup[xml_key][0]
+                    if  json_key == 'subject':
+                        json_data[json_key] = self.shared_utils.get_subject(xml_elem)
+                    else:
+                        json_data[json_key] = xml_elem[xml_key]
         return json_data
 
     def get_json_list(self, raw_course_data):
