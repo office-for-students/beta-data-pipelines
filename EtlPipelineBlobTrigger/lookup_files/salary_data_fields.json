@@ -1,8 +1,8 @@
 {
-    "SALPOP", ["number_of_students", "M"],
-    "SALRESP_RATE", ["response_rate", "M"],
-    "SALAGG", ["aggregation_level", "M"],
-    "SALSBJ", ["subject", "O"],
+    "SALPOP": ["number_of_students", "M"],
+    "SALRESP_RATE": ["response_rate", "M"],
+    "SALAGG": ["aggregation_level", "M"],
+    "SALSBJ": ["subject", "O"],
     "UQ": ["sector_higher_quartile", "O"],
     "LQ": ["sector_lower_quartile", "O"],
     "MED": ["sector_median", "O"],
