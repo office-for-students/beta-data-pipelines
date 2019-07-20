@@ -1,7 +1,5 @@
-import inspect
 import json
 import os
-import sys
 import unittest
 import xml.etree.ElementTree as ET
 
@@ -11,7 +9,7 @@ from course_stats import Salary
 
 
 def get_string(filename):
-    """Reads file in test dir into a string and returns"""
+    """Reads file into a string and returns"""
 
     cwd = os.path.dirname(os.path.abspath(__file__))
     with open(os.path.join(cwd, filename)) as fp:
@@ -24,6 +22,24 @@ class TestLookupDataFields(unittest.TestCase):
         self.salary = Salary()
         self.lookup = self.salary.salary_data_fields_lookup
 
+    def test_salagg_lookup(self):
+        xml_key = 'SALAGG'
+        expected_key = 'aggregation_level'
+        expected_elem_type = 'M'
+        json_key = self.lookup[xml_key][0]
+        elem_type = self.lookup[xml_key][1]
+        self.assertEqual(expected_key, json_key)
+        self.assertEqual(expected_elem_type, elem_type)
+
+    def test_salresp_rate_lookup(self):
+        xml_key = 'SALRESP_RATE'
+        expected_key = 'response_rate'
+        expected_elem_type = 'M'
+        json_key = self.lookup[xml_key][0]
+        elem_type = self.lookup[xml_key][1]
+        self.assertEqual(expected_key, json_key)
+        self.assertEqual(expected_elem_type, elem_type)
+
     def test_salpop_lookup(self):
         xml_key = 'SALPOP'
         expected_key = 'number_of_graduates'
@@ -32,6 +48,70 @@ class TestLookupDataFields(unittest.TestCase):
         elem_type = self.lookup[xml_key][1]
         self.assertEqual(expected_key, json_key)
         self.assertEqual(expected_elem_type, elem_type)
+
+    def test_sal_subj_lookup(self):
+        xml_key = 'SALSBJ'
+        expected_key = 'subject'
+        expected_elem_type = 'O'
+        json_key = self.lookup[xml_key][0]
+        elem_type = self.lookup[xml_key][1]
+        self.assertEqual(expected_key, json_key)
+        self.assertEqual(expected_elem_type, elem_type)
+
+    def test_lq_lookup(self):
+        xml_key = 'LQ'
+        expected_key = 'sector_lower_quartile'
+        expected_elem_type = 'O'
+        json_key = self.lookup[xml_key][0]
+        elem_type = self.lookup[xml_key][1]
+        self.assertEqual(expected_key, json_key)
+        self.assertEqual(expected_elem_type, elem_type)
+
+    def test_uq_lookup(self):
+        xml_key = 'UQ'
+        expected_key = 'sector_higher_quartile'
+        expected_elem_type = 'O'
+        json_key = self.lookup[xml_key][0]
+        elem_type = self.lookup[xml_key][1]
+        self.assertEqual(expected_key, json_key)
+        self.assertEqual(expected_elem_type, elem_type)
+
+    def test_med_lookup(self):
+        xml_key = 'MED'
+        expected_key = 'sector_median'
+        expected_elem_type = 'O'
+        json_key = self.lookup[xml_key][0]
+        elem_type = self.lookup[xml_key][1]
+        self.assertEqual(expected_key, json_key)
+        self.assertEqual(expected_elem_type, elem_type)
+
+    def test_instlq_lookup(self):
+        xml_key = 'INSTLQ'
+        expected_key = 'lower_quartile'
+        expected_elem_type = 'M'
+        json_key = self.lookup[xml_key][0]
+        elem_type = self.lookup[xml_key][1]
+        self.assertEqual(expected_key, json_key)
+        self.assertEqual(expected_elem_type, elem_type)
+
+    def test_instmed_lookup(self):
+        xml_key = 'INSTMED'
+        expected_key = 'median'
+        expected_elem_type = 'M'
+        json_key = self.lookup[xml_key][0]
+        elem_type = self.lookup[xml_key][1]
+        self.assertEqual(expected_key, json_key)
+        self.assertEqual(expected_elem_type, elem_type)
+
+    def test_instuq_lookup(self):
+        xml_key = 'INSTUQ'
+        expected_key = 'higher_quartile'
+        expected_elem_type = 'M'
+        json_key = self.lookup[xml_key][0]
+        elem_type = self.lookup[xml_key][1]
+        self.assertEqual(expected_key, json_key)
+        self.assertEqual(expected_elem_type, elem_type)
+
 
 class TestGetSalary(unittest.TestCase):
     def setUp(self):
@@ -63,6 +143,7 @@ class TestGetSalary(unittest.TestCase):
         json_obj = self.salary.get_stats(raw_course_xml)
         print(json.dumps(json_obj, indent=4))
         self.assertListEqual(json_obj, expected_response)
+
 
 # TODO Test more of the functionality - more lookups etc
 
