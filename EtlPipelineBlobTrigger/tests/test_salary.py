@@ -19,23 +19,19 @@ def get_string(filename):
     return string
 
 
-class TestGetSalaryKey(unittest.TestCase):
+class TestLookupDataFields(unittest.TestCase):
     def setUp(self):
         self.salary = Salary()
+        self.lookup = self.salary.salary_data_fields_lookup
 
-    def test_with_valid_key(self):
-        expected_key = 'number_of_graduates'
+    def test_salpop_lookup(self):
         xml_key = 'SALPOP'
-        key = self.salary.get_key(xml_key)
-        self.assertEqual(expected_key, key)
-
-    def test_with_invalid_key(self):
-        # TODO change this to test for KeyError exception when
-        # all Salary fields mapped.
-        invalid_xml_key = 'invalid_key'
-        key = self.salary.get_key(invalid_xml_key)
-        self.assertIsNone(key)
-
+        expected_key = 'number_of_graduates'
+        expected_elem_type = 'M'
+        json_key = self.lookup[xml_key][0]
+        elem_type = self.lookup[xml_key][1]
+        self.assertEqual(expected_key, json_key)
+        self.assertEqual(expected_elem_type, elem_type)
 
 class TestGetSalary(unittest.TestCase):
     def setUp(self):
@@ -59,12 +55,13 @@ class TestGetSalary(unittest.TestCase):
         json_obj = self.salary.get_stats(raw_course_xml)
         self.assertListEqual(json_obj, expected_response)
 
-    def test_get_stats_with_subj(self):
+    def test_salary_get_stats_with_subj(self):
         raw_course_xml = xmltodict.parse(
             get_string('fixtures/course_sal_subj.xml'))['KISCOURSE']
         expected_response = json.loads(
             get_string('fixtures/course_sal_subj_resp.json'))
         json_obj = self.salary.get_stats(raw_course_xml)
+        print(json.dumps(json_obj, indent=4))
         self.assertListEqual(json_obj, expected_response)
 
 # TODO Test more of the functionality - more lookups etc
