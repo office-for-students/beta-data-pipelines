@@ -110,7 +110,7 @@
             "description": "Overall, I am satisfied with the quality of the course",
             "agree_or_strongly_agree": 88
         },
-        "resp_rate": 94,
+        "response_rate": 94,
         "subject": {
             "code": "CAH06-01-01",
             "english_label": "Animal science",
