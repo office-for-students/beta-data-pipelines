@@ -163,9 +163,8 @@ class Nss:
     def __init__(self):
         self.xml_element_key = 'NSS'
 
-        self.shared_utils = SharedUtils(self.xml_element_key,
-                                        'NSSSBJ', 'NSSAGG',
-                                        'NSSUNAVAILREASON')
+        self.shared_utils = SharedUtils(self.xml_element_key, 'NSSSBJ',
+                                        'NSSAGG', 'NSSUNAVAILREASON')
         self.question_lookup = self.shared_utils.get_lookup(
             'nss_question_number')
         self.q_number_string_lookup = {
@@ -263,9 +262,6 @@ class Salary:
         self.salary_data_fields_lookup = self.shared_utils.get_lookup(
             'salary_data_fields')
 
-    def get_stats(self, raw_course_data):
-        return self.get_json_list(raw_course_data)
-
     def get_json_data(self, xml_elem):
 
         # TODO:
@@ -287,7 +283,7 @@ class Salary:
                         json_data[json_key] = xml_elem[xml_key]
         return json_data
 
-    def get_json_list(self, raw_course_data):
+    def get_stats(self, raw_course_data):
         """Returns a list of JSON objects (as dicts) for this stats element"""
 
         json_elem_list = []
@@ -406,10 +402,6 @@ class SharedUtils:
     def get_aggs_for_code(self, unavail_reason_code):
         return self.unavail_reason['data'][unavail_reason_code].keys()
 
-    def has_data(self, xml_elem):
-        """Returns True if the stats XML element has data otherwise False"""
-        return len(xml_elem) > 1
-
     def need_unavailable(self, xml_elem):
         """Returns True if unavailable is needed otherwise False"""
         if not self.has_data(xml_elem):
@@ -455,11 +447,6 @@ class SharedUtils:
             unavail_reason_code, subj_key, agg, elem)
         return unavailable
 
-    def get_json_value(self, xml_value):
-        if xml_value.isdigit():
-            xml_value = int(xml_value)
-        return xml_value
-
     def get_json_list(self, raw_course_data, get_key):
         """Returns a list of JSON objects (as dicts) for this stats element"""
 
@@ -482,6 +469,17 @@ class SharedUtils:
                 ordered_json_elem = OrderedDict(sorted(json_elem.items()))
             json_elem_list.append(ordered_json_elem)
         return json_elem_list
+
+    @staticmethod
+    def has_data(xml_elem):
+        """Returns True if the stats XML element has data otherwise False"""
+        return len(xml_elem) > 1
+
+    @staticmethod
+    def get_json_value(xml_value):
+        if xml_value.isdigit():
+            xml_value = int(xml_value)
+        return xml_value
 
     @staticmethod
     def get_raw_list(raw_course_data, element_key):
