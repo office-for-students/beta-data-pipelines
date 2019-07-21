@@ -1,20 +1,12 @@
+"""Test the course Salary statistics"""
 import json
-import os
 import unittest
 import xml.etree.ElementTree as ET
 
 import xmltodict
 
 from course_stats import Salary
-
-
-def get_string(filename):
-    """Reads file into a string and returns"""
-
-    cwd = os.path.dirname(os.path.abspath(__file__))
-    with open(os.path.join(cwd, filename)) as fp:
-        string = fp.read()
-    return string
+from testing_utils import get_string
 
 
 class TestLookupDataFields(unittest.TestCase):
@@ -141,7 +133,6 @@ class TestGetSalary(unittest.TestCase):
         expected_response = json.loads(
             get_string('fixtures/course_sal_subj_resp.json'))
         json_obj = self.salary.get_stats(raw_course_xml)
-        print(json.dumps(json_obj, indent=4))
         self.assertListEqual(json_obj, expected_response)
 
 
