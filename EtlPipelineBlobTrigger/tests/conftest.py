@@ -7,4 +7,5 @@ PARENTDIR = os.path.dirname(CURRENTDIR)
 GRANDPARENTDIR = os.path.dirname(PARENTDIR)
 sys.path.insert(0,PARENTDIR)
 sys.path.insert(0,GRANDPARENTDIR)
+sys.path.append(os.path.join(CURRENTDIR, 'test_helpers'))
 
