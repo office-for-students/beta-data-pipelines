@@ -157,7 +157,6 @@ class JobType:
         return self.shared_utils.get_json_list(raw_course_data, self.get_key)
 
 
-
 class Nss:
     """Extracts and transforms the NSS course element"""
 
@@ -170,7 +169,7 @@ class Nss:
             'nss_question_number')
         self.nss_data_fields_lookup = self.shared_utils.get_lookup(
             'nss_data_fields')
-        self.is_question_lookup = [ f'Q{i}' for i in range(1, 28)]
+        self.is_question_lookup = [f'Q{i}' for i in range(1, 28)]
 
     def is_question(self, xml_key):
         return xml_key in self.is_question_lookup
@@ -191,7 +190,8 @@ class Nss:
         json_data = OrderedDict()
         for xml_key in lookup:
             if lookup[xml_key][1] == 'M':
-                json_data[lookup[xml_key][0]] = self.get_mandatory_field(xml_elem, xml_key)
+                json_data[lookup[xml_key][0]] = self.get_mandatory_field(
+                    xml_elem, xml_key)
             else:
                 if xml_key in xml_elem:
                     json_key = lookup[xml_key][0]
@@ -199,7 +199,8 @@ class Nss:
                         json_data[json_key] = self.shared_utils.get_subject(
                             xml_elem)
                     else:
-                        json_data[json_key] = self.shared_utils.get_json_value(xml_elem[xml_key])
+                        json_data[json_key] = self.shared_utils.get_json_value(
+                            xml_elem[xml_key])
         return json_data
 
     def get_stats(self, raw_course_data):
@@ -217,6 +218,7 @@ class Nss:
                     xml_elem)
             json_elem_list.append(json_elem)
         return json_elem_list
+
 
 class Salary:
     """Extracts and transforms the Salary course element"""
@@ -241,7 +243,9 @@ class Salary:
         json_data = {}
         for xml_key in lookup:
             if lookup[xml_key][1] == 'M':
-                json_data[lookup[xml_key][0]] = xml_elem[xml_key]
+                json_data[lookup[xml_key]
+                          [0]] = self.shared_utils.get_json_value(
+                              xml_elem[xml_key])
             else:
                 if xml_key in xml_elem:
                     json_key = lookup[xml_key][0]
@@ -249,7 +253,8 @@ class Salary:
                         json_data[json_key] = self.shared_utils.get_subject(
                             xml_elem)
                     else:
-                        json_data[json_key] = xml_elem[xml_key]
+                        json_data[json_key] = self.shared_utils.get_json_value(
+                            xml_elem[xml_key])
         return json_data
 
     def get_stats(self, raw_course_data):
@@ -286,9 +291,6 @@ class Tariff:
         self.tariff_description_lookup = self.shared_utils.get_lookup(
             'tariff_description')
 
-    def get_stats(self, raw_course_data):
-        return self.get_json_list(raw_course_data)
-
     def get_tariff_description(self, xml_key):
         return self.tariff_description_lookup[xml_key]
 
@@ -296,19 +298,19 @@ class Tariff:
         return [{
             'code': xml_key,
             'description': self.get_tariff_description(xml_key),
-            'entrants': xml_elem[xml_key],
+            'entrants': int(xml_elem[xml_key]),
         } for xml_key in self.tariff_description_lookup.keys()]
 
     def get_json_data(self, xml_elem):
         json_data = {}
-        json_data['aggregation_level'] = xml_elem[self.xml_agg_key]
-        json_data['number_of_students'] = xml_elem[self.xml_pop_key]
+        json_data['aggregation_level'] = int(xml_elem[self.xml_agg_key])
+        json_data['number_of_students'] = int(xml_elem[self.xml_pop_key])
         if self.xml_subj_key in xml_elem:
             json_data['subject'] = self.shared_utils.get_subject(xml_elem)
         json_data['tariffs'] = self.get_tariffs_list(xml_elem)
         return json_data
 
-    def get_json_list(self, raw_course_data):
+    def get_stats(self, raw_course_data):
         """Returns a list of JSON objects (as dicts) for this stats element"""
 
         json_elem_list = []
