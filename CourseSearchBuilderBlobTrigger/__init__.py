@@ -18,25 +18,12 @@ def main(dataset: func.InputStream):
     api_version = os.environ['AzureSearchAPIVersion']
 
     try:
-        headers = {'Content-Type': 'application/json',
-                   'api-key': api_key,
-                   'odata': 'verbose'}
-
-        query_string = '?api-version=' + api_version
 
         # Get version number
         version = helpers.get_version(dataset.name)
 
-        index_name = f"courses-{version}"
-
-        # Delete search index if it already exists
-        delete_url = search_url + "/indexes/" + index_name + query_string
-
-        search.delete_index_if_exists(delete_url, headers, index_name)
-
         # Create search index
-        url = search_url + "/indexes" + query_string
-        search.Index().create(url, headers, index_name)
+        search.build_index(search_url, api_key, api_version, version)
 
         # Retrieve all courses for a specific version
         courses = utils.get_courses_by_version(version)
@@ -44,13 +31,10 @@ def main(dataset: func.InputStream):
         number_of_courses = len(courses)
 
         # Add course documents to search index
-        course_url = search_url + "/indexes/" + index_name + "/docs/index" + \
-            query_string
-
         logging.info(f'attempting to load courses to azure search\n\
                         number_of_courses: {number_of_courses}\n')
 
-        search.load_course_documents(course_url, headers, index_name, courses)
+        search.load_index(search_url, api_key, api_version, version, courses)
 
         logging.info(f'Successfully loaded search documents\n')
 

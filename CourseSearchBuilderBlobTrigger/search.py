@@ -1,334 +1,159 @@
 import logging
 import requests
+import json
+import os
 
 from SharedCode import exceptions
 from . import models
 
 
-def delete_index_if_exists(url, headers, index_name):
+def build_index(url, api_key, api_version, version):
 
     try:
-        response = requests.delete(url, headers=headers)
-    except requests.exceptions.RequestException as e:
-        logging.exception('unexpected error deleting index', exc_info=True)
-        raise exceptions.StopEtlPipelineErrorException(e)
+        index = Index(url, api_key, api_version, version)
 
-    if response.status_code == 204:
-        logging.warn(f'course search index already exists,\
-            successful deletion prior to recreation\n index: {index_name}')
-    elif response.status_code != 404:
-        # 404 is the expected response, because normally the
-        # course search index will not exist
-        logging.error(f'unexpected response when deleting existing search index,\
-            search_response: {response.json()}\n\
-            index-name: {index_name}\nstatus: {response.status_code}')
+        index.delete_if_already_exists()
+        index.create()
+    except Exception:
+        raise
 
-        raise exceptions.StopEtlPipelineErrorException
+
+def load_index(url, api_key, api_version, version, docs):
+
+    try:
+        load = Load(url, api_key, api_version, version, docs)
+
+        load.course_documents()
+    except Exception:
+        raise
+
 
 class Index():
-    """Retrieves schema before creating a new index"""
+    """Creates a new index"""
+    def __init__(self, url, api_key, api_version, version):
 
-    def get(self, index):
-        self.course_schema = {
-            "name": index,
-            "fields": [{
-                "name": "id",
-                "type": "Edm.String",
-                "key": "true"
-            }, {
-                "name": "course",
-                "type": "Edm.ComplexType",
-                "fields": [{
-                    "name": "country",
-                    "type": "Edm.ComplexType",
-                    "fields": [{
-                        "name": "code",
-                        "type": "Edm.String",
-                        "facetable": "false",
-                        "filterable": "true",
-                        "searchable": "false",
-                        "sortable": "false"
-                    }, {
-                        "name": "label",
-                        "type": "Edm.String",
-                        "facetable": "true",
-                        "filterable": "false",
-                        "searchable": "false",
-                        "sortable": "false"
-                    }]
-                }, {
-                    "name": "distance_learning",
-                    "type": "Edm.ComplexType",
-                    "fields": [{
-                        "name": "code",
-                        "type": "Edm.String",
-                        "facetable": "false",
-                        "filterable": "true",
-                        "searchable": "false",
-                        "sortable": "false"
-                    }, {
-                        "name": "label",
-                        "type": "Edm.String",
-                        "facetable": "true",
-                        "filterable": "false",
-                        "searchable": "false",
-                        "sortable": "false"
-                    }]
-                }, {
-                    "name": "foundation_year_availability",
-                    "type": "Edm.ComplexType",
-                    "fields": [{
-                        "name": "code",
-                        "type": "Edm.String",
-                        "facetable": "false",
-                        "filterable": "true",
-                        "searchable": "false",
-                        "sortable": "false"
-                    }, {
-                        "name": "label",
-                        "type": "Edm.String",
-                        "facetable": "true",
-                        "filterable": "false",
-                        "searchable": "false",
-                        "sortable": "false"
-                    }]
-                }, {
-                    "name": "honours_award_provision",
-                    "type": "Edm.String",
-                    "facetable": "true",
-                    "filterable": "true",
-                    "searchable": "false",
-                    "sortable": "false"
-                }, {
-                    "name": "institution",
-                    "type": "Edm.ComplexType",
-                    "fields": [{
-                        "name": "pub_ukprn_name",
-                        "type": "Edm.String",
-                        "facetable": "true",
-                        "filterable": "true",
-                        "searchable": "true",
-                        "sortable": "false"
-                    }, {
-                        "name": "sort_pub_ukprn_name",
-                        "type": "Edm.String",
-                        "facetable": "false",
-                        "filterable": "false",
-                        "searchable": "false",
-                        "sortable": "true"
-                    }, {
-                        "name": "pub_ukprn",
-                        "type": "Edm.String",
-                        "facetable": "false",
-                        "filterable": "true",
-                        "searchable": "false",
-                        "sortable": "false"
-                    }]
-                }, {
-                    "name": "kis_course_id",
-                    "type": "Edm.String",
-                    "facetable": "false",
-                    "filterable": "false",
-                    "searchable": "false",
-                    "sortable": "false"
-                }, {
-                    "name": "length_of_course",
-                    "type": "Edm.ComplexType",
-                    "fields": [{
-                        "name": "code",
-                        "type": "Edm.String",
-                        "facetable": "true",
-                        "filterable": "true",
-                        "searchable": "false",
-                        "sortable": "false"
-                    }, {
-                        "name": "label",
-                        "type": "Edm.String",
-                        "facetable": "true",
-                        "filterable": "false",
-                        "searchable": "false",
-                        "sortable": "false"
-                    }]
-                }, {
-                    "name": "locations",
-                    "type": "Collection(Edm.ComplexType)",
-                    "fields": [{
-                        "name": "geo",
-                        "type": "Edm.GeographyPoint",
-                        "facetable": "false",
-                        "filterable": "true",
-                        "searchable": "false",
-                        "sortable": "false"
-                    }, {
-                        "name": "name",
-                        "type": "Edm.ComplexType",
-                        "fields": [{
-                            "name": "english",
-                            "type": "Edm.String",
-                            "facetable": "true",
-                            "filterable": "false",
-                            "searchable": "false",
-                            "sortable": "false"
-                        }, {
-                            "name": "welsh",
-                            "type": "Edm.String",
-                            "facetable": "true",
-                            "filterable": "false",
-                            "searchable": "false",
-                            "sortable": "false"
-                        }]
-                    }]
-                }, {
-                    "name": "mode",
-                    "type": "Edm.ComplexType",
-                    "fields": [{
-                        "name": "code",
-                        "type": "Edm.String",
-                        "facetable": "true",
-                        "filterable": "true",
-                        "searchable": "false",
-                        "sortable": "false"
-                    }, {
-                        "name": "label",
-                        "type": "Edm.String",
-                        "facetable": "true",
-                        "filterable": "false",
-                        "searchable": "false",
-                        "sortable": "false"
-                    }]
-                }, {
-                    "name": "qualification",
-                    "type": "Edm.ComplexType",
-                    "fields": [{
-                        "name": "code",
-                        "type": "Edm.String",
-                        "facetable": "true",
-                        "filterable": "true",
-                        "searchable": "false",
-                        "sortable": "false"
-                    }, {
-                        "name": "label",
-                        "type": "Edm.String",
-                        "facetable": "true",
-                        "filterable": "false",
-                        "searchable": "false",
-                        "sortable": "false"
-                    }]
-                }, {
-                    "name": "sandwich_year",
-                    "type": "Edm.ComplexType",
-                    "fields": [{
-                        "name": "code",
-                        "type": "Edm.String",
-                        "facetable": "false",
-                        "filterable": "true",
-                        "searchable": "false",
-                        "sortable": "false"
-                    }, {
-                        "name": "label",
-                        "type": "Edm.String",
-                        "facetable": "true",
-                        "filterable": "false",
-                        "searchable": "false",
-                        "sortable": "false"
-                    }]
-                }, {
-                    "name": "title",
-                    "type": "Edm.ComplexType",
-                    "fields": [{
-                        "name": "english",
-                        "type": "Edm.String",
-                        "facetable": "true",
-                        "filterable": "false",
-                        "searchable": "true",
-                        "sortable": "false"
-                    }, {
-                        "name": "welsh",
-                       "type": "Edm.String",
-                        "facetable": "true",
-                        "filterable": "false",
-                        "searchable": "true",
-                        "sortable": "false"
-                    }]
-                }, {
-                    "name": "year_abroad",
-                    "type": "Edm.ComplexType",
-                    "fields": [{
-                        "name": "code",
-                        "type": "Edm.String",
-                        "facetable": "false",
-                        "filterable": "true",
-                        "searchable": "false",
-                        "sortable": "false"
-                    }, {
-                        "name": "label",
-                        "type": "Edm.String",
-                        "facetable": "true",
-                        "filterable": "false",
-                        "searchable": "false",
-                        "sortable": "false"
-                    }]
-                }]
-            }]
+        self.query_string = '?api-version=' + api_version
+        self.index_name = f"courses-{version}"
+        self.url = url
+
+        self.headers = {
+            'Content-Type': 'application/json',
+            'api-key': api_key,
+            'odata': 'verbose'
         }
 
-    def create(self, url, headers, index_name):
-        self.get(index_name)
+    def delete_if_already_exists(self):
 
         try:
-            response = requests.post(url, headers=headers, json=self.course_schema)
+            delete_url = self.url + "/indexes/" + self.index_name + \
+                self.query_string
+
+            response = requests.delete(delete_url, headers=self.headers)
+
+        except requests.exceptions.RequestException as e:
+            logging.exception('unexpected error deleting index', exc_info=True)
+            raise exceptions.StopEtlPipelineErrorException(e)
+
+        if response.status_code == 204:
+            logging.warn(
+                f'course search index already exists, successful deletion\
+                           prior to recreation\n index: {self.index_name}')
+
+        elif response.status_code != 404:
+            # 404 is the expected response, because normally the
+            # course search index will not exist
+            logging.error(
+                f'unexpected response when deleting existing search index,\
+                            search_response: {response.json()}\nindex-name:\
+                            {self.index_name}\nstatus: {response.status_code}')
+
+            raise exceptions.StopEtlPipelineErrorException
+
+    def create(self):
+        self.get_index()
+
+        try:
+            create_url = self.url + "/indexes" + self.query_string
+            response = requests.post(create_url,
+                                     headers=self.headers,
+                                     json=self.course_schema)
+
         except requests.exceptions.RequestException as e:
             logging.exception('unexpected error creating index', exc_info=True)
             raise exceptions.StopEtlPipelineErrorException(e)
 
         if response.status_code != 201:
             logging.error(f'failed to create search index\n\
-                            index-name: {index_name}\n\
+                            index-name: {self.index_name}\n\
                             status: {response.status_code}')
 
             raise exceptions.StopEtlPipelineErrorException
 
+    def get_index(self):
+        cwd = os.path.dirname(os.path.abspath(__file__))
+        with open(os.path.join(cwd, 'schemas/course.json')) as json_file:
+            schema = json.load(json_file)
+            schema['name'] = self.index_name
 
-def load_course_documents(course_url, headers, index_name, docs):
-
-    number_of_docs = len(docs)
-    course_count = 0
-    bulk_course_count = 500
-    documents = {}
-    search_courses = []
-    for doc in docs:
-        course_count += 1
-
-        search_course = models.build_course_search_doc(doc)
-        search_courses.append(search_course)
-
-        if course_count % bulk_course_count == 0 or\
-           course_count == number_of_docs:
-
-            documents['value'] = search_courses
-
-            bulk_create_courses(course_url, headers, documents, index_name)
-
-            logging.info(f'successfully loaded {course_count} courses into azure search\n\
-                    index: {index_name}\n')
-
-            # Empty variables
-            documents = {}
-            search_courses = []
+            self.course_schema = schema
 
 
-def bulk_create_courses(course_url, headers, documents, index_name):
-    try:
-        response = requests.post(course_url, headers=headers, json=documents)
-    except requests.exceptions.RequestException as e:
-        logging.exception('unexpected error creating index', exc_info=True)
-        raise exceptions.StopEtlPipelineErrorException(e)
+class Load():
+    """Loads course documents into search index"""
+    def __init__(self, url, api_key, api_version, version, docs):
 
-    if response.status_code != 200:
-        logging.error(f'failed to bulk load course search documents\n\
-                        index-name: {index_name}\n\
-                        status: {response.status_code}')
+        self.url = url
+        self.headers = {
+            'Content-Type': 'application/json',
+            'api-key': api_key,
+            'odata': 'verbose'
+        }
+        self.query_string = '?api-version=' + api_version
+        self.index_name = f"courses-{version}"
 
-        raise exceptions.StopEtlPipelineErrorException
+        self.docs = docs
 
+    def course_documents(self):
 
+        number_of_docs = len(self.docs)
+        course_count = 0
+        bulk_course_count = 500
+        documents = {}
+        search_courses = []
+        for doc in self.docs:
+            course_count += 1
+
+            search_course = models.build_course_search_doc(doc)
+            search_courses.append(search_course)
+
+            if course_count % bulk_course_count == 0 or\
+               course_count == number_of_docs:
+
+                documents['value'] = search_courses
+
+                self.bulk_create_courses(documents)
+
+                logging.info(
+                    f'successfully loaded {course_count} courses into azure search\n\
+                        index: {self.index_name}\n')
+
+                # Empty variables
+                documents = {}
+                search_courses = []
+
+    def bulk_create_courses(self, documents):
+
+        try:
+            url = self.url + "/indexes/" + self.index_name + \
+                "/docs/index" + self.query_string
+            response = requests.post(url, headers=self.headers, json=documents)
+        except requests.exceptions.RequestException as e:
+            logging.exception('unexpected error creating index', exc_info=True)
+            raise exceptions.StopEtlPipelineErrorException(e)
+
+        if response.status_code != 200:
+            logging.error(f'failed to bulk load course search documents\n\
+                            index-name: {self.index_name}\n\
+                            status: {response.status_code}')
+
+            raise exceptions.StopEtlPipelineErrorException

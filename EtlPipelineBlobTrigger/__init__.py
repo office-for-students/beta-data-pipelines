@@ -12,7 +12,8 @@ from distutils.util import strtobool
 import azure.functions as func
 from azure.storage.blob import BlockBlobService
 
-from . import course_docs, exceptions, validators
+from . import course_docs, validators
+from SharedCode import exceptions
 
 __author__ = "Jillur Quddus, Nathan Shumoogum"
 __credits__ = ["Jillur Quddus", "Nathan Shumoogum"]

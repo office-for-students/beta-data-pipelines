@@ -4,8 +4,7 @@ import logging
 def build_course_search_doc(course):
 
     sort_pub_ukprn_name = create_sortable_name(
-        course['course']['institution']['pub_ukprn_name']
-    )
+        course['course']['institution']['pub_ukprn_name'])
 
     locations = build_locations(course['course'])
     title = build_title(course['course'])
@@ -24,12 +23,16 @@ def build_course_search_doc(course):
                 "label": course['course']['distance_learning']['label']
             },
             "foundation_year_availability": {
-                "code": course['course']['foundation_year_availability']['code'],
-                "label": course['course']['foundation_year_availability']['label']
+                "code":
+                course['course']['foundation_year_availability']['code'],
+                "label":
+                course['course']['foundation_year_availability']['label']
             },
-            "honours_award_provision": course['course']['honours_award_provision'],
+            "honours_award_provision":
+            course['course']['honours_award_provision'],
             "institution": {
-                "pub_ukprn_name": course['course']['institution']['pub_ukprn_name'],
+                "pub_ukprn_name":
+                course['course']['institution']['pub_ukprn_name'],
                 "sort_pub_ukprn_name": sort_pub_ukprn_name,
                 "pub_ukprn": course['course']['institution']['pub_ukprn']
             },
@@ -98,10 +101,7 @@ def build_locations(course):
 
                 search_location['geo'] = {
                     "type": "Point",
-                    "coordinates": [
-                        longitude,
-                        latitude
-                    ]
+                    "coordinates": [longitude, latitude]
                 }
 
             search_locations.append(search_location)
@@ -118,7 +118,8 @@ def build_title(course):
         if 'welsh' in course['title']:
             search_title['welsh'] = course['title']['welsh']
     else:
-        logging.warning(f"course title missing\n course_id:{course['kis_course_id']}\n \
+        logging.warning(
+            f"course title missing\n course_id:{course['kis_course_id']}\n \
             course_mode: {course['mode']['code']}\n \
             institution_id: {course['institution']['pub_ukprn']}\n")
 
@@ -133,7 +134,9 @@ def build_length_of_course(course):
         if 'label' in course['length_of_course'] and \
            'code' in course['length_of_course']:
 
-            search_length_of_course['code'] = course['length_of_course']['code']
-            search_length_of_course['label'] = course['length_of_course']['label']
+            search_length_of_course['code'] = course['length_of_course'][
+                'code']
+            search_length_of_course['label'] = course['length_of_course'][
+                'label']
 
     return search_length_of_course
