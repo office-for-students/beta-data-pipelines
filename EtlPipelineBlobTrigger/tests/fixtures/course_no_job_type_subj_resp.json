@@ -4,7 +4,7 @@
         "non_professional_or_managerial_jobs": 20,
         "number_of_students": 10,
         "professional_or_managerial_jobs": 80,
-        "resp_rate": 70,
+        "response_rate": 70,
         "unknown_professions": 0
     }
 ]

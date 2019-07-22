@@ -1,39 +1,78 @@
-import inspect
+"""Test the course NSS statistics"""
 import json
-import os
-import sys
 import unittest
 import xml.etree.ElementTree as ET
 
 import xmltodict
+
 from course_stats import Nss
+from testing_utils import get_string
 
 
-def get_string(filename):
-    """Reads file in test dir into a string and returns"""
-
-    cwd = os.path.dirname(os.path.abspath(__file__))
-    with open(os.path.join(cwd, filename)) as fp:
-        string = fp.read()
-    return string
-
-
-class TestGetNssKey(unittest.TestCase):
+class TestLookupDataFields(unittest.TestCase):
     def setUp(self):
         self.nss = Nss()
+        self.lookup = self.nss.nss_data_fields_lookup
 
-    def test_with_valid_key(self):
-        expected_key = 'number_of_students'
+    def test_agg_lookup(self):
+        xml_key = 'NSSAGG'
+        expected_key = 'aggregation_level'
+        expected_elem_type = 'M'
+        json_key = self.lookup[xml_key][0]
+        elem_type = self.lookup[xml_key][1]
+        self.assertEqual(expected_key, json_key)
+        self.assertEqual(expected_elem_type, elem_type)
+
+    def test_resp_rate_lookup(self):
+        xml_key = 'NSSRESP_RATE'
+        expected_key = 'response_rate'
+        expected_elem_type = 'M'
+        json_key = self.lookup[xml_key][0]
+        elem_type = self.lookup[xml_key][1]
+        self.assertEqual(expected_key, json_key)
+        self.assertEqual(expected_elem_type, elem_type)
+
+    def test_pop_lookup(self):
         xml_key = 'NSSPOP'
-        key = self.nss.get_key(xml_key)
-        self.assertEqual(expected_key, key)
+        expected_key = 'number_of_students'
+        expected_elem_type = 'M'
+        json_key = self.lookup[xml_key][0]
+        elem_type = self.lookup[xml_key][1]
+        self.assertEqual(expected_key, json_key)
+        self.assertEqual(expected_elem_type, elem_type)
 
-    def test_with_invalid_key(self):
-        invalid_xml_key = 'invalid_key'
-        with self.assertRaises(KeyError):
-            self.nss.get_key(invalid_xml_key)
+    def test_subj_lookup(self):
+        xml_key = 'NSSSBJ'
+        expected_key = 'subject'
+        expected_elem_type = 'O'
+        json_key = self.lookup[xml_key][0]
+        elem_type = self.lookup[xml_key][1]
+        self.assertEqual(expected_key, json_key)
+        self.assertEqual(expected_elem_type, elem_type)
 
-class TestNss(unittest.TestCase):
+    def test_question_lookup(self):
+        xml_key = 'Q1'
+        expected_key = 'question_1'
+        expected_elem_type = 'M'
+        json_key = self.lookup[xml_key][0]
+        elem_type = self.lookup[xml_key][1]
+        self.assertEqual(expected_key, json_key)
+        self.assertEqual(expected_elem_type, elem_type)
+
+
+class TestLookupQuestionNumber(unittest.TestCase):
+    def setUp(self):
+        self.nss = Nss()
+        self.lookup = self.nss.question_lookup
+
+    def test_lookup_question_description(self):
+        xml_key = 'Q1'
+        expected_description = 'Staff are good at explaining things'
+        description = self.lookup[xml_key]
+        self.assertEqual(expected_description, description)
+
+
+class TestNssGetStats(unittest.TestCase):
     def setUp(self):
         self.nss = Nss()
 
@@ -47,15 +86,13 @@ class TestNss(unittest.TestCase):
                     ET.tostring(course))['KISCOURSE']
                 self.nss.get_stats(raw_course_data)
 
-
     def test_get_stats_no_subj(self):
         raw_course_xml = xmltodict.parse(
             get_string('fixtures/course_nss_questions.xml'))['KISCOURSE']
         expected_response = json.loads(
             get_string('fixtures/course_nss_questions_resp.json'))
         json_obj = self.nss.get_stats(raw_course_xml)
-        self.assertListEqual(json_obj, expected_response)
-
+        self.assertEqual(json_obj[0], expected_response[0])
 
     def test_get_stats_subj(self):
         raw_course_xml = xmltodict.parse(
@@ -63,7 +100,7 @@ class TestNss(unittest.TestCase):
         expected_response = json.loads(
             get_string('fixtures/course_nss_subj_resp.json'))
         json_obj = self.nss.get_stats(raw_course_xml)
-        self.assertListEqual(json_obj, expected_response)
+        self.assertDictEqual(json_obj[0], expected_response[0])
 
 
 # TODO Test more of the functionality - more lookups etc
