@@ -1,17 +1,21 @@
 [
     {
         "aggregation_level": 13,
-        "higher_quartile": 23000,
-        "lower_quartile": 16000,
+        "higher_quartile": 30000,
+        "lower_quartile": 22000,
+        "median": 26000,
         "number_of_graduates": 25,
         "response_rate": 95,
+        "sector_higher_quartile": 23000,
+        "sector_lower_quartile": 16000,
+        "sector_median": 19000,
         "subject": {
             "code": "CAH21-01-06",
             "english_label": "Drama",
             "welsh_label": "Drama"
         },
         "unavailable": {
-            "code": "1",
+            "code": 1,
             "reason": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in Drama."
         }
     }

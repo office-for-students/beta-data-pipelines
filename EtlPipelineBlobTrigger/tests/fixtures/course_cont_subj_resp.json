@@ -13,7 +13,7 @@
             "welsh_label": "Gwyddorau anifeiliaid"
         },
         "unavailable": {
-            "code": "1",
+            "code": 1,
             "reason": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in Animal science."
         }
     }

@@ -2,71 +2,71 @@
     {
         "code": "T001",
         "description": "less than 48 tariff points",
-        "entrants": "20"
+        "entrants": 20
     },
     {
         "code": "T048",
         "description": "between 48 and 63 tariff points",
-        "entrants": "10"
+        "entrants": 10
     },
     {
         "code": "T064",
         "description": "between 64 and 79 tariff points",
-        "entrants": "10"
+        "entrants": 10
     },
     {
         "code": "T080",
         "description": "between 80 and 95 tariff points",
-        "entrants": "20"
+        "entrants": 20
     },
     {
         "code": "T096",
         "description": "between 96 and 111 tariff points",
-        "entrants": "20"
+        "entrants": 20
     },
     {
         "code": "T112",
         "description": "between 112 and 127 tariff points",
-        "entrants": "0"
+        "entrants": 0
     },
     {
         "code": "T128",
         "description": "between 128 and 143 tariff points",
-        "entrants": "10"
+        "entrants": 10
     },
     {
         "code": "T144",
         "description": "between 144 and 159 tariff points",
-        "entrants": "20"
+        "entrants": 20
     },
     {
         "code": "T160",
         "description": "between 160 and 175 tariff points",
-        "entrants": "0"
+        "entrants": 0
     },
     {
         "code": "T176",
         "description": "between 176 and 191 tariff points",
-        "entrants": "0"
+        "entrants": 0
     },
     {
         "code": "T192",
         "description": "between 192 and 207 tariff points",
-        "entrants": "0"
+        "entrants": 0
     },
     {
         "code": "T208",
         "description": "between 208 and 223 tariff points",
-        "entrants": "0"
+        "entrants": 0
     },
     {
         "code": "T224",
         "description": "between 224 and 239 tariff points",
-        "entrants": "0"
+        "entrants": 0
     },
     {
         "code": "T240",
         "description": "240 or more tariff points",
-        "entrants": "0"
+        "entrants": 0
     }
 ]
