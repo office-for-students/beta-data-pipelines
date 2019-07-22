@@ -15,7 +15,7 @@ from distutils.util import strtobool
 import xmlschema
 from xmlschema.validators.exceptions import XMLSchemaValidationError
 
-import exceptions
+from SharedCode import exceptions
 
 __author__ = "Jillur Quddus, Nathan Shumoogum"
 __credits__ = ["Jillur Quddus", "Nathan Shumoogum"]
