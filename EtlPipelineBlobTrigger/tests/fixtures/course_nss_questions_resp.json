@@ -1,7 +1,7 @@
 [
     {
         "number_of_students": 15,
-        "resp_rate": 56,
+        "response_rate": 56,
         "aggregation_level": 14,
         "question_1": {
             "description": "Staff are good at explaining things",

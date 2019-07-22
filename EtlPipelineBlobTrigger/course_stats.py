@@ -42,7 +42,8 @@ class Continuation:
                                         self.xml_subj_key, self.xml_agg_key,
                                         self.xml_unavail_reason_key)
 
-    def get_key(self, xml_key):
+    @staticmethod
+    def get_key(xml_key):
         return {
             'CONTUNAVAILREASON': 'unavailable',
             "CONTPOP": 'number_of_students',
@@ -72,7 +73,8 @@ class Employment:
                                         self.xml_subj_key, self.xml_agg_key,
                                         self.xml_unavail_reason_key)
 
-    def get_key(self, xml_key):
+    @staticmethod
+    def get_key(xml_key):
         return {
             "EMPUNAVAILREASON": "unavailable",
             'EMPPOP': 'number_of_students',
@@ -104,7 +106,8 @@ class Entry:
                                         self.xml_subj_key, self.xml_agg_key,
                                         self.xml_unavail_reason_key)
 
-    def get_key(self, xml_key):
+    @staticmethod
+    def get_key(xml_key):
         return {
             'ENTUNAVAILREASON': 'unavailable',
             "ENTPOP": 'number_of_students',
@@ -137,13 +140,14 @@ class JobType:
                                         self.xml_subj_key, self.xml_agg_key,
                                         self.xml_unavail_reason_key)
 
-    def get_key(self, xml_key):
+    @staticmethod
+    def get_key(xml_key):
         return {
             'JOBUNAVAILREASON': 'unavailable',
             "JOBPOP": 'number_of_students',
             "JOBAGG": 'aggregation_level',
             "JOBSBJ": 'subject',
-            'JOBRESP_RATE': 'resp_rate',
+            'JOBRESP_RATE': 'response_rate',
             "PROFMAN": 'professional_or_managerial_jobs',
             "OTHERJOB": 'non_professional_or_managerial_jobs',
             "UNKWN": 'unknown_professions',
@@ -158,97 +162,66 @@ class Nss:
 
     def __init__(self):
         self.xml_element_key = 'NSS'
-        self.xml_subj_key = 'NSSSBJ'
-        self.xml_agg_key = 'NSSAGG'
-        self.xml_unavail_reason_key = 'NSSUNAVAILREASON'
 
-        self.shared_utils = SharedUtils(self.xml_element_key,
-                                        self.xml_subj_key, self.xml_agg_key,
-                                        self.xml_unavail_reason_key)
+        self.shared_utils = SharedUtils(self.xml_element_key, 'NSSSBJ',
+                                        'NSSAGG', 'NSSUNAVAILREASON')
         self.question_lookup = self.shared_utils.get_lookup(
             'nss_question_number')
-        self.q_number_string_lookup = {
-            f'Q{i}': f'question_{i}'
-            for i in range(1, 28)
-        }
-        self.nss_key_lookup_table = self.get_nss_key_lookup_table()
-
-    def get_nss_key_lookup_table(self):
-        lookup = {
-            'NSSUNAVAILREASON': 'unavailable',
-            "NSSPOP": 'number_of_students',
-            "NSSAGG": 'aggregation_level',
-            "NSSSBJ": 'subject',
-            'NSSRESP_RATE': 'resp_rate',
-        }
-        lookup.update(self.q_number_string_lookup)
-        return lookup
-
-    def get_key(self, xml_key):
-        return self.nss_key_lookup_table[xml_key]
-
-    def get_stats(self, raw_course_data):
-        return self.get_json_list(raw_course_data, self.get_key)
+        self.nss_data_fields_lookup = self.shared_utils.get_lookup(
+            'nss_data_fields')
+        self.is_question_lookup = [f'Q{i}' for i in range(1, 28)]
 
     def is_question(self, xml_key):
-        return xml_key in self.q_number_string_lookup
+        return xml_key in self.is_question_lookup
 
     def get_question(self, xml_elem, xml_key):
         question = {}
-
         question['description'] = self.question_lookup[xml_key]
         question['agree_or_strongly_agree'] = int(xml_elem[xml_key])
         return question
 
-    def get_sort_key(self, key):
-        sort_order = OrderedDict([('aggregation_level', 0),
-                                  ('number_of_students', 1)])
-        q_start = 2
-        n_questions = 27
-        q_end = q_start + n_questions
-        order_of_questions = OrderedDict(
-            {f'question_{i}': i + q_start
-             for i in range(1, 28)})
-        sort_order.update(order_of_questions)
-        sort_order['resp_rate'] = q_end + 1
-        sort_order['subject'] = q_end + 2
-        sort_order['unavailable'] = q_end + 3
-        return sort_order[key[0]]
+    def get_mandatory_field(self, xml_elem, xml_key):
+        if self.is_question(xml_key):
+            return self.get_question(xml_elem, xml_key)
+        return self.shared_utils.get_json_value(xml_elem[xml_key])
 
-    def get_json_list(self, raw_course_data, get_key):
+    def get_json_data(self, xml_elem):
+        lookup = self.nss_data_fields_lookup
+        json_data = OrderedDict()
+        for xml_key in lookup:
+            if lookup[xml_key][1] == 'M':
+                json_data[lookup[xml_key][0]] = self.get_mandatory_field(
+                    xml_elem, xml_key)
+            else:
+                if xml_key in xml_elem:
+                    json_key = lookup[xml_key][0]
+                    if json_key == 'subject':
+                        json_data[json_key] = self.shared_utils.get_subject(
+                            xml_elem)
+                    else:
+                        json_data[json_key] = self.shared_utils.get_json_value(
+                            xml_elem[xml_key])
+        return json_data
+
+    def get_stats(self, raw_course_data):
         """Returns a list of JSON objects (as dicts) for this stats element"""
 
         json_elem_list = []
         raw_xml_list = SharedUtils.get_raw_list(raw_course_data,
                                                 self.xml_element_key)
         for xml_elem in raw_xml_list:
-
-            json_elem = {}
-            for xml_key in xml_elem:
-                json_key = get_key(xml_key)
-                if self.is_question(xml_key):
-                    json_elem[json_key] = self.get_question(xml_elem, xml_key)
-                elif json_key == 'subject':
-                    json_elem[json_key] = self.shared_utils.get_subject(
-                        xml_elem)
-                elif json_key == 'unavailable':
-                    if self.shared_utils.need_unavailable(xml_elem):
-                        json_elem[
-                            json_key] = self.shared_utils.get_unavailable(
-                                xml_elem)
-                else:
-                    json_elem[json_key] = self.shared_utils.get_json_value(
-                        xml_elem[xml_key])
-                sorted_json_elem = OrderedDict(
-                    sorted(json_elem.items(), key=self.get_sort_key))
-            json_elem_list.append(sorted_json_elem)
+            json_elem = OrderedDict()
+            if self.shared_utils.has_data(xml_elem):
+                json_elem.update(self.get_json_data(xml_elem))
+            if self.shared_utils.need_unavailable(xml_elem):
+                json_elem['unavailable'] = self.shared_utils.get_unavailable(
+                    xml_elem)
+            json_elem_list.append(json_elem)
         return json_elem_list
 
 
 class Salary:
     """Extracts and transforms the Salary course element"""
-
-    # TODO add additional fields when remaining mappings available
 
     def __init__(self):
         self.xml_element_key = 'SALARY'
@@ -260,47 +233,45 @@ class Salary:
                                         self.xml_subj_key, self.xml_agg_key,
                                         self.xml_unavail_reason_key)
 
-    def get_key(self, xml_key):
-        # TODO add additional fields once mappings are completed
-        # and change back to }[xml_key] so we'll bubble up any KeyErrors.
-        return {
-            "SALUNAVAILREASON": "unavailable",
-            'SALPOP': 'number_of_graduates',
-            'SALRESP_RATE': 'response_rate',
-            "SALAGG": "aggregation_level",
-            "SALSBJ": 'subject',
-            "UQ": "higher_quartile",
-            'LQ': 'lower_quartile',
-            "MEDIAN": 'median',
-        }.get(xml_key)
+        self.salary_data_fields_lookup = self.shared_utils.get_lookup(
+            'salary_data_fields')
+
+    def get_json_data(self, xml_elem):
+
+        # TODO: Use this technique where appropriate elsewhere.
+        lookup = self.salary_data_fields_lookup
+        json_data = {}
+        for xml_key in lookup:
+            if lookup[xml_key][1] == 'M':
+                json_data[lookup[xml_key]
+                          [0]] = self.shared_utils.get_json_value(
+                              xml_elem[xml_key])
+            else:
+                if xml_key in xml_elem:
+                    json_key = lookup[xml_key][0]
+                    if json_key == 'subject':
+                        json_data[json_key] = self.shared_utils.get_subject(
+                            xml_elem)
+                    else:
+                        json_data[json_key] = self.shared_utils.get_json_value(
+                            xml_elem[xml_key])
+        return json_data
 
     def get_stats(self, raw_course_data):
-        # TODO - use shared version when all Salary fields mapped
-        return self.get_json_list(raw_course_data)
+        """Returns a list of JSON objects (as dicts) for this stats element"""
 
-    def get_json_list(self, raw_course_data):
         json_elem_list = []
         raw_xml_list = SharedUtils.get_raw_list(raw_course_data,
                                                 self.xml_element_key)
         for xml_elem in raw_xml_list:
             json_elem = {}
-            for xml_key in xml_elem:
-                json_key = self.get_key(xml_key)
-                if not json_key:
-                    continue
-                if json_key == 'subject':
-                    json_elem[json_key] = self.shared_utils.get_subject(
-                        xml_elem)
-                elif json_key == 'unavailable':
-                    if self.shared_utils.need_unavailable(xml_elem):
-                        json_elem[
-                            json_key] = self.shared_utils.get_unavailable(
-                                xml_elem)
-                else:
-                    json_elem[json_key] = self.shared_utils.get_json_value(
-                        xml_elem[xml_key])
-                ordered_json_elem = OrderedDict(sorted(json_elem.items()))
-            json_elem_list.append(ordered_json_elem)
+            if self.shared_utils.has_data(xml_elem):
+                json_elem.update(self.get_json_data(xml_elem))
+            if self.shared_utils.need_unavailable(xml_elem):
+                json_elem['unavailable'] = self.shared_utils.get_unavailable(
+                    xml_elem)
+            sorted_json_elem = OrderedDict(sorted(json_elem.items()))
+            json_elem_list.append(sorted_json_elem)
         return json_elem_list
 
 
@@ -318,10 +289,7 @@ class Tariff:
                                         self.xml_subj_key, self.xml_agg_key,
                                         self.xml_unavail_reason_key)
         self.tariff_description_lookup = self.shared_utils.get_lookup(
-            'tariff_description_lookup')
-
-    def get_stats(self, raw_course_data):
-        return self.get_json_list(raw_course_data)
+            'tariff_description')
 
     def get_tariff_description(self, xml_key):
         return self.tariff_description_lookup[xml_key]
@@ -330,19 +298,19 @@ class Tariff:
         return [{
             'code': xml_key,
             'description': self.get_tariff_description(xml_key),
-            'entrants': xml_elem[xml_key],
+            'entrants': int(xml_elem[xml_key]),
         } for xml_key in self.tariff_description_lookup.keys()]
 
     def get_json_data(self, xml_elem):
         json_data = {}
-        json_data['aggregation'] = xml_elem[self.xml_agg_key]
-        json_data['number_of_students'] = xml_elem[self.xml_pop_key]
+        json_data['aggregation_level'] = int(xml_elem[self.xml_agg_key])
+        json_data['number_of_students'] = int(xml_elem[self.xml_pop_key])
         if self.xml_subj_key in xml_elem:
             json_data['subject'] = self.shared_utils.get_subject(xml_elem)
         json_data['tariffs'] = self.get_tariffs_list(xml_elem)
         return json_data
 
-    def get_json_list(self, raw_course_data):
+    def get_stats(self, raw_course_data):
         """Returns a list of JSON objects (as dicts) for this stats element"""
 
         json_elem_list = []
@@ -374,14 +342,17 @@ class SharedUtils:
         self.subj_code_welsh = self.get_lookup('subj_code_welsh')
         self.unavail_reason = self.get_lookup('unavail_reason')
 
-    def get_lookup(self, lookup_name):
+    @staticmethod
+    def get_lookup(lookup_name):
         cwd = os.path.dirname(os.path.abspath(__file__))
         filename = {
             'subj_code_english': 'subj_code_english.json',
             'subj_code_welsh': 'subj_code_welsh.json',
             'unavail_reason': 'unavailreason.json',
             'nss_question_number': 'nss_question_number.json',
-            'tariff_description_lookup': 'tariff_description.json'
+            'tariff_description': 'tariff_description.json',
+            'salary_data_fields': 'salary_data_fields.json',
+            'nss_data_fields': 'nss_data_fields.json',
         }[lookup_name]
         with open(os.path.join(cwd, f'lookup_files/{filename}')) as infile:
             return json.load(infile)
@@ -402,10 +373,6 @@ class SharedUtils:
 
     def get_aggs_for_code(self, unavail_reason_code):
         return self.unavail_reason['data'][unavail_reason_code].keys()
-
-    def has_data(self, xml_elem):
-        """Returns True if the stats XML element has data otherwise False"""
-        return len(xml_elem) > 1
 
     def need_unavailable(self, xml_elem):
         """Returns True if unavailable is needed otherwise False"""
@@ -447,15 +414,10 @@ class SharedUtils:
         unavail_reason_code = elem[self.xml_unavail_reason_key]
         validate_unavailable_reason_code(unavail_reason_code)
 
-        unavailable['code'] = unavail_reason_code
+        unavailable['code'] = int(unavail_reason_code)
         unavailable['reason'] = self.get_unavailable_reason_str(
             unavail_reason_code, subj_key, agg, elem)
         return unavailable
-
-    def get_json_value(self, xml_value):
-        if xml_value.isdigit():
-            xml_value = int(xml_value)
-        return xml_value
 
     def get_json_list(self, raw_course_data, get_key):
         """Returns a list of JSON objects (as dicts) for this stats element"""
@@ -479,6 +441,17 @@ class SharedUtils:
                 ordered_json_elem = OrderedDict(sorted(json_elem.items()))
             json_elem_list.append(ordered_json_elem)
         return json_elem_list
+
+    @staticmethod
+    def has_data(xml_elem):
+        """Returns True if the stats XML element has data otherwise False"""
+        return len(xml_elem) > 1
+
+    @staticmethod
+    def get_json_value(xml_value):
+        if xml_value.isdigit():
+            xml_value = int(xml_value)
+        return xml_value
 
     @staticmethod
     def get_raw_list(raw_course_data, element_key):
