@@ -174,7 +174,7 @@ class JobType:
 class Nss:
     """Extracts and transforms the NSS course element"""
 
-    NUM_QUESTIONS = NUM_QUESTIONS = 27
+    NUM_QUESTIONS = 27
 
     def __init__(self):
         self.xml_element_key = "NSS"
