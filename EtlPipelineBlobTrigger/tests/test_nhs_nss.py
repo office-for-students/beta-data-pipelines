@@ -1,4 +1,5 @@
 """Test the course NSS statistics"""
+import json
 import unittest
 import xml.etree.ElementTree as ET
 
@@ -89,23 +90,25 @@ class TestNssGetStats(unittest.TestCase):
                 ]
                 self.nhs.get_stats(raw_course_data)
 
-    """
-    def test_get_stats_no_subj(self):
-        raw_course_xml = xmltodict.parse(
-            get_string('fixtures/course_nss_questions.xml'))['KISCOURSE']
-        expected_response = json.loads(
-            get_string('fixtures/course_nss_questions_resp.json'))
-        json_obj = self.nss.get_stats(raw_course_xml)
-        self.assertEqual(json_obj[0], expected_response[0])
-
     def test_get_stats_subj(self):
         raw_course_xml = xmltodict.parse(
-            get_string('fixtures/course_nss_subj.xml'))['KISCOURSE']
+            get_string("fixtures/course_nhs_subj.xml")
+        )["KISCOURSE"]
         expected_response = json.loads(
-            get_string('fixtures/course_nss_subj_resp.json'))
-        json_obj = self.nss.get_stats(raw_course_xml)
+            get_string("fixtures/course_nhs_subj_resp.json")
+        )
+        json_obj = self.nhs.get_stats(raw_course_xml)
+        self.assertEqual(json_obj[0], expected_response[0])
+
+    def test_get_stats_no_subj(self):
+        raw_course_xml = xmltodict.parse(
+            get_string("fixtures/course_nhs_no_subj.xml")
+        )["KISCOURSE"]
+        expected_response = json.loads(
+            get_string("fixtures/course_nhs_no_subj_resp.json")
+        )
+        json_obj = self.nhs.get_stats(raw_course_xml)
         self.assertDictEqual(json_obj[0], expected_response[0])
-     """
 
 
 # TODO Test more of the functionality - more lookups etc
