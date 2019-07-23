@@ -6,10 +6,8 @@
 
 """
 
-import inspect
 import logging
 import os
-import sys
 from distutils.util import strtobool
 
 import xmlschema
@@ -27,7 +25,8 @@ __status__ = "Development"
 
 def validate_xml(xsd_path, xml_path_or_string) -> bool:
     stop_etl_pipeline_on_warning = bool(
-        strtobool(os.environ['StopEtlPipelineOnWarning']))
+        strtobool(os.environ["StopEtlPipelineOnWarning"])
+    )
     """ Validate a given XML file or string against its XSD """
     xml_schema = xmlschema.XMLSchema(xsd_path)
     xml_is_valid = xml_schema.is_valid(xml_path_or_string)
@@ -50,17 +49,31 @@ def validate_xml(xsd_path, xml_path_or_string) -> bool:
 def validate_unavailable_reason_code(unavail_reason_code):
     """Check the code read from the ????UNAVAILREASON is valid"""
 
-    valid_codes = ['0', '1', '2']
+    valid_codes = ["0", "1", "2"]
     if unavail_reason_code not in valid_codes:
         logging.error(
-            f'The unavailable reason code is invalid {unavail_reason_code}',
-            exc_info=True)
+            f"The unavailable reason code is invalid {unavail_reason_code}",
+            exc_info=True,
+        )
+        raise exceptions.StopEtlPipelineErrorException
+    return True
+
+
+def validate_leo_unavailable_reason_code(unavail_reason_code):
+    """Check the code read from LEOUNAVAILREASON is valid for no data"""
+
+    valid_codes = ["1", "2"]
+    if unavail_reason_code not in valid_codes:
+        logging.error(
+            f"The unavailable reason code is invalid {unavail_reason_code}",
+            exc_info=True,
+        )
         raise exceptions.StopEtlPipelineErrorException
     return True
 
 
 def validate_agg(unavail_reason_code, data, agg, lookup):
-    """Check the agg is valid if it is to be used to get an unavailble string"""
+    """Check the agg code is valid for an unavailble string"""
 
     # The valid values for agg depends on if there is data availble and the
     # unavail reason code.
@@ -69,12 +82,13 @@ def validate_agg(unavail_reason_code, data, agg, lookup):
 
     if not validate_unavailable_reason_code(unavail_reason_code):
         logging.error(
-            f'The unavailable reason code is invalid {unavail_reason_code}',
-            exc_info=True)
+            f"The unavailable reason code is invalid {unavail_reason_code}",
+            exc_info=True,
+        )
         raise exceptions.StopEtlPipelineErrorException
     try:
-        reason_str = lookup['data'][unavail_reason_code][agg]
+        lookup["data"][unavail_reason_code][agg]
     except KeyError:
-        logging.error(f'The aggregation value is invalid {agg}', exc_info=True)
+        logging.error(f"The aggregation value is invalid {agg}", exc_info=True)
         raise exceptions.StopEtlPipelineErrorException
     return
