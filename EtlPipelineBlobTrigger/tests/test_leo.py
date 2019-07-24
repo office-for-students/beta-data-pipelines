@@ -1,14 +1,14 @@
 """Test the course NSS statistics"""
-# import json
 import unittest
 
-# import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as ET
 
-# import xmltodict
+import xmltodict
 
+from course_docs import get_country
 from course_stats import Leo
 
-# from testing_utils import get_string
+from testing_utils import get_string
 
 
 class TestLeoDataFields(unittest.TestCase):
@@ -42,6 +42,24 @@ class TestLeoDataFields(unittest.TestCase):
         elem_type = self.lookup[xml_key][1]
         self.assertEqual(expected_key, json_key)
         self.assertEqual(expected_elem_type, elem_type)
+
+
+class TestGetStats(unittest.TestCase):
+    def test_with_large_file(self):
+        """Initial smoke test"""
+        xml_string = get_string("fixtures/large-test-file.xml")
+        root = ET.fromstring(xml_string)
+        for institution in root.iter("INSTITUTION"):
+            raw_inst_data = xmltodict.parse(ET.tostring(institution))[
+                "INSTITUTION"
+            ]
+            country_code = get_country(raw_inst_data)["code"]
+            for course in institution.findall("KISCOURSE"):
+                raw_course_data = xmltodict.parse(ET.tostring(course))[
+                    "KISCOURSE"
+                ]
+                leo = Leo(country_code)
+                leo.get_stats(raw_course_data)
 
 
 # TODO Test more of the functionality - more lookups etc
