@@ -9,6 +9,7 @@ from validators import (
     validate_agg,
     validate_unavailable_reason_code,
     validate_leo_unavailable_reason_code,
+    validate_leo_element_with_data,
 )
 
 
@@ -181,7 +182,7 @@ class Leo:
     """Extracts and transforms the LEO course element"""
 
     # Current understanding of how to transform this data is as follows:
-    #    If there is no data:
+    #    If there is data:
     #       no unavailable section needed
 
     #    What follows is when there is data
@@ -216,8 +217,8 @@ class Leo:
     def need_unavailable(self, xml_elem):
         """Returns True if unavailable is needed otherwise False"""
 
-        # Current understanding is no unavailable reason if there is data
         if self.shared_utils.has_data(xml_elem):
+            validate_leo_element_with_data(xml_elem, self.country_code)
             return False
         return True
 
@@ -641,7 +642,6 @@ class SharedUtils:
 
         validate_agg(
             unavail_reason_code,
-            self.has_data(xml_elem),
             agg,
             self.unavail_reason,
         )
