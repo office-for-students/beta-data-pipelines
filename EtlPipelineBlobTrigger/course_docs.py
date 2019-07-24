@@ -23,10 +23,13 @@ sys.path.insert(0, CURRENTDIR)
 
 import course_lookup_tables as lookup
 from course_stats import get_stats
+from course_accreditations import get_accreditations
+from accreditations import Accreditations
 from kisaims import KisAims
 from locations import Locations
 from SharedCode import utils
 from ukrlp_enricher import UkRlpCourseEnricher
+
 
 def get_institution(raw_inst_data):
     return {
@@ -164,8 +167,8 @@ def get_qualification(lookup_table_raw_xml, kisaims):
     return entry
 
 
-def get_course_entry(locations, locids, raw_inst_data, raw_course_data,
-                     kisaims):
+def get_course_entry(accreditations, locations, locids, raw_inst_data,
+                     raw_course_data, kisaims):
     outer_wrapper = {}
     outer_wrapper['id'] = utils.get_uuid()
     outer_wrapper['created_at'] = datetime.datetime.utcnow().isoformat()
@@ -175,6 +178,11 @@ def get_course_entry(locations, locids, raw_inst_data, raw_course_data,
     outer_wrapper['course_mode'] = raw_course_data['KISMODE']
 
     course = {}
+
+    if 'ACCREDITATION' in raw_course_data:
+        course['accreditations'] = get_accreditations(
+                                        raw_course_data, accreditations)
+
     if 'UKPRNAPPLY' in raw_course_data:
         course['application_provider'] = raw_course_data['UKPRNAPPLY']
     country = get_country(raw_inst_data)
@@ -251,28 +259,23 @@ def create_course_docs(xml_string):
     # Import the XML dataset
     root = ET.fromstring(xml_string)
 
-    # Import kisaims and location nodes
+    # Import accreditations, common, kisaims and location nodes
+    accreditations = Accreditations(root)
     kisaims = KisAims(root)
     locations = Locations(root)
 
-    # Remove limit on the number of courses iterated
-    # iterateion_limit = 5
     course_count = 0
     for institution in root.iter('INSTITUTION'):
-        # if course_count == iterateion_limit:
-        #     break
-            
         raw_inst_data = xmltodict.parse(
             ET.tostring(institution))['INSTITUTION']
         ukprn = raw_inst_data['UKPRN']
         for course in institution.findall('KISCOURSE'):
-            # if course_count == iterateion_limit:
-            #     break
-
             raw_course_data = xmltodict.parse(ET.tostring(course))['KISCOURSE']
             locids = get_locids(raw_course_data, ukprn)
-            course_entry = get_course_entry(locations, locids, raw_inst_data,
+            course_entry = get_course_entry(accreditations, locations,
+                                            locids, raw_inst_data,
                                             raw_course_data, kisaims)
+
             enricher.enrich_course(course_entry)
             cosmosdb_client.CreateItem(collection_link, course_entry)
             course_count += 1
