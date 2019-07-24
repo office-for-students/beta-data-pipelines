@@ -1,4 +1,5 @@
 """Test the course NSS statistics"""
+import json
 import unittest
 
 import xml.etree.ElementTree as ET
@@ -60,6 +61,19 @@ class TestGetStats(unittest.TestCase):
                 ]
                 leo = Leo(country_code)
                 leo.get_stats(raw_course_data)
+
+    def test_get_stats_with_subj(self):
+        raw_course_xml = xmltodict.parse(
+            get_string("fixtures/course_leo_with_subj.xml")
+        )["KISCOURSE"]
+        expected_response = json.loads(
+            get_string("fixtures/course_leo_with_subj_resp.json")
+        )
+        country_code = "XF"
+        leo = Leo(country_code)
+        json_obj = leo.get_stats(raw_course_xml)
+        print(json.dumps(json_obj, indent=4))
+        self.assertEqual(json_obj[0], expected_response[0])
 
 
 # TODO Test more of the functionality - more lookups etc
