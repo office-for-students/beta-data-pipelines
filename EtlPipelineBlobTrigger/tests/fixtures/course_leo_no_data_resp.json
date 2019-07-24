@@ -1,0 +1,8 @@
+[
+    {
+        "unavailable": {
+            "code": 1,
+            "reason": "There is no data available for the subject area of this course. This may be because we only have data for a small number of students or because we do not yet have data. This does not reflect on the quality of the course."
+        }
+    }
+]
