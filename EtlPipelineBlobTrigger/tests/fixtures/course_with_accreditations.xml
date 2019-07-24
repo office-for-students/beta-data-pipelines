@@ -1,0 +1,28 @@
+<KIS>
+    <ACCREDITATIONTABLE>
+        <ACCURL>http://www.bcs.org/accredited</ACCURL>
+        <ACCTEXT>Accredited by BCS, the Chartered Institute for IT for the purposes of fully meeting the academic requirement for registration as a Chartered IT Professional.</ACCTEXT>
+        <ACCTEXTW>Achredir gan BCS, Sefydliad Siartredig TG at ddibenion llawn cwrdd â'r gofynion academaidd ar gyfer cofrestru fel TG Proffesiynol Siartredig.</ACCTEXTW>
+        <ACCTYPE>01101</ACCTYPE>
+    </ACCREDITATIONTABLE>
+    <ACCREDITATIONTABLE>
+        <ACCURL>http://www.engc.org.uk/informationfor/students-apprentices-and-graduates/</ACCURL>
+        <ACCTEXT>Accredited by BCS, the Chartered Institute for IT on behalf of the Engineering Council for the purposes of fully meeting the academic requirement for Incorporated Engineer and partially meeting the academic requirement for a Chartered Engineer.</ACCTEXT>
+        <ACCTEXTW>Cydnabuwyd gan BCS, y Sefydliad Siartredig ar gyfer TG ar ran y Cyngor Peirianneg at bwrpasau cwrdd yn llawn â'r gofyniad academaidd ar gyfer Peiriannydd Corfforedig a chwrdd yn rhannol â'r gofyniad academaidd ar gyfer Peiriannydd Siartredig.</ACCTEXTW>
+        <ACCTYPE>01105</ACCTYPE>
+    </ACCREDITATIONTABLE>
+    <KISCOURSE>
+        <ACCREDITATION>
+            <ACCTYPE>01105</ACCTYPE>
+            <ACCDEPEND>1</ACCDEPEND>
+            <ACCDEPENDURL>http://www.swansea.ac.uk/undergraduate/courses/science/computer-science/bsc-computer-science-g400/</ACCDEPENDURL>
+            <ACCDEPENDURLW>http://www.swansea.ac.uk/cy/israddedig/cyrsiau/gwyddoniaeth/cyfrifiadureg/bsc-cyfrifiadureg-g400/</ACCDEPENDURLW>
+        </ACCREDITATION>
+        <ACCREDITATION>
+            <ACCTYPE>01101</ACCTYPE>
+            <ACCDEPEND>0</ACCDEPEND>
+            <ACCDEPENDURL>http://www.swansea.ac.uk/undergraduate/courses/science/computer-science/bsc-computer-science-g400/</ACCDEPENDURL>
+            <ACCDEPENDURLW>http://www.swansea.ac.uk/cy/israddedig/cyrsiau/gwyddoniaeth/cyfrifiadureg/bsc-cyfrifiadureg-g400/</ACCDEPENDURLW>
+        </ACCREDITATION>
+    </KISCOURSE>
+</KIS>
