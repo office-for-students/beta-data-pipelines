@@ -72,7 +72,18 @@ class TestGetStats(unittest.TestCase):
         country_code = "XF"
         leo = Leo(country_code)
         json_obj = leo.get_stats(raw_course_xml)
-        print(json.dumps(json_obj, indent=4))
+        self.assertEqual(json_obj[0], expected_response[0])
+
+    def test_get_stats_no_data(self):
+        raw_course_xml = xmltodict.parse(
+            get_string("fixtures/course_leo_no_data.xml")
+        )["KISCOURSE"]
+        expected_response = json.loads(
+            get_string("fixtures/course_leo_no_data_resp.json")
+        )
+        country_code = "XF"
+        leo = Leo(country_code)
+        json_obj = leo.get_stats(raw_course_xml)
         self.assertEqual(json_obj[0], expected_response[0])
 
 
