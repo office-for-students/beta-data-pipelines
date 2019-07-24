@@ -22,7 +22,7 @@ CURRENTDIR = os.path.dirname(
 sys.path.insert(0, CURRENTDIR)
 
 import course_lookup_tables as lookup
-from course_stats import get_stats
+from course_stats import get_stats, SharedUtils
 from course_accreditations import get_accreditations
 from accreditations import Accreditations
 from kisaims import KisAims
@@ -80,20 +80,6 @@ def get_locids(raw_course_data, ukprn):
     return locids
 
 
-def get_accommodation_links(locations, locids):
-    accom = []
-    for locid in locids:
-        accom_dict = {}
-        raw_location_data = locations.get_location_data_for_key(locid)
-        if 'ACCOMURL' in raw_location_data:
-            accom_dict['english'] = raw_location_data['ACCOMURL']
-        if 'ACCOMURLW' in raw_location_data:
-            accom_dict['welsh'] = raw_location_data['ACCOMURLW']
-        if accom_dict:
-            accom.append(accom_dict)
-    return accom
-
-
 def get_eng_welsh_item(key, lookup_table):
     item = {}
     keyw = key + 'W'
@@ -106,9 +92,6 @@ def get_eng_welsh_item(key, lookup_table):
 
 def get_links(locations, locids, raw_inst_data, raw_course_data):
     links = {}
-    if locids:
-        accommodation = get_accommodation_links(locations, locids)
-        links['accommodation'] = accommodation
 
     item_details = [
         ('ASSURL', 'assessment_method', raw_course_data),
@@ -127,15 +110,47 @@ def get_links(locations, locids, raw_inst_data, raw_course_data):
     return links
 
 
-def get_location_items(locations, locids, raw_inst_data, raw_course_data):
+def get_location_items(locations, locids, raw_course_data, pub_ukprn):
+
+    course_locations = SharedUtils.get_raw_list(raw_course_data,
+                                                "COURSELOCATION")
+    item = {}
+    for course_location in course_locations:
+        if 'UCASCOURSEID' in course_location:
+            item[course_location['LOCID']+pub_ukprn] = course_location[
+                                                        'UCASCOURSEID']
+
     location_items = []
     for locid in locids:
         location_dict = {}
         raw_location_data = locations.get_location_data_for_key(locid)
+
+        if raw_location_data is None:
+            # TODO Handle gracefully if unable to find lookup
+            logging.warning(f'failed to find location data in lookup table')
+
+        links, accomodation, student_union = {}, {}, {}
+        if 'ACCOMURL' in raw_location_data:
+            accomodation['english'] = raw_location_data['ACCOMURL']
+        if 'ACCOMURLW' in raw_location_data:
+            accomodation['welsh'] = raw_location_data['ACCOMURLW']
+        if accomodation:
+            links['accommodation'] = accomodation
+
+        if 'SUURL' in raw_location_data:
+            student_union['english'] = raw_location_data['SUURL']
+        if 'SUURLW' in raw_location_data:
+            student_union['welsh'] = raw_location_data['SUURLW']
+        if student_union:
+            links['student_union'] = student_union
+        if links:
+            location_dict['links'] = links
+
         if 'LATITUDE' in raw_location_data:
             location_dict['latitude'] = raw_location_data['LATITUDE']
         if 'LONGITUDE' in raw_location_data:
             location_dict['longitude'] = raw_location_data['LONGITUDE']
+
         name = {}
         if 'LOCNAME' in raw_location_data:
             name['english'] = raw_location_data['LOCNAME']
@@ -143,6 +158,10 @@ def get_location_items(locations, locids, raw_inst_data, raw_course_data):
             name['welsh'] = raw_location_data['LOCNAMEW']
         if name:
             location_dict['name'] = name
+
+        if locid in item:
+            location_dict['ucas_course_id'] = item[locid]
+
         location_items.append(location_dict)
     return location_items
 
@@ -209,8 +228,8 @@ def get_course_entry(accreditations, locations, locids, raw_inst_data,
     links = get_links(locations, locids, raw_inst_data, raw_course_data)
     if links:
         course['links'] = links
-    location_items = get_location_items(locations, locids, raw_inst_data,
-                                        raw_course_data)
+    location_items = get_location_items(locations, locids, raw_course_data,
+                                        raw_inst_data['PUBUKPRN'])
     if location_items:
         course['locations'] = location_items
     mode = get_code_label_entry(raw_course_data, lookup.mode, 'KISMODE')
