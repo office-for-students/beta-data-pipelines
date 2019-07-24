@@ -217,7 +217,7 @@ class Leo:
         """Returns True if unavailable is needed otherwise False"""
 
         # Current understanding is no unavailable reason if there is data
-        if not self.shared_utils.has_data(xml_elem):
+        if self.shared_utils.has_data(xml_elem):
             return False
         return True
 
@@ -225,8 +225,6 @@ class Leo:
         return self.country_code != "XF"
 
     def get_unavailable_reason_str(self, unavail_reason_code):
-        validate_unavailable_reason_code(unavail_reason_code)
-
         if self.course_outside_england():
             reason_str = self.unavail_reason["outside_england"]
         else:
