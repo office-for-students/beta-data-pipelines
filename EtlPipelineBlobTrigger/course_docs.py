@@ -1,8 +1,8 @@
 """
 This module extracts course information from the HESA
 XML dataset and writes it in JSON format to Cosmos DB.
-To fit with the recent architecture update this will
-require considerable refactoring.
+To fit with the recent architecture update this may
+require refactoring.
 
 Currently, we handle unexpected exceptions by letting
 them bubble up. This should help flush out problems
@@ -27,6 +27,7 @@ from kisaims import KisAims
 from locations import Locations
 from SharedCode import utils
 from ukrlp_enricher import UkRlpCourseEnricher
+
 
 def get_institution(raw_inst_data):
     return {
@@ -231,7 +232,7 @@ def get_course_entry(locations, locids, raw_inst_data, raw_course_data,
                                                      lookup.year_abroad,
                                                      'YEARABROAD')
 
-    course['statistics'] = get_stats(raw_course_data)
+    course['statistics'] = get_stats(raw_course_data, course['country']['code'])
 
     outer_wrapper['course'] = course
     return outer_wrapper
@@ -261,7 +262,7 @@ def create_course_docs(xml_string):
     for institution in root.iter('INSTITUTION'):
         # if course_count == iterateion_limit:
         #     break
-            
+
         raw_inst_data = xmltodict.parse(
             ET.tostring(institution))['INSTITUTION']
         ukprn = raw_inst_data['UKPRN']
