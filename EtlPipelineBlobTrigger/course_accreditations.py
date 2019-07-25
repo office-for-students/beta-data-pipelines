@@ -1,5 +1,13 @@
 """Data transformation code for accreditation data."""
 
+import os
+import sys
+import inspect
+
+CURRENTDIR = os.path.dirname(
+    os.path.abspath(inspect.getfile(inspect.currentframe())))
+sys.path.insert(0, CURRENTDIR)
+
 import course_lookup_tables as lookup
 from course_stats import SharedUtils
 from helpers import get_eng_welsh_item
@@ -25,7 +33,6 @@ def get_accreditations(raw_course_data, acc_lookup):
             json_elem['text'] = text
 
         if 'ACCDEPENDURL' in xml_elem or 'ACCDEPENDURLW' in xml_elem:
-
             urls = get_eng_welsh_item('ACCDEPENDURL', xml_elem)
             json_elem['url'] = urls
 
