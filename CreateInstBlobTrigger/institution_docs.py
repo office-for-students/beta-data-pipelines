@@ -58,7 +58,10 @@ class InstitutionDocs:
             return {"No name availble for:": f"UKPRN: {ukprn}"}
         return self.ukrlp_lookups[ukprn]["ukprn_name"]
 
-    def get_institution_element(self, raw_inst_data):
+    def get_institution_element(self, institution):
+        raw_inst_data = xmltodict.parse(ET.tostring(institution))[
+            "INSTITUTION"
+        ]
         inst = {}
         if "APROutcome" in raw_inst_data:
             inst["apr_outcome"] = raw_inst_data["APROutcome"]
@@ -72,9 +75,14 @@ class InstitutionDocs:
         )
         if "TEFOutcome" in raw_inst_data:
             inst["tef_outcome"] = raw_inst_data["TEFOutcome"]
+        inst["total_number_of_courses"] = get_total_number_of_courses(
+            institution
+        )
         return inst
 
     def get_institution_doc(self, institution):
+        number_of_courses = get_total_number_of_courses()
+
         raw_inst_data = xmltodict.parse(ET.tostring(institution))[
             "INSTITUTION"
         ]
@@ -84,7 +92,7 @@ class InstitutionDocs:
         outer_wrapper["version"] = 1
         outer_wrapper["institution_id"] = raw_inst_data["PUBUKPRN"]
         outer_wrapper["institution"] = self.get_institution_element(
-            raw_inst_data
+            raw_inst_data, institution
         )
         return outer_wrapper
 
@@ -113,3 +121,7 @@ def get_country(code):
     country["code"] = code
     country["name"] = lookup.country_code[code]
     return country
+
+
+def get_total_number_of_courses(institution):
+    return len(institution.findall("KISCOURSE"))
