@@ -51,13 +51,15 @@ class InstitutionDocs:
         return course
 
     def get_contact_details(self, ukprn):
-        return self.ukrlp_lookups[ukprn][contact_details]
+        if ukprn not in self.ukrlp_lookups:
+            return {'No contact details availble for this institution.':f'UKPRN: {ukprn}'}
+        return self.ukrlp_lookups[ukprn]['contact_details']
 
-    def get_institution_element(self, institution):
+    def get_institution_element(self, raw_inst_data):
         inst = {}
         if 'APROutcome' in raw_inst_data:
             inst['apr_outcome'] = raw_inst_data['APROutcome']
-        contact_details = get_contact_details()
+        inst['contact_details'] = self.get_contact_details(raw_inst_data['UKPRN'])
         return inst
 
     def get_institution_doc(self, institution):
@@ -69,7 +71,7 @@ class InstitutionDocs:
         outer_wrapper['version'] = 1
         outer_wrapper['institution_id'] = raw_inst_data['PUBUKPRN']
 
-        outer_wrapper['institution'] = get_institution_element
+        outer_wrapper['institution'] = self.get_institution_element(raw_inst_data)
         return outer_wrapper
 
 
@@ -95,6 +97,6 @@ class InstitutionDocs:
         inst_count = 0
         for institution in root.iter('INSTITUTION'):
             inst_count += 1
-            institution_doc = get_institution_doc(institution)
+            institution_doc = self.get_institution_doc(institution)
             cosmosdb_client.CreateItem(collection_link, institution_doc)
         logging.info(f"Processed {inst_count} institutions")
