@@ -23,7 +23,7 @@ PARENTDIR = os.path.dirname(CURRENTDIR)
 sys.path.insert(0, CURRENTDIR)
 sys.path.insert(0, PARENTDIR)
 
-from EtlPipelineBlobTrigger.course_docs import get_code_label_entry
+from EtlPipelineBlobTrigger.course_docs import get_code_label_entry, get_country
 from kisaims import KisAims
 from locations import Locations
 from SharedCode import utils
@@ -36,6 +36,7 @@ class InstitutionDocs:
         self.ukrlp_lookups = utils.get_ukrlp_lookups()
 
     def get_course(self, raw_course_data):
+        # TODO complete and then call this
         course = {}
         distance_learning = get_code_label_entry(raw_course_data,
                                                 lookup.distance_learning_lookup,
@@ -57,8 +58,8 @@ class InstitutionDocs:
 
     def get_ukprn_name(self, ukprn):
         if ukprn not in self.ukrlp_lookups:
-            return {'No name availble':f'UKPRN: {ukprn}'}
-        return self.ukrlp_lookups[ukprn]['']
+            return {'No name availble for:':f'UKPRN: {ukprn}'}
+        return self.ukrlp_lookups[ukprn]['ukprn_name']
 
     def get_institution_element(self, raw_inst_data):
         inst = {}
@@ -67,6 +68,7 @@ class InstitutionDocs:
         inst['contact_details'] = self.get_contact_details(raw_inst_data['UKPRN'])
         inst['pub_ukprn_name'] = self.get_pub_ukprn_name(raw_inst_data['PUBUKPRN'])
         inst['pub_ukprn'] = raw_inst_data['PUBUKPRN'])
+        inst['pub_ukprn_country'] = self.get_country(raw_inst_data)
         return inst
 
     def get_institution_doc(self, institution):
@@ -77,7 +79,6 @@ class InstitutionDocs:
         outer_wrapper['created_at'] = datetime.datetime.utcnow().isoformat()
         outer_wrapper['version'] = 1
         outer_wrapper['institution_id'] = raw_inst_data['PUBUKPRN']
-
         outer_wrapper['institution'] = self.get_institution_element(raw_inst_data)
         return outer_wrapper
 
@@ -89,17 +90,10 @@ class InstitutionDocs:
         logging.info(f"create_institution_docs entry \n")
         cosmosdb_client = utils.get_cosmos_client()
 
-        enricher = UkRlpCourseEnricher()
-
         collection_link = utils.get_collection_link(
             'AzureCosmosDbDatabaseId', 'AzureCosmosDbInstitutionsCollectionId')
 
-        # Import the XML dataset
         root = ET.fromstring(xml_string)
-
-        # Import kisaims and location nodes
-        kisaims = KisAims(root)
-        locations = Locations(root)
 
         inst_count = 0
         for institution in root.iter('INSTITUTION'):
