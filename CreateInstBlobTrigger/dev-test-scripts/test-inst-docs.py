@@ -23,13 +23,14 @@ sys.path.insert(0,PARENTDIR)
 sys.path.insert(0,GRANDPARENTDIR)
 sys.path.insert(0,GREATGRANDPARENTDIR)
 
-from institution_docs import create_institution_docs
+from institution_docs import InstitutionDocs
 
 def test_create_inst_docs():
 
     with open('institutions.xml', 'r') as file:
         xml_string = file.read()
 
-    create_institution_docs(xml_string)
+    institution_docs = InstitutionDocs()
+    institution_docs.create_institution_docs(xml_string)
 
 test_create_inst_docs()
