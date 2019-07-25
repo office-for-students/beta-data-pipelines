@@ -129,20 +129,15 @@ def get_location_items(locations, locids, raw_course_data, pub_ukprn):
             # TODO Handle gracefully if unable to find lookup
             logging.warning(f'failed to find location data in lookup table')
 
-        links, accomodation, student_union = {}, {}, {}
-        if 'ACCOMURL' in raw_location_data:
-            accomodation['english'] = raw_location_data['ACCOMURL']
-        if 'ACCOMURLW' in raw_location_data:
-            accomodation['welsh'] = raw_location_data['ACCOMURLW']
-        if accomodation:
-            links['accommodation'] = accomodation
+        links, accommodation, student_union = {}, {}, {}
+        accommodation = get_eng_welsh_item('ACCOMURL', raw_location_data)
+        if accommodation:
+            links['accommodation'] = accommodation
 
-        if 'SUURL' in raw_location_data:
-            student_union['english'] = raw_location_data['SUURL']
-        if 'SUURLW' in raw_location_data:
-            student_union['welsh'] = raw_location_data['SUURLW']
+        student_union = get_eng_welsh_item('SUURL', raw_location_data)
         if student_union:
             links['student_union'] = student_union
+
         if links:
             location_dict['links'] = links
 
