@@ -1,5 +1,10 @@
 """This module provides lookup tables for use when building course docs"""
 
+accreditation_code = {
+    '0': 'Accreditation is not dependent on student choice',
+    '1': 'Accreditation is dependent on student choice'
+}
+
 country_code = {
     'XF': 'England',
     'XG': 'Northern Ireland',

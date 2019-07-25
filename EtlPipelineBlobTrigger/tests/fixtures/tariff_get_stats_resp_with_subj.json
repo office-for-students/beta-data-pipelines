@@ -81,7 +81,7 @@
         ],
         "unavailable": {
             "code": 1,
-            "reason": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in Business and management."
+            "reason": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in Business and management across the last two years."
         }
     }
 ]

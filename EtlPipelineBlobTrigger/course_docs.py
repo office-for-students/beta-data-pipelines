@@ -22,11 +22,14 @@ CURRENTDIR = os.path.dirname(
 sys.path.insert(0, CURRENTDIR)
 
 import course_lookup_tables as lookup
-from course_stats import get_stats
+from course_stats import get_stats, SharedUtils
+from course_accreditations import get_accreditations
+from accreditations import Accreditations
 from kisaims import KisAims
 from locations import Locations
 from SharedCode import utils
 from ukrlp_enricher import UkRlpCourseEnricher
+from helpers import get_eng_welsh_item
 
 
 def get_institution(raw_inst_data):
@@ -78,35 +81,8 @@ def get_locids(raw_course_data, ukprn):
     return locids
 
 
-def get_accommodation_links(locations, locids):
-    accom = []
-    for locid in locids:
-        accom_dict = {}
-        raw_location_data = locations.get_location_data_for_key(locid)
-        if 'ACCOMURL' in raw_location_data:
-            accom_dict['english'] = raw_location_data['ACCOMURL']
-        if 'ACCOMURLW' in raw_location_data:
-            accom_dict['welsh'] = raw_location_data['ACCOMURLW']
-        if accom_dict:
-            accom.append(accom_dict)
-    return accom
-
-
-def get_eng_welsh_item(key, lookup_table):
-    item = {}
-    keyw = key + 'W'
-    if key in lookup_table:
-        item['english'] = lookup_table[key]
-    if keyw in lookup_table:
-        item['welsh'] = lookup_table[keyw]
-    return item
-
-
 def get_links(locations, locids, raw_inst_data, raw_course_data):
     links = {}
-    if locids:
-        accommodation = get_accommodation_links(locations, locids)
-        links['accommodation'] = accommodation
 
     item_details = [
         ('ASSURL', 'assessment_method', raw_course_data),
@@ -125,22 +101,51 @@ def get_links(locations, locids, raw_inst_data, raw_course_data):
     return links
 
 
-def get_location_items(locations, locids, raw_inst_data, raw_course_data):
+def get_location_items(locations, locids, raw_course_data, pub_ukprn):
+
     location_items = []
+    if "COURSELOCATION" not in raw_course_data:
+        return location_items
+
+    course_locations = SharedUtils.get_raw_list(raw_course_data,
+                                                "COURSELOCATION")
+    item = {}
+    for course_location in course_locations:
+        if 'UCASCOURSEID' in course_location:
+            id = course_location['LOCID']+pub_ukprn
+            item[id] = course_location['UCASCOURSEID']
+
     for locid in locids:
         location_dict = {}
         raw_location_data = locations.get_location_data_for_key(locid)
+
+        if raw_location_data is None:
+            logging.warning(f'failed to find location data in lookup table')
+
+        links, accommodation, student_union = {}, {}, {}
+        accommodation = get_eng_welsh_item('ACCOMURL', raw_location_data)
+        if accommodation:
+            links['accommodation'] = accommodation
+
+        student_union = get_eng_welsh_item('SUURL', raw_location_data)
+        if student_union:
+            links['student_union'] = student_union
+
+        if links:
+            location_dict['links'] = links
+
         if 'LATITUDE' in raw_location_data:
             location_dict['latitude'] = raw_location_data['LATITUDE']
         if 'LONGITUDE' in raw_location_data:
             location_dict['longitude'] = raw_location_data['LONGITUDE']
-        name = {}
-        if 'LOCNAME' in raw_location_data:
-            name['english'] = raw_location_data['LOCNAME']
-        if 'LOCNAMEW' in raw_location_data:
-            name['welsh'] = raw_location_data['LOCNAMEW']
+
+        name = get_eng_welsh_item('LOCNAME', raw_location_data)
         if name:
             location_dict['name'] = name
+
+        if locid in item:
+            location_dict['ucas_course_id'] = item[locid]
+
         location_items.append(location_dict)
     return location_items
 
@@ -165,8 +170,8 @@ def get_qualification(lookup_table_raw_xml, kisaims):
     return entry
 
 
-def get_course_entry(locations, locids, raw_inst_data, raw_course_data,
-                     kisaims):
+def get_course_entry(accreditations, locations, locids, raw_inst_data,
+                     raw_course_data, kisaims):
     outer_wrapper = {}
     outer_wrapper['id'] = utils.get_uuid()
     outer_wrapper['created_at'] = datetime.datetime.utcnow().isoformat()
@@ -176,6 +181,11 @@ def get_course_entry(locations, locids, raw_inst_data, raw_course_data,
     outer_wrapper['course_mode'] = raw_course_data['KISMODE']
 
     course = {}
+
+    if 'ACCREDITATION' in raw_course_data:
+        course['accreditations'] = get_accreditations(
+                                        raw_course_data, accreditations)
+
     if 'UKPRNAPPLY' in raw_course_data:
         course['application_provider'] = raw_course_data['UKPRNAPPLY']
     country = get_country(raw_inst_data)
@@ -202,8 +212,8 @@ def get_course_entry(locations, locids, raw_inst_data, raw_course_data,
     links = get_links(locations, locids, raw_inst_data, raw_course_data)
     if links:
         course['links'] = links
-    location_items = get_location_items(locations, locids, raw_inst_data,
-                                        raw_course_data)
+    location_items = get_location_items(locations, locids, raw_course_data,
+                                        raw_inst_data['PUBUKPRN'])
     if location_items:
         course['locations'] = location_items
     mode = get_code_label_entry(raw_course_data, lookup.mode, 'KISMODE')
@@ -232,7 +242,8 @@ def get_course_entry(locations, locids, raw_inst_data, raw_course_data,
                                                      lookup.year_abroad,
                                                      'YEARABROAD')
 
-    course['statistics'] = get_stats(raw_course_data, course['country']['code'])
+    course['statistics'] = get_stats(raw_course_data,
+                                     course['country']['code'])
 
     outer_wrapper['course'] = course
     return outer_wrapper
@@ -252,28 +263,25 @@ def create_course_docs(xml_string):
     # Import the XML dataset
     root = ET.fromstring(xml_string)
 
-    # Import kisaims and location nodes
+    # Import accreditations, common, kisaims and location nodes
+    accreditations = Accreditations(root)
     kisaims = KisAims(root)
     locations = Locations(root)
 
-    # Remove limit on the number of courses iterated
-    # iterateion_limit = 5
     course_count = 0
     for institution in root.iter('INSTITUTION'):
-        # if course_count == iterateion_limit:
-        #     break
 
         raw_inst_data = xmltodict.parse(
             ET.tostring(institution))['INSTITUTION']
         ukprn = raw_inst_data['UKPRN']
         for course in institution.findall('KISCOURSE'):
-            # if course_count == iterateion_limit:
-            #     break
 
             raw_course_data = xmltodict.parse(ET.tostring(course))['KISCOURSE']
             locids = get_locids(raw_course_data, ukprn)
-            course_entry = get_course_entry(locations, locids, raw_inst_data,
+            course_entry = get_course_entry(accreditations, locations,
+                                            locids, raw_inst_data,
                                             raw_course_data, kisaims)
+
             enricher.enrich_course(course_entry)
             cosmosdb_client.CreateItem(collection_link, course_entry)
             course_count += 1

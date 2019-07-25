@@ -650,6 +650,13 @@ class SharedUtils:
         ]
         partial_reason_str = unicodedata.normalize("NFKD", partial_reason_str)
         subj = self.get_unavailable_reason_subj(subj_key)
+
+        # Handle unavailable reason for aggregation over 2 years
+        if agg == "21" or agg == "22" or agg == "23":
+            return partial_reason_str + subj + " across the last two years."
+        elif agg == "24":
+            return partial_reason_str
+
         return partial_reason_str + subj + "."
 
     def get_unavailable(self, elem):

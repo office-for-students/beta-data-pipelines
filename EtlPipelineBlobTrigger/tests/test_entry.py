@@ -8,15 +8,7 @@ import xml.etree.ElementTree as ET
 import xmltodict
 
 from course_stats import Entry
-
-
-def get_string(filename):
-    """Reads file in test dir into a string and returns"""
-
-    cwd = os.path.dirname(os.path.abspath(__file__))
-    with open(os.path.join(cwd, filename)) as fp:
-        string = fp.read()
-    return string
+from testing_utils import get_string
 
 
 class TestGetEntryKey(unittest.TestCase):
