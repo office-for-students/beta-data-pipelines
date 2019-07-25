@@ -7,15 +7,7 @@ import xmltodict
 
 from course_accreditations import get_accreditations
 from accreditations import Accreditations
-
-
-def get_string(filename):
-    """Reads file in test dir into a string and returns"""
-
-    cwd = os.path.dirname(os.path.abspath(__file__))
-    with open(os.path.join(cwd, filename)) as fp:
-        string = fp.read()
-    return string
+from testing_utils import get_string
 
 
 class TestGetAccreditations(unittest.TestCase):

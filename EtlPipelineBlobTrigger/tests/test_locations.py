@@ -7,15 +7,7 @@ import xmltodict
 
 from course_docs import get_location_items, get_locids
 from locations import Locations
-
-
-def get_string(filename):
-    """Reads file in test dir into a string and returns"""
-
-    cwd = os.path.dirname(os.path.abspath(__file__))
-    with open(os.path.join(cwd, filename)) as fp:
-        string = fp.read()
-    return string
+from testing_utils import get_string
 
 
 class TestGetLocations(unittest.TestCase):
@@ -23,7 +15,6 @@ class TestGetLocations(unittest.TestCase):
         xml_string = get_string('fixtures/course_with_locations.xml')
         root = ET.fromstring(xml_string)
         self.locations = Locations(root)
-        self.maxDiff = None
 
     def test_get_stats_subj(self):
         raw_course_xml = xmltodict.parse(get_string(

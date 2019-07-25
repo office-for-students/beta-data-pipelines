@@ -6,15 +6,7 @@ import xml.etree.ElementTree as ET
 import xmltodict
 
 from course_stats import SharedUtils, Tariff
-
-
-def get_string(filename):
-    """Reads file into a string and returns"""
-
-    cwd = os.path.dirname(os.path.abspath(__file__))
-    with open(os.path.join(cwd, filename)) as fp:
-        string = fp.read()
-    return string
+from testing_utils import get_string
 
 
 class TestVariousHelperMethods(unittest.TestCase):
