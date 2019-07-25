@@ -1,8 +1,8 @@
 """
 This module extracts course information from the HESA
 XML dataset and writes it in JSON format to Cosmos DB.
-To fit with the recent architecture update this will
-require considerable refactoring.
+To fit with the recent architecture update this may
+require refactoring.
 
 Currently, we handle unexpected exceptions by letting
 them bubble up. This should help flush out problems
@@ -258,7 +258,7 @@ def get_course_entry(accreditations, locations, locids, raw_inst_data,
                                                      lookup.year_abroad,
                                                      'YEARABROAD')
 
-    course['statistics'] = get_stats(raw_course_data)
+    course['statistics'] = get_stats(raw_course_data, course['country']['code'])
 
     outer_wrapper['course'] = course
     return outer_wrapper
