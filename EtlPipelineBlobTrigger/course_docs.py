@@ -29,6 +29,7 @@ from kisaims import KisAims
 from locations import Locations
 from SharedCode import utils
 from ukrlp_enricher import UkRlpCourseEnricher
+from helpers import get_eng_welsh_item
 
 
 def get_institution(raw_inst_data):
@@ -80,16 +81,6 @@ def get_locids(raw_course_data, ukprn):
     return locids
 
 
-def get_eng_welsh_item(key, lookup_table):
-    item = {}
-    keyw = key + 'W'
-    if key in lookup_table:
-        item['english'] = lookup_table[key]
-    if keyw in lookup_table:
-        item['welsh'] = lookup_table[keyw]
-    return item
-
-
 def get_links(locations, locids, raw_inst_data, raw_course_data):
     links = {}
 
@@ -112,6 +103,10 @@ def get_links(locations, locids, raw_inst_data, raw_course_data):
 
 def get_location_items(locations, locids, raw_course_data, pub_ukprn):
 
+    location_items = []
+    if "COURSELOCATION" not in raw_course_data:
+        return location_items
+
     course_locations = SharedUtils.get_raw_list(raw_course_data,
                                                 "COURSELOCATION")
     item = {}
@@ -120,13 +115,11 @@ def get_location_items(locations, locids, raw_course_data, pub_ukprn):
             item[course_location['LOCID']+pub_ukprn] = course_location[
                                                         'UCASCOURSEID']
 
-    location_items = []
     for locid in locids:
         location_dict = {}
         raw_location_data = locations.get_location_data_for_key(locid)
 
         if raw_location_data is None:
-            # TODO Handle gracefully if unable to find lookup
             logging.warning(f'failed to find location data in lookup table')
 
         links, accommodation, student_union = {}, {}, {}
@@ -146,11 +139,7 @@ def get_location_items(locations, locids, raw_course_data, pub_ukprn):
         if 'LONGITUDE' in raw_location_data:
             location_dict['longitude'] = raw_location_data['LONGITUDE']
 
-        name = {}
-        if 'LOCNAME' in raw_location_data:
-            name['english'] = raw_location_data['LOCNAME']
-        if 'LOCNAMEW' in raw_location_data:
-            name['welsh'] = raw_location_data['LOCNAMEW']
+        name = get_eng_welsh_item('LOCNAME', raw_location_data)
         if name:
             location_dict['name'] = name
 
@@ -253,7 +242,8 @@ def get_course_entry(accreditations, locations, locids, raw_inst_data,
                                                      lookup.year_abroad,
                                                      'YEARABROAD')
 
-    course['statistics'] = get_stats(raw_course_data, course['country']['code'])
+    course['statistics'] = get_stats(raw_course_data,
+                                     course['country']['code'])
 
     outer_wrapper['course'] = course
     return outer_wrapper
@@ -279,11 +269,18 @@ def create_course_docs(xml_string):
     locations = Locations(root)
 
     course_count = 0
+    stop_count = 5
     for institution in root.iter('INSTITUTION'):
+        if course_count == stop_count:
+            break
+
         raw_inst_data = xmltodict.parse(
             ET.tostring(institution))['INSTITUTION']
         ukprn = raw_inst_data['UKPRN']
         for course in institution.findall('KISCOURSE'):
+            if course_count == stop_count:
+                break
+
             raw_course_data = xmltodict.parse(ET.tostring(course))['KISCOURSE']
             locids = get_locids(raw_course_data, ukprn)
             course_entry = get_course_entry(accreditations, locations,

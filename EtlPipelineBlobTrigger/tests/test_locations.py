@@ -16,7 +16,7 @@ class TestGetLocations(unittest.TestCase):
         root = ET.fromstring(xml_string)
         self.locations = Locations(root)
 
-    def test_get_stats_subj(self):
+    def test_get_multiple_locations(self):
         raw_course_xml = xmltodict.parse(get_string(
             'fixtures/course_with_locations.xml'))['KIS']['KISCOURSE']
         pub_ukprn = '10007814'

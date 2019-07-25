@@ -2,6 +2,7 @@
 
 import course_lookup_tables as lookup
 from course_stats import SharedUtils
+from helpers import get_eng_welsh_item
 
 
 def get_accreditations(raw_course_data, acc_lookup):
@@ -20,24 +21,12 @@ def get_accreditations(raw_course_data, acc_lookup):
             if 'ACCURL' in accreditations:
                 json_elem['accreditor_url'] = accreditations['ACCURL']
 
-            text = {}
-            if 'ACCTEXT' in accreditations:
-                text['english'] = accreditations['ACCTEXT']
-
-            if 'ACCTEXTW' in accreditations:
-                text['welsh'] = accreditations['ACCTEXTW']
-
+            text = get_eng_welsh_item('ACCTEXT', accreditations)
             json_elem['text'] = text
 
         if 'ACCDEPENDURL' in xml_elem or 'ACCDEPENDURLW' in xml_elem:
 
-            urls = {}
-            if 'ACCDEPENDURL' in xml_elem:
-                urls['english'] = xml_elem['ACCDEPENDURL']
-
-            if 'ACCDEPENDURLW' in xml_elem:
-                urls['welsh'] = xml_elem['ACCDEPENDURLW']
-
+            urls = get_eng_welsh_item('ACCDEPENDURL', xml_elem)
             json_elem['url'] = urls
 
         if 'ACCDEPEND' in xml_elem:

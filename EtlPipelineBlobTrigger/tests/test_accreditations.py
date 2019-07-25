@@ -16,7 +16,7 @@ class TestGetAccreditations(unittest.TestCase):
         root = ET.fromstring(xml_string)
         self.accreditations = Accreditations(root)
 
-    def test_get_stats_subj(self):
+    def test_get_multiple_accreditations(self):
         raw_course_xml = xmltodict.parse(get_string(
             'fixtures/course_with_accreditations.xml'))['KIS']['KISCOURSE']
         expected_response = json.loads(get_string(
