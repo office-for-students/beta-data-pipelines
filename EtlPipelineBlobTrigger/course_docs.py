@@ -269,17 +269,12 @@ def create_course_docs(xml_string):
     locations = Locations(root)
 
     course_count = 0
-    stop_count = 5
     for institution in root.iter('INSTITUTION'):
-        if course_count == stop_count:
-            break
 
         raw_inst_data = xmltodict.parse(
             ET.tostring(institution))['INSTITUTION']
         ukprn = raw_inst_data['UKPRN']
         for course in institution.findall('KISCOURSE'):
-            if course_count == stop_count:
-                break
 
             raw_course_data = xmltodict.parse(ET.tostring(course))['KISCOURSE']
             locids = get_locids(raw_course_data, ukprn)
