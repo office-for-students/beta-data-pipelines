@@ -12,7 +12,7 @@ from distutils.util import strtobool
 import azure.functions as func
 from azure.storage.blob import BlockBlobService
 
-from . import institution_docs
+from institution_docs import InstitutionDocs
 from SharedCode import exceptions
 
 def main(xmlblob: func.InputStream, context: func.Context):
@@ -20,8 +20,7 @@ def main(xmlblob: func.InputStream, context: func.Context):
     logging.info(f"CreateInstBlobTrigger Python BLOB trigger function processing BLOB \n"
                  f"Name: {xmlblob.name}\n"
                  f"Blob Size: {xmlblob.length} bytes")
-
-    try:
+try:
 
         """ 0. PREPARATION """
 
@@ -61,6 +60,7 @@ def main(xmlblob: func.InputStream, context: func.Context):
 
         """ 3. LOADING - Parse XML and create enriched JSON Documents in Document Database """
 
+        institution_docs = InstitutionDocs()
         institution_docs.create_institution_docs(xml_string)
 
         """ 4. CLEANUP """
