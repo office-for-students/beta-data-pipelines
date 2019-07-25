@@ -52,14 +52,21 @@ class InstitutionDocs:
 
     def get_contact_details(self, ukprn):
         if ukprn not in self.ukrlp_lookups:
-            return {'No contact details availble for this institution.':f'UKPRN: {ukprn}'}
+            return {'No contact details availble':f'UKPRN: {ukprn}'}
         return self.ukrlp_lookups[ukprn]['contact_details']
+
+    def get_ukprn_name(self, ukprn):
+        if ukprn not in self.ukrlp_lookups:
+            return {'No name availble':f'UKPRN: {ukprn}'}
+        return self.ukrlp_lookups[ukprn]['']
 
     def get_institution_element(self, raw_inst_data):
         inst = {}
         if 'APROutcome' in raw_inst_data:
             inst['apr_outcome'] = raw_inst_data['APROutcome']
         inst['contact_details'] = self.get_contact_details(raw_inst_data['UKPRN'])
+        inst['pub_ukprn_name'] = self.get_pub_ukprn_name(raw_inst_data['PUBUKPRN'])
+        inst['pub_ukprn'] = raw_inst_data['PUBUKPRN'])
         return inst
 
     def get_institution_doc(self, institution):
