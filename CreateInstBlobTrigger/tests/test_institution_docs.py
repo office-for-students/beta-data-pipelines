@@ -9,7 +9,6 @@ from inst_test_utils import get_string, get_first
 
 
 class TestStaticHelperFunctions(unittest.TestCase):
-
     def test_get_total_number_of_courses_with_one_course(self):
         xml_string = get_string("fixtures/one_inst_one_course.xml")
         root = ET.fromstring(xml_string)
@@ -26,14 +25,30 @@ class TestStaticHelperFunctions(unittest.TestCase):
         number_of_courses = get_total_number_of_courses(institution)
         self.assertEqual(expected_number_of_courses, number_of_courses)
 
-
     def test_get_country_england(self):
-        expected_resp = json.loads(
-            get_string("fixtures/country_england.json")
-        )
-        code = 'XF'
+        expected_resp = json.loads(get_string("fixtures/country_england.json"))
+        code = "XF"
         resp = get_country(code)
-        #print(json.dumps(country, indent=4))
+        self.assertEqual(expected_resp, resp)
+
+    def test_get_country_wales(self):
+        expected_resp = json.loads(get_string("fixtures/country_wales.json"))
+        code = "XI"
+        resp = get_country(code)
+        self.assertEqual(expected_resp, resp)
+
+    def test_get_country_scotland(self):
+        expected_resp = json.loads(
+            get_string("fixtures/country_scotland.json")
+        )
+        code = "XH"
+        resp = get_country(code)
+        self.assertEqual(expected_resp, resp)
+
+    def test_get_country_ni(self):
+        expected_resp = json.loads(get_string("fixtures/country_ni.json"))
+        code = "XG"
+        resp = get_country(code)
         self.assertEqual(expected_resp, resp)
 
 
