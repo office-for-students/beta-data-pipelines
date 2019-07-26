@@ -40,8 +40,8 @@ class InstitutionDocs:
         )
         if distance_learning:
             course["distance_learning"] = distance_learning
-        if "honors" in raw_course_data:
-            course["honours_award_provision"] = raw_course_data["honors"]
+        if "honours" in raw_course_data:
+            course["honours_award_provision"] = raw_course_data["honours"]
         course["kis_course_id"] = raw_course_data["kiscourseid"]
         mode = get_code_label_entry(raw_course_data, lookup.mode, "kismode")
         if mode:
@@ -55,7 +55,7 @@ class InstitutionDocs:
 
     def get_ukprn_name(self, ukprn):
         if ukprn not in self.ukrlp_lookups:
-            return {"No name availble for:": f"UKPRN: {ukprn}"}
+            return {"No name availble": f"UKPRN: {ukprn}"}
         return self.ukrlp_lookups[ukprn]["ukprn_name"]
 
     def get_institution_element(self, institution):
@@ -66,7 +66,7 @@ class InstitutionDocs:
         if "APROutcome" in raw_inst_data:
             inst["apr_outcome"] = raw_inst_data["APROutcome"]
         inst["contact_details"] = self.get_contact_details(
-            raw_inst_data["UKPRN"]
+            raw_inst_data["PUBUKPRN"]
         )
         inst["pub_ukprn_name"] = self.get_ukprn_name(raw_inst_data["PUBUKPRN"])
         inst["pub_ukprn"] = raw_inst_data["PUBUKPRN"]
@@ -78,21 +78,22 @@ class InstitutionDocs:
         inst["total_number_of_courses"] = get_total_number_of_courses(
             institution
         )
+        inst["ukprn_name"] = self.get_ukprn_name(raw_inst_data["UKPRN"])
+        inst["ukprn"] = raw_inst_data["UKPRN"]
+        inst["pub_ukprn_country"] = get_country(raw_inst_data["COUNTRY"])
         return inst
 
     def get_institution_doc(self, institution):
-        number_of_courses = get_total_number_of_courses()
-
         raw_inst_data = xmltodict.parse(ET.tostring(institution))[
             "INSTITUTION"
         ]
         outer_wrapper = {}
-        outer_wrapper["id"] = utils.get_uuid()
+        outer_wrapper["_id"] = utils.get_uuid()
         outer_wrapper["created_at"] = datetime.datetime.utcnow().isoformat()
         outer_wrapper["version"] = 1
         outer_wrapper["institution_id"] = raw_inst_data["PUBUKPRN"]
         outer_wrapper["institution"] = self.get_institution_element(
-            raw_inst_data, institution
+            institution
         )
         return outer_wrapper
 
