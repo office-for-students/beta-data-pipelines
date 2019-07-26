@@ -26,7 +26,7 @@ def main(xmlblob: func.InputStream):
     * Creates a lookup item for each Institution and writes it to CosmosDB
 
     * Currently, once completed successfully this function triggers the Etl function by copying
-      the compressed XML passed in to a Blob storage monitored by the Etl function. 
+      the compressed XML passed in to a Blob storage monitored by the Etl function.
 
     """
 
@@ -66,7 +66,7 @@ def main(xmlblob: func.InputStream):
 
         # Instantiate the Block Blob Service
         blob_service = BlockBlobService(
-            account_name = storage_account_name, 
+            account_name = storage_account_name,
             account_key = storage_account_key)
 
         logging.info('Created Block Blob Service to Azure Storage Account {storage_account_name}')
@@ -78,11 +78,11 @@ def main(xmlblob: func.InputStream):
 
         source_url += xmlblob.name
         blob_filename = xmlblob.name.split('/')[1]
-        destination_blob_name = f'{create_ukrlp_start_datetime}-{blob_filename}' 
+        destination_blob_name = f'{create_ukrlp_start_datetime}-{blob_filename}'
         logging.info(f'Copy the XML we have processed to {destination_blob_name}')
 
         blob_service.copy_blob(
-            container_name = output_container_name, 
+            container_name = output_container_name,
             blob_name = destination_blob_name,
             copy_source = source_url)
 
@@ -91,7 +91,7 @@ def main(xmlblob: func.InputStream):
 
     except Exception as e:
         # Unexpected exception
-        logging.error('Unexpected extension')
+        logging.error('Unexpected exception')
         logging.error(traceback.format_exc())
 
         # Raise to Azure
