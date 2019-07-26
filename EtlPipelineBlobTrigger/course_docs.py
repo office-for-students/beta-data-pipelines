@@ -173,7 +173,7 @@ def get_qualification(lookup_table_raw_xml, kisaims):
 def get_course_entry(accreditations, locations, locids, raw_inst_data,
                      raw_course_data, kisaims):
     outer_wrapper = {}
-    outer_wrapper['id'] = utils.get_uuid()
+    outer_wrapper['_id'] = utils.get_uuid()
     outer_wrapper['created_at'] = datetime.datetime.utcnow().isoformat()
     outer_wrapper['version'] = 1
     outer_wrapper['institution_id'] = raw_inst_data['PUBUKPRN']
