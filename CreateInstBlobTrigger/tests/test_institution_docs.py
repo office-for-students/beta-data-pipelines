@@ -1,11 +1,15 @@
 import json
 import unittest
-
 import xml.etree.ElementTree as ET
 
-from institution_docs import get_total_number_of_courses, get_country
+from unittest import mock
 
-from inst_test_utils import get_string, get_first
+from inst_test_utils import get_first, get_string, remove_variable_elements
+from institution_docs import (
+    InstitutionDocs,
+    get_country,
+    get_total_number_of_courses,
+)
 
 
 class TestStaticHelperFunctions(unittest.TestCase):
@@ -49,6 +53,28 @@ class TestStaticHelperFunctions(unittest.TestCase):
         expected_resp = json.loads(get_string("fixtures/country_ni.json"))
         code = "XG"
         resp = get_country(code)
+        self.assertEqual(expected_resp, resp)
+
+
+class TestGetInstitionDoc(unittest.TestCase):
+    @mock.patch("institution_docs.utils")
+    def setUp(self, mock_utils):
+        mock_ukrlp_lookup = json.loads(
+            get_string("fixtures/mock_ukrlp_lookup.json")
+        )
+        mock_utils.get_ukrlp_lookups.return_value = mock_ukrlp_lookup
+        self.institution_docs = InstitutionDocs()
+
+    def test_get_institution_doc(self):
+        xml_string = get_string("fixtures/one_inst_one_course.xml")
+        root = ET.fromstring(xml_string)
+        institution = get_first(root.iter("INSTITUTION"))
+        expected_resp = json.loads(
+            get_string("fixtures/one_inst_one_course.json")
+        )
+        expected_resp = remove_variable_elements(expected_resp)
+        resp = dict(self.institution_docs.get_institution_doc(institution))
+        resp = remove_variable_elements(resp)
         self.assertEqual(expected_resp, resp)
 
 
