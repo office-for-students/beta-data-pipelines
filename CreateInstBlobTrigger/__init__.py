@@ -1,7 +1,4 @@
 #!/usr/bin/env python
-
-""" EtlPipelineBlobTrigger: Build Institution Data based on a BLOB trigger """
-
 import gzip
 import io
 import logging
@@ -24,7 +21,6 @@ def main(xmlblob: func.InputStream, context: func.Context):
     try:
 
         """ 0. PREPARATION """
-
         xsd_filename = os.environ["XsdFilename"]
         xsd_path = os.path.join(context.function_directory, xsd_filename)
 
@@ -73,17 +69,16 @@ def main(xmlblob: func.InputStream, context: func.Context):
 
     except exceptions.StopEtlPipelineWarningException:
 
-        # A WARNING is raised during the ETL Pipeline and
+        # A WARNING is raised while the function is running and
         # StopEtlPipelineOnWarning=True. For example, the incoming raw XML
         # is not valid against its XSD
         error_message = (
-            "A WARNING has been encountered during the ETL Pipeline. "
-            "The Pipeline will be stopped since StopEtlPipelineOnWarning is "
+            "A WARNING has been encountered while the function is running. "
+            "The function will be stopped since StopEtlPipelineOnWarning is "
             "set to TRUE in the Application Settings."
         )
         logging.error(error_message)
-        pipeline_fail_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
-        logging.error("ETL Pipeline failed on " + pipeline_fail_datetime)
+        logging.error("CreateInstBlobTrigger stopped")
         raise Exception(error_message)
 
     except Exception as e:
