@@ -65,6 +65,13 @@ class TestGetInstitionDoc(unittest.TestCase):
         mock_utils.get_ukrlp_lookups.return_value = mock_ukrlp_lookup
         self.institution_docs = InstitutionDocs()
 
+    def test_with_large_file(self):
+        """Initial smoke test"""
+        xml_string = get_string("fixtures/large-test-file.xml")
+        root = ET.fromstring(xml_string)
+        for institution in root.iter("INSTITUTION"):
+            self.institution_docs.get_institution_doc(institution)
+
     def test_get_institution_doc(self):
         xml_string = get_string("fixtures/one_inst_one_course.xml")
         root = ET.fromstring(xml_string)
@@ -73,7 +80,7 @@ class TestGetInstitionDoc(unittest.TestCase):
             get_string("fixtures/one_inst_one_course.json")
         )
         expected_resp = remove_variable_elements(expected_resp)
-        resp = dict(self.institution_docs.get_institution_doc(institution))
+        resp = self.institution_docs.get_institution_doc(institution)
         resp = remove_variable_elements(resp)
         self.assertEqual(expected_resp, resp)
 
