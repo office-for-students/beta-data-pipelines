@@ -1,10 +1,9 @@
 """
 This module extracts institution information from the HESA
-XML dataset and writes it in JSON format to Cosmos DB.
+XML dataset and writes it, in JSON format, to Cosmos DB.
 
-Currently, we handle unexpected exceptions by letting
-them bubble up. This should help flush out problems
-during development and testing.
+Currently, if expected data is missing, we let the exception
+bubble up.
 """
 import datetime
 import inspect
@@ -24,16 +23,21 @@ sys.path.insert(0, CURRENTDIR)
 sys.path.insert(0, PARENTDIR)
 
 from EtlPipelineBlobTrigger.course_docs import get_code_label_entry
-from SharedCode import utils
+from SharedCode.utils import (
+    get_collection_link,
+    get_cosmos_client,
+    get_ukrlp_lookups,
+    get_uuid,
+)
 import course_lookup_tables as lookup
 
 
 class InstitutionDocs:
     def __init__(self):
-        self.ukrlp_lookups = utils.get_ukrlp_lookups()
+        self.ukrlp_lookups = get_ukrlp_lookups()
 
     def get_course(self, raw_course_data):
-        # TODO complete and then call this
+        # TODO complete and call this
         course = {}
         distance_learning = get_code_label_entry(
             raw_course_data, lookup.distance_learning_lookup, "distance"
@@ -50,71 +54,77 @@ class InstitutionDocs:
 
     def get_contact_details(self, ukprn):
         if ukprn not in self.ukrlp_lookups:
-            return {"No contact details availble": f"UKPRN: {ukprn}"}
+            return {"No contact details available": f"UKPRN: {ukprn}"}
         return self.ukrlp_lookups[ukprn]["contact_details"]
 
     def get_ukprn_name(self, ukprn):
         if ukprn not in self.ukrlp_lookups:
-            return {"No name availble": f"UKPRN: {ukprn}"}
+            return {"No name available": f"UKPRN: {ukprn}"}
         return self.ukrlp_lookups[ukprn]["ukprn_name"]
 
     def get_institution_element(self, institution):
         raw_inst_data = xmltodict.parse(ET.tostring(institution))[
             "INSTITUTION"
         ]
-        inst = {}
+        institution_element = {}
         if "APROutcome" in raw_inst_data:
-            inst["apr_outcome"] = raw_inst_data["APROutcome"]
-        inst["contact_details"] = self.get_contact_details(
+            institution_element["apr_outcome"] = raw_inst_data["APROutcome"]
+        institution_element["contact_details"] = self.get_contact_details(
             raw_inst_data["PUBUKPRN"]
         )
-        inst["pub_ukprn_name"] = self.get_ukprn_name(raw_inst_data["PUBUKPRN"])
-        inst["pub_ukprn"] = raw_inst_data["PUBUKPRN"]
-        inst["pub_ukprn_country"] = get_country(
+        institution_element["pub_ukprn_name"] = self.get_ukprn_name(
+            raw_inst_data["PUBUKPRN"]
+        )
+        institution_element["pub_ukprn"] = raw_inst_data["PUBUKPRN"]
+        institution_element["pub_ukprn_country"] = get_country(
             raw_inst_data["PUBUKPRNCOUNTRY"]
         )
         if "TEFOutcome" in raw_inst_data:
-            inst["tef_outcome"] = raw_inst_data["TEFOutcome"]
-        inst["total_number_of_courses"] = get_total_number_of_courses(
-            institution
+            institution_element["tef_outcome"] = raw_inst_data["TEFOutcome"]
+        institution_element[
+            "total_number_of_courses"
+        ] = get_total_number_of_courses(institution)
+        institution_element["ukprn_name"] = self.get_ukprn_name(
+            raw_inst_data["UKPRN"]
         )
-        inst["ukprn_name"] = self.get_ukprn_name(raw_inst_data["UKPRN"])
-        inst["ukprn"] = raw_inst_data["UKPRN"]
-        inst["pub_ukprn_country"] = get_country(raw_inst_data["COUNTRY"])
-        return inst
+        institution_element["ukprn"] = raw_inst_data["UKPRN"]
+        institution_element["pub_ukprn_country"] = get_country(
+            raw_inst_data["COUNTRY"]
+        )
+        return institution_element
 
     def get_institution_doc(self, institution):
         raw_inst_data = xmltodict.parse(ET.tostring(institution))[
             "INSTITUTION"
         ]
-        outer_wrapper = {}
-        outer_wrapper["_id"] = utils.get_uuid()
-        outer_wrapper["created_at"] = datetime.datetime.utcnow().isoformat()
-        outer_wrapper["version"] = 1
-        outer_wrapper["institution_id"] = raw_inst_data["PUBUKPRN"]
-        outer_wrapper["institution"] = self.get_institution_element(
+        institution_doc = {}
+        institution_doc["_id"] = get_uuid()
+        institution_doc["created_at"] = datetime.datetime.utcnow().isoformat()
+        institution_doc["version"] = 1
+        institution_doc["institution_id"] = raw_inst_data["PUBUKPRN"]
+        institution_doc["institution"] = self.get_institution_element(
             institution
         )
-        return outer_wrapper
+        return institution_doc
 
     def create_institution_docs(self, xml_string):
         """Parse HESA XML and create JSON institution docs in Cosmos DB."""
 
         # TODO Investigate writing docs to CosmosDB in bulk to speed things up.
-        cosmosdb_client = utils.get_cosmos_client()
+        cosmosdb_client = get_cosmos_client()
 
-        collection_link = utils.get_collection_link(
+        collection_link = get_collection_link(
             "AzureCosmosDbDatabaseId", "AzureCosmosDbInstitutionsCollectionId"
         )
 
         root = ET.fromstring(xml_string)
 
-        inst_count = 0
+        institution_count = 0
         for institution in root.iter("INSTITUTION"):
-            inst_count += 1
+            institution_count += 1
             institution_doc = self.get_institution_doc(institution)
             cosmosdb_client.CreateItem(collection_link, institution_doc)
-        logging.info(f"Processed {inst_count} institutions")
+        logging.info(f"Processed {institution_count} institutions")
 
 
 def get_country(code):
