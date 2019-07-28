@@ -5,6 +5,7 @@ import xml.etree.ElementTree as ET
 from unittest import mock
 
 from inst_test_utils import get_first, get_string, remove_variable_elements
+import institution_docs
 from institution_docs import (
     InstitutionDocs,
     get_country,
@@ -56,14 +57,14 @@ class TestStaticHelperFunctions(unittest.TestCase):
         self.assertEqual(expected_resp, resp)
 
 
-class TestGetInstitionDoc(unittest.TestCase):
-    @mock.patch("institution_docs.utils")
-    def setUp(self, mock_utils):
-        mock_ukrlp_lookup = json.loads(
-            get_string("fixtures/mock_ukrlp_lookup.json")
-        )
-        mock_utils.get_ukrlp_lookups.return_value = mock_ukrlp_lookup
-        self.institution_docs = InstitutionDocs()
+class TestGetInstitutionDoc(unittest.TestCase):
+    def setUp(self):
+        with mock.patch("institution_docs.get_ukrlp_lookups"):
+            mock_ukrlp_lookup = json.loads(
+                get_string("fixtures/mock_ukrlp_lookup.json")
+            )
+            institution_docs.get_ukrlp_lookups.return_value = mock_ukrlp_lookup
+            self.institution_docs = InstitutionDocs()
 
     def test_with_large_file(self):
         """Initial smoke test"""
@@ -83,6 +84,29 @@ class TestGetInstitionDoc(unittest.TestCase):
         resp = self.institution_docs.get_institution_doc(institution)
         resp = remove_variable_elements(resp)
         self.assertEqual(expected_resp, resp)
+
+
+class TestCreateInstitutionDocs(unittest.TestCase):
+
+    @mock.patch.object(institution_docs.InstitutionDocs, "get_institution_doc")
+    @mock.patch("institution_docs.get_collection_link")
+    @mock.patch("institution_docs.get_cosmos_client")
+    @mock.patch("institution_docs.get_ukrlp_lookups")
+    def test_create_institution_docs(
+        self,
+        mock_get_ukrlp_lookups,
+        mock_get_cosmos_client,
+        mock_get_collection_link,
+        mock_get_institution_doc,
+    ):
+        inst_docs = InstitutionDocs()
+
+        xml_string = get_string("fixtures/one_inst_one_course.xml")
+        inst_docs.create_institution_docs(xml_string)
+        mock_get_ukrlp_lookups.assert_called_once()
+        mock_get_cosmos_client.assert_called_once()
+        mock_get_collection_link.assert_called_once()
+        mock_get_institution_doc.assert_called_once()
 
 
 # TODO Test more of the functionality - more lookups etc
