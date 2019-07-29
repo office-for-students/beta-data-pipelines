@@ -60,10 +60,12 @@ class LookupCreator:
     def get_website(matching_provider_records):
 
         website = "No website available"
-        for i, provider_contact in enumerate(matching_provider_records['ProviderContact']):
+        for i, provider_contact in enumerate(
+            matching_provider_records["ProviderContact"]
+        ):
             if i > 1:
                 # only look at first two Provider Contacts
-                break;
+                break
 
             if "ContactWebsiteAddress" in provider_contact:
                 website = provider_contact["ContactWebsiteAddress"]
@@ -86,7 +88,9 @@ class LookupCreator:
 
         contact_details["address"] = LookupCreator.get_address(address)
         contact_details["telephone"] = provider_contact["ContactTelephone1"]
-        contact_details["website"] = LookupCreator.get_website(matching_provider_records)
+        contact_details["website"] = LookupCreator.get_website(
+            matching_provider_records
+        )
         return contact_details
 
     @staticmethod
