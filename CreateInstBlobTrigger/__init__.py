@@ -49,17 +49,12 @@ def main(xmlblob: func.InputStream, context: func.Context):
         # Decode the bytes into a string
         xml_string = decompressed_file.decode("utf-8")
 
-        """ 2. VALIDATION - Validate the HESA Raw XML against the XSD """
-
-        # TODO fix failing validation.
-        # validators.validate_xml(xsd_path, xml_string)
-
-        """ 3. LOADING - extract data and create enriched JSON Documents """
+        """ 2. LOADING - extract data and create enriched JSON Documents """
 
         inst_docs = InstitutionDocs()
         inst_docs.create_institution_docs(xml_string)
 
-        """ 4. CLEANUP """
+        """ 3. CLEANUP """
 
         pipeline_end_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
         logging.info(
