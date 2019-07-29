@@ -1,15 +1,22 @@
 """Contains the class responsibe for creating UKRLP lookups"""
 
 import datetime
+import inspect
 import logging
+import os
+import sys
 import xml.etree.ElementTree as ET
 
 import xmltodict
 
 from SharedCode import utils
 
-from .ukrlp_client import UkrlpClient
-from .helper import Helper
+CURRENTDIR = os.path.dirname(
+    os.path.abspath(inspect.getfile(inspect.currentframe())))
+sys.path.insert(0, CURRENTDIR)
+
+from ukrlp_client import UkrlpClient
+from helper import Helper
 
 
 class LookupCreator:
