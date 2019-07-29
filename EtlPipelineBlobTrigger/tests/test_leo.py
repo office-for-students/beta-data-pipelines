@@ -1,4 +1,3 @@
-"""Test the course NSS statistics"""
 import json
 import unittest
 
