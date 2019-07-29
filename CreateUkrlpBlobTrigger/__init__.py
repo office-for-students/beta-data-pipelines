@@ -51,8 +51,6 @@ def main(xmlblob: func.InputStream):
         # Decode the bytes into a string
         xml_string = decompressed_file.decode('utf-8')
 
-        # TODO Validate the HESA XML
-
         # Parse the xml and create the lookups
         lookup_creator = LookupCreator(xml_string)
         lookup_creator.create_ukrlp_lookups()
