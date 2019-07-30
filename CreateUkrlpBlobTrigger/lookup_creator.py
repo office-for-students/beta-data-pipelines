@@ -12,7 +12,8 @@ import xmltodict
 from SharedCode import utils
 
 CURRENTDIR = os.path.dirname(
-    os.path.abspath(inspect.getfile(inspect.currentframe())))
+    os.path.abspath(inspect.getfile(inspect.currentframe()))
+)
 sys.path.insert(0, CURRENTDIR)
 
 from ukrlp_client import UkrlpClient
@@ -71,7 +72,7 @@ class LookupCreator:
             matching_provider_records["ProviderContact"]
         ):
             if i > 1:
-                # only look at first two Provider Contacts
+                # Currently, we look in the first two Provider Contacts
                 break
 
             if "ContactWebsiteAddress" in provider_contact:
