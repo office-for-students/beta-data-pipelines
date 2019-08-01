@@ -5,10 +5,12 @@ import xml.etree.ElementTree as ET
 from unittest import mock
 
 from inst_test_utils import get_first, get_string, remove_variable_elements
+from EtlPipelineBlobTrigger.locations import Locations
 import institution_docs
 from institution_docs import (
     InstitutionDocs,
     get_country,
+    get_student_unions,
     get_total_number_of_courses,
 )
 
@@ -64,11 +66,12 @@ class TestGetInstitutionDoc(unittest.TestCase):
                 get_string("fixtures/mock_ukrlp_lookup.json")
             )
             institution_docs.get_ukrlp_lookups.return_value = mock_ukrlp_lookup
-            self.institution_docs = InstitutionDocs()
+            kis_xml_string = get_string("fixtures/large_test_file.xml")
+            self.institution_docs = InstitutionDocs(kis_xml_string)
 
     def test_with_large_file(self):
         """Initial smoke test"""
-        xml_string = get_string("fixtures/large-test-file.xml")
+        xml_string = get_string("fixtures/large_test_file.xml")
         root = ET.fromstring(xml_string)
         for institution in root.iter("INSTITUTION"):
             self.institution_docs.get_institution_doc(institution)
@@ -99,14 +102,27 @@ class TestCreateInstitutionDocs(unittest.TestCase):
         mock_get_collection_link,
         mock_get_institution_doc,
     ):
-        inst_docs = InstitutionDocs()
+        kis_xml_string = get_string("fixtures/large_test_file.xml")
+        inst_docs = InstitutionDocs(kis_xml_string)
 
         xml_string = get_string("fixtures/one_inst_one_course.xml")
-        inst_docs.create_institution_docs(xml_string)
+        inst_docs.create_institution_docs()
         mock_get_ukrlp_lookups.assert_called_once()
         mock_get_cosmos_client.assert_called_once()
         mock_get_collection_link.assert_called_once()
-        mock_get_institution_doc.assert_called_once()
+        mock_get_institution_doc.assert_called()
+
+
+class TestGetStudentUnions(unittest.TestCase):
+
+    def test_get_student_unions(self):
+        kis_xml_string = get_string("fixtures/large_test_file.xml")
+        inst_xml_string = get_string("fixtures/one_inst_one_course.xml")
+        kis_root = ET.fromstring(kis_xml_string)
+        locations = Locations(kis_root)
+        inst_root = ET.fromstring(inst_xml_string)
+        institution = get_first(inst_root.iter("INSTITUTION"))
+        get_student_unions(locations, institution)
 
 
 # TODO Test more of the functionality - more lookups etc
