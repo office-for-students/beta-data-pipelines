@@ -23,14 +23,15 @@ class Locations:
         """
 
         self.lookup_dict = {}
-        for location in root.iter('LOCATION'):
-            raw_location_data = xmltodict.parse(
-                ET.tostring(location))['LOCATION']
-            ukprn = raw_location_data['UKPRN']
-            if 'LOCUKPRN' in raw_location_data:
-                ukprn = raw_location_data['LOCUKPRN']
+        for location in root.iter("LOCATION"):
+            raw_location_data = xmltodict.parse(ET.tostring(location))[
+                "LOCATION"
+            ]
+            ukprn = raw_location_data["UKPRN"]
+            if "LOCUKPRN" in raw_location_data:
+                ukprn = raw_location_data["LOCUKPRN"]
             lockey = f"{ukprn}{raw_location_data['LOCID']}"
             self.lookup_dict[lockey] = raw_location_data
 
-    def get_location_data_for_key(self, key):
+    def get_location(self, key):
         return self.lookup_dict.get(key)
