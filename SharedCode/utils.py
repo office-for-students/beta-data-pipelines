@@ -13,50 +13,68 @@ def get_collection_link(db_id, collection_id):
     cosmosdb_database_id = os.environ[db_id]
     cosmosdb_collection_id = os.environ[collection_id]
 
-    #Return a link to the relevant CosmosDB Container/Document Collection
-    return 'dbs/' + cosmosdb_database_id + '/colls/' + cosmosdb_collection_id
+    # Return a link to the relevant CosmosDB Container/Document Collection
+    return "dbs/" + cosmosdb_database_id + "/colls/" + cosmosdb_collection_id
 
 
 def get_cosmos_client():
-    cosmosdb_uri = os.environ['AzureCosmosDbUri']
-    cosmosdb_key = os.environ['AzureCosmosDbKey']
+    cosmosdb_uri = os.environ["AzureCosmosDbUri"]
+    cosmosdb_key = os.environ["AzureCosmosDbKey"]
 
-    master_key = 'masterKey'
+    master_key = "masterKey"
 
-    return cosmos_client.CosmosClient(url_connection=cosmosdb_uri,
-                                      auth={master_key: cosmosdb_key})
+    return cosmos_client.CosmosClient(
+        url_connection=cosmosdb_uri, auth={master_key: cosmosdb_key}
+    )
+
 
 def get_uuid():
     return str(uuid.uuid1())
 
+
 def get_ukrlp_lookups():
     """Returns a dictionary of UKRLP lookups"""
 
-    cosmos_client = get_cosmos_client()
+    cosmos_db_client = get_cosmos_client()
     collection_link = get_collection_link(
-                'AzureCosmosDbDatabaseId', 'AzureCosmosDbUkRlpCollectionId')
+        "AzureCosmosDbDatabaseId", "AzureCosmosDbUkRlpCollectionId"
+    )
 
-    query = ( "SELECT * from c ")
+    query = "SELECT * from c "
 
-    options = {'enableCrossPartitionQuery': True}
+    options = {"enableCrossPartitionQuery": True}
 
     lookup_list = list(
-        cosmos_client.QueryItems(collection_link, query, options))
+        cosmos_db_client.QueryItems(collection_link, query, options)
+    )
 
-    return {lookup['ukprn']:lookup for lookup in lookup_list}
+    return {lookup["ukprn"]: lookup for lookup in lookup_list}
+
 
 def get_courses_by_version(version):
     """Returns a dictionary of courses for a version of the dataset"""
 
-    cosmos_client = get_cosmos_client()
+    cosmos_db_client = get_cosmos_client()
     collection_link = get_collection_link(
-                'AzureCosmosDbDatabaseId', 'AzureCosmosDbCoursesCollectionId')
+        "AzureCosmosDbDatabaseId", "AzureCosmosDbCoursesCollectionId"
+    )
 
-    query = ( f'SELECT * from c WHERE c.version = {version}')
+    query = f"SELECT * from c WHERE c.version = {version}"
 
-    options = {'enableCrossPartitionQuery': True}
+    options = {"enableCrossPartitionQuery": True}
 
     course_list = list(
-        cosmos_client.QueryItems(collection_link, query, options))
+        cosmos_db_client.QueryItems(collection_link, query, options)
+    )
 
     return course_list
+
+
+def get_english_welsh_item(key, lookup_table):
+    item = {}
+    keyw = key + "W"
+    if key in lookup_table:
+        item["english"] = lookup_table[key]
+    if keyw in lookup_table:
+        item["welsh"] = lookup_table[keyw]
+    return item
