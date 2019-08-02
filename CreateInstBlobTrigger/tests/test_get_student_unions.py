@@ -32,7 +32,32 @@ class TestGetStudentUnions(unittest.TestCase):
         institution = get_first(institution_root.iter("INSTITUTION"))
 
         student_unions = get_student_unions(location_lookup, institution)
-        print(json.dumps(student_unions, indent=4))
+        expected_student_unions = json.loads(
+            get_string("fixtures/one_inst_nine_courses.json")
+        )
+        self.assertEqual(expected_student_unions, student_unions)
+
+
+    def test_get_student_unions_413_courses(self):
+
+        # Build a locations lookup
+        kis_xml_string = get_string("fixtures/large_test_file.xml")
+        kis_root = ET.fromstring(kis_xml_string)
+        location_lookup = Locations(kis_root)
+
+        # Get an institution so we can pass it to get_student_unions
+        institution_xml_string = get_string(
+            "fixtures/one_inst_413_courses.xml"
+        )
+        institution_root = ET.fromstring(institution_xml_string)
+        institution = get_first(institution_root.iter("INSTITUTION"))
+
+        student_unions = get_student_unions(location_lookup, institution)
+        expected_student_unions = json.loads(
+            get_string("fixtures/one_inst_413_courses.json")
+        )
+        self.assertEqual(expected_student_unions, student_unions)
+
 
 
 # TODO Test more of the functionality - more lookups etc
