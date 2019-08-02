@@ -113,18 +113,6 @@ class TestCreateInstitutionDocs(unittest.TestCase):
         mock_get_institution_doc.assert_called()
 
 
-class TestGetStudentUnions(unittest.TestCase):
-
-    def test_get_student_unions(self):
-        kis_xml_string = get_string("fixtures/large_test_file.xml")
-        inst_xml_string = get_string("fixtures/one_inst_one_course.xml")
-        kis_root = ET.fromstring(kis_xml_string)
-        locations = Locations(kis_root)
-        inst_root = ET.fromstring(inst_xml_string)
-        institution = get_first(inst_root.iter("INSTITUTION"))
-        get_student_unions(locations, institution)
-
-
 # TODO Test more of the functionality - more lookups etc
 
 if __name__ == "__main__":

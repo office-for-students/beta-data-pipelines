@@ -11,11 +11,11 @@ class TestGetStudentUnion(unittest.TestCase):
     def test_get_student_union_10000047(self):
         kis_xml_string = get_string("fixtures/large_test_file.xml")
         kis_root = ET.fromstring(kis_xml_string)
-        locations = Locations(kis_root)
+        locations_lookup = Locations(kis_root)
         institution_pubukprn = "10000047"
         locid = "A1"
         lookup_key = f"{institution_pubukprn}{locid}"
-        location = locations.get_location(lookup_key)
+        location = locations_lookup.get_location(lookup_key)
         student_union = get_student_union(location)
         expected_student_union = json.loads(
             get_string("fixtures/su_10000047.json")
