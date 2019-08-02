@@ -22,6 +22,7 @@ PARENTDIR = os.path.dirname(CURRENTDIR)
 sys.path.insert(0, CURRENTDIR)
 sys.path.insert(0, PARENTDIR)
 
+from EtlPipelineBlobTrigger.locations import Locations
 from EtlPipelineBlobTrigger.course_docs import get_code_label_entry
 from SharedCode.utils import (
     get_collection_link,
@@ -33,8 +34,10 @@ import course_lookup_tables as lookup
 
 
 class InstitutionDocs:
-    def __init__(self):
+    def __init__(self, xml_string):
         self.ukrlp_lookups = get_ukrlp_lookups()
+        self.root = ET.fromstring(xml_string)
+        self.locations_lookup = Locations(self.root)
 
     def get_course(self, raw_course_data):
         # TODO complete and call this
@@ -72,6 +75,8 @@ class InstitutionDocs:
         institution_element["contact_details"] = self.get_contact_details(
             raw_inst_data["PUBUKPRN"]
         )
+        # institution_element["student_unions"] =
+        # get_student_unions(self.locations_lookup, institution)
         institution_element["pub_ukprn_name"] = self.get_ukprn_name(
             raw_inst_data["PUBUKPRN"]
         )
@@ -107,7 +112,7 @@ class InstitutionDocs:
         )
         return institution_doc
 
-    def create_institution_docs(self, xml_string):
+    def create_institution_docs(self):
         """Parse HESA XML and create JSON institution docs in Cosmos DB."""
 
         # TODO Investigate writing docs to CosmosDB in bulk to speed things up.
@@ -117,10 +122,8 @@ class InstitutionDocs:
             "AzureCosmosDbDatabaseId", "AzureCosmosDbInstitutionsCollectionId"
         )
 
-        root = ET.fromstring(xml_string)
-
         institution_count = 0
-        for institution in root.iter("INSTITUTION"):
+        for institution in self.root.iter("INSTITUTION"):
             institution_count += 1
             institution_doc = self.get_institution_doc(institution)
             cosmosdb_client.CreateItem(collection_link, institution_doc)
@@ -132,6 +135,22 @@ def get_country(code):
     country["code"] = code
     country["name"] = lookup.country_code[code]
     return country
+
+
+def get_student_unions(locations_lookup, institution):
+    raw_inst_data = xmltodict.parse(ET.tostring(institution))["INSTITUTION"]
+    pubukprn = raw_inst_data["PUBUKPRN"]
+    student_unions = []
+    for course in institution.findall("KISCOURSE"):
+        for course_location in course.findall("COURSELOCATION"):
+            student_union = {}
+            raw_course_location = xmltodict.parse(ET.tostring(course_location))
+            if not "LOCID" in raw_course_location:
+                continue
+            locid = raw_course_location["LOCID"]
+            location_lookup_key = f"{pubukprn}{pubukprn}"
+            location_data = get_location_data_for_key(location_lookup_key)
+            print(location_data["SUURL"])
 
 
 def get_total_number_of_courses(institution):
