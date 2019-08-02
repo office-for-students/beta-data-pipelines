@@ -23,6 +23,7 @@ sys.path.insert(0, CURRENTDIR)
 sys.path.insert(0, PARENTDIR)
 
 from EtlPipelineBlobTrigger.course_docs import get_code_label_entry
+from CreateInstBlobTrigger.locations import Locations
 from SharedCode.utils import (
     get_collection_link,
     get_cosmos_client,
@@ -34,8 +35,10 @@ import course_lookup_tables as lookup
 
 
 class InstitutionDocs:
-    def __init__(self):
+    def __init__(self, xml_string):
         self.ukrlp_lookups = get_ukrlp_lookups()
+        self.root = ET.fromstring(xml_string)
+        self.location_lookup = Locations(self.root)
 
     def get_course(self, raw_course_data):
         # TODO complete and call this
@@ -108,7 +111,7 @@ class InstitutionDocs:
         )
         return institution_doc
 
-    def create_institution_docs(self, xml_string):
+    def create_institution_docs(self):
         """Parse HESA XML and create JSON institution docs in Cosmos DB."""
 
         # TODO Investigate writing docs to CosmosDB in bulk to speed things up.
@@ -118,10 +121,8 @@ class InstitutionDocs:
             "AzureCosmosDbDatabaseId", "AzureCosmosDbInstitutionsCollectionId"
         )
 
-        root = ET.fromstring(xml_string)
-
         institution_count = 0
-        for institution in root.iter("INSTITUTION"):
+        for institution in self.root.iter("INSTITUTION"):
             institution_count += 1
             institution_doc = self.get_institution_doc(institution)
             cosmosdb_client.CreateItem(collection_link, institution_doc)
