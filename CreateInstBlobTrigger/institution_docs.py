@@ -151,20 +151,27 @@ def get_student_unions(locations_lookup, institution):
     raw_inst_data = xmltodict.parse(ET.tostring(institution))["INSTITUTION"]
     pubukprn = raw_inst_data["PUBUKPRN"]
     student_unions = []
+    locations_done = []
     for course in institution.findall("KISCOURSE"):
         for course_location in course.findall("COURSELOCATION"):
             student_union = {}
-            raw_course_location = xmltodict.parse(ET.tostring(course_location))
+            raw_course_location = xmltodict.parse(
+                ET.tostring(course_location)
+            )["COURSELOCATION"]
+            print(raw_course_location)
             if "LOCID" not in raw_course_location:
                 # LOCID is not mandatory in COURSELOCATION
                 continue
             locid = raw_course_location["LOCID"]
             location_lookup_key = f"{pubukprn}{locid}"
-            location = locations_lookup.get_location(location_lookup_key)
-            if location:
-                student_union = get_student_union(location)
-                if student_union:
-                    student_unions.append(student_union)
+            if location_lookup_key not in locations_done:
+                locations_done.append(location_lookup_key)
+                print(location_lookup_key)
+                location = locations_lookup.get_location(location_lookup_key)
+                if location:
+                    student_union = get_student_union(location)
+                    if student_union:
+                        student_unions.append(student_union)
     return student_unions
 
 
