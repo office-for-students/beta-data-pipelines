@@ -58,8 +58,10 @@ class InstitutionDocs:
 
     def get_contact_details(self, ukprn):
         if ukprn not in self.ukrlp_lookups:
-            return {"No contact details available": f"UKPRN: {ukprn}"}
-        return self.ukrlp_lookups[ukprn]["contact_details"]
+            return {}
+        contact_details = self.ukrlp_lookups[ukprn]["contact_details"]
+        contact_details.pop("website", None)
+        return contact_details
 
     def get_ukprn_name(self, ukprn):
         if ukprn not in self.ukrlp_lookups:
@@ -73,9 +75,9 @@ class InstitutionDocs:
         institution_element = {}
         if "APROutcome" in raw_inst_data:
             institution_element["apr_outcome"] = raw_inst_data["APROutcome"]
-        institution_element["contact_details"] = self.get_contact_details(
-            raw_inst_data["PUBUKPRN"]
-        )
+        contact_details = self.get_contact_details(raw_inst_data["PUBUKPRN"])
+        if contact_details:
+            institution_element["contact_details"] = contact_details
         institution_element["pub_ukprn_name"] = self.get_ukprn_name(
             raw_inst_data["PUBUKPRN"]
         )
