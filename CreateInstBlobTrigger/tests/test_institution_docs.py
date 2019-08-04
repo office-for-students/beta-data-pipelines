@@ -5,12 +5,10 @@ import xml.etree.ElementTree as ET
 from unittest import mock
 
 from inst_test_utils import get_first, get_string, remove_variable_elements
-from EtlPipelineBlobTrigger.locations import Locations
 import institution_docs
 from institution_docs import (
     InstitutionDocs,
     get_country,
-    get_student_unions,
     get_total_number_of_courses,
 )
 
@@ -90,7 +88,6 @@ class TestGetInstitutionDoc(unittest.TestCase):
 
 
 class TestCreateInstitutionDocs(unittest.TestCase):
-
     @mock.patch.object(institution_docs.InstitutionDocs, "get_institution_doc")
     @mock.patch("institution_docs.get_collection_link")
     @mock.patch("institution_docs.get_cosmos_client")
@@ -105,7 +102,6 @@ class TestCreateInstitutionDocs(unittest.TestCase):
         kis_xml_string = get_string("fixtures/large_test_file.xml")
         inst_docs = InstitutionDocs(kis_xml_string)
 
-        xml_string = get_string("fixtures/one_inst_one_course.xml")
         inst_docs.create_institution_docs()
         mock_get_ukrlp_lookups.assert_called_once()
         mock_get_cosmos_client.assert_called_once()
