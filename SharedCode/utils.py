@@ -1,6 +1,7 @@
 """Functions shared by Azure Functions"""
 
 import os
+import html
 import uuid
 
 import azure.cosmos.cosmos_client as cosmos_client
@@ -74,7 +75,7 @@ def get_english_welsh_item(key, lookup_table):
     item = {}
     keyw = key + "W"
     if key in lookup_table:
-        item["english"] = lookup_table[key]
+        item["english"] = html.unescape(lookup_table[key])
     if keyw in lookup_table:
-        item["welsh"] = lookup_table[keyw]
+        item["welsh"] = html.unescape(lookup_table[keyw])
     return item
