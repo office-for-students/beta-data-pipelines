@@ -211,7 +211,7 @@ def get_accreditations(raw_course_data, acc_lookup):
 
     return acc_list
 
-def get_course_entry(accreditations, locations, locids, raw_inst_data,
+def get_course_doc(accreditations, locations, locids, raw_inst_data,
                      raw_course_data, kisaims):
     outer_wrapper = {}
     outer_wrapper['_id'] = utils.get_uuid()
@@ -242,7 +242,7 @@ def get_course_entry(accreditations, locations, locids, raw_inst_data,
     if foundataion_year:
         course['foundation_year_availability'] = foundataion_year
     if 'HONOURS' in raw_course_data:
-        course['honours_award_provision'] = raw_course_data['HONOURS']
+        course['honours_award_provision'] = int(raw_course_data['HONOURS'])
     course['institution'] = get_institution(raw_inst_data)
     course['kis_course_id'] = raw_course_data['KISCOURSEID']
     length_of_course = get_code_label_entry(raw_course_data,
@@ -319,7 +319,7 @@ def create_course_docs(xml_string):
 
             raw_course_data = xmltodict.parse(ET.tostring(course))['KISCOURSE']
             locids = get_locids(raw_course_data, ukprn)
-            course_entry = get_course_entry(accreditations, locations,
+            course_entry = get_course_doc(accreditations, locations,
                                             locids, raw_inst_data,
                                             raw_course_data, kisaims)
 
