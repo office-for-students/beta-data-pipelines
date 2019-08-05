@@ -153,10 +153,16 @@ def get_location_items(locations, locids, raw_course_data, pub_ukprn):
     return location_items
 
 
+def get_code(lookup_table_raw_xml, key):
+    code = lookup_table_raw_xml[key]
+    if code.isdigit():
+        code = int(code)
+    return code
+
 def get_code_label_entry(lookup_table_raw_xml, lookup_table_local, key):
     entry = {}
     if key in lookup_table_raw_xml:
-        code = lookup_table_raw_xml[key]
+        code = get_code(lookup_table_raw_xml, key)
         entry['code'] = code
         entry['label'] = lookup_table_local[code]
     return entry
