@@ -1,5 +1,5 @@
 import xmltodict
-import xml.etree.ElementTree as ET
+import defusedxml.ElementTree as ET
 
 
 class Accreditations:
