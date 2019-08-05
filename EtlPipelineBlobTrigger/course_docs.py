@@ -17,9 +17,14 @@ import xml.etree.ElementTree as ET
 
 import xmltodict
 
+# TODO investigate setting PATH in Azure so can remove this
 CURRENTDIR = os.path.dirname(
-    os.path.abspath(inspect.getfile(inspect.currentframe())))
+    os.path.abspath(inspect.getfile(inspect.currentframe()))
+)
+PARENTDIR = os.path.dirname(CURRENTDIR)
 sys.path.insert(0, CURRENTDIR)
+sys.path.insert(0, PARENTDIR)
+
 
 import course_lookup_tables as lookup
 from course_stats import get_stats, SharedUtils
@@ -29,8 +34,7 @@ from locations import Locations
 from SharedCode import utils
 from ukrlp_enricher import UkRlpCourseEnricher
 
-# TODO update this to use the new one that will be in SharedCode after PR#34
-from helpers import get_eng_welsh_item
+from SharedCode.utils import get_english_welsh_item
 
 
 def get_institution(raw_inst_data):
@@ -95,7 +99,7 @@ def get_links(locations, locids, raw_inst_data, raw_course_data):
     ]
 
     for item_detail in item_details:
-        link_item = get_eng_welsh_item(item_detail[0], item_detail[2])
+        link_item = get_english_welsh_item(item_detail[0], item_detail[2])
         if link_item:
             links[item_detail[1]] = link_item
 
@@ -127,11 +131,11 @@ def get_location_items(locations, locids, raw_course_data, pub_ukprn):
             logging.warning(f'failed to find location data in lookup table')
 
         links, accommodation, student_union = {}, {}, {}
-        accommodation = get_eng_welsh_item('ACCOMURL', raw_location_data)
+        accommodation = get_english_welsh_item('ACCOMURL', raw_location_data)
         if accommodation:
             links['accommodation'] = accommodation
 
-        student_union = get_eng_welsh_item('SUURL', raw_location_data)
+        student_union = get_english_welsh_item('SUURL', raw_location_data)
         if student_union:
             links['student_union'] = student_union
 
@@ -143,7 +147,7 @@ def get_location_items(locations, locids, raw_course_data, pub_ukprn):
         if 'LONGITUDE' in raw_location_data:
             location_dict['longitude'] = raw_location_data['LONGITUDE']
 
-        name = get_eng_welsh_item('LOCNAME', raw_location_data)
+        name = get_english_welsh_item('LOCNAME', raw_location_data)
         if name:
             location_dict['name'] = name
 
@@ -196,11 +200,11 @@ def get_accreditations(raw_course_data, acc_lookup):
             if 'ACCURL' in accreditations:
                 json_elem['accreditor_url'] = accreditations['ACCURL']
 
-            text = get_eng_welsh_item('ACCTEXT', accreditations)
+            text = get_english_welsh_item('ACCTEXT', accreditations)
             json_elem['text'] = text
 
         if 'ACCDEPENDURL' in xml_elem or 'ACCDEPENDURLW' in xml_elem:
-            urls = get_eng_welsh_item('ACCDEPENDURL', xml_elem)
+            urls = get_english_welsh_item('ACCDEPENDURL', xml_elem)
             json_elem['url'] = urls
 
         dependent_on = get_code_label_entry(xml_elem, lookup.accreditation_code, 'ACCDEPEND')
@@ -271,7 +275,7 @@ def get_course_doc(accreditations, locations, locids, raw_inst_data,
                                          'SANDWICH')
     if sandwich_year:
         course['sandwich_year'] = sandwich_year
-    title = get_eng_welsh_item('TITLE', raw_course_data)
+    title = get_english_welsh_item('TITLE', raw_course_data)
     if title:
         course['title'] = title
     if 'UCASPROGID' in raw_course_data:
@@ -319,11 +323,11 @@ def create_course_docs(xml_string):
 
             raw_course_data = xmltodict.parse(ET.tostring(course))['KISCOURSE']
             locids = get_locids(raw_course_data, ukprn)
-            course_entry = get_course_doc(accreditations, locations,
+            course_doc = get_course_doc(accreditations, locations,
                                             locids, raw_inst_data,
                                             raw_course_data, kisaims)
 
-            enricher.enrich_course(course_entry)
-            cosmosdb_client.CreateItem(collection_link, course_entry)
+            enricher.enrich_course(course_doc)
+            cosmosdb_client.CreateItem(collection_link, course_doc)
             course_count += 1
     logging.info(f"Processed {course_count} courses")
