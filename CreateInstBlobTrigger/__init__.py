@@ -51,8 +51,8 @@ def main(xmlblob: func.InputStream, context: func.Context):
 
         """ 2. LOADING - extract data and create enriched JSON Documents """
 
-        inst_docs = InstitutionDocs()
-        inst_docs.create_institution_docs(xml_string)
+        inst_docs = InstitutionDocs(xml_string)
+        inst_docs.create_institution_docs()
 
         """ 3. CLEANUP """
 
