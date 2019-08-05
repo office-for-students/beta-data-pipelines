@@ -112,7 +112,6 @@ def get_location_items(locations, locids, raw_course_data, pub_ukprn):
     item = {}
     for course_location in course_locations:
         if 'LOCID' not in course_location:
-            logging.warning(f"missing LOCID, course: {raw_course_data}")
             continue
 
         if 'UCASCOURSEID' in course_location:
