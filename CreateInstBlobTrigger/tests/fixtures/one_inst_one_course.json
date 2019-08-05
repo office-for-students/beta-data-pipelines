@@ -16,6 +16,19 @@
             },
             "telephone": "01632 960661"
         },
+        "links": {
+            "institution_homepage": "10000047.com"
+        },
+        "student_unions": [
+            {
+                "link": {
+                    "english": "http://ccsu.co.uk/"
+                },
+                "name": {
+                    "english": "ABDO College"
+                }
+            }
+        ],
         "pub_ukprn_name": "Institution name for 10000047",
         "pub_ukprn": "10000047",
         "pub_ukprn_country": {
