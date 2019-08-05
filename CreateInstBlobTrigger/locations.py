@@ -18,8 +18,6 @@ class Locations:
 
         The LOCID part is the LOCATION.LOCID
 
-        We are not sure if this mapping is correct; it may need a
-        modification after consulting with OfS.
         """
 
         self.lookup_dict = {}
