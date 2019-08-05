@@ -55,7 +55,7 @@ def get_locids(raw_course_data, ukprn):
     locids = []
     if 'COURSELOCATION' not in raw_course_data:
         return locids
-    if type(raw_course_data['COURSELOCATION']) == list:
+    if isinstance(raw_course_data['COURSELOCATION'], list):
         for val in raw_course_data['COURSELOCATION']:
             # TODO if UCASCOURSEIDs present, then process accordingly
             # For example, check distant learning is set True. May
