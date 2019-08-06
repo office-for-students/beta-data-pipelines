@@ -80,7 +80,7 @@
             }, {
                 "name": "sort_pub_ukprn_name",
                 "type": "Edm.String",
-                "facetable": "false",
+                "facetable": "true",
                 "filterable": "false",
                 "searchable": "false",
                 "sortable": "true"
