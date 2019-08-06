@@ -13,23 +13,28 @@ import inspect
 import logging
 import os
 import sys
-import xml.etree.ElementTree as ET
+import defusedxml.ElementTree as ET
 
 import xmltodict
 
+# TODO investigate setting PATH in Azure so can remove this
 CURRENTDIR = os.path.dirname(
-    os.path.abspath(inspect.getfile(inspect.currentframe())))
+    os.path.abspath(inspect.getfile(inspect.currentframe()))
+)
+PARENTDIR = os.path.dirname(CURRENTDIR)
 sys.path.insert(0, CURRENTDIR)
+sys.path.insert(0, PARENTDIR)
+
 
 import course_lookup_tables as lookup
 from course_stats import get_stats, SharedUtils
-from course_accreditations import get_accreditations
 from accreditations import Accreditations
 from kisaims import KisAims
 from locations import Locations
 from SharedCode import utils
 from ukrlp_enricher import UkRlpCourseEnricher
-from helpers import get_eng_welsh_item
+
+from SharedCode.utils import get_english_welsh_item
 
 
 def get_institution(raw_inst_data):
@@ -55,7 +60,7 @@ def get_locids(raw_course_data, ukprn):
     locids = []
     if 'COURSELOCATION' not in raw_course_data:
         return locids
-    if type(raw_course_data['COURSELOCATION']) == list:
+    if isinstance(raw_course_data['COURSELOCATION'], list):
         for val in raw_course_data['COURSELOCATION']:
             # TODO if UCASCOURSEIDs present, then process accordingly
             # For example, check distant learning is set True. May
@@ -94,7 +99,7 @@ def get_links(locations, locids, raw_inst_data, raw_course_data):
     ]
 
     for item_detail in item_details:
-        link_item = get_eng_welsh_item(item_detail[0], item_detail[2])
+        link_item = get_english_welsh_item(item_detail[0], item_detail[2])
         if link_item:
             links[item_detail[1]] = link_item
 
@@ -112,7 +117,6 @@ def get_location_items(locations, locids, raw_course_data, pub_ukprn):
     item = {}
     for course_location in course_locations:
         if 'LOCID' not in course_location:
-            logging.warning(f"missing LOCID, course: {raw_course_data}")
             continue
 
         if 'UCASCOURSEID' in course_location:
@@ -127,11 +131,11 @@ def get_location_items(locations, locids, raw_course_data, pub_ukprn):
             logging.warning(f'failed to find location data in lookup table')
 
         links, accommodation, student_union = {}, {}, {}
-        accommodation = get_eng_welsh_item('ACCOMURL', raw_location_data)
+        accommodation = get_english_welsh_item('ACCOMURL', raw_location_data)
         if accommodation:
             links['accommodation'] = accommodation
 
-        student_union = get_eng_welsh_item('SUURL', raw_location_data)
+        student_union = get_english_welsh_item('SUURL', raw_location_data)
         if student_union:
             links['student_union'] = student_union
 
@@ -143,7 +147,7 @@ def get_location_items(locations, locids, raw_course_data, pub_ukprn):
         if 'LONGITUDE' in raw_location_data:
             location_dict['longitude'] = raw_location_data['LONGITUDE']
 
-        name = get_eng_welsh_item('LOCNAME', raw_location_data)
+        name = get_english_welsh_item('LOCNAME', raw_location_data)
         if name:
             location_dict['name'] = name
 
@@ -154,10 +158,16 @@ def get_location_items(locations, locids, raw_course_data, pub_ukprn):
     return location_items
 
 
+def get_code(lookup_table_raw_xml, key):
+    code = lookup_table_raw_xml[key]
+    if code.isdigit():
+        code = int(code)
+    return code
+
 def get_code_label_entry(lookup_table_raw_xml, lookup_table_local, key):
     entry = {}
     if key in lookup_table_raw_xml:
-        code = lookup_table_raw_xml[key]
+        code = get_code(lookup_table_raw_xml, key)
         entry['code'] = code
         entry['label'] = lookup_table_local[code]
     return entry
@@ -174,7 +184,38 @@ def get_qualification(lookup_table_raw_xml, kisaims):
     return entry
 
 
-def get_course_entry(accreditations, locations, locids, raw_inst_data,
+def get_accreditations(raw_course_data, acc_lookup):
+    acc_list = []
+    raw_xml_list = SharedUtils.get_raw_list(raw_course_data,
+                                            'ACCREDITATION')
+
+    for xml_elem in raw_xml_list:
+        json_elem = {}
+
+        if 'ACCTYPE' in xml_elem:
+            json_elem['type'] = xml_elem['ACCTYPE']
+            accreditations = acc_lookup.get_accreditation_data_for_key(
+                                xml_elem['ACCTYPE'])
+
+            if 'ACCURL' in accreditations:
+                json_elem['accreditor_url'] = accreditations['ACCURL']
+
+            text = get_english_welsh_item('ACCTEXT', accreditations)
+            json_elem['text'] = text
+
+        if 'ACCDEPENDURL' in xml_elem or 'ACCDEPENDURLW' in xml_elem:
+            urls = get_english_welsh_item('ACCDEPENDURL', xml_elem)
+            json_elem['url'] = urls
+
+        dependent_on = get_code_label_entry(xml_elem, lookup.accreditation_code, 'ACCDEPEND')
+        if dependent_on:
+            json_elem['dependent_on'] = dependent_on
+
+        acc_list.append(json_elem)
+
+    return acc_list
+
+def get_course_doc(accreditations, locations, locids, raw_inst_data,
                      raw_course_data, kisaims):
     outer_wrapper = {}
     outer_wrapper['_id'] = utils.get_uuid()
@@ -182,7 +223,7 @@ def get_course_entry(accreditations, locations, locids, raw_inst_data,
     outer_wrapper['version'] = 1
     outer_wrapper['institution_id'] = raw_inst_data['PUBUKPRN']
     outer_wrapper['course_id'] = raw_course_data['KISCOURSEID']
-    outer_wrapper['course_mode'] = raw_course_data['KISMODE']
+    outer_wrapper['course_mode'] = int(raw_course_data['KISMODE'])
 
     course = {}
 
@@ -205,7 +246,7 @@ def get_course_entry(accreditations, locations, locids, raw_inst_data,
     if foundataion_year:
         course['foundation_year_availability'] = foundataion_year
     if 'HONOURS' in raw_course_data:
-        course['honours_award_provision'] = raw_course_data['HONOURS']
+        course['honours_award_provision'] = int(raw_course_data['HONOURS'])
     course['institution'] = get_institution(raw_inst_data)
     course['kis_course_id'] = raw_course_data['KISCOURSEID']
     length_of_course = get_code_label_entry(raw_course_data,
@@ -234,7 +275,7 @@ def get_course_entry(accreditations, locations, locids, raw_inst_data,
                                          'SANDWICH')
     if sandwich_year:
         course['sandwich_year'] = sandwich_year
-    title = get_eng_welsh_item('TITLE', raw_course_data)
+    title = get_english_welsh_item('TITLE', raw_course_data)
     if title:
         course['title'] = title
     if 'UCASPROGID' in raw_course_data:
@@ -282,11 +323,11 @@ def create_course_docs(xml_string):
 
             raw_course_data = xmltodict.parse(ET.tostring(course))['KISCOURSE']
             locids = get_locids(raw_course_data, ukprn)
-            course_entry = get_course_entry(accreditations, locations,
+            course_doc = get_course_doc(accreditations, locations,
                                             locids, raw_inst_data,
                                             raw_course_data, kisaims)
 
-            enricher.enrich_course(course_entry)
-            cosmosdb_client.CreateItem(collection_link, course_entry)
+            enricher.enrich_course(course_doc)
+            cosmosdb_client.CreateItem(collection_link, course_doc)
             course_count += 1
     logging.info(f"Processed {course_count} courses")

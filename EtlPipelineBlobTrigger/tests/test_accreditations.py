@@ -5,7 +5,7 @@ import xml.etree.ElementTree as ET
 
 import xmltodict
 
-from course_accreditations import get_accreditations
+from course_docs import get_accreditations
 from accreditations import Accreditations
 from testing_utils import get_string
 

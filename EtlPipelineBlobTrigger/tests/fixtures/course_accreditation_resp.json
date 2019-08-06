@@ -11,7 +11,7 @@
             "welsh": "http://www.swansea.ac.uk/cy/israddedig/cyrsiau/gwyddoniaeth/cyfrifiadureg/bsc-cyfrifiadureg-g400/"
         },
         "dependent_on": {
-            "code": "1",
+            "code": 1,
             "label": "Accreditation is dependent on student choice"
         }
     },
@@ -27,7 +27,7 @@
             "welsh": "http://www.swansea.ac.uk/cy/israddedig/cyrsiau/gwyddoniaeth/cyfrifiadureg/bsc-cyfrifiadureg-g400/"
         },
         "dependent_on": {
-            "code": "0",
+            "code": 0,
             "label": "Accreditation is not dependent on student choice"
         }
     }
