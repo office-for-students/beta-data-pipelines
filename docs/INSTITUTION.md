@@ -69,14 +69,20 @@
         ],
         "links": {
             "institution_homepage": "string",
-            "self": "string",
-            "student_union": [
-                {
+            "self": "string"
+        },
+        "student_unions": [
+            {
+                "link": {
+                    "english": "string",
+                    "welsh": "string"
+                },
+                "name": {
                     "english": "string",
                     "welsh": "string"
                 }
-            ]
-        },
+            }
+        ],
         "publ_ukprn_name" : "string",
         "publ_ukprn" : "string", // doc is unique based on the public_ukprn 
         "publ_ukprn_country": {
@@ -128,8 +134,10 @@
 | institution.courses.[].title.welsh               | KIS.INSTITUTION.KISCOURSE.TITLEW                      | TITLEW                |
 | institution.links.institution_homepage           | Retreive data from UKPRN API                          | ContactWebsiteAddress |
 | institution.links.self                           | Dynamically built                                     | N/A                   |
-| institution.links.[].student_union.english       | LOCATION.SUURL                                        | SUURL                 |
-| institution.links.[].student_union.welsh         | LOCATION.SUURLW                                       | SUURLW                |
+| institution.student_unions.[].link.english       | KIS.LOCATION.SUURL                                    | SUURL                 |
+| institution.student_unions.[].link.welsh         | KIS.LOCATION.SUURLW                                   | SUURLW                |
+| institution.student_unions.[].name.english       | KIS.LOCATION.LOCNAME                                  | LOCNAME               |
+| institution.student_unions.[].name.welsh         | KIS.LOCATION.LOCNAMEW                                 | LOCNAMEW              |
 | institution.public_ukprn_name                    | KIS.INSTITUTION.PUBUKPRN                              | PUBUKPRN              |
 | institution.public_ukprn                         | Retreive data from UKPRN API                          | N/A                   |
 | institution.public_ukprn_country.code            | KIS.INSTITUTION.PUBUKPRNCOUNTRY                       | PUBUKPRNCOUNTRY       |
@@ -141,6 +149,10 @@
 | institution.ukprn_country.code                   | KIS.INSTITUTION.COUNTRY                               | COUNTRY               |
 | institution.ukprn_country.label                  | See Country Code values                               | N/A                   |
 
+### Location Data
+
+Using the KISCOURSE.COURSELOCATION.LOCID to find unique teaching locations (KIS.LOCATION) for institution, 
+here you can find the student union url for location as well as the name.
 
 ### Country Codes Values
 
