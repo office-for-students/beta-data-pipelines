@@ -4,21 +4,21 @@
     "version": 1,
     "institution_id": "10000047",
     "course_id": "PSSFDOPTDIS",
-    "course_mode": "1",
+    "course_mode": 1,
     "course": {
         "country": {
             "code": "XF",
             "name": "England"
         },
         "distance_learning": {
-            "code": "0",
+            "code": 0,
             "label": "Course is availble other than by distance learning"
         },
         "foundation_year_availability": {
-            "code": "0",
+            "code": 0,
             "label": "Not available"
         },
-        "honours_award_provision": "0",
+        "honours_award_provision": 0,
         "institution": {
             "pub_ukprn_name": "ABDO College of Education",
             "pub_ukprn": "10000047",
@@ -27,7 +27,7 @@
         },
         "kis_course_id": "PSSFDOPTDIS",
         "length_of_course": {
-            "code": "2",
+            "code": 2,
             "label": "2 stages"
         },
         "links": {
@@ -61,7 +61,7 @@
             }
         ],
         "mode": {
-            "code": "1",
+            "code": 1,
             "label": "Full-time"
         },
         "qualification": {
@@ -69,7 +69,7 @@
             "label": "FD"
         },
         "sandwich_year": {
-            "code": "0",
+            "code": 0,
             "label": "Not available"
         },
         "title": {
@@ -77,7 +77,7 @@
         },
         "ucas_programme_id": "A19-H32",
         "year_abroad": {
-            "code": "0",
+            "code": 0,
             "label": "Not available"
         },
         "statistics": {
@@ -247,7 +247,7 @@
             "salary": [
                 {
                     "unavailable": {
-                        "code": "0",
+                        "code": 0,
                         "reason": "There is not enough data available to publish for this course. This is either because the course is small or we have not had enough survey responses.  This does not reflect on the quality of the course."
                     }
                 }

@@ -7,14 +7,14 @@
             "label": "England"
         },
         "distance_learning": {
-            "code": "0",
+            "code": 0,
             "label": "Course is availble other than by distance learning"
         },
         "foundation_year_availability": {
-            "code": "0",
+            "code": 0,
             "label": "Not available"
         },
-        "honours_award_provision": "0",
+        "honours_award_provision": 0,
         "institution": {
             "pub_ukprn_name": "ABDO College of Education",
             "sort_pub_ukprn_name": "abdo college of education",
@@ -22,7 +22,7 @@
         },
         "kis_course_id": "PSSFDOPTDIS",
         "length_of_course": {
-            "code": "2",
+            "code": 2,
             "label": "2 stages"
         },
         "locations": [{
@@ -35,7 +35,7 @@
             }
         }],
         "mode": {
-            "code": "1",
+            "code": 1,
             "label": "Full-time"
         },
         "qualification": {
@@ -43,14 +43,14 @@
             "label": "FD"
         },
         "sandwich_year": {
-            "code": "0",
+            "code": 0,
             "label": "Not available"
         },
         "title": {
             "english": "Ophthalmic Dispensing"
         },
         "year_abroad": {
-            "code": "0",
+            "code": 0,
             "label": "Not available"
         }
     }
