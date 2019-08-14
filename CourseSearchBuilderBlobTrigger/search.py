@@ -85,7 +85,8 @@ class Index():
         if response.status_code != 201:
             logging.error(f'failed to create search index\n\
                             index-name: {self.index_name}\n\
-                            status: {response.status_code}')
+                            status: {response.status_code}\n\
+                            error: {requests.exceptions.HTTPError(response.text)}')
 
             raise exceptions.StopEtlPipelineErrorException
 
@@ -146,14 +147,16 @@ class Load():
         try:
             url = self.url + "/indexes/" + self.index_name + \
                 "/docs/index" + self.query_string
+            logging.info(f"url: {url}")
             response = requests.post(url, headers=self.headers, json=documents)
         except requests.exceptions.RequestException as e:
-            logging.exception('unexpected error creating index', exc_info=True)
+            logging.exception('unexpected error loading bulk index', exc_info=True)
             raise exceptions.StopEtlPipelineErrorException(e)
 
         if response.status_code != 200:
             logging.error(f'failed to bulk load course search documents\n\
                             index-name: {self.index_name}\n\
-                            status: {response.status_code}')
+                            status: {response.status_code}\n\
+                            error: {requests.exceptions.HTTPError(response.text)}')
 
-            raise exceptions.StopEtlPipelineErrorException
+            raise exceptions.StopEtlPipelineErrorException()
