@@ -19,17 +19,17 @@ def build_course_search_doc(course):
                 "label": course['course']['country']['name']
             },
             "distance_learning": {
-                "code": course['course']['distance_learning']['code'],
+                "code": int(course['course']['distance_learning']['code']),
                 "label": course['course']['distance_learning']['label']
             },
             "foundation_year_availability": {
                 "code":
-                course['course']['foundation_year_availability']['code'],
+                int(course['course']['foundation_year_availability']['code']),
                 "label":
                 course['course']['foundation_year_availability']['label']
             },
             "honours_award_provision":
-            course['course']['honours_award_provision'],
+            int(course['course']['honours_award_provision']),
             "institution": {
                 "pub_ukprn_name":
                 course['course']['institution']['pub_ukprn_name'],
@@ -40,20 +40,20 @@ def build_course_search_doc(course):
             "length_of_course": length_of_course,
             "locations": locations,
             "mode": {
-                "code": course['course']['mode']['code'],
+                "code": int(course['course']['mode']['code']),
                 "label": course['course']['mode']['label']
             },
             "qualification": {
-                "code": course['course']['qualification']['code'],
+                "code": int(course['course']['qualification']['code']),
                 "label": course['course']['qualification']['label']
             },
             "sandwich_year": {
-                "code": course['course']['sandwich_year']['code'],
+                "code": int(course['course']['sandwich_year']['code']),
                 "label": course['course']['sandwich_year']['label']
             },
             "title": title,
             "year_abroad": {
-                "code": course['course']['year_abroad']['code'],
+                "code": int(course['course']['year_abroad']['code']),
                 "label": course['course']['year_abroad']['label']
             }
         }
