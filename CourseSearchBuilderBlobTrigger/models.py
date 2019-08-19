@@ -51,6 +51,11 @@ def build_course_search_doc(course):
                     "code": course['course']['sandwich_year']['code'],
                     "label": course['course']['sandwich_year']['label']
                 },
+                "subject": {
+                    "code": course['course']['subject']['code'],
+                    "english": course['course']['subject']['english'],
+                    "welsh": course['course']['subject']['welsh']
+                },
                 "title": title,
                 "year_abroad": {
                     "code": course['course']['year_abroad']['code'],
