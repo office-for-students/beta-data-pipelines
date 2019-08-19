@@ -128,8 +128,8 @@
         },
         "subject": {
             "code": "string",
-            "english_label": "string",
-            "welsh_label": "string"
+            "english": "string",
+            "welsh": "string"
         },
         "title": {
             "english": "string",
@@ -205,8 +205,8 @@
 | sandwich_year.code                         | KIS.INSTITUTION.KISCOURSE.SANDWICH                    | SANDWICH         |
 | sandwich_year.label                        | See Sandwich Years Code values                        | N/A              |
 | subject.code                               | KIS.INSTITUTION.KISCOURSE.SBJ                         | SBJ              |
-| subject.english_label                      | See english-and-wesh-subject-codes.csv                | N/A              |
-| subject.welsh_label                        | See english-and-wesh-subject-codes.csv                | N/A              |
+| subject.english                            | See english-and-wesh-subject-codes.csv                | N/A              |
+| subject.welsh                              | See english-and-wesh-subject-codes.csv                | N/A              |
 | statistics.*                               | See [STATISTICS](STATISTICS.md)                       | N/A              |
 | title.english                              | KIS.INSTITUTION.KISCOURSE.TITLE                       | TITLE            |
 | title.welsh                                | KIS.INSTITUTION.KISCOURSE.TITLEW                      | TITLEW           |
