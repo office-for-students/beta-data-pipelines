@@ -6,8 +6,6 @@ trigger:
 - bugfix/*
 - refactor/*
 
-pr: none
-
 # Build Agent Resources
 pool:
   vmImage: 'ubuntu-latest'
