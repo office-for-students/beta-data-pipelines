@@ -4,6 +4,8 @@
 trigger:
 - master
 
+pr: none
+
 # Build Agent Resources
 pool:
   vmImage: 'ubuntu-latest'
