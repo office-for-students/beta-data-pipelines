@@ -178,6 +178,78 @@ class JobType:
         return self.shared_utils.get_json_list(raw_course_data, self.get_key)
 
 
+class JobList:
+    """Extracts and transforms the JobList and related course elements"""
+
+    def __init__(self):
+        self.xml_element_key = "COMMON"
+        self.xml_subj_key = "COMSBJ"
+        self.xml_agg_key = "COMAGG"
+        self.xml_unavail_reason_key = "COMUNAVAILREASON"
+        self.shared_utils = SharedUtils(
+            self.xml_element_key,
+            self.xml_subj_key,
+            self.xml_agg_key,
+            self.xml_unavail_reason_key,
+        )
+
+        self.data_fields_lookup = self.shared_utils.get_lookup("common_data_fields")
+    @staticmethod
+    def get_key(xml_key):
+        return {
+            "COMUNAVAILREASON": "unavailable",
+            "COMPOP": "number_of_students",
+            "COMAGG": "aggregation_level",
+            "JOBSBJ": "subject",
+            "JOBRESP_RATE": "response_rate",
+        }[xml_key]
+
+
+    def get_mandatory_field(self, xml_elem, xml_key):
+        return self.shared_utils.get_json_value(xml_elem[xml_key])
+
+
+    def get_json_data(self, xml_elem):
+        lookup = self.data_fields_lookup
+        json_data = {}
+        for xml_key in lookup:
+            if lookup[xml_key][1] == "M":
+                json_data[lookup[xml_key][0]] = self.get_mandatory_field(
+                    xml_elem, xml_key
+                )
+            else:
+                if xml_key in xml_elem:
+                    json_key = lookup[xml_key][0]
+                    if json_key == "subject":
+                        json_data[json_key] = self.shared_utils.get_subject(
+                            xml_elem
+                        )
+                    elif json_key == "list":
+                        pass
+                    else:
+                        json_data[json_key] = self.shared_utils.get_json_value(
+                            xml_elem[xml_key]
+                        )
+        return json_data
+
+
+    def get_stats(self, raw_course_data):
+        """Returns a list of JSON objects (as dicts) for this stats element"""
+
+        json_elem_list = []
+        raw_xml_list = SharedUtils.get_raw_list(
+            raw_course_data, self.xml_element_key
+        )
+        for xml_elem in raw_xml_list:
+            json_elem = {}
+            if self.shared_utils.has_data(xml_elem):
+                json_elem.update(self.get_json_data(xml_elem))
+            if self.shared_utils.need_unavailable(xml_elem):
+                json_elem["unavailable"] = self.shared_utils.get_unavailable(xml_elem)
+            json_elem_list.append(json_elem)
+        return json_elem_list
+
+
 class Leo:
     """Extracts and transforms the LEO course element"""
 
@@ -593,6 +665,7 @@ class SharedUtils:
             "nhs_data_fields": "nhs_data_fields.json",
             "leo_unavail_reason": "leo_unavailreason.json",
             "leo_data_fields": "leo_data_fields.json",
+            "common_data_fields": "common_data_fields.json",
         }[lookup_name]
         with open(os.path.join(cwd, f"lookup_files/{filename}")) as infile:
             return json.load(infile)
