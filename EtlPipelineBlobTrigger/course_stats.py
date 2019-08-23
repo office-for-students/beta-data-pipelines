@@ -19,6 +19,7 @@ def get_stats(raw_course_data, country_code):
     employment = Employment()
     entry = Entry()
     job_type = JobType()
+    job_list = JobList()
     leo = Leo(country_code)
     nhs_nss = NhsNss()
     nss = Nss()
@@ -30,6 +31,7 @@ def get_stats(raw_course_data, country_code):
     stats["employment"] = employment.get_stats(raw_course_data)
     stats["entry"] = entry.get_stats(raw_course_data)
     stats["job_type"] = job_type.get_stats(raw_course_data)
+    stats["job_list"] = job_list.get_stats(raw_course_data)
     stats["leo"] = leo.get_stats(raw_course_data)
     stats["nhs_nss"] = nhs_nss.get_stats(raw_course_data)
     stats["nss"] = nss.get_stats(raw_course_data)
@@ -192,22 +194,12 @@ class JobList:
             self.xml_agg_key,
             self.xml_unavail_reason_key,
         )
-
-        self.data_fields_lookup = self.shared_utils.get_lookup("common_data_fields")
-    @staticmethod
-    def get_key(xml_key):
-        return {
-            "COMUNAVAILREASON": "unavailable",
-            "COMPOP": "number_of_students",
-            "COMAGG": "aggregation_level",
-            "JOBSBJ": "subject",
-            "JOBRESP_RATE": "response_rate",
-        }[xml_key]
-
+        self.data_fields_lookup = self.shared_utils.get_lookup(
+            "common_data_fields"
+        )
 
     def get_mandatory_field(self, xml_elem, xml_key):
         return self.shared_utils.get_json_value(xml_elem[xml_key])
-
 
     def get_json_data(self, xml_elem):
         lookup = self.data_fields_lookup
@@ -225,13 +217,25 @@ class JobList:
                             xml_elem
                         )
                     elif json_key == "list":
-                        pass
+                        json_data["list"] = self.get_list_field(xml_elem)
                     else:
                         json_data[json_key] = self.shared_utils.get_json_value(
                             xml_elem[xml_key]
                         )
         return json_data
 
+    def get_list_field(self, xml_elem):
+        """returns the list field for job_list"""
+
+        list_field = []
+        job_lists = self.shared_utils.get_raw_list(xml_elem, "JOBLIST")
+        for job_list in job_lists:
+            job_list_item = {}
+            job_list_item["job"] = job_list["JOB"]
+            job_list_item["percentage_of_students"] = job_list["PERC"]
+            job_list_item["order"] = job_list["ORDER"]
+            list_field.append(job_list_item)
+        return list_field
 
     def get_stats(self, raw_course_data):
         """Returns a list of JSON objects (as dicts) for this stats element"""
@@ -245,7 +249,9 @@ class JobList:
             if self.shared_utils.has_data(xml_elem):
                 json_elem.update(self.get_json_data(xml_elem))
             if self.shared_utils.need_unavailable(xml_elem):
-                json_elem["unavailable"] = self.shared_utils.get_unavailable(xml_elem)
+                json_elem["unavailable"] = self.shared_utils.get_unavailable(
+                    xml_elem
+                )
             json_elem_list.append(json_elem)
         return json_elem_list
 
@@ -713,11 +719,7 @@ class SharedUtils:
             reason_str = self.unavail_reason["no-data"][unavail_reason_code]
             return unicodedata.normalize("NFKD", reason_str)
 
-        validate_agg(
-            unavail_reason_code,
-            agg,
-            self.unavail_reason,
-        )
+        validate_agg(unavail_reason_code, agg, self.unavail_reason)
         partial_reason_str = self.unavail_reason["data"][unavail_reason_code][
             agg
         ]
@@ -782,9 +784,8 @@ class SharedUtils:
         return xml_value
 
     @staticmethod
-    def get_raw_list(raw_course_data, element_key):
-        """Get a list for the element"""
-
-        if isinstance(raw_course_data[element_key], dict):
-            return [raw_course_data[element_key]]
-        return raw_course_data[element_key]
+    def get_raw_list(data, element_key):
+        """If value is a dict, return in list, otherwise return value"""
+        if isinstance(data[element_key], dict):
+            return [data[element_key]]
+        return data[element_key]
