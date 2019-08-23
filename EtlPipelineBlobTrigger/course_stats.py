@@ -181,7 +181,32 @@ class JobType:
 
 
 class JobList:
-    """Extracts and transforms the JobList and related course elements"""
+    """Extracts the JobList and related course XML elements
+
+    It has been agreed that the data will be transformed to the JSON structure
+    shown below:
+
+        "job_list": [{
+            "aggregation_level": "integer",
+            "list": [{
+                "job": "string",
+                "percentage_of_students": "integer",
+                "order": "integer",
+            }],
+            "number_of_students": "integer",
+            "response_rate": "integer",
+            "subject": {
+                "code": "string",
+                "english_label": "string",
+                "welsh_label": "string"
+            },
+            "unavailable": {
+                "code": "integer",
+                "reason": "string"
+            }
+        }]
+
+    """
 
     def __init__(self):
         self.xml_element_key = "COMMON"
