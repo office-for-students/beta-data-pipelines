@@ -1,7 +1,7 @@
 {
+    "COMAGG": ["aggregation_level", "M"],
+    "JOBLIST": ["list", "O"],
     "COMPOP": ["number_of_students", "M"],
     "COMRESP_RATE": ["response_rate", "M"],
-    "COMAGG": ["aggregation_level", "M"],
-    "COMSBJ": ["subject", "O"],
-    "JOBLIST": ["list", "O"]
+    "COMSBJ": ["subject", "O"]
 }
