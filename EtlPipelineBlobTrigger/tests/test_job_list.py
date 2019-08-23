@@ -67,6 +67,15 @@ class TestLookupDataFields(unittest.TestCase):
         self.assertEqual(expected_key, json_key)
         self.assertEqual(expected_elem_type, elem_type)
 
+    def test_joblist_lookup(self):
+        xml_key = "JOBLIST"
+        expected_key = "list"
+        expected_elem_type = "O"
+        json_key = self.lookup[xml_key][0]
+        elem_type = self.lookup[xml_key][1]
+        self.assertEqual(expected_key, json_key)
+        self.assertEqual(expected_elem_type, elem_type)
+
 
 # TODO Test more of the functionality - more lookups etc
 
