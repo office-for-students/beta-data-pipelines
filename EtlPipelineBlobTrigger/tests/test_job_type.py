@@ -1,7 +1,4 @@
-import inspect
 import json
-import os
-import sys
 import unittest
 import xml.etree.ElementTree as ET
 
