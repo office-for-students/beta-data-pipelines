@@ -1,8 +1,8 @@
 """Test the course NSS statistics"""
 import json
 import unittest
-import xml.etree.ElementTree as ET
 
+import defusedxml.ElementTree as ET
 import xmltodict
 
 from course_stats import NhsNss

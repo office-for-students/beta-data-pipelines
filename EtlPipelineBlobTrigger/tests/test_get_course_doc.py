@@ -1,7 +1,7 @@
 import json
 import unittest
-import xml.etree.ElementTree as ET
 
+import defusedxml.ElementTree as ET
 import xmltodict
 
 from testing_utils import get_first, get_string, remove_variable_elements

@@ -1,6 +1,6 @@
 import unittest
-import xml.etree.ElementTree as ET
 
+import defusedxml.ElementTree as ET
 import xmltodict
 
 import course_stats

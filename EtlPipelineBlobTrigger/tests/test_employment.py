@@ -1,11 +1,9 @@
-import inspect
 import json
-import os
-import sys
 import unittest
-import xml.etree.ElementTree as ET
 
+import defusedxml.ElementTree as ET
 import xmltodict
+
 from course_stats import Employment
 from testing_utils import get_string
 
