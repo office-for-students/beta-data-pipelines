@@ -84,11 +84,21 @@ class TestGetStats(unittest.TestCase):
         raw_course_xml = xmltodict.parse(
             get_string("fixtures/course_no_subj_for_most.xml")
         )["KISCOURSE"]
-        expected_response = json.loads(
+        expected_result = json.loads(
             get_string("fixtures/course_no_com_subj_resp.json")
         )
         json_obj = self.job_list.get_stats(raw_course_xml)
-        self.assertListEqual(json_obj, expected_response)
+        self.assertListEqual(json_obj, expected_result)
+
+    def test_get_stats_with_subj(self):
+        raw_course_xml = xmltodict.parse(
+            get_string("fixtures/course_with_subj_for_most.xml")
+        )["KISCOURSE"]
+        json_obj = self.job_list.get_stats(raw_course_xml)
+        expected_result = json.loads(
+            get_string("fixtures/job_list_with_subj.json")
+        )
+        self.assertListEqual(json_obj, expected_result)
 
 
 # TODO Test more of the functionality - more lookups etc

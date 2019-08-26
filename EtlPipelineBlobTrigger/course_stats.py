@@ -1,4 +1,4 @@
-"""Data transformation code for statistical data."""
+"""Data extraction and transformation for statistical data."""
 
 import json
 import os
@@ -181,30 +181,31 @@ class JobType:
 
 
 class JobList:
-    """Extracts the JobList and related course XML elements
+    """Extracts and transforms the COMMON entries in a KISCOURSE"""
 
-    It has been agreed that the data will be transformed to the JSON structure
-    shown below:
+    """
+    The following is the agreed structure that COMMON elements in a KISCOURSE
+    element will be transformed to:
 
-        "job_list": [{
-            "aggregation_level": "integer",
-            "list": [{
-                "job": "string",
-                "percentage_of_students": "integer",
-                "order": "integer",
-            }],
-            "number_of_students": "integer",
-            "response_rate": "integer",
-            "subject": {
-                "code": "string",
-                "english_label": "string",
-                "welsh_label": "string"
-            },
-            "unavailable": {
-                "code": "integer",
-                "reason": "string"
-            }
-        }]
+    "job_list": [{
+        "aggregation_level": "integer",
+        "list": [{
+            "job": "string",
+            "percentage_of_students": "integer",
+            "order": "integer",
+        }],
+        "number_of_students": "integer",
+        "response_rate": "integer",
+        "subject": {
+            "code": "string",
+            "english_label": "string",
+            "welsh_label": "string"
+        },
+        "unavailable": {
+            "code": "integer",
+            "reason": "string"
+        }
+    }]
 
     """
 
@@ -223,17 +224,34 @@ class JobList:
             "common_data_fields"
         )
 
-    def get_mandatory_field(self, xml_elem, xml_key):
-        return self.shared_utils.get_json_value(xml_elem[xml_key])
+    def get_stats(self, raw_course_data):
+        """Extracts and transforms the COMMON entries in a KISCOURSE"""
+
+        json_elem_list = []
+        raw_xml_list = SharedUtils.get_raw_list(
+            raw_course_data, self.xml_element_key
+        )
+        for xml_elem in raw_xml_list:
+            json_elem = {}
+            if self.shared_utils.has_data(xml_elem):
+                json_elem.update(self.get_json_data(xml_elem))
+            if self.shared_utils.need_unavailable(xml_elem):
+                json_elem["unavailable"] = self.shared_utils.get_unavailable(
+                    xml_elem
+                )
+            json_elem_list.append(json_elem)
+        return json_elem_list
 
     def get_json_data(self, xml_elem):
+        """Extracts and transforms a COMMON entry with data in a KISCOURSE"""
+
         lookup = self.data_fields_lookup
         json_data = {}
         for xml_key in lookup:
             if lookup[xml_key][1] == "M":
-                json_data[lookup[xml_key][0]] = self.get_mandatory_field(
-                    xml_elem, xml_key
-                )
+                json_data[
+                    lookup[xml_key][0]
+                ] = self.shared_utils.get_json_value(xml_elem[xml_key])
             else:
                 if xml_key in xml_elem:
                     json_key = lookup[xml_key][0]
@@ -250,7 +268,7 @@ class JobList:
         return json_data
 
     def get_list_field(self, xml_elem):
-        """returns the list field for job_list"""
+        """Extracts and transforms the JOBLIST entries in a COMMON element"""
 
         list_field = []
         job_lists = self.shared_utils.get_raw_list(xml_elem, "JOBLIST")
@@ -261,24 +279,6 @@ class JobList:
             job_list_item["order"] = job_list["ORDER"]
             list_field.append(job_list_item)
         return list_field
-
-    def get_stats(self, raw_course_data):
-        """Returns a list of JSON objects (as dicts) for this stats element"""
-
-        json_elem_list = []
-        raw_xml_list = SharedUtils.get_raw_list(
-            raw_course_data, self.xml_element_key
-        )
-        for xml_elem in raw_xml_list:
-            json_elem = {}
-            if self.shared_utils.has_data(xml_elem):
-                json_elem.update(self.get_json_data(xml_elem))
-            if self.shared_utils.need_unavailable(xml_elem):
-                json_elem["unavailable"] = self.shared_utils.get_unavailable(
-                    xml_elem
-                )
-            json_elem_list.append(json_elem)
-        return json_elem_list
 
 
 class Leo:
