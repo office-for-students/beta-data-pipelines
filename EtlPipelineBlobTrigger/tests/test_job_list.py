@@ -9,22 +9,6 @@ from course_stats import JobList
 from testing_utils import get_string
 
 
-class TestGetStats(unittest.TestCase):
-    def test_with_large_file(self):
-        """Initial smoke test"""
-        xml_string = get_string("fixtures/large-test-file.xml")
-        root = ET.fromstring(xml_string)
-        for institution in root.iter("INSTITUTION"):
-            for course in institution.findall("KISCOURSE"):
-                raw_course_data = xmltodict.parse(ET.tostring(course))[
-                    "KISCOURSE"
-                ]
-                job_list = JobList()
-                json_job_list = job_list.get_stats(raw_course_data)
-                if len(json_job_list) > 1:
-                    print(json.dumps(json_job_list, indent=4))
-
-
 class TestLookupDataFields(unittest.TestCase):
     def setUp(self):
         self.job_list = JobList()
@@ -80,7 +64,20 @@ class TestGetStats(unittest.TestCase):
     def setUp(self):
         self.job_list = JobList()
 
-    def test_get_stats_no_subj(self):
+    def test_with_large_file(self):
+        """Initial smoke test"""
+        print("test with large file")
+        xml_string = get_string("fixtures/large-test-file.xml")
+        root = ET.fromstring(xml_string)
+        for institution in root.iter("INSTITUTION"):
+            for course in institution.findall("KISCOURSE"):
+                raw_course_data = xmltodict.parse(ET.tostring(course))[
+                    "KISCOURSE"
+                ]
+                job_list = JobList()
+                job_list.get_stats(raw_course_data)
+
+    def test_no_subj(self):
         raw_course_xml = xmltodict.parse(
             get_string("fixtures/course_no_subj_for_most.xml")
         )["KISCOURSE"]
@@ -90,13 +87,23 @@ class TestGetStats(unittest.TestCase):
         json_obj = self.job_list.get_stats(raw_course_xml)
         self.assertListEqual(json_obj, expected_result)
 
-    def test_get_stats_with_subj(self):
+    def test_with_subj(self):
         raw_course_xml = xmltodict.parse(
             get_string("fixtures/course_with_subj_for_most.xml")
         )["KISCOURSE"]
         json_obj = self.job_list.get_stats(raw_course_xml)
         expected_result = json.loads(
             get_string("fixtures/job_list_with_subj.json")
+        )
+        self.assertListEqual(json_obj, expected_result)
+
+    def test_three_commons(self):
+        raw_course_xml = xmltodict.parse(
+            get_string("fixtures/course_three_commons.xml")
+        )["KISCOURSE"]
+        json_obj = self.job_list.get_stats(raw_course_xml)
+        expected_result = json.loads(
+            get_string("fixtures/course_three_commons.json")
         )
         self.assertListEqual(json_obj, expected_result)
 
