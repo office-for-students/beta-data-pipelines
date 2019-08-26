@@ -2,7 +2,6 @@ import json
 import unittest
 
 import defusedxml.ElementTree as ET
-
 import xmltodict
 
 from course_stats import JobList
@@ -75,6 +74,21 @@ class TestLookupDataFields(unittest.TestCase):
         elem_type = self.lookup[xml_key][1]
         self.assertEqual(expected_key, json_key)
         self.assertEqual(expected_elem_type, elem_type)
+
+
+class TestGetStats(unittest.TestCase):
+    def setUp(self):
+        self.job_list = JobList()
+
+    def test_get_stats_no_subj(self):
+        raw_course_xml = xmltodict.parse(
+            get_string("fixtures/course_no_subj_for_most.xml")
+        )["KISCOURSE"]
+        expected_response = json.loads(
+            get_string("fixtures/course_no_com_subj_resp.json")
+        )
+        json_obj = self.job_list.get_stats(raw_course_xml)
+        self.assertListEqual(json_obj, expected_response)
 
 
 # TODO Test more of the functionality - more lookups etc
