@@ -1,21 +1,21 @@
-"""Test the course NSS statistics"""
 import json
 import unittest
 
 import defusedxml.ElementTree as ET
 import xmltodict
 
-from course_stats import NhsNss
+from course_stats import JobList
+
 from testing_utils import get_string
 
 
 class TestLookupDataFields(unittest.TestCase):
     def setUp(self):
-        self.nhs_nss = NhsNss()
-        self.lookup = self.nhs_nss.data_fields_lookup
+        self.job_list = JobList()
+        self.lookup = self.job_list.data_fields_lookup
 
     def test_agg_lookup(self):
-        xml_key = "NHSAGG"
+        xml_key = "COMAGG"
         expected_key = "aggregation_level"
         expected_elem_type = "M"
         json_key = self.lookup[xml_key][0]
@@ -24,7 +24,7 @@ class TestLookupDataFields(unittest.TestCase):
         self.assertEqual(expected_elem_type, elem_type)
 
     def test_resp_rate_lookup(self):
-        xml_key = "NHSRESP_RATE"
+        xml_key = "COMRESP_RATE"
         expected_key = "response_rate"
         expected_elem_type = "M"
         json_key = self.lookup[xml_key][0]
@@ -33,7 +33,7 @@ class TestLookupDataFields(unittest.TestCase):
         self.assertEqual(expected_elem_type, elem_type)
 
     def test_pop_lookup(self):
-        xml_key = "NHSPOP"
+        xml_key = "COMPOP"
         expected_key = "number_of_students"
         expected_elem_type = "M"
         json_key = self.lookup[xml_key][0]
@@ -42,7 +42,7 @@ class TestLookupDataFields(unittest.TestCase):
         self.assertEqual(expected_elem_type, elem_type)
 
     def test_subj_lookup(self):
-        xml_key = "NHSSBJ"
+        xml_key = "COMSBJ"
         expected_key = "subject"
         expected_elem_type = "O"
         json_key = self.lookup[xml_key][0]
@@ -50,37 +50,23 @@ class TestLookupDataFields(unittest.TestCase):
         self.assertEqual(expected_key, json_key)
         self.assertEqual(expected_elem_type, elem_type)
 
-    def test_question_lookup(self):
-        xml_key = "NHSQ1"
-        expected_key = "question_1"
-        expected_elem_type = "M"
+    def test_joblist_lookup(self):
+        xml_key = "JOBLIST"
+        expected_key = "list"
+        expected_elem_type = "O"
         json_key = self.lookup[xml_key][0]
         elem_type = self.lookup[xml_key][1]
         self.assertEqual(expected_key, json_key)
         self.assertEqual(expected_elem_type, elem_type)
 
 
-class TestLookupQuestionNumber(unittest.TestCase):
+class TestGetStats(unittest.TestCase):
     def setUp(self):
-        self.nhs_nss = NhsNss()
-        self.lookup = self.nhs_nss.question_description_lookup
-
-    def test_lookup_question_description(self):
-        xml_key = "NHSQ1"
-        expected_description = (
-            "I received sufficient preparatory information prior "
-            "to my placement(s)"
-        )
-        description = self.lookup[xml_key]
-        self.assertEqual(expected_description, description)
-
-
-class TestNssGetStats(unittest.TestCase):
-    def setUp(self):
-        self.nhs = NhsNss()
+        self.job_list = JobList()
 
     def test_with_large_file(self):
         """Initial smoke test"""
+        print("test with large file")
         xml_string = get_string("fixtures/large-test-file.xml")
         root = ET.fromstring(xml_string)
         for institution in root.iter("INSTITUTION"):
@@ -88,27 +74,38 @@ class TestNssGetStats(unittest.TestCase):
                 raw_course_data = xmltodict.parse(ET.tostring(course))[
                     "KISCOURSE"
                 ]
-                self.nhs.get_stats(raw_course_data)
+                job_list = JobList()
+                job_list.get_stats(raw_course_data)
 
-    def test_get_stats_subj(self):
+    def test_no_subj(self):
         raw_course_xml = xmltodict.parse(
-            get_string("fixtures/course_nhs_subj.xml")
+            get_string("fixtures/course_no_subj_for_most.xml")
         )["KISCOURSE"]
-        expected_response = json.loads(
-            get_string("fixtures/course_nhs_subj_resp.json")
+        expected_result = json.loads(
+            get_string("fixtures/course_no_com_subj_resp.json")
         )
-        json_obj = self.nhs.get_stats(raw_course_xml)
-        self.assertEqual(json_obj[0], expected_response[0])
+        json_obj = self.job_list.get_stats(raw_course_xml)
+        self.assertListEqual(json_obj, expected_result)
 
-    def test_get_stats_no_subj(self):
+    def test_with_subj(self):
         raw_course_xml = xmltodict.parse(
-            get_string("fixtures/course_nhs_no_subj.xml")
+            get_string("fixtures/course_with_subj_for_most.xml")
         )["KISCOURSE"]
-        expected_response = json.loads(
-            get_string("fixtures/course_nhs_no_subj_resp.json")
+        json_obj = self.job_list.get_stats(raw_course_xml)
+        expected_result = json.loads(
+            get_string("fixtures/job_list_with_subj.json")
         )
-        json_obj = self.nhs.get_stats(raw_course_xml)
-        self.assertDictEqual(json_obj[0], expected_response[0])
+        self.assertListEqual(json_obj, expected_result)
+
+    def test_three_commons(self):
+        raw_course_xml = xmltodict.parse(
+            get_string("fixtures/course_three_commons.xml")
+        )["KISCOURSE"]
+        json_obj = self.job_list.get_stats(raw_course_xml)
+        expected_result = json.loads(
+            get_string("fixtures/course_three_commons.json")
+        )
+        self.assertListEqual(json_obj, expected_result)
 
 
 # TODO Test more of the functionality - more lookups etc

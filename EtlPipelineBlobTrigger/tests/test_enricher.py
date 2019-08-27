@@ -1,6 +1,3 @@
-import inspect
-import os
-import sys
 import unittest
 from unittest import mock
 import ukrlp_enricher
