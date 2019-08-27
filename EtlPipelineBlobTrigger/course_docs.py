@@ -33,6 +33,7 @@ from kisaims import KisAims
 from locations import Locations
 from SharedCode import utils
 from ukrlp_enricher import UkRlpCourseEnricher
+from subject_enricher import SubjectCourseEnricher
 
 from SharedCode.utils import get_english_welsh_item
 
@@ -275,6 +276,9 @@ def get_course_doc(accreditations, locations, locids, raw_inst_data,
                                          'SANDWICH')
     if sandwich_year:
         course['sandwich_year'] = sandwich_year
+
+    course['subject'] = {"code": raw_course_data['SBJ']}
+
     title = get_english_welsh_item('TITLE', raw_course_data)
     if title:
         course['title'] = title
@@ -301,6 +305,7 @@ def create_course_docs(xml_string):
     cosmosdb_client = utils.get_cosmos_client()
 
     enricher = UkRlpCourseEnricher()
+    subject_enricher = SubjectCourseEnricher()
 
     collection_link = utils.get_collection_link(
         'AzureCosmosDbDatabaseId', 'AzureCosmosDbCoursesCollectionId')
@@ -328,6 +333,8 @@ def create_course_docs(xml_string):
                                             raw_course_data, kisaims)
 
             enricher.enrich_course(course_doc)
+            subject_enricher.enrich_course(course_doc)
+
             cosmosdb_client.CreateItem(collection_link, course_doc)
             course_count += 1
     logging.info(f"Processed {course_count} courses")
