@@ -1,0 +1,22 @@
+[
+    {
+        "link": {
+            "english": "https://www.undebbangor.com/",
+            "welsh": "https://cy.undebbangor.com/"
+        },
+        "name": {
+            "english": "Main Campus",
+            "welsh": "Prif Campws"
+        }
+    },
+    {
+        "link": {
+            "english": "https://www.undebbangor.com/",
+            "welsh": "https://cy.undebbangor.com/"
+        },
+        "name": {
+            "english": "Wrexham",
+            "welsh": "Wrecsam"
+        }
+    }
+]

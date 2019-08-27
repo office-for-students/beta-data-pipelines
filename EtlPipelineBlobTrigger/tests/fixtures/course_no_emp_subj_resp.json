@@ -1,0 +1,13 @@
+[
+    {
+        "aggregation_level": 14,
+        "assumed_to_be_unemployed": 0,
+        "in_study": 40,
+        "in_work": 30,
+        "in_work_and_study": 35,
+        "in_work_or_study": 100,
+        "not_available_for_work_or_study": 0,
+        "number_of_students": 20,
+        "response_rate": 70
+    }
+]

@@ -1,0 +1,34 @@
+{
+    "no-data": {
+        "0": "There is not enough data available to publish for this course. This is either because the course is small or we have not had enough survey responses.  This does not reflect on the quality of the course.",
+        "1": "There is no data available for this course, as the course has either not run yet, or has not been running long enough for this data to be available.  This does not reflect on the quality of the course.",
+        "2": "There is no data available for this course. This does not reflect on the quality of the course."
+    },
+    "data": {
+        "0": {
+            "11": "There was not enough data to publish information specifically for this course. This is either because the course size is small or not enough students responded to a survey. For this reason, the data displayed is for all students in ",
+            "12": "There was not enough data to publish information specifically for this course. This is either because the course size is small or not enough students responded to a survey. For this reason, the data displayed is for all students in ",
+            "13": "There was not enough data to publish information specifically for this course. This is either because the course size is small or not enough students responded to a survey. For this reason, the data displayed is for all students in ",
+            "21": "There was not enough data to publish information specifically for this course. This is either because the course size is small or not enough students responded to a survey. For this reason, the data displayed is for all students in ",
+            "22": "There was not enough data to publish information specifically for this course. This is either because the course size is small or not enough students responded to a survey. For this reason, the data displayed is for all students in ",
+            "23": "There was not enough data to publish information specifically for this course. This is either because the course size is small or not enough students responded to a survey. For this reason, the data displayed is for all students in ",
+            "24": "Data for students in the last two years of this course has been combined, as there was not enough data to publish information for last year only."
+        },
+        "1": {
+            "11": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in ",
+            "12": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in ",
+            "13": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in ",
+            "21": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in ",
+            "22": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in ",
+            "23": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in "
+        },
+        "2": {
+            "11": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in ",
+            "12": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in ",
+            "13": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in ",
+            "21": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in ",
+            "22": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in ",
+            "23": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in "
+        }
+    }
+}

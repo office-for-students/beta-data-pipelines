@@ -138,3 +138,6 @@ setup_env_vars.sh
 
 # Test files
 test-output.xml
+
+# config file - used to config black
+pyproject.toml
