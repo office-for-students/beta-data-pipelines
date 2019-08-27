@@ -1,4 +1,5 @@
 import inspect
+import json
 import os
 import sys
 
@@ -19,19 +20,47 @@ class DataSetCreator:
             "AzureCosmosDbDatabaseId", "AzureCosmosDbDataSetCollectionId"
         )
 
-    def create_dataset_doc(self):
-        version_number = self.get_next_dataset_version_number()
-        print(version_number)
+    def load_latest_dataset_doc(self):
+        dataset_doc = self.get_latest_dataset_doc()
+        dsd = json.dumps(dataset_doc)
+        print(f"data set doc {dsd}")
+        self.cosmos_client.CreateItem(self.collection_link, dataset_doc)
+
+    def get_latest_dataset_doc(self):
+        next_version_number = self.get_next_dataset_version_number()
+        dataset_doc = self.get_dataset_doc(next_version_number)
+        return dataset_doc
+
+    def get_dataset_doc(self, version):
+        dataset_doc = {}
+        dataset_doc["builds"] = self.get_builds_value()
+        dataset_doc["version"] = version
+        return dataset_doc
+
+    def get_builds_value(self):
+        builds = {}
+        builds["courses"] = self.get_courses_value()
+        return builds
+
+    def get_courses_value(self):
+        return {"error": "", "status": "pending"}
 
     def get_next_dataset_version_number(self):
         if self.get_number_of_dataset_docs() == 0:
             return 1
+        return self.get_max_version_number() + 1
+
+    def get_max_version_number(self):
+        query = "SELECT VALUE MAX(c.version) from c "
+        options = {"enableCrossPartitionQuery": True}
+        max_version_number_list = list(
+            self.cosmos_client.QueryItems(self.collection_link, query, options)
+        )
+        return max_version_number_list[0]
 
     def get_number_of_dataset_docs(self):
         query = "SELECT * from c "
-
         options = {"enableCrossPartitionQuery": True}
-
         data_set_list = list(
             self.cosmos_client.QueryItems(self.collection_link, query, options)
         )
@@ -39,4 +68,5 @@ class DataSetCreator:
 
 
 dsc = DataSetCreator()
-dsc.create_dataset_doc()
+#dsc.get_max_version_number()
+dsc.load_latest_dataset_doc()
