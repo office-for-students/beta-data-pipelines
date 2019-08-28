@@ -21,7 +21,7 @@ class DataSetCreator:
             "AzureCosmosDbDatabaseId", "AzureCosmosDbDataSetCollectionId"
         )
 
-    def load_latest_dataset_doc(self):
+    def load_new_dataset_doc(self):
         dataset_doc = self.get_latest_dataset_doc()
         dsd = json.dumps(dataset_doc)
         print(f"data set doc {dsd}")
@@ -69,5 +69,6 @@ class DataSetCreator:
         return len(data_set_list)
 
 
-dsc = DataSetCreator()
-dsc.load_latest_dataset_doc()
+# TODO remove
+#dsc = DataSetCreator()
+#dsc.load_latest_dataset_doc()
