@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+""" Creates a new DataSet for each new file we get from HESA """
+
 import gzip
 import io
 import logging
@@ -7,7 +9,12 @@ from datetime import datetime
 
 import azure.functions as func
 
-from SharedCode import exceptions
+from SharedCode.exceptions import (
+    XmlValidationError,
+    StopEtlPipelineErrorException,
+)
+from .dataset_creator import DataSetCreator
+from . import validators
 
 
 def main(xmlblob: func.InputStream, context: func.Context):
@@ -19,49 +26,43 @@ def main(xmlblob: func.InputStream, context: func.Context):
     )
     try:
 
-        """ DECOMPRESSION - Decompress the compressed HESA XML """
-
-        # Read the compressed Blob into a BytesIO object
+        """ DECOMPRESSION - Decompress the compressed XML data"""
         compressed_file = io.BytesIO(xmlblob.read())
 
-        # Read the compressed file into a GzipFile object
         compressed_gzip = gzip.GzipFile(fileobj=compressed_file)
 
-        # Decompress the data
         decompressed_file = compressed_gzip.read()
 
-        # Decode the bytes into a string
         xml_string = decompressed_file.decode("utf-8")
 
-        """ CREATION - Create a new dataset entry """
+        """ BASIC XML Validation """
+        try:
+            validators.parse_xml_data(xml_string)
+        except XmlValidationError:
+            logging.error("Error unable to parse the XML data from HESA.")
 
-"""
-        pipeline_end_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
-        logging.info(
-            "CreateInstBlobTrigger successfully finished on "
-            + pipeline_end_datetime
+        """ CREATE NEW DATASET """
+        data_set_creator = DataSetCreator()
+        data_set_creator.load_new_dataset_doc()
+
+        logging.info("CreateDataSetBlobTrigger successfully finished.")
+
+    except StopEtlPipelineErrorException as e:
+        logging.error(
+            "CreateDataSetBlogTrigger an error has stopped the pipeline",
+            exc_info=True,
         )
-
-    except exceptions.StopEtlPipelineWarningException:
-
-        # A WARNING is raised while the function is running and
-        # StopEtlPipelineOnWarning=True. For example, the incoming raw XML
-        # is not valid against its XSD
         error_message = (
-            "A WARNING has been encountered while the function is running. "
-            "The function will be stopped since StopEtlPipelineOnWarning is "
-            "set to TRUE in the Application Settings."
+            "An ERROR has been encountered during "
+            "CreateDataSetBlobTrigger. "
+            "The CreateDataSetBlobTrigger will be stopped."
         )
-        logging.error(error_message)
-        logging.error("CreateInstBlobTrigger stopped")
         raise Exception(error_message)
-"""
 
     except Exception as e:
-        # Unexpected exception
         logging.error(
-            "CreateInstBlogTrigger unexpected exception ", exc_info=True
+            "CreateDataSetBlogTrigger unexpected exception raised",
+            exc_info=True,
         )
-
         # Raise to Azure
         raise e
