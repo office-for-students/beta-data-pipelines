@@ -3,7 +3,7 @@ from unittest import mock
 import ukrlp_enricher
 
 TEST_LOOKUP = {
-    '10002863': {
+    "10002863": {
         "id": "d1bf0a06-9cae-11e9-b1d0-8c859021ae2e",
         "created_at": "2019-07-02T09:50:26.871179",
         "ukprn": "10002863",
@@ -16,12 +16,12 @@ TEST_LOOKUP = {
                 "line_4": "Northend",
                 "town": "Little Whingeing",
                 "county": "Shire",
-                "post_code": "CB1 1AA"
+                "post_code": "CB1 1AA",
             },
-            "telephone": "01632 960661"
+            "telephone": "01632 960661",
         },
     },
-    '10002718': {
+    "10002718": {
         "id": "cf1dce22-9cae-11e9-af84-8c859021ae2e",
         "created_at": "2019-07-02T09:50:22.459071",
         "ukprn": "10002718",
@@ -34,11 +34,11 @@ TEST_LOOKUP = {
                 "line_4": "Northend",
                 "town": "Little Whingeing",
                 "county": "Shire",
-                "post_code": "CB1 1AA"
+                "post_code": "CB1 1AA",
             },
-            "telephone": "01632 960661"
+            "telephone": "01632 960661",
         },
-    }
+    },
 }
 
 
@@ -48,18 +48,12 @@ EXPECTED_COURSE = {
     "version": "1",
     "course": {
         "application_provider": "10004930",
-        "country": {
-            "code": "XF",
-            "name": "England"
-        },
+        "country": {"code": "XF", "name": "England"},
         "distance_learning": {
             "code": "0",
-            "label": "Course is availble other than by distance learning"
+            "label": "Course is availble other than by distance learning",
         },
-        "foundation_year_availability": {
-            "code": "0",
-            "label": "Not available"
-        },
+        "foundation_year_availability": {"code": "0", "label": "Not available"},
         "honours_award_provision": "0",
         "institution": {
             "pub_ukprn_name": "ACME TESTING COLLEGE",
@@ -68,10 +62,7 @@ EXPECTED_COURSE = {
             "ukprn": "10002863",
         },
         "kis_course_id": "AB20",
-        "length_of_course": {
-            "code": "2",
-            "label": "2 stages"
-        },
+        "length_of_course": {"code": "2", "label": "2 stages"},
         "links": {
             "accomodation": [
                 {
@@ -95,7 +86,7 @@ EXPECTED_COURSE = {
             },
             "student_union": {
                 "english": "http://www.nus.org.uk/en/students-unions/abingdon-and-witney-college-students-union/"
-            }
+            },
         },
         "locations": [
             {
@@ -103,28 +94,14 @@ EXPECTED_COURSE = {
                 "longitude": "-1.477227",
                 "name": {
                     "english": "Abingdon &amp; Witney College (Common Leys Campus)"
-                }
+                },
             }
         ],
-        "mode": {
-            "code": "1",
-            "label": "Full-time"
-        },
-        "qualification": {
-            "code": "036",
-            "label": "FdSc"
-        },
-        "sandwich_year": {
-            "code": "0",
-            "label": "Not available"
-        },
-        "title": {
-            "english": "Animal Behaviour and Welfare"
-        },
-        "year_abroad": {
-            "code": "0",
-            "label": "Not available"
-        }
+        "mode": {"code": "1", "label": "Full-time"},
+        "qualification": {"code": "036", "label": "FdSc"},
+        "sandwich_year": {"code": "0", "label": "Not available"},
+        "title": {"english": "Animal Behaviour and Welfare"},
+        "year_abroad": {"code": "0", "label": "Not available"},
     },
 }
 
@@ -134,18 +111,12 @@ test_course = {
     "version": "1",
     "course": {
         "application_provider": "10004930",
-        "country": {
-            "code": "XF",
-            "name": "England"
-        },
+        "country": {"code": "XF", "name": "England"},
         "distance_learning": {
             "code": "0",
-            "label": "Course is availble other than by distance learning"
+            "label": "Course is availble other than by distance learning",
         },
-        "foundation_year_availability": {
-            "code": "0",
-            "label": "Not available"
-        },
+        "foundation_year_availability": {"code": "0", "label": "Not available"},
         "honours_award_provision": "0",
         "institution": {
             "pub_ukprn_name": "n/a",
@@ -154,10 +125,7 @@ test_course = {
             "ukprn": "10002863",
         },
         "kis_course_id": "AB20",
-        "length_of_course": {
-            "code": "2",
-            "label": "2 stages"
-        },
+        "length_of_course": {"code": "2", "label": "2 stages"},
         "links": {
             "accomodation": [
                 {
@@ -181,7 +149,7 @@ test_course = {
             },
             "student_union": {
                 "english": "http://www.nus.org.uk/en/students-unions/abingdon-and-witney-college-students-union/"
-            }
+            },
         },
         "locations": [
             {
@@ -189,34 +157,20 @@ test_course = {
                 "longitude": "-1.477227",
                 "name": {
                     "english": "Abingdon &amp; Witney College (Common Leys Campus)"
-                }
+                },
             }
         ],
-        "mode": {
-            "code": "1",
-            "label": "Full-time"
-        },
-        "qualification": {
-            "code": "036",
-            "label": "FdSc"
-        },
-        "sandwich_year": {
-            "code": "0",
-            "label": "Not available"
-        },
-        "title": {
-            "english": "Animal Behaviour and Welfare"
-        },
-        "year_abroad": {
-            "code": "0",
-            "label": "Not available"
-        }
+        "mode": {"code": "1", "label": "Full-time"},
+        "qualification": {"code": "036", "label": "FdSc"},
+        "sandwich_year": {"code": "0", "label": "Not available"},
+        "title": {"english": "Animal Behaviour and Welfare"},
+        "year_abroad": {"code": "0", "label": "Not available"},
     },
 }
 
-class TestEnricher(unittest.TestCase):
 
-    @mock.patch('ukrlp_enricher.utils')
+class TestEnricher(unittest.TestCase):
+    @mock.patch("ukrlp_enricher.utils")
     def test_enrich_course(self, mock_utils):
         """Test a course is updated correctly with lookup data"""
 
@@ -225,7 +179,8 @@ class TestEnricher(unittest.TestCase):
         ukrlp_course_enricher.enrich_course(test_course)
         self.assertDictEqual(test_course, EXPECTED_COURSE)
 
+
 # TODO add more tests - including test when no lookup available for course
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

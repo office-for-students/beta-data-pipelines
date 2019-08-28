@@ -12,10 +12,10 @@ class KisAims:
         """
 
         self.lookup_dict = {}
-        for kisaim in root.iter('KISAIM'):
-            raw_kisaim_data = xmltodict.parse(ET.tostring(kisaim))['KISAIM']
+        for kisaim in root.iter("KISAIM"):
+            raw_kisaim_data = xmltodict.parse(ET.tostring(kisaim))["KISAIM"]
             key = f"{raw_kisaim_data['KISAIMCODE']}"
-            self.lookup_dict[key] = raw_kisaim_data['KISAIMLABEL']
+            self.lookup_dict[key] = raw_kisaim_data["KISAIMLABEL"]
 
     def get_kisaim_label_for_key(self, key):
         return self.lookup_dict.get(key)

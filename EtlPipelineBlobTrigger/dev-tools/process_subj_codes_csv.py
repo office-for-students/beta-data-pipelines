@@ -7,8 +7,8 @@ import csv
 import json
 
 
-with open('subj_codes.csv') as csv_file:
-    csv_reader = csv.reader(csv_file, delimiter=',')
+with open("subj_codes.csv") as csv_file:
+    csv_reader = csv.reader(csv_file, delimiter=",")
     line_count = 0
     subj_code_english = {}
     subj_code_welsh = {}
@@ -20,10 +20,10 @@ with open('subj_codes.csv') as csv_file:
             subj_code_welsh[row[0]] = row[3]
             line_count += 1
 
-    with open('subj_code_english.json', 'w') as fp:
+    with open("subj_code_english.json", "w") as fp:
         json.dump(subj_code_english, fp, indent=4)
 
-    with open('subj_code_welsh.json', 'w') as fp:
+    with open("subj_code_welsh.json", "w") as fp:
         json.dump(subj_code_welsh, fp, indent=4)
 
-    print(f'Processed {line_count} lines.')
+    print(f"Processed {line_count} lines.")

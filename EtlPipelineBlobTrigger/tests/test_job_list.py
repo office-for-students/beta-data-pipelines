@@ -71,9 +71,7 @@ class TestGetStats(unittest.TestCase):
         root = ET.fromstring(xml_string)
         for institution in root.iter("INSTITUTION"):
             for course in institution.findall("KISCOURSE"):
-                raw_course_data = xmltodict.parse(ET.tostring(course))[
-                    "KISCOURSE"
-                ]
+                raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
                 job_list = JobList()
                 job_list.get_stats(raw_course_data)
 
@@ -92,9 +90,7 @@ class TestGetStats(unittest.TestCase):
             get_string("fixtures/course_with_subj_for_most.xml")
         )["KISCOURSE"]
         json_obj = self.job_list.get_stats(raw_course_xml)
-        expected_result = json.loads(
-            get_string("fixtures/job_list_with_subj.json")
-        )
+        expected_result = json.loads(get_string("fixtures/job_list_with_subj.json"))
         self.assertListEqual(json_obj, expected_result)
 
     def test_three_commons(self):
@@ -102,9 +98,7 @@ class TestGetStats(unittest.TestCase):
             get_string("fixtures/course_three_commons.xml")
         )["KISCOURSE"]
         json_obj = self.job_list.get_stats(raw_course_xml)
-        expected_result = json.loads(
-            get_string("fixtures/course_three_commons.json")
-        )
+        expected_result = json.loads(get_string("fixtures/course_three_commons.json"))
         self.assertListEqual(json_obj, expected_result)
 
 
