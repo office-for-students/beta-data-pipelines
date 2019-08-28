@@ -1,3 +1,5 @@
+import logging
+
 from SharedCode import utils
 
 
@@ -10,31 +12,33 @@ class SubjectCourseEnricher:
     def enrich_course(self, course):
         """Takes a course and enriches subject object with subject names"""
 
-        subject_code = course['course']['subject']['code']
-        course['course']['subject'] = self.get_subject_object(
-            subject_code)
+        subjects = course["course"]["subjects"]
+        course["course"]["subjects"] = self.get_subjects(subjects)
 
-    def get_subject_object(self, code):
+    def get_subjects(self, subject_codes):
         """Returns a subject object containing code, english_name, welsh_name and level"""
-        subject = {
-            "code": code
-        }
 
-        if code not in self.subject_lookups:
-            return subject
+        subjects = []
+        for subject in subject_codes:
 
-        level = self.subject_lookups[code].get("level", "")
-        english_name = self.subject_lookups[code].get("english_name", "")
-        welsh_name = self.subject_lookups[code].get("welsh_name", "")
+            code = subject["code"]
+            if code not in self.subject_lookups:
+                subjects.append(subject)
+                continue
 
-        if level != "":
-            subject["level"] = level
+            level = self.subject_lookups[code].get("level", "")
+            english = self.subject_lookups[code].get("english_name", "")
+            welsh = self.subject_lookups[code].get("welsh_name", "")
 
-        if english_name != "":
-            subject["english_name"] = english_name
+            if level != "":
+                subject["level"] = level
 
-        if welsh_name != "":
-            subject["welsh_name"] = english_name
+            if english != "":
+                subject["english"] = english
 
-        return subject
-        
+            if welsh != "":
+                subject["welsh"] = welsh
+
+            subjects.append(subject)
+
+        return subjects
