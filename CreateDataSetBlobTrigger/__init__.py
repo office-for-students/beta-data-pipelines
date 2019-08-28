@@ -13,6 +13,7 @@ from SharedCode.exceptions import (
     XmlValidationError,
     StopEtlPipelineErrorException,
 )
+from .blob_helper import BlobHelper
 from .dataset_creator import DataSetCreator
 from . import validators
 
@@ -46,6 +47,11 @@ def main(xmlblob: func.InputStream, context: func.Context):
         data_set_creator.load_new_dataset_doc()
 
         logging.info("CreateDataSetBlobTrigger successfully finished.")
+
+        """ PASS THE COMPRESSED XML TO NEXT AZURE FUNCTION IN THE PIPELINE"""
+        # "path": "for-ukrlp-blob-trigger/{name}",
+        blob_helper = BlobHelper(xmlblob)
+        blob_helper.create_output_blob()
 
     except StopEtlPipelineErrorException as e:
         logging.error(
