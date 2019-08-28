@@ -1,3 +1,4 @@
+import datetime
 import inspect
 import json
 import os
@@ -28,21 +29,22 @@ class DataSetCreator:
 
     def get_latest_dataset_doc(self):
         next_version_number = self.get_next_dataset_version_number()
-        dataset_doc = self.get_dataset_doc(next_version_number)
-        return dataset_doc
-
-    def get_dataset_doc(self, version):
         dataset_doc = {}
         dataset_doc["builds"] = self.get_builds_value()
-        dataset_doc["version"] = version
+        dataset_doc["created_at"] = datetime.datetime.utcnow().isoformat()
+        dataset_doc["is_published"] = False
+        dataset_doc["status"] = "pending"
+        dataset_doc["version"] = next_version_number
         return dataset_doc
 
     def get_builds_value(self):
         builds = {}
-        builds["courses"] = self.get_courses_value()
+        builds["courses"] = self.get_initial_build_value()
+        builds["institutions"] = self.get_initial_build_value()
+        builds["search"] = self.get_initial_build_value()
         return builds
 
-    def get_courses_value(self):
+    def get_initial_build_value(self):
         return {"error": "", "status": "pending"}
 
     def get_next_dataset_version_number(self):
@@ -68,5 +70,4 @@ class DataSetCreator:
 
 
 dsc = DataSetCreator()
-#dsc.get_max_version_number()
 dsc.load_latest_dataset_doc()
