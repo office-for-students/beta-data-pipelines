@@ -25,5 +25,5 @@ class BlobHelper:
 
     def get_destination_blob_name(self):
         blob_filename = self.blob.name.split("/")[1]
-        datetime_str = datetime.today().strftime("%Y%m%d %H%M%S")
+        datetime_str = datetime.today().strftime("%Y%m%d-%H%M%S")
         return f"{datetime_str}-{blob_filename}"
