@@ -104,7 +104,11 @@ Create or edit `local.settings.json`:
         "DummyInputBlobUrl": "https://{storage account name}.blob.core.windows.net/hesa-raw-xml-dummy-source/kis20190507140855-test.xml",
         "StopEtlPipelineOnWarning": "false",
         "XsdFilename": "unistatsoutputschema_leo.xsd",
-        "XPathInstitution": "INSTITUTION"
+        "XPathInstitution": "INSTITUTION",
+        "UkrlpInputContainerName": "ukrlp-input",
+        "StorageUrl": "https://{storage account name}.blob.core.windows.net",
+        "AzureCosmosDbDataSetCollectionId": "datasets",
+        "TimeInMinsToWaitBeforeCreateNewDataSet"="120"
   }
 }
 ```
