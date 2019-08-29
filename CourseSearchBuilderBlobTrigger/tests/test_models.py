@@ -333,7 +333,7 @@ class TestBuildLengthOfCourse(unittest.TestCase):
     def test_course_with_valid_length_of_course(self):
         input_course = {"length_of_course": {"code": 1, "label": "1st stage"}}
 
-        expected_search_length_of_course = {"code": 1, "label": "1st stage"}
+        expected_search_length_of_course = {"code": "1", "label": "1st stage"}
 
         search_length_of_course = build_length_of_course(input_course)
         self.assertEqual(expected_search_length_of_course, search_length_of_course)
@@ -341,7 +341,7 @@ class TestBuildLengthOfCourse(unittest.TestCase):
     def test_course_with_valid_length_of_course_but_as_string(self):
         input_course = {"length_of_course": {"code": "1", "label": "1st stage"}}
 
-        expected_search_length_of_course = {"code": 1, "label": "1st stage"}
+        expected_search_length_of_course = {"code": "1", "label": "1st stage"}
 
         search_length_of_course = build_length_of_course(input_course)
         self.assertEqual(expected_search_length_of_course, search_length_of_course)

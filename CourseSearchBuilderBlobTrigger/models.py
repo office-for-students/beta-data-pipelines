@@ -148,8 +148,7 @@ def build_length_of_course(course):
                 "label" in course["length_of_course"]
                 and "code" in course["length_of_course"]
             ):
-                code = int(course["length_of_course"]["code"])
-                print(code)
+                code = str(course["length_of_course"]["code"])
                 search_length_of_course["code"] = code
                 search_length_of_course["label"] = course["length_of_course"]["label"]
 

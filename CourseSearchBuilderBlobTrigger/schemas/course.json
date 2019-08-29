@@ -104,7 +104,7 @@
             "type": "Edm.ComplexType",
             "fields": [{
                 "name": "code",
-                "type": "Edm.Int32",
+                "type": "Edm.String",
                 "facetable": "true",
                 "filterable": "true",
                 "searchable": "false",
