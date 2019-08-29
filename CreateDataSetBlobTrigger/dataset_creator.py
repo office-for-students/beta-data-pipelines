@@ -17,6 +17,8 @@ sys.path.insert(0, PARENTDIR)
 
 from SharedCode.utils import get_cosmos_client, get_collection_link
 
+from SharedCode.exceptions import DataSetTooEarlyError
+
 
 class DataSetCreator:
     def __init__(self):
@@ -26,19 +28,24 @@ class DataSetCreator:
         )
 
     def load_new_dataset_doc(self):
-        if not set.has_enough_time_elapsed_since_previous_dataset_created():
-            print("DataSet can not run yet")
-            # TODO throw exception
-            return
+        if not self.has_enough_time_elaspsed_since_last_dataset_created():
+            raise DataSetTooEarlyError
 
         dataset_doc = self.get_next_dataset_doc()
         self.cosmos_client.CreateItem(self.collection_link, dataset_doc)
         logging.info(f"Created new vertsion {dataset_doc['version']} DataSet")
 
-    def has_enough_time_elapsed_since_previous_dataset_created(self):
-        dt_of_lastest_dataset_doc = self.get_datetime_of_latest_dataset_doc()
-        time_in_minutes_since_latest_dataset_doc = get_time_in_minutes_since_given_datetime(dt_of_latest_dataset_doc)
-        time_in_minutes_to_wait = os.environ("TimeInMinsToWaitBeforeNewDataSet")
+    def has_enough_time_elaspsed_since_last_dataset_created(self):
+        dt_of_latest_dataset_doc = self.get_datetime_of_latest_dataset_doc()
+        time_in_minutes_since_latest_dataset_doc = self.get_time_in_minutes_since_given_datetime(
+            dt_of_latest_dataset_doc
+        )
+        time_in_minutes_to_wait = int(
+            os.environ["TimeInMinsToWaitBeforeCreateNewDataSet"]
+        )
+        if time_in_minutes_to_wait > time_in_minutes_since_latest_dataset_doc:
+            return False
+        return True
 
     def get_datetime_of_latest_dataset_doc(self):
         max_version_number = self.get_max_version_number()
@@ -60,8 +67,7 @@ class DataSetCreator:
 
     def get_time_in_minutes_since_given_datetime(self, dt_in_the_past):
         dt_now = datetime.datetime.utcnow()
-        print(dt_now)
-        minutes_diff = (dt_now - dt_in_the_past).total_seconds() / 60.0
+        minutes_diff = round((dt_now - dt_in_the_past).total_seconds() / 60)
         return minutes_diff
 
     def get_next_dataset_doc(self):
@@ -96,13 +102,3 @@ class DataSetCreator:
             self.cosmos_client.QueryItems(self.collection_link, query, options)
         )
         return len(data_set_list)
-
-# TODO remove
-dsc = DataSetCreator()
-created_at_str = dsc.get_datetime_of_newest_dataset_doc()
-print(created_at_str)
-created_at_dt = parser.isoparse(created_at_str)
-#created_at_dt.replace(tzinfo=pytz.utc)
-print(created_at_dt)
-diff = dsc.get_time_in_minutes_since_datetime(created_at_dt)
-print(diff)
