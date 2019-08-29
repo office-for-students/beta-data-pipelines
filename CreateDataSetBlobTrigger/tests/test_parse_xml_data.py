@@ -1,7 +1,7 @@
 import unittest
 
 from dataset_test_utils import get_string
-from validators import parse_xml_data
+from CreateDataSetBlobTrigger.validators import parse_xml_data
 from SharedCode.exceptions import XmlValidationError
 
 
