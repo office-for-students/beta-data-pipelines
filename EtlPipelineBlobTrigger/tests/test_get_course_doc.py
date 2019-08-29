@@ -19,14 +19,10 @@ class TestGetCourseDoc(unittest.TestCase):
         kisaims = KisAims(root)
         locations = Locations(root)
         for institution in root.iter("INSTITUTION"):
-            raw_inst_data = xmltodict.parse(ET.tostring(institution))[
-                "INSTITUTION"
-            ]
+            raw_inst_data = xmltodict.parse(ET.tostring(institution))["INSTITUTION"]
             ukprn = raw_inst_data["UKPRN"]
             for course in institution.findall("KISCOURSE"):
-                raw_course_data = xmltodict.parse(ET.tostring(course))[
-                    "KISCOURSE"
-                ]
+                raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
                 locids = get_locids(raw_course_data, ukprn)
                 course_doc = get_course_doc(
                     accreditations,
@@ -46,9 +42,7 @@ class TestGetCourseDoc(unittest.TestCase):
         xml_string = get_string("fixtures/one_inst_one_course.xml")
         root = ET.fromstring(xml_string)
         institution = get_first(root.iter("INSTITUTION"))
-        raw_inst_data = xmltodict.parse(ET.tostring(institution))[
-            "INSTITUTION"
-        ]
+        raw_inst_data = xmltodict.parse(ET.tostring(institution))["INSTITUTION"]
         ukprn = raw_inst_data["UKPRN"]
         course = get_first(institution.findall("KISCOURSE"))
         raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
@@ -57,12 +51,7 @@ class TestGetCourseDoc(unittest.TestCase):
             get_string("fixtures/one_inst_one_course.json")
         )
         course_doc = get_course_doc(
-            accreditations,
-            locations,
-            locids,
-            raw_inst_data,
-            raw_course_data,
-            kisaims,
+            accreditations, locations, locids, raw_inst_data, raw_course_data, kisaims
         )
         course_doc = remove_variable_elements(course_doc)
         self.assertEqual(expected_course_doc, course_doc)

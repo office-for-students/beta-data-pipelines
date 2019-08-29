@@ -126,11 +126,12 @@
         "statistics": {
             ...See STATISTICS.md
         },
-        "subject": {
+        "subjects": [{
             "code": "string",
             "english": "string",
+            "level": "string",
             "welsh": "string"
-        },
+        }],
         "title": {
             "english": "string",
             "welsh": "string"
