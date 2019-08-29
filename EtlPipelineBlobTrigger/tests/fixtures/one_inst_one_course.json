@@ -74,6 +74,11 @@
             "code": 0,
             "label": "Not available"
         },
+        "subjects": [
+            {
+                "code": "CAH02-03-03"
+            }
+        ],
         "title": {
             "english": "Ophthalmic Dispensing"
         },
@@ -129,6 +134,25 @@
                     "professional_or_managerial_jobs": 80,
                     "response_rate": 70,
                     "unknown_professions": 0
+                }
+            ],
+            "job_list": [
+                {
+                    "aggregation_level": 14,
+                    "list": [
+                        {
+                            "job": "Health associate professionals",
+                            "percentage_of_students": "80",
+                            "order": "1"
+                        },
+                        {
+                            "job": "Sales occupations",
+                            "percentage_of_students": "20",
+                            "order": "2"
+                        }
+                    ],
+                    "number_of_students": 10,
+                    "response_rate": 70
                 }
             ],
             "leo": [

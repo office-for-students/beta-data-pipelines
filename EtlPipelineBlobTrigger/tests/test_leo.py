@@ -1,8 +1,7 @@
 import json
 import unittest
 
-import xml.etree.ElementTree as ET
-
+import defusedxml.ElementTree as ET
 import xmltodict
 
 from course_docs import get_country
@@ -50,14 +49,10 @@ class TestGetStats(unittest.TestCase):
         xml_string = get_string("fixtures/large-test-file.xml")
         root = ET.fromstring(xml_string)
         for institution in root.iter("INSTITUTION"):
-            raw_inst_data = xmltodict.parse(ET.tostring(institution))[
-                "INSTITUTION"
-            ]
+            raw_inst_data = xmltodict.parse(ET.tostring(institution))["INSTITUTION"]
             country_code = get_country(raw_inst_data)["code"]
             for course in institution.findall("KISCOURSE"):
-                raw_course_data = xmltodict.parse(ET.tostring(course))[
-                    "KISCOURSE"
-                ]
+                raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
                 leo = Leo(country_code)
                 leo.get_stats(raw_course_data)
 
@@ -74,9 +69,9 @@ class TestGetStats(unittest.TestCase):
         self.assertEqual(json_obj[0], expected_response[0])
 
     def test_get_stats_no_data(self):
-        raw_course_xml = xmltodict.parse(
-            get_string("fixtures/course_leo_no_data.xml")
-        )["KISCOURSE"]
+        raw_course_xml = xmltodict.parse(get_string("fixtures/course_leo_no_data.xml"))[
+            "KISCOURSE"
+        ]
         expected_response = json.loads(
             get_string("fixtures/course_leo_no_data_resp.json")
         )

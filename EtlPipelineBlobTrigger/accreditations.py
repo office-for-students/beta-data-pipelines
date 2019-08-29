@@ -12,9 +12,10 @@ class Accreditations:
         """
 
         self.lookup_dict = {}
-        for accreditation in root.iter('ACCREDITATIONTABLE'):
-            raw_accreditation_data = xmltodict.parse(
-                ET.tostring(accreditation))['ACCREDITATIONTABLE']
+        for accreditation in root.iter("ACCREDITATIONTABLE"):
+            raw_accreditation_data = xmltodict.parse(ET.tostring(accreditation))[
+                "ACCREDITATIONTABLE"
+            ]
 
             acckey = f"{raw_accreditation_data['ACCTYPE']}"
             self.lookup_dict[acckey] = raw_accreditation_data

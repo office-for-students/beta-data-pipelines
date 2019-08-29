@@ -1,8 +1,8 @@
 """Test the course NSS statistics"""
 import json
 import unittest
-import xml.etree.ElementTree as ET
 
+import defusedxml.ElementTree as ET
 import xmltodict
 
 from course_stats import NhsNss
@@ -68,8 +68,7 @@ class TestLookupQuestionNumber(unittest.TestCase):
     def test_lookup_question_description(self):
         xml_key = "NHSQ1"
         expected_description = (
-            "I received sufficient preparatory information prior "
-            "to my placement(s)"
+            "I received sufficient preparatory information prior " "to my placement(s)"
         )
         description = self.lookup[xml_key]
         self.assertEqual(expected_description, description)
@@ -85,25 +84,21 @@ class TestNssGetStats(unittest.TestCase):
         root = ET.fromstring(xml_string)
         for institution in root.iter("INSTITUTION"):
             for course in institution.findall("KISCOURSE"):
-                raw_course_data = xmltodict.parse(ET.tostring(course))[
-                    "KISCOURSE"
-                ]
+                raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
                 self.nhs.get_stats(raw_course_data)
 
     def test_get_stats_subj(self):
-        raw_course_xml = xmltodict.parse(
-            get_string("fixtures/course_nhs_subj.xml")
-        )["KISCOURSE"]
-        expected_response = json.loads(
-            get_string("fixtures/course_nhs_subj_resp.json")
-        )
+        raw_course_xml = xmltodict.parse(get_string("fixtures/course_nhs_subj.xml"))[
+            "KISCOURSE"
+        ]
+        expected_response = json.loads(get_string("fixtures/course_nhs_subj_resp.json"))
         json_obj = self.nhs.get_stats(raw_course_xml)
         self.assertEqual(json_obj[0], expected_response[0])
 
     def test_get_stats_no_subj(self):
-        raw_course_xml = xmltodict.parse(
-            get_string("fixtures/course_nhs_no_subj.xml")
-        )["KISCOURSE"]
+        raw_course_xml = xmltodict.parse(get_string("fixtures/course_nhs_no_subj.xml"))[
+            "KISCOURSE"
+        ]
         expected_response = json.loads(
             get_string("fixtures/course_nhs_no_subj_resp.json")
         )
