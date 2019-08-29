@@ -2,7 +2,10 @@ OfS Beta Serverless Data Pipelines
 ==================
 OfS Beta Serverless Data Ingestion and ETL Pipelines using Azure Functions and the Azure Python SDK
 
-[![Build Status](https://dev.azure.com/nathanshumoogum/pre-prod/_apis/build/status/office-for-students.beta-data-pipelines?branchName=develop)](https://dev.azure.com/nathanshumoogum/pre-prod/_build/latest?definitionId=1&branchName=develop)
+Builds
+
+master - [![Build Status](https://dev.azure.com/ofsbeta/discoverUni/_apis/build/status/prod/prod-data-pipelines?branchName=master)](https://dev.azure.com/ofsbeta/discoverUni/_build/latest?definitionId=13&branchName=master)
+develop - [![Build Status](https://dev.azure.com/ofsbeta/discoverUni/_apis/build/status/dev/dev-data-pipelines?branchName=develop)](https://dev.azure.com/ofsbeta/discoverUni/_build/latest?definitionId=7&branchName=develop)
 
 ### Installation
 
@@ -78,40 +81,45 @@ TODO - Info on Setting up Blob storage containers
 The XML in test-data/kis20190507140855-test.xml can be used as HESA dummy
 source during development and testing by uploading to the hesa-raw-xml-dummy-source container.
 
-### Configuration
+### Configuration Settings
 
-Create or edit `local.settings.json`:
-* `vi ~/{PATH to workspace}/local.settings.json`
-* Add the following json to file and set configuration values:
-```json
-{
-  "IsEncrypted": false,
-  "Values": {
-        "FUNCTIONS_WORKER_RUNTIME": "python",
-        "AzureCosmosDbUri": "{cosmos db uri}",
-        "AzureCosmosDbKey": "{account key value}",
-        "AzureCosmosDbConnectionString": "AccountEndpoint={cosmos db uri};AccountKey={account key}",
-        "AzureCosmosDbDatabaseId": "{name of database}",
-        "AzureCosmosDbCollectionId": "institutions",
-        "AzureStorageAccountName": "{storage account name}",
-        "AzureStorageAccountKey": "{storage account key}",
-        "AzureStorageAccountConnectionString": "DefaultEndpointsProtocol=https;AccountName={storage account name};AccountKey={storage account key};EndpointSuffix=core.windows.net",
-        "AzureStorageAccountOutputContainerName": "{storage container name, e.g. hesa-raw-xml-ingest}",
-        "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName={storage account name};AccountKey={storage account key};EndpointSuffix=core.windows.net",
-        "OutputBlobNamePrefix": "hesa-raw-xml-",
-        "DummyAzureStorageAccountInputContainerName": "hesa-raw-xml-dummy-source",
-        "DummyInputBlobName": "kis20190507140855-test.xml",
-        "DummyInputBlobUrl": "https://{storage account name}.blob.core.windows.net/hesa-raw-xml-dummy-source/kis20190507140855-test.xml",
-        "StopEtlPipelineOnWarning": "false",
-        "XsdFilename": "unistatsoutputschema_leo.xsd",
-        "XPathInstitution": "INSTITUTION",
-        "UkrlpInputContainerName": "ukrlp-input",
-        "StorageUrl": "https://{storage account name}.blob.core.windows.net",
-        "AzureCosmosDbDataSetCollectionId": "datasets",
-        "TimeInMinsToWaitBeforeCreateNewDataSet"="120"
-  }
-}
-```
+Add the following to your local.settings.json:
+
+| Variable                                   | Default                   | Description                                                                                                  |
+| ------------------------------------------ | ------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| FUNCTIONS_WORKER_RUNTIME                   | python                    | The programming language the function worker runs on                                                         |
+| AzureCosmosDbUri                           | {retrieve from portal}    | The cosmos db uri to access the datastore                                                                    |
+| AzureCosmosDbKey                           | {retrieve from portal}    | The cosmos database key in which to connect to the datastore                                                 |
+| AzureCosmosDbConnectionString              | {retrieve from portal}    | The connection string in which to connect to the datastore                                                   |
+| AzureCosmosDbDatabaseId                    | discoveruni               | The name of the database in which resource documents are stored in                                           |
+| AzureCosmosDbInstitutionsCollectionId      | institutions              | The name of the collection in which institutions are uploaded to                                             |
+| AzureCosmosDbCoursesCollectionId           | courses                   | The name of the collection in which courses are uploaded to                                                  |
+| AzureCosmosDbUkRlpCollectionId             | ukrlp                     | The name of the collection in which ukrlp docs are uploaded to                                               |
+| AzureCosmosDbSubjectsCollectionId          | subjects                  | The name of the collection in which subjects are uploaded to                                                 |
+| AzureCosmosDbDataSetCollectionId           | datasets                  | The name of the collection in which datasets are loaded                                                      |
+| AzureStorageAccountName                    | {retrieve from portal}    | The name of the storage account instance                                                                     |
+| AzureStorageAccountKey                     | {retrieve from portal}    | The key in which to connect to the storage account                                                           |
+| AzureStorageAccountConnectionString        | {retrieve from portal}    | The connection string to access storage account                                                              |
+| AzureWebJobsStorage                        | {retrieve from portal}    | The default endpoint to access storage account                                                               |
+| DummyInputBlobUrl                          | {retrieve from portal}    | The url to the dummy storage container. To be removed later                                                  |
+| CreateUkrlpSourceUrl                       | {retrieve from portal}    | The url location of the sourced xml for ukrlp                                                                |
+| DummyAzureStorageAccountInputContainerName | hesa-raw-xml-dummy-source | The dummy storage container to trigger IngestRawXml trigger. To be removed later                             |
+| DummyInputBlobName                         | {name}.xml                | The dummy name of xml file stored in dummy storage container. To be removed later                            |
+| AzureStorageAccountOutputContainerName     | hesa-raw-xml-ingest       | The name of the storage container in which the xml is copied to that triggers  CreateUkrlp function          |
+| OutputBlobNamePrefix                       | hesa-raw-xml-             | The prefix part of name for the output blob stored in the output container                                   |
+| EtlInputContainerName                      | hesa-raw-xml-ingest-etl   | The name of the storage container in which the xml is located that triggers Etl function                     |
+| CourseSearchBuilerContainerName            | course-search-blobs       | The name of the storage container in which the version is located that triggers CourseSearchBuilder function |
+| UkRlpUrl                                   | {retrieve from ukrlp}     | The url to the UKRLP API service                                                                             |
+| UkRlpOfsId                                 | {retrieve from ukrlp}     | The organisation id calling the UKRLP API, unique to each organisation                                       |
+| SearchURL                                  | {retrieve from portal}    | The uri to the azure search instance                                                                         |
+| SearchAPIKey                               | {retrieve from portal}    | The api key to access the azure search instance                                                              |
+| AzureSearchAPIVersion                      | 2019-05-06                | The azure search API version for instance                                                                    |
+| XsdFilename                                | {name}.xsd                | The xsd file location and name to validate incoming xml                                                      |
+| StopEtlPipelineOnWarning                   | false                     | Boolean flag to stop function worker on a warning                                                            |
+| UkrlpInputContainerName                    | ukrlp-input               | The name of the storage container UKRLP is triggered from                                                    |
+| StorageUrl                                 | {retrieve from portal}    | The url to the top level storage                                                                             |
+| TimeInMinsToWaitBeforeCreateNewDataSet     | 120                       | You may need to reduce this time if you wish to run more frequently -e.g., to retry after a fix              |
+
 
 #### Running Service
 

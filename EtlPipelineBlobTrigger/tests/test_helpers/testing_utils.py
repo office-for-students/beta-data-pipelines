@@ -11,12 +11,14 @@ def get_string(filename):
         string = infile.read()
     return string
 
+
 def get_first(Node):
     for x in Node:
         return x
 
+
 def remove_variable_elements(doc):
-    keys_to_delete = ['_id', 'created_at']
+    keys_to_delete = ["_id", "created_at"]
     for key in keys_to_delete:
         del doc[key]
     return doc
