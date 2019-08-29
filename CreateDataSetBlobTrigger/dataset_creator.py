@@ -1,8 +1,12 @@
 import datetime
 import inspect
 import json
+import logging
+import pytz
 import os
 import sys
+
+from dateutil import parser
 
 CURRENTDIR = os.path.dirname(
     os.path.abspath(inspect.getfile(inspect.currentframe()))
@@ -22,18 +26,51 @@ class DataSetCreator:
         )
 
     def load_new_dataset_doc(self):
-        dataset_doc = self.get_latest_dataset_doc()
-        dsd = json.dumps(dataset_doc)
-        print(f"data set doc {dsd}")
-        self.cosmos_client.CreateItem(self.collection_link, dataset_doc)
+        if not set.has_enough_time_elapsed_since_previous_dataset_created():
+            print("DataSet can not run yet")
+            # TODO throw exception
+            return
 
-    def get_latest_dataset_doc(self):
+        dataset_doc = self.get_next_dataset_doc()
+        self.cosmos_client.CreateItem(self.collection_link, dataset_doc)
+        logging.info(f"Created new vertsion {dataset_doc['version']} DataSet")
+
+    def has_enough_time_elapsed_since_previous_dataset_created(self):
+        dt_of_lastest_dataset_doc = self.get_datetime_of_latest_dataset_doc()
+        time_in_minutes_since_latest_dataset_doc = get_time_in_minutes_since_given_datetime(dt_of_latest_dataset_doc)
+        time_in_minutes_to_wait = os.environ("TimeInMinsToWaitBeforeNewDataSet")
+
+    def get_datetime_of_latest_dataset_doc(self):
+        max_version_number = self.get_max_version_number()
+        query = f"SELECT * FROM c WHERE c.version = {max_version_number}"
+        options = {"enableCrossPartitionQuery": True}
+        latest_doc = list(
+            self.cosmos_client.QueryItems(self.collection_link, query, options)
+        )[0]
+        created_at_str = latest_doc["created_at"]
+        return parser.isoparse(created_at_str)
+
+    def get_max_version_number(self):
+        query = "SELECT VALUE MAX(c.version) from c "
+        options = {"enableCrossPartitionQuery": True}
+        max_version_number_list = list(
+            self.cosmos_client.QueryItems(self.collection_link, query, options)
+        )
+        return max_version_number_list[0]
+
+    def get_time_in_minutes_since_given_datetime(self, dt_in_the_past):
+        dt_now = datetime.datetime.utcnow()
+        print(dt_now)
+        minutes_diff = (dt_now - dt_in_the_past).total_seconds() / 60.0
+        return minutes_diff
+
+    def get_next_dataset_doc(self):
         next_version_number = self.get_next_dataset_version_number()
         dataset_doc = {}
         dataset_doc["builds"] = self.get_builds_value()
         dataset_doc["created_at"] = datetime.datetime.utcnow().isoformat()
         dataset_doc["is_published"] = False
-        dataset_doc["status"] = "pending"
+        dataset_doc["status"] = "in progress"
         dataset_doc["version"] = next_version_number
         return dataset_doc
 
@@ -45,30 +82,27 @@ class DataSetCreator:
         return builds
 
     def get_initial_build_value(self):
-        return {"error": "", "status": "pending"}
+        return {"status": "pending"}
 
     def get_next_dataset_version_number(self):
         if self.get_number_of_dataset_docs() == 0:
             return 1
         return self.get_max_version_number() + 1
 
-    def get_max_version_number(self):
-        query = "SELECT VALUE MAX(c.version) from c "
-        options = {"enableCrossPartitionQuery": True}
-        max_version_number_list = list(
-            self.cosmos_client.QueryItems(self.collection_link, query, options)
-        )
-        return max_version_number_list[0]
-
     def get_number_of_dataset_docs(self):
-        query = "SELECT * from c "
+        query = "SELECT * FROM c "
         options = {"enableCrossPartitionQuery": True}
         data_set_list = list(
             self.cosmos_client.QueryItems(self.collection_link, query, options)
         )
         return len(data_set_list)
 
-
 # TODO remove
-#dsc = DataSetCreator()
-#dsc.load_latest_dataset_doc()
+dsc = DataSetCreator()
+created_at_str = dsc.get_datetime_of_newest_dataset_doc()
+print(created_at_str)
+created_at_dt = parser.isoparse(created_at_str)
+#created_at_dt.replace(tzinfo=pytz.utc)
+print(created_at_dt)
+diff = dsc.get_time_in_minutes_since_datetime(created_at_dt)
+print(diff)
