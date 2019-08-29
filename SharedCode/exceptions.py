@@ -1,15 +1,5 @@
 #!/usr/bin/env python
 
-""" exceptions.py: ETL Pipeline Custom Exceptions """
-
-__author__ = "Jillur Quddus, Nathan Shumoogum"
-__credits__ = ["Jillur Quddus", "Nathan Shumoogum"]
-__version__ = "0.1"
-_maintainer__ = "Jillur Quddus"
-__email__ = "jillur.quddus@methods.co.uk"
-__status__ = "Development"
-
-
 class Error(Exception):
     """ Base Exception Class """
 
@@ -30,5 +20,10 @@ class StopEtlPipelineErrorException(Error):
 
 class XmlValidationError(Error):
     """ An error is raised during XML Validation """
+
+    pass
+
+class DataSetTooEarlyError(Error):
+    """ An error raised if too soon for DataSet service run again """
 
     pass
