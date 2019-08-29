@@ -72,6 +72,14 @@
             "code": 0,
             "label": "Not available"
         },
+        "subjects": [
+            {
+                "code": "CAH02-03-03",
+                "level": 3,
+                "english": "Ophthalmics",
+                "welsh": "Offthalmoleg"
+            }
+        ],
         "title": {
             "english": "Ophthalmic Dispensing"
         },

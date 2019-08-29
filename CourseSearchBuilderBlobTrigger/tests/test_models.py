@@ -10,7 +10,7 @@ PARENTDIR = os.path.dirname(CURRENTDIR)
 sys.path.insert(0, PARENTDIR)
 
 from models import build_course_search_doc, create_sortable_name,\
-    build_locations, build_title, build_length_of_course
+    build_locations, build_subjects, build_title, build_length_of_course
 
 
 class TestCreateSortableName(unittest.TestCase):
@@ -187,6 +187,72 @@ class TestBuildLocations(unittest.TestCase):
 
         search_locations = build_locations(input_course)
         self.assertEqual(expected_search_locations, search_locations)
+
+
+class TestBuildSubjects(unittest.TestCase):
+    def test_course_without_subject_objects(self):
+        expected_search_subjects = []
+        search_subjects = build_subjects({})
+        self.assertEqual(expected_search_subjects, search_subjects)
+
+    def test_course_with_one_subject_object(self):
+        input_course = {
+            "subjects": [
+                {
+                    "code": "CAH02-03-03",
+                    "level": 3,
+                    "english": "Ophthalmics",
+                    "welsh": "Offthalmoleg"
+                }
+            ]
+        }
+
+        expected_search_subjects = [
+            {
+                "code": "CAH02-03-03",
+                "level": 3,
+                "english": "Ophthalmics",
+                "welsh": "Offthalmoleg"
+            }
+        ]
+
+        search_subjects = build_subjects(input_course)
+        self.assertEqual(expected_search_subjects, search_subjects)
+
+    def test_course_with_mutiple_subject_objects(self):
+        input_course = {
+            "subjects": [
+                {
+                    "code": "CAH02-03-03",
+                    "level": 3,
+                    "english": "Ophthalmics",
+                    "welsh": "Offthalmoleg"
+                },
+                {
+                    "code": "CAH01-03-03",
+                    "level": 3,
+                    "english": "my special course",
+                    "welsh": "fy nghwrs arbennig"
+                }
+            ]
+        }
+
+        expected_search_subjects = [
+            {
+                "code": "CAH02-03-03",
+                "level": 3,
+                "english": "Ophthalmics",
+                "welsh": "Offthalmoleg"
+            }, {
+                    "code": "CAH01-03-03",
+                    "level": 3,
+                    "english": "my special course",
+                    "welsh": "fy nghwrs arbennig"
+                }
+        ]
+
+        search_subjects = build_subjects(input_course)
+        self.assertEqual(expected_search_subjects, search_subjects)
 
 
 class TestBuildTitle(unittest.TestCase):

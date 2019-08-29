@@ -9,6 +9,7 @@ def build_course_search_doc(course):
         locations = build_locations(course['course'])
         title = build_title(course['course'])
         length_of_course = build_length_of_course(course['course'])
+        subjects = build_subjects(course['course'])
 
         json = {
             "@search.action": "upload",
@@ -51,11 +52,7 @@ def build_course_search_doc(course):
                     "code": course['course']['sandwich_year']['code'],
                     "label": course['course']['sandwich_year']['label']
                 },
-                "subject": {
-                    "code": course['course']['subject']['code'],
-                    "english": course['course']['subject']['english'],
-                    "welsh": course['course']['subject']['welsh']
-                },
+                "subjects": subjects,
                 "title": title,
                 "year_abroad": {
                     "code": course['course']['year_abroad']['code'],
@@ -115,6 +112,15 @@ def build_locations(course):
             search_locations.append(search_location)
 
     return search_locations
+
+
+def build_subjects(course):
+
+    subjects = []
+    if 'subjects' in course:
+        subjects = course["subjects"]
+
+    return subjects
 
 
 def build_title(course):
