@@ -12,6 +12,7 @@ import azure.functions as func
 from SharedCode.exceptions import (
     XmlValidationError,
     StopEtlPipelineErrorException,
+    DataSetTooEarlyError,
 )
 from .blob_helper import BlobHelper
 from .dataset_creator import DataSetCreator
@@ -41,15 +42,26 @@ def main(xmlblob: func.InputStream, context: func.Context):
             validators.parse_xml_data(xml_string)
         except XmlValidationError:
             logging.error("Error unable to parse the XML data from HESA.")
+            raise StopEtlPipelineErrorException
 
         """ CREATE NEW DATASET """
         data_set_creator = DataSetCreator()
-        data_set_creator.load_new_dataset_doc()
+        try:
+            data_set_creator.load_new_dataset_doc()
+        except DataSetTooEarlyError:
+            logging.error("It's too soon to create another DataSet.")
+            error_message = (
+                "See the documentation for information on the environment "
+                "variable that controls how frequently new DataSets "
+                "can be created. "
+            )
+            logging.error(error_message)
+            logging.info("CreateDataSetBlobTrigger is being stopped.")
+            return
 
         logging.info("CreateDataSetBlobTrigger successfully finished.")
 
         """ PASS THE COMPRESSED XML TO NEXT AZURE FUNCTION IN THE PIPELINE"""
-        # "path": "for-ukrlp-blob-trigger/{name}",
         blob_helper = BlobHelper(xmlblob)
         blob_helper.create_output_blob()
 
