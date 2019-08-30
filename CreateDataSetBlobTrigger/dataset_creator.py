@@ -65,19 +65,12 @@ class DataSetCreator:
     def get_next_dataset_doc(self):
         next_version_number = self.get_next_dataset_version_number()
         dataset_doc = {}
-        dataset_doc["builds"] = self.get_builds_value()
+        dataset_doc["builds"] = get_builds_value()
         dataset_doc["created_at"] = datetime.now(timezone.utc).isoformat()
         dataset_doc["is_published"] = False
         dataset_doc["status"] = "in progress"
         dataset_doc["version"] = next_version_number
         return dataset_doc
-
-    def get_builds_value(self):
-        builds = {}
-        builds["courses"] = get_initial_build_value()
-        builds["institutions"] = get_initial_build_value()
-        builds["search"] = get_initial_build_value()
-        return builds
 
     def get_next_dataset_version_number(self):
         if self.get_number_of_dataset_docs() == 0:
@@ -99,9 +92,17 @@ def get_time_in_minutes_since_given_datetime(dt_in_the_past):
     return round((dt_now - dt_in_the_past).total_seconds() / 60)
 
 
-def get_initial_build_value():
-    return {"status": "pending"}
-
-
 def convert_dt_str_to_dt_object(dt_str):
     return parser.isoparse(dt_str)
+
+
+def get_builds_value():
+    builds = {}
+    builds["courses"] = get_initial_build_value()
+    builds["institutions"] = get_initial_build_value()
+    builds["search"] = get_initial_build_value()
+    return builds
+
+
+def get_initial_build_value():
+    return {"status": "pending"}
