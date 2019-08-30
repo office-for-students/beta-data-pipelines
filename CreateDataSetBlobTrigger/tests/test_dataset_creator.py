@@ -1,6 +1,10 @@
 import unittest
 from datetime import datetime, timedelta, timezone
-from dataset_creator import get_time_in_minutes_since_given_datetime
+import dateutil
+from dataset_creator import (
+    get_time_in_minutes_since_given_datetime,
+    convert_dt_str_to_dt_object,
+)
 
 
 class TestGetTimeInMinutesSinceGivenDatetime(unittest.TestCase):
@@ -45,6 +49,13 @@ class TestGetTimeInMinutesSinceGivenDatetime(unittest.TestCase):
         time_in_minutes = get_time_in_minutes_since_given_datetime(dt_in_past)
         expected_time_in_minutes = 7 * 24 * 60
         self.assertEqual(time_in_minutes, expected_time_in_minutes)
+
+
+class TestConvertDateStrToDtObject(unittest.TestCase):
+    def test_with_isoformat_string(self):
+        isoformat_dt_str = "2019-08-30T11:49:17.663837+00:00"
+        dt_obj = convert_dt_str_to_dt_object(isoformat_dt_str)
+        self.assertEqual(dt_obj.tzinfo, dateutil.tz.tz.tzutc())
 
 
 # TODO add more tests
