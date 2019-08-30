@@ -104,7 +104,7 @@
             "type": "Edm.ComplexType",
             "fields": [{
                 "name": "code",
-                "type": "Edm.Int32",
+                "type": "Edm.String",
                 "facetable": "true",
                 "filterable": "true",
                 "searchable": "false",
@@ -196,6 +196,38 @@
                 "name": "label",
                 "type": "Edm.String",
                 "facetable": "true",
+                "filterable": "false",
+                "searchable": "false",
+                "sortable": "false"
+            }]
+        }, {
+            "name": "subjects",
+            "type": "Collection(Edm.ComplexType)",
+            "fields": [{
+                "name": "code",
+                "type": "Edm.String",
+                "facetable": "false",
+                "filterable": "true",
+                "searchable": "false",
+                "sortable": "false"
+            }, {
+                "name": "level",
+                "type": "Edm.Int32",
+                "facetable": "false",
+                "filterable": "false",
+                "searchable": "false",
+                "sortable": "false"
+            }, {
+                "name": "english",
+                "type": "Edm.String",
+                "facetable": "false",
+                "filterable": "false",
+                "searchable": "false",
+                "sortable": "false"
+            }, {
+                "name": "welsh",
+                "type": "Edm.String",
+                "facetable": "false",
                 "filterable": "false",
                 "searchable": "false",
                 "sortable": "false"
