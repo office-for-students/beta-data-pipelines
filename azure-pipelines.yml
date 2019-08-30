@@ -1,0 +1,54 @@
+# DevOps Pipeline definition for the OFS Beta Backend Data Pipeline 
+
+# The code branch that will trigger a build
+trigger:
+- feature/*
+- bugfix/*
+- refactor/*
+
+# Build Agent Resources
+pool:
+  vmImage: 'ubuntu-latest'
+strategy:
+  matrix:
+    Python36:
+      python.version: '3.6'
+
+# Build Process Tree
+steps:
+
+# Enforce Python Version (see above)
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '$(python.version)'
+  displayName: 'Use Python $(python.version)'
+
+# Create a Python Virtual Environment and download required dependencies
+- script: |
+    python3.6 -m venv .python_packages
+    source .python_packages/bin/activate
+    python3.6 -m pip install --upgrade pip
+    python3.6 -m pip install -r requirements.txt
+  displayName: 'Install Python Dependencies'
+
+# Execute Python Tests
+- script: |
+    python3.6 -m pip install -r requirements.txt
+    pytest -v
+  displayName: 'pytest'
+
+# Archive the Azure Python Function into a ZIP package for deployment
+- task: ArchiveFiles@2
+  displayName: "Archive Files"
+  inputs:
+    rootFolderOrFile: "$(System.DefaultWorkingDirectory)"
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: "$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip"
+    replaceExistingArchive: true
+
+# Publish the ZIP package
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip'
+    ArtifactName: 'drop'
