@@ -15,13 +15,6 @@ from azure.storage.blob import BlockBlobService
 from . import course_docs, validators
 from SharedCode import exceptions
 
-__author__ = "Jillur Quddus, Nathan Shumoogum"
-__credits__ = ["Jillur Quddus", "Nathan Shumoogum"]
-__version__ = "0.1"
-_maintainer__ = "Jillur Quddus"
-__email__ = "jillur.quddus@methods.co.uk"
-__status__ = "Development"
-
 
 def main(xmlblob: func.InputStream, context: func.Context):
 
