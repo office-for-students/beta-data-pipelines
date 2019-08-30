@@ -26,10 +26,10 @@ class DataSetCreator:
         )
 
     def load_new_dataset_doc(self):
-        if not self.has_enough_time_elaspsed_since_last_dataset_created():
-            raise DataSetTooEarlyError
-
         dataset_doc = self.get_next_dataset_doc()
+        if dataset_doc["version"] != 1:
+            if not self.has_enough_time_elaspsed_since_last_dataset_created():
+                raise DataSetTooEarlyError
         self.cosmos_client.CreateItem(self.collection_link, dataset_doc)
         logging.info(f"Created new vertsion {dataset_doc['version']} DataSet")
 
@@ -52,10 +52,7 @@ class DataSetCreator:
         latest_doc = list(
             self.cosmos_client.QueryItems(self.collection_link, query, options)
         )[0]
-        created_at_str = latest_doc["created_at"]
-        dt_created_at = parser.isoparse(created_at_str)
-        dt_created_at.replace(tzinfo=timezone.utc)
-        return dt_created_at
+        return convert_dt_str_to_dt_object(latest_doc["created_at"])
 
     def get_max_version_number(self):
         query = "SELECT VALUE MAX(c.version) from c "
@@ -97,10 +94,14 @@ class DataSetCreator:
 
 
 def get_time_in_minutes_since_given_datetime(dt_in_the_past):
+    """ Get time diff from now in minutes for timezone aware dt passed in"""
     dt_now = datetime.now(timezone.utc)
-    minutes_diff = round((dt_now - dt_in_the_past).total_seconds() / 60)
-    return minutes_diff
+    return round((dt_now - dt_in_the_past).total_seconds() / 60)
 
 
 def get_initial_build_value():
     return {"status": "pending"}
+
+
+def convert_dt_str_to_dt_object(dt_str):
+    return parser.isoparse(dt_str)
