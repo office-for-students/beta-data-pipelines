@@ -4,6 +4,7 @@ import dateutil
 from dataset_creator import (
     get_time_in_minutes_since_given_datetime,
     convert_dt_str_to_dt_object,
+    get_initial_build_value,
 )
 
 
@@ -56,6 +57,12 @@ class TestConvertDateStrToDtObject(unittest.TestCase):
         isoformat_dt_str = "2019-08-30T11:49:17.663837+00:00"
         dt_obj = convert_dt_str_to_dt_object(isoformat_dt_str)
         self.assertEqual(dt_obj.tzinfo, dateutil.tz.tz.tzutc())
+
+
+class TestBuildSection(unittest.TestCase):
+    def test_get_initial_build_value(self):
+        initial_build_value = get_initial_build_value()
+        self.assertEqual(initial_build_value, {"status": "pending"})
 
 
 # TODO add more tests
