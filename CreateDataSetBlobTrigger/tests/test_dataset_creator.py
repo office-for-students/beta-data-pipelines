@@ -4,6 +4,7 @@ import dateutil
 from dataset_creator import (
     get_time_in_minutes_since_given_datetime,
     convert_dt_str_to_dt_object,
+    get_builds_value,
     get_initial_build_value,
 )
 
@@ -63,6 +64,14 @@ class TestBuildSection(unittest.TestCase):
     def test_get_initial_build_value(self):
         initial_build_value = get_initial_build_value()
         self.assertEqual(initial_build_value, {"status": "pending"})
+
+    def test_get_builds_value(self):
+        builds_value = get_builds_value()
+        expected_value = {}
+        expected_value["courses"] = {"status": "pending"}
+        expected_value["institutions"] = {"status": "pending"}
+        expected_value["search"] = {"status": "pending"}
+        self.assertEqual(builds_value, expected_value)
 
 
 # TODO add more tests
