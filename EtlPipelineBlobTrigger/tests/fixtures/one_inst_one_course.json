@@ -74,6 +74,11 @@
             "code": 0,
             "label": "Not available"
         },
+        "subjects": [
+            {
+                "code": "CAH02-03-03"
+            }
+        ],
         "title": {
             "english": "Ophthalmic Dispensing"
         },

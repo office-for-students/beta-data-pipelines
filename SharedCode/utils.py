@@ -52,6 +52,25 @@ def get_ukrlp_lookups():
     return {lookup["ukprn"]: lookup for lookup in lookup_list}
 
 
+def get_subject_lookups():
+    """Returns a dictionary of UKRLP lookups"""
+
+    cosmos_db_client = get_cosmos_client()
+    collection_link = get_collection_link(
+        "AzureCosmosDbDatabaseId", "AzureCosmosDbSubjectsCollectionId"
+    )
+
+    query = "SELECT * from c "
+
+    options = {"enableCrossPartitionQuery": True}
+
+    lookup_list = list(
+        cosmos_db_client.QueryItems(collection_link, query, options)
+    )
+
+    return {lookup["code"]: lookup for lookup in lookup_list}
+
+
 def get_courses_by_version(version):
     """Returns a dictionary of courses for a version of the dataset"""
 
