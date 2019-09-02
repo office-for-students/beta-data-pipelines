@@ -16,6 +16,7 @@ from SharedCode.utils import get_cosmos_client, get_collection_link
 class DataSetHelper:
     def __init__(self):
         self.cosmos_client = get_cosmos_client()
+        print(f"init cosmos_client type {type(self.cosmos_client)}")
         self.collection_link = get_collection_link(
             "AzureCosmosDbDatabaseId", "AzureCosmosDbDataSetCollectionId"
         )
@@ -29,25 +30,28 @@ class DataSetHelper:
         return max_version_number_list[0]
 
     def update_status(self, item, value):
-        dataset_doc = self.get_latest_dataset_doc()
+        dataset_doc = self.get_latest_doc()
         if item == "root":
             dataset_doc["status"] = value
-        elif item == "courses":
-            dataset_doc["builds"]["courses"]["status"] = value
-        elif item == "institutions":
-            dataset_doc["builds"]["institutions"]["status"] = value
-        elif item == "search":
-            dataset_doc["builds"]["search"]["status"] = value
+        else:
+            dataset_doc["builds"][item]["status"] = value
         self.cosmos_client.UpsertItem(self.collection_link, dataset_doc)
 
-    def get_latest_dataset_doc(self):
+    def get_updated_status_doc(self, item, value):
+        dataset_doc = self.get_latest_doc()
+        if item == "root":
+            dataset_doc["status"] = value
+        else:
+            dataset_doc["builds"][item]["status"] = value
+        self.cosmos_client.UpsertItem(self.collection_link, dataset_doc)
+
+    def get_latest_doc(self):
         max_version_number = self.get_latest_version_number()
         query = f"SELECT * FROM c WHERE c.version = {max_version_number}"
         options = {"enableCrossPartitionQuery": True}
+        print(f"cosmos_client type {type(self.cosmos_client)}")
         return list(
             self.cosmos_client.QueryItems(self.collection_link, query, options)
         )[0]
 
 
-dsh = DataSetHelper()
-dsh.update_status("institutions", "in progress")
