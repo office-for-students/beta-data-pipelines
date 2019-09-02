@@ -1,10 +1,7 @@
 import inspect
-import logging
 import os
 import sys
 
-from datetime import datetime, timezone
-from dateutil import parser
 
 CURRENTDIR = os.path.dirname(
     os.path.abspath(inspect.getfile(inspect.currentframe()))
@@ -14,8 +11,6 @@ sys.path.insert(0, CURRENTDIR)
 sys.path.insert(0, PARENTDIR)
 
 from SharedCode.utils import get_cosmos_client, get_collection_link
-
-from SharedCode.exceptions import DataSetTooEarlyError
 
 
 class DataSetHelper:
@@ -33,7 +28,5 @@ class DataSetHelper:
         )
         return max_version_number_list[0]
 
-    def update_status(section, value):
+    def update_status(self, section, value):
         pass
-
-
