@@ -35,11 +35,23 @@ class TestDataSetHelper(unittest.TestCase):
     @mock.patch("SharedCode.dataset_helper.get_cosmos_client")
     def test_update_status(self, mock_get_cosmos_client):
         dsh = DataSetHelper()
+
+        latest_dataset_doc = {}
+        latest_dataset_doc["builds"] = {"courses": {"status": "pending"}}
+        dsh.get_latest_doc = mock.MagicMock(return_value=latest_dataset_doc)
+
         dsh.cosmos_client.UpsertItem = mock.MagicMock()
-        dsh.get_latest_doc = mock.MagicMock()
+
         dsh.update_status("courses", "in progress")
-        dsh.get_latest_doc.assert_called_once()
-        dsh.cosmos_client.UpsertItem.assert_called_once()
+
+        expected_connection_link = (
+            "dbs/test-db-id/colls/test-dataset-collection-id"
+        )
+        expected_dataset_doc = {}
+        expected_dataset_doc["builds"] = {"courses": {"status": "in progress"}}
+        dsh.cosmos_client.UpsertItem.assert_called_once_with(
+            expected_connection_link, expected_dataset_doc
+        )
 
 
 if __name__ == "__main__":
