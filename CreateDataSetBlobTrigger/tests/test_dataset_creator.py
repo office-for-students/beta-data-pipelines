@@ -1,7 +1,12 @@
+import os
 import unittest
-from datetime import datetime, timedelta, timezone
+
 import dateutil
+
+from datetime import datetime, timedelta, timezone
+from unittest import mock
 from dataset_creator import (
+    DataSetCreator,
     get_time_in_minutes_since_given_datetime,
     convert_dt_str_to_dt_object,
     get_builds_value,
@@ -72,6 +77,44 @@ class TestBuildSection(unittest.TestCase):
         expected_value["institutions"] = {"status": "pending"}
         expected_value["search"] = {"status": "pending"}
         self.assertEqual(builds_value, expected_value)
+
+
+class TestHasEnoughTimeElapsedSinceLastDataSetCreated(unittest.TestCase):
+    @mock.patch.dict(
+        os.environ, {"TimeInMinsToWaitBeforeCreateNewDataSet": "120"}
+    )
+    @mock.patch("dataset_creator.get_cosmos_client")
+    @mock.patch("dataset_creator.get_collection_link")
+    def test_has_enough_time_elapsed_with_60(
+        self, mock_cosmos_client, mock_get_collection_link
+    ):
+        dt_in_past = datetime.now(timezone.utc) - timedelta(hours=1)
+        dsc = DataSetCreator()
+        dsc.get_datetime_of_latest_dataset_doc = mock.MagicMock(
+            return_value=dt_in_past
+        )
+        enough_time_elapsed = (
+            dsc.has_enough_time_elaspsed_since_last_dataset_created()
+        )
+        self.assertFalse(enough_time_elapsed)
+
+    @mock.patch.dict(
+        os.environ, {"TimeInMinsToWaitBeforeCreateNewDataSet": "120"}
+    )
+    @mock.patch("dataset_creator.get_cosmos_client")
+    @mock.patch("dataset_creator.get_collection_link")
+    def test_has_enough_time_elapsed_with_120(
+        self, mock_cosmos_client, mock_get_collection_link
+    ):
+        dt_in_past = datetime.now(timezone.utc) - timedelta(hours=2)
+        dsc = DataSetCreator()
+        dsc.get_datetime_of_latest_dataset_doc = mock.MagicMock(
+            return_value=dt_in_past
+        )
+        enough_time_elapsed = (
+            dsc.has_enough_time_elaspsed_since_last_dataset_created()
+        )
+        self.assertTrue(enough_time_elapsed)
 
 
 # TODO add more tests
