@@ -83,11 +83,7 @@ class TestHasEnoughTimeElapsedSinceLastDataSetCreated(unittest.TestCase):
     @mock.patch.dict(
         os.environ, {"TimeInMinsToWaitBeforeCreateNewDataSet": "120"}
     )
-    @mock.patch("dataset_creator.get_cosmos_client")
-    @mock.patch("dataset_creator.get_collection_link")
-    def test_has_enough_time_elapsed_with_60(
-        self, mock_cosmos_client, mock_get_collection_link
-    ):
+    def test_has_enough_time_elapsed_with_60(self):
         dt_in_past = datetime.now(timezone.utc) - timedelta(hours=1)
         dsc = DataSetCreator()
         dsc.get_datetime_of_latest_dataset_doc = mock.MagicMock(
@@ -101,11 +97,7 @@ class TestHasEnoughTimeElapsedSinceLastDataSetCreated(unittest.TestCase):
     @mock.patch.dict(
         os.environ, {"TimeInMinsToWaitBeforeCreateNewDataSet": "120"}
     )
-    @mock.patch("dataset_creator.get_cosmos_client")
-    @mock.patch("dataset_creator.get_collection_link")
-    def test_has_enough_time_elapsed_with_120(
-        self, mock_cosmos_client, mock_get_collection_link
-    ):
+    def test_has_enough_time_elapsed_with_120(self):
         dt_in_past = datetime.now(timezone.utc) - timedelta(hours=2)
         dsc = DataSetCreator()
         dsc.get_datetime_of_latest_dataset_doc = mock.MagicMock(
