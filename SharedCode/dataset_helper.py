@@ -29,8 +29,8 @@ class DataSetHelper:
         self.cosmos_client.UpsertItem(self.collection_link, dataset_doc)
 
     def get_latest_doc(self):
-        max_version_number = self.get_latest_version_number()
-        query = f"SELECT * FROM c WHERE c.version = {max_version_number}"
+        latest_version_number = self.get_latest_version_number()
+        query = f"SELECT * FROM c WHERE c.version = {latest_version_number}"
         options = {"enableCrossPartitionQuery": True}
         print(f"cosmos_client type {type(self.cosmos_client)}")
         return list(
