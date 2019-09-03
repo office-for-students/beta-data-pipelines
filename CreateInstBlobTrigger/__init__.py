@@ -21,6 +21,7 @@ def main(xmlblob: func.InputStream, context: func.Context):
     try:
 
         """ 0. PREPARATION """
+        dsh = DataSetHelper()
         xsd_filename = os.environ["XsdFilename"]
         xsd_path = os.path.join(context.function_directory, xsd_filename)
 
@@ -33,8 +34,7 @@ def main(xmlblob: func.InputStream, context: func.Context):
         """ 1. DECOMPRESSION - Decompress the compressed HESA XML """
         # The XML blob provided to this function will be gzip compressed.
         # This is a work around for a limitation discovered in Azure,
-        # where Functions written in Python do not get triggered
-        # correctly with large blobs. Tests showed this is not a limitation
+        # where Functions written in Python do not get triggered # correctly with large blobs. Tests showed this is not a limitation
         # with Funtions written in C#.
 
         # Read the compressed Blob into a BytesIO object
@@ -53,6 +53,7 @@ def main(xmlblob: func.InputStream, context: func.Context):
 
         inst_docs = InstitutionDocs(xml_string)
         inst_docs.create_institution_docs()
+        dsh.update_status("institutions", "succeeded")
 
         """ 3. CLEANUP """
 
@@ -74,10 +75,12 @@ def main(xmlblob: func.InputStream, context: func.Context):
         )
         logging.error(error_message)
         logging.error("CreateInstBlobTrigger stopped")
+        dsh.update_status("institutions", "failed")
         raise Exception(error_message)
 
     except Exception as e:
         # Unexpected exception
+        dsh.update_status("institutions", "failed")
         logging.error(
             "CreateInstBlogTrigger unexpected exception ", exc_info=True
         )
