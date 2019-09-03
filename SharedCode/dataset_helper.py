@@ -47,9 +47,9 @@ class DataSetHelper:
 
     def query_items(self, query):
         options = {"enableCrossPartitionQuery": True}
-        return list(self.cosmos_client.QueryItems(self.collection_link, query, options))
-
+        return list(
+            self.cosmos_client.QueryItems(self.collection_link, query, options)
+        )
 
     def create_item(self, dataset_doc):
         self.cosmos_client.CreateItem(self.collection_link, dataset_doc)
-
