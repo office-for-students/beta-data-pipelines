@@ -7,21 +7,24 @@ from datetime import datetime
 
 import azure.functions as func
 
-from .institution_docs import InstitutionDocs
 from SharedCode import exceptions
+from SharedCode.dataset_helper import DataSetHelper
+
+from .institution_docs import InstitutionDocs
 
 
 def main(xmlblob: func.InputStream, context: func.Context):
 
-    logging.info(
-        f"CreateInstBlobTrigger processing BLOB \n"
-        f"Name: {xmlblob.name}\n"
-        f"Blob Size: {xmlblob.length} bytes"
-    )
     try:
+        dsh = DataSetHelper()
+
+        logging.info(
+            f"CreateInstBlobTrigger processing BLOB \n"
+            f"Name: {xmlblob.name}\n"
+            f"Blob Size: {xmlblob.length} bytes"
+        )
 
         """ 0. PREPARATION """
-        dsh = DataSetHelper()
         xsd_filename = os.environ["XsdFilename"]
         xsd_path = os.path.join(context.function_directory, xsd_filename)
 
@@ -49,10 +52,14 @@ def main(xmlblob: func.InputStream, context: func.Context):
         # Decode the bytes into a string
         xml_string = decompressed_file.decode("utf-8")
 
-        """ 2. LOADING - extract data and create enriched JSON Documents """
+        """ 2. LOADING - extract data and load JSON Documents """
+
+        version = dsh.get_latest_version_number()
+        logging.info(f"using version number: {version}")
+        dsh.update_status("institutions", "in progress")
 
         inst_docs = InstitutionDocs(xml_string)
-        inst_docs.create_institution_docs()
+        inst_docs.create_institution_docs(version)
         dsh.update_status("institutions", "succeeded")
 
         """ 3. CLEANUP """
