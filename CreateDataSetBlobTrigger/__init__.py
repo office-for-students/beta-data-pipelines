@@ -14,7 +14,7 @@ from SharedCode.exceptions import (
     StopEtlPipelineErrorException,
     DataSetTooEarlyError,
 )
-from .blob_helper import BlobHelper
+from SharedCode.blob_helper import BlobHelper
 from .dataset_creator import DataSetCreator
 from . import validators
 
