@@ -4,8 +4,6 @@
 import gzip
 import io
 import logging
-import os
-from datetime import datetime
 
 import azure.functions as func
 
