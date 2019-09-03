@@ -9,6 +9,7 @@ import azure.functions as func
 
 from SharedCode import exceptions
 from SharedCode.dataset_helper import DataSetHelper
+from SharedCode.blob_helper import BlobHelper
 
 from .institution_docs import InstitutionDocs
 
@@ -24,7 +25,7 @@ def main(xmlblob: func.InputStream, context: func.Context):
             f"Blob Size: {xmlblob.length} bytes"
         )
 
-        """ 0. PREPARATION """
+        """ PREPARATION """
         xsd_filename = os.environ["XsdFilename"]
         xsd_path = os.path.join(context.function_directory, xsd_filename)
 
@@ -34,7 +35,7 @@ def main(xmlblob: func.InputStream, context: func.Context):
             f"XsdPath: {xsd_path}"
         )
 
-        """ 1. DECOMPRESSION - Decompress the compressed HESA XML """
+        """ DECOMPRESSION - Decompress the compressed HESA XML """
         # The XML blob provided to this function will be gzip compressed.
         # This is a work around for a limitation discovered in Azure,
         # where Functions written in Python do not get triggered # correctly with large blobs. Tests showed this is not a limitation
@@ -52,7 +53,7 @@ def main(xmlblob: func.InputStream, context: func.Context):
         # Decode the bytes into a string
         xml_string = decompressed_file.decode("utf-8")
 
-        """ 2. LOADING - extract data and load JSON Documents """
+        """ LOADING - extract data and load JSON Documents """
 
         version = dsh.get_latest_version_number()
         logging.info(f"using version number: {version}")
@@ -62,13 +63,12 @@ def main(xmlblob: func.InputStream, context: func.Context):
         inst_docs.create_institution_docs(version)
         dsh.update_status("institutions", "succeeded")
 
-        """ 3. CLEANUP """
+        """ PASS THE COMPRESSED XML TO NEXT AZURE FUNCTION IN THE PIPELINE"""
+        destination_container_name = os.environ["CoursesInputContainerName"]
+        blob_helper = BlobHelper(xmlblob)
+        blob_helper.create_output_blob(destination_container_name)
 
-        pipeline_end_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
-        logging.info(
-            "CreateInstBlobTrigger successfully finished on "
-            + pipeline_end_datetime
-        )
+        logging.info("CreateInstBlobTrigger successfully finished.")
 
     except exceptions.StopEtlPipelineWarningException:
 
