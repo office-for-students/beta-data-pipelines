@@ -12,8 +12,7 @@ class BlobHelper:
         )
         self.blob = blob
 
-    def create_output_blob(self):
-        destination_container_name = os.environ["UkrlpInputContainerName"]
+    def create_output_blob(self, destination_container_name):
         source_url = os.environ["StorageUrl"] + self.blob.name
         destination_blob_name = self.get_destination_blob_name()
 
