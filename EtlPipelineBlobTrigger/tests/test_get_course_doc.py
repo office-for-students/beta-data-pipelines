@@ -36,6 +36,7 @@ class TestGetCourseDoc(unittest.TestCase):
                     raw_course_data,
                     kisaims,
                 )
+                self.assertTrue("institution_id" in course_doc)
 
     def test_specific_10000047_course(self):
         xml_string = get_string("fixtures/large-test-file.xml")
