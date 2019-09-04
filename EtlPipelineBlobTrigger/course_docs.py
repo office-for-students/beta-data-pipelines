@@ -125,8 +125,8 @@ def get_location_items(locations, locids, raw_course_data, pub_ukprn):
             continue
 
         if "UCASCOURSEID" in course_location:
-            id = course_location["LOCID"] + pub_ukprn
-            item[id] = course_location["UCASCOURSEID"]
+            lookup_key = course_location["LOCID"] + pub_ukprn
+            item[lookup_key] = course_location["UCASCOURSEID"]
 
     for locid in locids:
         location_dict = {}
