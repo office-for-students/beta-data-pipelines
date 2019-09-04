@@ -14,10 +14,14 @@ class TestGetStats(unittest.TestCase):
         xml_string = get_string("fixtures/25_courses.xml")
         root = ET.fromstring(xml_string)
         for institution in root.iter("INSTITUTION"):
-            raw_inst_data = xmltodict.parse(ET.tostring(institution))["INSTITUTION"]
+            raw_inst_data = xmltodict.parse(ET.tostring(institution))[
+                "INSTITUTION"
+            ]
             country_code = get_country(raw_inst_data)["code"]
             for course in institution.findall("KISCOURSE"):
-                raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
+                raw_course_data = xmltodict.parse(ET.tostring(course))[
+                    "KISCOURSE"
+                ]
                 course_stats.get_stats(raw_course_data, country_code)
 
 

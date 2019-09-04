@@ -22,6 +22,8 @@ class TestGetAccreditations(unittest.TestCase):
         expected_response = json.loads(
             get_string("fixtures/course_accreditation_resp.json")
         )
-        accreditations = get_accreditations(raw_course_xml, self.accreditations)
+        accreditations = get_accreditations(
+            raw_course_xml, self.accreditations
+        )
 
         self.assertListEqual(accreditations, expected_response)

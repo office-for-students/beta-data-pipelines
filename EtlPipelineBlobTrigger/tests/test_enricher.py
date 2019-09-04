@@ -53,7 +53,10 @@ EXPECTED_COURSE = {
             "code": "0",
             "label": "Course is availble other than by distance learning",
         },
-        "foundation_year_availability": {"code": "0", "label": "Not available"},
+        "foundation_year_availability": {
+            "code": "0",
+            "label": "Not available",
+        },
         "honours_award_provision": "0",
         "institution": {
             "pub_ukprn_name": "ACME TESTING COLLEGE",
@@ -116,7 +119,10 @@ test_course = {
             "code": "0",
             "label": "Course is availble other than by distance learning",
         },
-        "foundation_year_availability": {"code": "0", "label": "Not available"},
+        "foundation_year_availability": {
+            "code": "0",
+            "label": "Not available",
+        },
         "honours_award_provision": "0",
         "institution": {
             "pub_ukprn_name": "n/a",
