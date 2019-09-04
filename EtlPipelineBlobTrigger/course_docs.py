@@ -89,7 +89,7 @@ def get_locids(raw_course_data, ukprn):
     return locids
 
 
-def get_links(locations, raw_inst_data, raw_course_data):
+def get_links(raw_inst_data, raw_course_data):
     links = {}
 
     item_details = [
@@ -266,7 +266,7 @@ def get_course_doc(
     )
     if length_of_course:
         course["length_of_course"] = length_of_course
-    links = get_links(locations, raw_inst_data, raw_course_data)
+    links = get_links(raw_inst_data, raw_course_data)
     if links:
         course["links"] = links
     location_items = get_location_items(
@@ -341,7 +341,6 @@ def create_course_docs(xml_string):
     kisaims = KisAims(root)
     locations = Locations(root)
 
-    stop = 1
     course_count = 0
     for institution in root.iter("INSTITUTION"):
 
