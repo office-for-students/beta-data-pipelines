@@ -781,25 +781,28 @@ class SharedUtils:
         else:
             unavail_reason_lookup = self.unavail_reason_english
 
-
         if not self.has_data(xml_elem):
             reason_str = unavail_reason_lookup["no-data"][unavail_reason_code]
             return unicodedata.normalize("NFKD", reason_str)
 
         validate_agg(unavail_reason_code, agg, unavail_reason_lookup)
-        partial_reason_str = unavail_reason_lookup["data"][unavail_reason_code][
-            agg
-        ]
+        partial_reason_str = unavail_reason_lookup["data"][
+            unavail_reason_code
+        ][agg]
         partial_reason_str = unicodedata.normalize("NFKD", partial_reason_str)
         if welsh:
             subj = self.get_unavailable_reason_subj_welsh(subj_key)
-            subj = "" # TODO Remove this line when translations avaialble
+            subj = ""  # TODO Remove this line when translations avaialble
         else:
             subj = self.get_unavailable_reason_subj_english(subj_key)
 
         # Handle unavailable reason for aggregation over 2 years
         if agg == "21" or agg == "22" or agg == "23":
-            return partial_reason_str + subj + unavail_reason_lookup["agg-over-two-years"]
+            return (
+                partial_reason_str
+                + subj
+                + unavail_reason_lookup["agg-over-two-years"]
+            )
         elif agg == "24":
             return partial_reason_str
 
@@ -814,7 +817,6 @@ class SharedUtils:
         if sbj_key:
             return self.get_welsh_sbj_label(sbj_key)
         return self.unavail_reason_welsh["no-subject"]
-
 
     @staticmethod
     def has_data(xml_elem):
