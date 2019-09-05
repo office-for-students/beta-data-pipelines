@@ -310,41 +310,32 @@ class Leo:
         )
 
         self.country_code = course_code
-        self.unavail_reason = self.shared_utils.get_lookup(
-            "leo_unavail_reason"
+        self.unavail_reason_english = self.shared_utils.get_lookup(
+            "leo_unavail_reason_english"
+        )
+        self.unavail_reason_welsh = self.shared_utils.get_lookup(
+            "leo_unavail_reason_welsh"
         )
         self.data_fields_lookup = self.shared_utils.get_lookup(
             "leo_data_fields"
         )
 
-    def need_unavailable(self, xml_elem):
-        """Returns True if unavailable is needed otherwise False"""
+    def get_stats(self, raw_course_data):
+        """Returns a list of JSON objects (as dicts) for this stats element"""
 
-        if self.shared_utils.has_data(xml_elem):
-            validate_leo_element_with_data(xml_elem, self.country_code)
-            return False
-        return True
-
-    def course_outside_england(self):
-        return self.country_code != "XF"
-
-    def get_unavailable_reason_str(self, unavail_reason_code):
-        if self.course_outside_england():
-            reason_str = self.unavail_reason["outside_england"]
-        else:
-            reason_str = self.unavail_reason[unavail_reason_code]
-        return unicodedata.normalize("NFKD", reason_str)
-
-    def get_unavailable(self, xml_elem):
-        unavailable = {}
-        unavail_reason_code = xml_elem[self.xml_unavail_reason_key]
-        validate_leo_unavailable_reason_code(unavail_reason_code)
-
-        unavailable["code"] = int(unavail_reason_code)
-        unavailable["reason"] = self.get_unavailable_reason_str(
-            unavail_reason_code
+        json_elem_list = []
+        raw_xml_list = SharedUtils.get_raw_list(
+            raw_course_data, self.xml_element_key
         )
-        return unavailable
+        for xml_elem in raw_xml_list:
+            json_elem = {}
+            if self.shared_utils.has_data(xml_elem):
+                json_elem.update(self.get_json_data(xml_elem))
+            if self.need_unavailable(xml_elem):
+                json_elem["unavailable"] = self.get_unavailable(xml_elem)
+            sorted_json_elem = OrderedDict(sorted(json_elem.items()))
+            json_elem_list.append(sorted_json_elem)
+        return json_elem_list
 
     def get_json_data(self, xml_elem):
         """Extracts and formats the data from the XML element"""
@@ -369,22 +360,44 @@ class Leo:
                         )
         return json_data
 
-    def get_stats(self, raw_course_data):
-        """Returns a list of JSON objects (as dicts) for this stats element"""
+    def get_unavailable(self, xml_elem):
+        unavailable = {}
+        unavail_reason_code = xml_elem[self.xml_unavail_reason_key]
+        validate_leo_unavailable_reason_code(unavail_reason_code)
 
-        json_elem_list = []
-        raw_xml_list = SharedUtils.get_raw_list(
-            raw_course_data, self.xml_element_key
+        unavailable["code"] = int(unavail_reason_code)
+        unavailable[
+            "reason_english"
+        ] = self.get_unavailable_reason_str_english(unavail_reason_code)
+        unavailable["reason_welsh"] = self.get_unavailable_reason_str_welsh(
+            unavail_reason_code
         )
-        for xml_elem in raw_xml_list:
-            json_elem = {}
-            if self.shared_utils.has_data(xml_elem):
-                json_elem.update(self.get_json_data(xml_elem))
-            if self.need_unavailable(xml_elem):
-                json_elem["unavailable"] = self.get_unavailable(xml_elem)
-            sorted_json_elem = OrderedDict(sorted(json_elem.items()))
-            json_elem_list.append(sorted_json_elem)
-        return json_elem_list
+        return unavailable
+
+    def need_unavailable(self, xml_elem):
+        """Returns True if unavailable is needed otherwise False"""
+
+        if self.shared_utils.has_data(xml_elem):
+            validate_leo_element_with_data(xml_elem, self.country_code)
+            return False
+        return True
+
+    def course_outside_england(self):
+        return self.country_code != "XF"
+
+    def get_unavailable_reason_str_english(self, unavail_reason_code):
+        if self.course_outside_england():
+            reason_str = self.unavail_reason_english["outside_england"]
+        else:
+            reason_str = self.unavail_reason_english[unavail_reason_code]
+        return unicodedata.normalize("NFKD", reason_str)
+
+    def get_unavailable_reason_str_welsh(self, unavail_reason_code):
+        if self.course_outside_england():
+            reason_str = self.unavail_reason_welsh["outside_england"]
+        else:
+            reason_str = self.unavail_reason_welsh[unavail_reason_code]
+        return unicodedata.normalize("NFKD", reason_str)
 
 
 class Nss:
@@ -696,7 +709,8 @@ class SharedUtils:
             "nss_data_fields": "nss_data_fields.json",
             "nhs_question_description": "nhs_question_description.json",
             "nhs_data_fields": "nhs_data_fields.json",
-            "leo_unavail_reason": "leo_unavailreason.json",
+            "leo_unavail_reason_english": "leo_unavailreason_english.json",
+            "leo_unavail_reason_welsh": "leo_unavailreason_welsh.json",
             "leo_data_fields": "leo_data_fields.json",
             "common_data_fields": "common_data_fields.json",
         }[lookup_name]
@@ -797,13 +811,13 @@ class SharedUtils:
             subj = self.get_unavailable_reason_subj_english(subj_key)
 
         # Handle unavailable reason for aggregation over 2 years
-        if agg == "21" or agg == "22" or agg == "23":
+        if agg in ["21", "22", "23"]:
             return (
                 partial_reason_str
                 + subj
                 + unavail_reason_lookup["agg-over-two-years"]
             )
-        elif agg == "24":
+        if agg == "24":
             return partial_reason_str
 
         return partial_reason_str + subj + "."
