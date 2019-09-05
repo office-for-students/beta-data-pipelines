@@ -33,7 +33,8 @@
                 "english": "https://www.canterbury.ac.uk/study-here/courses/undergraduate/ophthalmic-dispensing-19-20.aspx"
             },
             "course_cost": {
-                "english": "https://www.example.ac.uk/costs-info#csrseinfocosts"
+                "english": "https://www.example.ac.uk/costs-info#csrseinfocosts",
+                "welsh": "https://www.example.cymru/costs-info#csrseinfocosts"
             },
             "course_page": {
                 "english": "https://www.canterbury.ac.uk/study-here/courses/undergraduate/ophthalmic-dispensing-19-20.aspx"

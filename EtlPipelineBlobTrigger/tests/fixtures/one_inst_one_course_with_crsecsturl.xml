@@ -8,6 +8,7 @@
     <KISCOURSE>
         <ASSURL>https://www.canterbury.ac.uk/study-here/courses/undergraduate/ophthalmic-dispensing-19-20.aspx</ASSURL>
         <CRSECSTURL>https://www.example.ac.uk/costs-info#csrseinfocosts</CRSECSTURL>
+        <CRSECSTURLW>https://www.example.cymru/costs-info#csrseinfocosts</CRSECSTURLW>
         <CRSEURL>https://www.canterbury.ac.uk/study-here/courses/undergraduate/ophthalmic-dispensing-19-20.aspx</CRSEURL>
         <DISTANCE>0</DISTANCE>
         <EMPLOYURL>http://www.canterbury.ac.uk/career-development/information-for-prospective-students.aspx</EMPLOYURL>
