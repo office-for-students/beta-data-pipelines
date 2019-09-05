@@ -30,5 +30,7 @@
             "22": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in ",
             "23": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in "
         }
-    }
+    },
+    "no-subject": "this subject",
+    "agg-over-two-years": " across the last two years"
 }
