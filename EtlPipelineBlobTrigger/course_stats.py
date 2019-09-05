@@ -793,6 +793,7 @@ class SharedUtils:
         partial_reason_str = unicodedata.normalize("NFKD", partial_reason_str)
         if welsh:
             subj = self.get_unavailable_reason_subj_welsh(subj_key)
+            subj = "" # TODO Remove this line when translations avaialble
         else:
             subj = self.get_unavailable_reason_subj_english(subj_key)
 
