@@ -23,7 +23,9 @@ class TestGetLocations(unittest.TestCase):
         pub_ukprn = "10007814"
         locids = get_locids(raw_course_xml, pub_ukprn)
 
-        expected_response = json.loads(get_string("fixtures/course_location_resp.json"))
+        expected_response = json.loads(
+            get_string("fixtures/course_location_resp.json")
+        )
         locations = get_location_items(
             self.locations, locids, raw_course_xml, pub_ukprn
         )

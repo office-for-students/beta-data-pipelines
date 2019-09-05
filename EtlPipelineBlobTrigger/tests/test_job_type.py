@@ -34,7 +34,9 @@ class TestGetJobType(unittest.TestCase):
         root = ET.fromstring(xml_string)
         for institution in root.iter("INSTITUTION"):
             for course in institution.findall("KISCOURSE"):
-                raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
+                raw_course_data = xmltodict.parse(ET.tostring(course))[
+                    "KISCOURSE"
+                ]
                 self.job_type.get_stats(raw_course_data)
 
     def test_get_stats_no_subj(self):

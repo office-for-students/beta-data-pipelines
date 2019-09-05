@@ -18,7 +18,9 @@ import defusedxml.ElementTree as ET
 import xmltodict
 
 # TODO investigate setting PATH in Azure so can remove this
-CURRENTDIR = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+CURRENTDIR = os.path.dirname(
+    os.path.abspath(inspect.getfile(inspect.currentframe()))
+)
 PARENTDIR = os.path.dirname(CURRENTDIR)
 sys.path.insert(0, CURRENTDIR)
 sys.path.insert(0, PARENTDIR)
@@ -75,7 +77,9 @@ def get_locids(raw_course_data, ukprn):
                 pass
     else:
         try:
-            locids.append(f"{raw_course_data['COURSELOCATION']['LOCID']}{ukprn}")
+            locids.append(
+                f"{raw_course_data['COURSELOCATION']['LOCID']}{ukprn}"
+            )
         except KeyError:
             # TODO: Handle COURSELOCATION without LOCID.
             # See KISCOURSEID BADE for an example of this.
@@ -85,11 +89,12 @@ def get_locids(raw_course_data, ukprn):
     return locids
 
 
-def get_links(locations, locids, raw_inst_data, raw_course_data):
+def get_links(raw_inst_data, raw_course_data):
     links = {}
 
     item_details = [
         ("ASSURL", "assessment_method", raw_course_data),
+        ("CRSECSTURL", "course_cost", raw_course_data),
         ("CRSEURL", "course_page", raw_course_data),
         ("EMPLOYURL", "employment_details", raw_course_data),
         ("SUPPORTURL", "financial_support_details", raw_course_data),
@@ -111,15 +116,17 @@ def get_location_items(locations, locids, raw_course_data, pub_ukprn):
     if "COURSELOCATION" not in raw_course_data:
         return location_items
 
-    course_locations = SharedUtils.get_raw_list(raw_course_data, "COURSELOCATION")
+    course_locations = SharedUtils.get_raw_list(
+        raw_course_data, "COURSELOCATION"
+    )
     item = {}
     for course_location in course_locations:
         if "LOCID" not in course_location:
             continue
 
         if "UCASCOURSEID" in course_location:
-            id = course_location["LOCID"] + pub_ukprn
-            item[id] = course_location["UCASCOURSEID"]
+            lookup_key = course_location["LOCID"] + pub_ukprn
+            item[lookup_key] = course_location["UCASCOURSEID"]
 
     for locid in locids:
         location_dict = {}
@@ -231,7 +238,9 @@ def get_course_doc(
     course = {}
 
     if "ACCREDITATION" in raw_course_data:
-        course["accreditations"] = get_accreditations(raw_course_data, accreditations)
+        course["accreditations"] = get_accreditations(
+            raw_course_data, accreditations
+        )
 
     if "UKPRNAPPLY" in raw_course_data:
         course["application_provider"] = raw_course_data["UKPRNAPPLY"]
@@ -257,7 +266,7 @@ def get_course_doc(
     )
     if length_of_course:
         course["length_of_course"] = length_of_course
-    links = get_links(locations, locids, raw_inst_data, raw_course_data)
+    links = get_links(raw_inst_data, raw_course_data)
     if links:
         course["links"] = links
     location_items = get_location_items(
@@ -268,7 +277,9 @@ def get_course_doc(
     mode = get_code_label_entry(raw_course_data, lookup.mode, "KISMODE")
     if mode:
         course["mode"] = mode
-    nhs_funded = get_code_label_entry(raw_course_data, lookup.nhs_funded, "NHS")
+    nhs_funded = get_code_label_entry(
+        raw_course_data, lookup.nhs_funded, "NHS"
+    )
     if nhs_funded:
         course["nhs_funded"] = nhs_funded
     qualification = get_qualification(raw_course_data, kisaims)
@@ -295,7 +306,9 @@ def get_course_doc(
             raw_course_data, lookup.year_abroad, "YEARABROAD"
         )
 
-    course["statistics"] = get_stats(raw_course_data, course["country"]["code"])
+    course["statistics"] = get_stats(
+        raw_course_data, course["country"]["code"]
+    )
 
     outer_wrapper["course"] = course
     return outer_wrapper
@@ -307,9 +320,13 @@ def create_course_docs(xml_string):
     # TODO Investigate writing docs to CosmosDB in bulk to speed things up.
     cosmosdb_client = utils.get_cosmos_client()
 
-    logging.info("adding ukrlp data into memory ahead of building course documents")
+    logging.info(
+        "adding ukrlp data into memory ahead of building course documents"
+    )
     enricher = UkRlpCourseEnricher()
-    logging.info("adding subject data into memory ahead of building course documents")
+    logging.info(
+        "adding subject data into memory ahead of building course documents"
+    )
     subject_enricher = SubjectCourseEnricher()
 
     collection_link = utils.get_collection_link(
@@ -324,11 +341,12 @@ def create_course_docs(xml_string):
     kisaims = KisAims(root)
     locations = Locations(root)
 
-    stop = 1
     course_count = 0
     for institution in root.iter("INSTITUTION"):
 
-        raw_inst_data = xmltodict.parse(ET.tostring(institution))["INSTITUTION"]
+        raw_inst_data = xmltodict.parse(ET.tostring(institution))[
+            "INSTITUTION"
+        ]
         ukprn = raw_inst_data["UKPRN"]
         for course in institution.findall("KISCOURSE"):
 

@@ -13,8 +13,12 @@ class Locations:
 
         self.lookup_dict = {}
         for location in root.iter("LOCATION"):
-            raw_location_data = xmltodict.parse(ET.tostring(location))["LOCATION"]
-            lockey = f"{raw_location_data['LOCID']}{raw_location_data['UKPRN']}"
+            raw_location_data = xmltodict.parse(ET.tostring(location))[
+                "LOCATION"
+            ]
+            lockey = (
+                f"{raw_location_data['LOCID']}{raw_location_data['UKPRN']}"
+            )
             self.lookup_dict[lockey] = raw_location_data
 
     def get_location_data_for_key(self, key):

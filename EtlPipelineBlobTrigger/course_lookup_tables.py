@@ -28,7 +28,11 @@ distance_learning_lookup = {
     2: "Course is optionally available through distance learning",
 }
 
-foundation_year_availability = {0: "Not available", 1: "Optional", 2: "Compulsory"}
+foundation_year_availability = {
+    0: "Not available",
+    1: "Optional",
+    2: "Compulsory",
+}
 
 mode = {1: "Full-time", 2: "Part-time"}
 
