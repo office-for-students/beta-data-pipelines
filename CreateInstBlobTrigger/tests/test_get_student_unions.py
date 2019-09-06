@@ -1,6 +1,6 @@
 import json
 import unittest
-import xml.etree.ElementTree as ET
+import defusedxml.ElementTree as ET
 
 from inst_test_utils import get_first, get_string
 from CreateInstBlobTrigger.locations import Locations
@@ -37,7 +37,6 @@ class TestGetStudentUnions(unittest.TestCase):
         )
         self.assertEqual(expected_student_unions, student_unions)
 
-
     def test_get_student_unions_413_courses(self):
 
         # Build a locations lookup
@@ -57,7 +56,6 @@ class TestGetStudentUnions(unittest.TestCase):
             get_string("fixtures/one_inst_413_courses.json")
         )
         self.assertEqual(expected_student_unions, student_unions)
-
 
 
 # TODO Test more of the functionality - more lookups etc

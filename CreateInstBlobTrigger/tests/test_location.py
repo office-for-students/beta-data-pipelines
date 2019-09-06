@@ -1,5 +1,5 @@
 import unittest
-import xml.etree.ElementTree as ET
+import defusedxml.ElementTree as ET
 
 from inst_test_utils import get_string
 from CreateInstBlobTrigger.locations import Locations

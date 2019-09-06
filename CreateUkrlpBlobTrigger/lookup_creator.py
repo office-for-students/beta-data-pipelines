@@ -5,7 +5,7 @@ import inspect
 import logging
 import os
 import sys
-import xml.etree.ElementTree as ET
+import defusedxml.ElementTree as ET
 
 import xmltodict
 
