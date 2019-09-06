@@ -62,7 +62,8 @@
         },
         "unavailable": {
             "code": 1,
-            "reason": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in Subjects allied to medicine (other) across the last two years."
+            "reason_english": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in Subjects allied to medicine (other) across the last two years.",
+            "reason_welsh": "Placeholder for Welsh translation"
         }
     },
     {
@@ -128,7 +129,8 @@
         },
         "unavailable": {
             "code": 1,
-            "reason": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in Biosciences (other)."
+            "reason_english": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in Biosciences (other).",
+            "reason_welsh": "Placeholder for Welsh translation."
         }
     },
     {
@@ -194,7 +196,8 @@
         },
         "unavailable": {
             "code": 1,
-            "reason": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in Engineering (non-specific)."
+            "reason_english": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in Engineering (non-specific).",
+            "reason_welsh": "Placeholder for Welsh translation."
         }
     }
 ]

@@ -2,7 +2,8 @@
     {
         "unavailable": {
             "code": 0,
-            "reason": "There is not enough data available to publish for this course. This is either because the course is small or we have not had enough survey responses.  This does not reflect on the quality of the course."
+            "reason_english": "There is not enough data available to publish for this course. This is either because the course is small or we have not had enough survey responses.  This does not reflect on the quality of the course.",
+            "reason_welsh": "Placeholder for Welsh translation"
         }
     }
 ]
