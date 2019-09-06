@@ -7,7 +7,7 @@ class Helper:
 
         if isinstance(term, dict):
             return [term]
-        
+
         return term
 
     @staticmethod
@@ -15,8 +15,13 @@ class Helper:
         """Returns a single name for the provider"""
 
         # Get provider name if alias does not exist in ukrlp response body
-        if 'ProviderAliases' in matching_provider_records and matching_provider_records['ProviderAliases'] is not None:
-            aliases = Helper.get_list(matching_provider_records['ProviderAliases'])
-            return aliases[0]['ProviderAlias']
-        
-        return matching_provider_records['ProviderName']
+        if (
+            "ProviderAliases" in matching_provider_records
+            and matching_provider_records["ProviderAliases"] is not None
+        ):
+            aliases = Helper.get_list(
+                matching_provider_records["ProviderAliases"]
+            )
+            return aliases[0]["ProviderAlias"]
+
+        return matching_provider_records["ProviderName"]
