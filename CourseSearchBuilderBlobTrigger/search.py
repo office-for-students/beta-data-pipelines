@@ -194,15 +194,14 @@ class Synonym:
         self.synonym_name = "english-course-title"
         self.url = url
 
-        self.headers = {
-            "Content-Type": "application/json",
-            "api-key": api_key
-        }
+        self.headers = {"Content-Type": "application/json", "api-key": api_key}
 
     def delete_if_already_exists(self):
 
         try:
-            delete_url = self.url + "/synonymmaps/" + self.synonym_name + self.query_string
+            delete_url = (
+                self.url + "/synonymmaps/" + self.synonym_name + self.query_string
+            )
 
             response = requests.delete(delete_url, headers=self.headers)
 
@@ -231,6 +230,40 @@ class Synonym:
         self.get_synonym()
 
         try:
+            update_url = (
+                self.url + "/synonymmaps/" + self.synonym_name + self.query_string
+            )
+            response = requests.put(
+                update_url, headers=self.headers, json=self.course_synonym_schema
+            )
+
+        except requests.exceptions.RequestException as e:
+            logging.exception("unexpected error creating course synonym", exc_info=True)
+            raise exceptions.StopEtlPipelineErrorException(e)
+
+        if response.status_code == 204:
+            return
+        elif response.status_code == 404:
+            logging.warning(
+                f"failed to update course search synonyms, unable to find synonym; try creating synonym\n\
+                            index-name: {self.synonym_name}\n\
+                            status: {response.status_code}\n\
+                            error: {requests.exceptions.HTTPError(response.text)}"
+            )
+
+            self.create()
+        else:
+            logging.error(
+                f"failed to update course search synonyms\n\
+                            index-name: {self.synonym_name}\n\
+                            status: {response.status_code}\n\
+                            error: {requests.exceptions.HTTPError(response.text)}"
+            )
+
+            raise exceptions.StopEtlPipelineErrorException
+
+    def create(self):
+        try:
             create_url = self.url + "/synonymmaps" + self.query_string
             response = requests.put(
                 create_url, headers=self.headers, json=self.course_synonym_schema
@@ -240,9 +273,9 @@ class Synonym:
             logging.exception("unexpected error creating course synonym", exc_info=True)
             raise exceptions.StopEtlPipelineErrorException(e)
 
-        if response.status_code != 200 or response.status_code != 201:
+        if response.status_code != 201:
             logging.error(
-                f"failed to create course search synonyms\n\
+                f"failed to create course search synonyms, after failing to update synonyms\n\
                             index-name: {self.synonym_name}\n\
                             status: {response.status_code}\n\
                             error: {requests.exceptions.HTTPError(response.text)}"
@@ -255,14 +288,16 @@ class Synonym:
         with open(os.path.join(cwd, "schemas/course_synonym.json")) as json_file:
             schema = json.load(json_file)
             schema["name"] = self.synonym_name
-            shema["synonyms"] = self.get_synonym_list()
+            schema["synonyms"] = self.get_synonym_list()
 
             self.course_synonym_schema = schema
 
     def get_synonym_list(self):
         dentist_synonyms = "dentist, dentistry, endodontics, orthodontics, dentofacial orthopedics, oral medicine, pediatric dentistry, public health dentistry, prosthodontist, tooth doctor, dental surgeon, dental practitioner, hygenist, clinical dentistry, preclinical dentistry, pre clinical dentistry, pre-clinical dentistry => dentistry"
         midwidfery_synonyms = "obstetrics, obstetrical delivery, perinatology, fetology, feotology, tocology => midwifery"
-        dental_nursing_synonyms = "dentistry, hygenist, dental practitioner => dental nursing"
+        dental_nursing_synonyms = (
+            "dentistry, hygenist, dental practitioner => dental nursing"
+        )
         mental_health_nursing_synonyms = "registered mental health nursing(RMN), mental health nurse, dual diagnosis, mental health => mental health nursing"
         pharmacology_synonyms = "pharmacology, psychopharmacology, pharmacological medicine, pharmacokenetics, pharmacodynamics, medical speciality, toxicology, substances, drugs => pharmacology"
         toxicology_synonyms = "pharmacology, pharmacological medicine => toxicology"
@@ -271,9 +306,17 @@ class Synonym:
         mathematics_synonyms = "maths, math, applied mathematics, pure maths, pure math, pure mathematics, applied maths, applied math => mathematics"
         civil_engineering_synonyms = "construction, roads, bridges, applied science, engineering science, engineering, hydrolic engineering => civil engineering"
 
-        synonyms = {dentist_synonyms, midwidfery_synonyms, dental_nursing_synonyms, mental_health_nursing_synonyms, pharmacology_synonyms, toxicology_synonyms, pharmacy_synonyms, chemistry_synonyms, mathematics_synonyms, civil_engineering_synonyms}
+        synonyms = {
+            dentist_synonyms,
+            midwidfery_synonyms,
+            dental_nursing_synonyms,
+            mental_health_nursing_synonyms,
+            pharmacology_synonyms,
+            toxicology_synonyms,
+            pharmacy_synonyms,
+            chemistry_synonyms,
+            mathematics_synonyms,
+            civil_engineering_synonyms,
+        }
 
         return "\n".join(synonyms)
-
-
-

@@ -24,7 +24,7 @@ def main(dataset: func.InputStream):
         # Get version number
         version = helpers.get_version(dataset.name)
 
-        # Update synonyms
+        # Upsert (create or update) synonyms
         search.build_synonyms(search_url, api_key, api_version)
 
         # Create search index
