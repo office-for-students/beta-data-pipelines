@@ -8,22 +8,22 @@ from . import models
 
 
 def build_index(url, api_key, api_version, version):
-        index = Index(url, api_key, api_version, version)
+    index = Index(url, api_key, api_version, version)
 
-        index.delete_if_already_exists()
-        index.create()
+    index.delete_if_already_exists()
+    index.create()
 
 
 def load_index(url, api_key, api_version, version, docs):
-        load = Load(url, api_key, api_version, version, docs)
+    load = Load(url, api_key, api_version, version, docs)
 
-        load.course_documents()
+    load.course_documents()
 
 
 def build_synonyms(url, api_key, api_version):
-        synonyms = SynonymMap(url, api_key, api_version)
+    synonyms = SynonymMap(url, api_key, api_version)
 
-        synonyms.update()
+    synonyms.update()
 
 
 class Index:
@@ -200,7 +200,7 @@ class SynonymMap:
 
         if response.status_code == 204:
             return
-        
+
         if response.status_code == 404:
             logging.warning(
                 f"failed to update course search synonyms, unable to find synonym; try creating synonym\n\
