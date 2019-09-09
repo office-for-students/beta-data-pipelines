@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+
 class Error(Exception):
     """ Base Exception Class """
 
@@ -22,6 +23,7 @@ class XmlValidationError(Error):
     """ An error is raised during XML Validation """
 
     pass
+
 
 class DataSetTooEarlyError(Error):
     """ An error raised if too soon for DataSet service run again """

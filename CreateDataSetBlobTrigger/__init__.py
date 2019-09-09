@@ -5,7 +5,6 @@ import gzip
 import io
 import logging
 import os
-from datetime import datetime
 
 import azure.functions as func
 
@@ -14,7 +13,7 @@ from SharedCode.exceptions import (
     StopEtlPipelineErrorException,
     DataSetTooEarlyError,
 )
-from .blob_helper import BlobHelper
+from SharedCode.blob_helper import BlobHelper
 from .dataset_creator import DataSetCreator
 from . import validators
 
@@ -62,8 +61,9 @@ def main(xmlblob: func.InputStream, context: func.Context):
         logging.info("CreateDataSetBlobTrigger successfully finished.")
 
         """ PASS THE COMPRESSED XML TO NEXT AZURE FUNCTION IN THE PIPELINE"""
+        destination_container_name = os.environ["UkrlpInputContainerName"]
         blob_helper = BlobHelper(xmlblob)
-        blob_helper.create_output_blob()
+        blob_helper.create_output_blob(destination_container_name)
 
     except StopEtlPipelineErrorException as e:
         logging.error(

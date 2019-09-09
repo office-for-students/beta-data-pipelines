@@ -1,4 +1,4 @@
-# CourseSearchBuilderBlobTrigger - Python
+CourseSearchBuilderBlobTrigger - Python
 =========================================
 The course search builder creates and populates a new version of the course dataset into azure search.
 
