@@ -241,7 +241,11 @@
                 "facetable": "true",
                 "filterable": "false",
                 "searchable": "true",
-                "sortable": "false"
+                "sortable": "false",
+                "analyzer":"en.lucene",
+	            "synonymMaps":[
+	                "english-course-title"
+	            ]
             }, {
                 "name": "welsh",
                 "type": "Edm.String",

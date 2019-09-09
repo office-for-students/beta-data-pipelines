@@ -1,0 +1,35 @@
+{
+    "no-data": {
+        "0": "Placeholder for Welsh translation",
+        "1": "Placeholder for Welsh translation",
+        "2": "Placeholder for Welsh translation"
+    },
+    "data": {
+        "0": {
+            "11": "Placeholder for Welsh translation",
+            "12": "Placeholder for Welsh translation",
+            "13": "Placeholder for Welsh translation",
+            "21": "Placeholder for Welsh translation",
+            "22": "Placeholder for Welsh translation",
+            "23": "Placeholder for Welsh translation",
+            "24": "Placeholder for Welsh translation"
+        },
+        "1": {
+            "11": "Placeholder for Welsh translation",
+            "12": "Placeholder for Welsh translation",
+            "13": "Placeholder for Welsh translation",
+            "21": "Placeholder for Welsh translation",
+            "22": "Placeholder for Welsh translation",
+            "23": "Placeholder for Welsh translation"
+        },
+        "2": {
+            "12": "Placeholder for Welsh translation",
+            "13": "Placeholder for Welsh translation",
+            "21": "Placeholder for Welsh translation",
+            "22": "Placeholder for Welsh translation",
+            "23": "Placeholder for Welsh translation"
+        }
+    },
+    "no-subject": "",
+    "agg-over-two-years": ""
+}

@@ -14,7 +14,8 @@ class TestVariousHelperMethods(unittest.TestCase):
 
     def test_get_tariff_description(self):
         self.assertEqual(
-            self.tariff.get_tariff_description("T001"), "less than 48 tariff points"
+            self.tariff.get_tariff_description("T001"),
+            "less than 48 tariff points",
         )
         self.assertEqual(
             self.tariff.get_tariff_description("T048"),
@@ -65,7 +66,8 @@ class TestVariousHelperMethods(unittest.TestCase):
             "between 224 and 239 tariff points",
         )
         self.assertEqual(
-            self.tariff.get_tariff_description("T240"), "240 or more tariff points"
+            self.tariff.get_tariff_description("T240"),
+            "240 or more tariff points",
         )
 
     def test_get_tariffs_list(self):
@@ -91,7 +93,9 @@ class TestGetStats(unittest.TestCase):
         root = ET.fromstring(xml_string)
         for institution in root.iter("INSTITUTION"):
             for course in institution.findall("KISCOURSE"):
-                raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
+                raw_course_data = xmltodict.parse(ET.tostring(course))[
+                    "KISCOURSE"
+                ]
                 self.tariff.get_stats(raw_course_data)
 
     def test_get_stats_with_subj(self):

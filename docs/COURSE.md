@@ -59,6 +59,10 @@
                 "english": "string",
                 "welsh": "string"
             },
+            "course_cost": {
+                "english": "string",
+                "welsh": "string"
+            },
             "course_page": {
                 "english": "string",
                 "welsh": "string"
@@ -174,6 +178,8 @@
 | length_of_course.label                     | See Length of Course Code values                      | N/A              |
 | links.assessment_method.english            | KIS.INSTITUTION.KISCOURSE.ASSURL                      | ASSURL           |
 | links.assessment_method.welsh              | KIS.INSTITUTION.KISCOURSE.ASSMURLW                    | ASSURLW          |
+| links.course_cost.english                  | KIS.INSTITUTION.KISCOURSE.CRSECTURL                   | CRSECTURL        |
+| links.course_cost.welsh                    | KIS.INSTITUTION.KISCOURSE.CRSECTURLW                  | CRSECTURLW       |
 | links.course_page.english                  | KIS.INSTITUTION.KISCOURSE.CRSEURL                     | CRSEURL          |
 | links.course_page.welsh                    | KIS.INSTITUTION.KISCOURSE.CRSEURLW                    | CRSEURLW         |
 | links.employment.english                   | KIS.INSTITUTION.KISCOURSE.EMPLOYURL                   | EMPLOYURL        |

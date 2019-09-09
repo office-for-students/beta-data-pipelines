@@ -1,6 +1,6 @@
 import json
 import unittest
-import xml.etree.ElementTree as ET
+import defusedxml.ElementTree as ET
 
 from unittest import mock
 

@@ -12,7 +12,8 @@
         },
         "unavailable": {
             "code": 0,
-            "reason": "There was not enough data to publish information specifically for this course. This is either because the course size is small or not enough students responded to a survey. For this reason, the data displayed is for all students in Animal science."
+            "reason_english": "There was not enough data to publish information specifically for this course. This is either because the course size is small or not enough students responded to a survey. For this reason, the data displayed is for all students in Animal science.",
+            "reason_welsh": "Placeholder for Welsh translation."
         },
         "unknown_professions": 0
     }
