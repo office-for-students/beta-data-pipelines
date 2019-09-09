@@ -8,35 +8,22 @@ from . import models
 
 
 def build_index(url, api_key, api_version, version):
-
-    try:
         index = Index(url, api_key, api_version, version)
 
         index.delete_if_already_exists()
         index.create()
-    except Exception:
-        raise
 
 
 def load_index(url, api_key, api_version, version, docs):
-
-    try:
         load = Load(url, api_key, api_version, version, docs)
 
         load.course_documents()
-    except Exception:
-        raise
 
 
 def build_synonyms(url, api_key, api_version):
+        synonyms = SynonymMap(url, api_key, api_version)
 
-    try:
-        synonyms = Synonym(url, api_key, api_version)
-
-        # synonyms.delete_if_already_exists()
         synonyms.update()
-    except Exception:
-        raise
 
 
 class Index:
@@ -185,7 +172,7 @@ class Load:
             raise exceptions.StopEtlPipelineErrorException()
 
 
-class Synonym:
+class SynonymMap:
     """Creates a new synonym"""
 
     def __init__(self, url, api_key, api_version):
@@ -195,36 +182,6 @@ class Synonym:
         self.url = url
 
         self.headers = {"Content-Type": "application/json", "api-key": api_key}
-
-    def delete_if_already_exists(self):
-
-        try:
-            delete_url = (
-                self.url + "/synonymmaps/" + self.synonym_name + self.query_string
-            )
-
-            response = requests.delete(delete_url, headers=self.headers)
-
-        except requests.exceptions.RequestException as e:
-            logging.exception("unexpected error deleting synonym", exc_info=True)
-            raise exceptions.StopEtlPipelineErrorException(e)
-
-        if response.status_code == 204:
-            logging.warn(
-                f"course search synonym already exists, successful deletion\
-                           prior to recreation\n synonym: {self.index_name}"
-            )
-
-        elif response.status_code != 404:
-            # 404 is the expected response, because normally the
-            # course search index will not exist
-            logging.error(
-                f"unexpected response when deleting existing search synonym,\
-                            search_response: {response.json()}\nsynonym-name:\
-                            {self.synonym_name}\nstatus: {response.status_code}"
-            )
-
-            raise exceptions.StopEtlPipelineErrorException
 
     def update(self):
         self.get_synonym()
@@ -243,10 +200,11 @@ class Synonym:
 
         if response.status_code == 204:
             return
-        elif response.status_code == 404:
+        
+        if response.status_code == 404:
             logging.warning(
                 f"failed to update course search synonyms, unable to find synonym; try creating synonym\n\
-                            index-name: {self.synonym_name}\n\
+                            synonym-name: {self.synonym_name}\n\
                             status: {response.status_code}\n\
                             error: {requests.exceptions.HTTPError(response.text)}"
             )
@@ -255,7 +213,7 @@ class Synonym:
         else:
             logging.error(
                 f"failed to update course search synonyms\n\
-                            index-name: {self.synonym_name}\n\
+                            synonym-name: {self.synonym_name}\n\
                             status: {response.status_code}\n\
                             error: {requests.exceptions.HTTPError(response.text)}"
             )
@@ -276,7 +234,7 @@ class Synonym:
         if response.status_code != 201:
             logging.error(
                 f"failed to create course search synonyms, after failing to update synonyms\n\
-                            index-name: {self.synonym_name}\n\
+                            synonym-name: {self.synonym_name}\n\
                             status: {response.status_code}\n\
                             error: {requests.exceptions.HTTPError(response.text)}"
             )
