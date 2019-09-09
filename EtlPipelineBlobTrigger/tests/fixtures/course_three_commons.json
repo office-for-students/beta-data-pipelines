@@ -62,7 +62,7 @@
         },
         "unavailable": {
             "code": 1,
-            "reason_english": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in Subjects allied to medicine (other) across the last two years.",
+            "reason_english": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in Subjects allied to medicine (other) for the most recent two years.",
             "reason_welsh": "Placeholder for Welsh translation"
         }
     },

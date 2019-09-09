@@ -380,7 +380,7 @@
                     ],
                     "unavailable": {
                         "code": 0,
-                        "reason_english": "Data for students in the last two years of this course has been combined, as there was not enough data to publish information for last year only.",
+                        "reason_english": "We have combined data for two years of this course, as there was not enough to publish the most recent year’s data only.",
                         "reason_welsh": "Placeholder for Welsh translation"
                     }
                 }
