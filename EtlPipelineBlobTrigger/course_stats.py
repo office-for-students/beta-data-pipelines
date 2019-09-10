@@ -33,7 +33,8 @@ def get_stats(raw_course_data, country_code):
     stats["job_type"] = job_type.get_stats(raw_course_data)
     stats["job_list"] = job_list.get_stats(raw_course_data)
     stats["leo"] = leo.get_stats(raw_course_data)
-    stats["nhs_nss"] = nhs_nss.get_stats(raw_course_data)
+    if need_nhs_nss(raw_course_data):
+        stats["nhs_nss"] = nhs_nss.get_stats(raw_course_data)
     stats["nss"] = nss.get_stats(raw_course_data)
     stats["salary"] = salary.get_stats(raw_course_data)
     stats["tariff"] = tariff.get_stats(raw_course_data)
@@ -849,3 +850,10 @@ class SharedUtils:
         if isinstance(data[element_key], dict):
             return [data[element_key]]
         return data[element_key]
+
+
+def need_nhs_nss(course):
+    nhs_nss_elem = SharedUtils.get_raw_list(course, "NHSNSS")[0]
+    if SharedUtils.has_data(nhs_nss_elem):
+        return True
+    return False
