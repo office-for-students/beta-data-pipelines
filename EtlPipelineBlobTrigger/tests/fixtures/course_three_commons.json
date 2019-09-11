@@ -63,7 +63,7 @@
         "unavailable": {
             "code": 1,
             "reason_english": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in Subjects allied to medicine (other) for the most recent two years.",
-            "reason_welsh": "Nid oes data ar gael ar gyfer y cwrs hwn. Mae hyn oherwydd nad yw'r cwrs wedi'i gynnal eto neu am nad yw wedi cael ei gynnal yn ddigon hir iO\u0303r data hwn fod ar gael. Am y rheswm hwn, mae'r data a ddangosir ar gyfer myfyrwyr ar gyrsiau eraill mewn Pynciau\u2019n gysylltiedig \u00e2 meddygaeth (arall) ar gyfer y ddwy flynedd fwyaf diweddar."
+            "reason_welsh": "Nid oes data ar gael ar gyfer y cwrs hwn. Mae hyn oherwydd nad yw'r cwrs wedi'i gynnal eto neu am nad yw wedi cael ei gynnal yn ddigon hir i'r data hwn fod ar gael. Am y rheswm hwn, mae'r data a ddangosir ar gyfer myfyrwyr ar gyrsiau eraill mewn Pynciau\u2019n gysylltiedig \u00e2 meddygaeth (arall) ar gyfer y ddwy flynedd fwyaf diweddar."
         }
     },
     {
@@ -130,7 +130,7 @@
         "unavailable": {
             "code": 1,
             "reason_english": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in Biosciences (other).",
-            "reason_welsh": "Nid oes data ar gael ar gyfer y cwrs hwn. Mae hyn oherwydd nad yw'r cwrs wedi'i gynnal eto neu am nad yw wedi cael ei gynnal yn ddigon hir iO\u0303r data hwn fod ar gael. Am y rheswm hwn, mae'r data a ddangosir ar gyfer myfyrwyr ar gyrsiau eraill mewn Biowyddorau (arall)."
+            "reason_welsh": "Nid oes data ar gael ar gyfer y cwrs hwn. Mae hyn oherwydd nad yw'r cwrs wedi'i gynnal eto neu am nad yw wedi cael ei gynnal yn ddigon hir i'r data hwn fod ar gael. Am y rheswm hwn, mae'r data a ddangosir ar gyfer myfyrwyr ar gyrsiau eraill mewn Biowyddorau (arall)."
         }
     },
     {
@@ -197,7 +197,7 @@
         "unavailable": {
             "code": 1,
             "reason_english": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in Engineering (non-specific).",
-            "reason_welsh": "Nid oes data ar gael ar gyfer y cwrs hwn. Mae hyn oherwydd nad yw'r cwrs wedi'i gynnal eto neu am nad yw wedi cael ei gynnal yn ddigon hir iO\u0303r data hwn fod ar gael. Am y rheswm hwn, mae'r data a ddangosir ar gyfer myfyrwyr ar gyrsiau eraill mewn Peirianneg (amhenodol)."
+            "reason_welsh": "Nid oes data ar gael ar gyfer y cwrs hwn. Mae hyn oherwydd nad yw'r cwrs wedi'i gynnal eto neu am nad yw wedi cael ei gynnal yn ddigon hir i'r data hwn fod ar gael. Am y rheswm hwn, mae'r data a ddangosir ar gyfer myfyrwyr ar gyrsiau eraill mewn Peirianneg (amhenodol)."
         }
     }
 ]
