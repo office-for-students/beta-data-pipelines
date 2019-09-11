@@ -82,7 +82,7 @@
         "unavailable": {
             "code": 1,
             "reason_english": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in Business and management for the most recent two years.",
-            "reason_welsh": "Placeholder for Welsh translation"
+            "reason_welsh": "Nid oes data ar gael ar gyfer y cwrs hwn. Mae hyn oherwydd nad yw'r cwrs wedi'i gynnal eto neu am nad yw wedi cael ei gynnal yn ddigon hir iO\u0303r data hwn fod ar gael. Am y rheswm hwn, mae'r data a ddangosir ar gyfer myfyrwyr ar gyrsiau eraill mewn Busnes a rheolaeth ar gyfer y ddwy flynedd fwyaf diweddar."
         }
     }
 ]
