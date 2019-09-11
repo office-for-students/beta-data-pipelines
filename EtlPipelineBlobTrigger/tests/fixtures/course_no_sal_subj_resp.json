@@ -3,7 +3,7 @@
         "unavailable": {
             "code": 0,
             "reason_english": "There is not enough data available to publish for this course. This is either because the course is small or we have not had enough survey responses.  This does not reflect on the quality of the course.",
-            "reason_welsh": "Placeholder for Welsh translation"
+            "reason_welsh": "Nid oes digon o ddata ar gael iO\u0303w gyhoeddi ar gyfer y cwrs hwn. Mae hyn naill ai oherwydd bod maint y cwrs yn fach neu am nad ydym wedi derbyn digon o ymatebion i'r arolwg.E\u0302Nid yw hyn yn adlewyrchu ansawdd y cwrs."
         }
     }
 ]
