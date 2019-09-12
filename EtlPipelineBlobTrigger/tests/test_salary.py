@@ -115,7 +115,9 @@ class TestGetSalary(unittest.TestCase):
         root = ET.fromstring(xml_string)
         for institution in root.iter("INSTITUTION"):
             for course in institution.findall("KISCOURSE"):
-                raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
+                raw_course_data = xmltodict.parse(ET.tostring(course))[
+                    "KISCOURSE"
+                ]
                 self.salary.get_stats(raw_course_data)
 
     def test_get_stats_no_subj(self):
@@ -129,10 +131,12 @@ class TestGetSalary(unittest.TestCase):
         self.assertListEqual(json_obj, expected_response)
 
     def test_salary_get_stats_with_subj(self):
-        raw_course_xml = xmltodict.parse(get_string("fixtures/course_sal_subj.xml"))[
-            "KISCOURSE"
-        ]
-        expected_response = json.loads(get_string("fixtures/course_sal_subj_resp.json"))
+        raw_course_xml = xmltodict.parse(
+            get_string("fixtures/course_sal_subj.xml")
+        )["KISCOURSE"]
+        expected_response = json.loads(
+            get_string("fixtures/course_sal_subj_resp.json")
+        )
         json_obj = self.salary.get_stats(raw_course_xml)
         self.assertListEqual(json_obj, expected_response)
 

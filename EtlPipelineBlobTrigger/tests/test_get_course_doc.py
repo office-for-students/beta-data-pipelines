@@ -19,10 +19,14 @@ class TestGetCourseDoc(unittest.TestCase):
         kisaims = KisAims(root)
         locations = Locations(root)
         for institution in root.iter("INSTITUTION"):
-            raw_inst_data = xmltodict.parse(ET.tostring(institution))["INSTITUTION"]
+            raw_inst_data = xmltodict.parse(ET.tostring(institution))[
+                "INSTITUTION"
+            ]
             ukprn = raw_inst_data["UKPRN"]
             for course in institution.findall("KISCOURSE"):
-                raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
+                raw_course_data = xmltodict.parse(ET.tostring(course))[
+                    "KISCOURSE"
+                ]
                 locids = get_locids(raw_course_data, ukprn)
                 course_doc = get_course_doc(
                     accreditations,
@@ -32,8 +36,9 @@ class TestGetCourseDoc(unittest.TestCase):
                     raw_course_data,
                     kisaims,
                 )
+                self.assertTrue("institution_id" in course_doc)
 
-    def test_specific_10000047(self):
+    def test_specific_10000047_course(self):
         xml_string = get_string("fixtures/large-test-file.xml")
         root = ET.fromstring(xml_string)
         accreditations = Accreditations(root)
@@ -42,7 +47,9 @@ class TestGetCourseDoc(unittest.TestCase):
         xml_string = get_string("fixtures/one_inst_one_course.xml")
         root = ET.fromstring(xml_string)
         institution = get_first(root.iter("INSTITUTION"))
-        raw_inst_data = xmltodict.parse(ET.tostring(institution))["INSTITUTION"]
+        raw_inst_data = xmltodict.parse(ET.tostring(institution))[
+            "INSTITUTION"
+        ]
         ukprn = raw_inst_data["UKPRN"]
         course = get_first(institution.findall("KISCOURSE"))
         raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
@@ -51,7 +58,44 @@ class TestGetCourseDoc(unittest.TestCase):
             get_string("fixtures/one_inst_one_course.json")
         )
         course_doc = get_course_doc(
-            accreditations, locations, locids, raw_inst_data, raw_course_data, kisaims
+            accreditations,
+            locations,
+            locids,
+            raw_inst_data,
+            raw_course_data,
+            kisaims,
+        )
+        course_doc = remove_variable_elements(course_doc)
+        self.assertEqual(expected_course_doc, course_doc)
+
+    def test_specific_10000047_with_new_crsecsturl_field(self):
+        xml_string = get_string("fixtures/large-test-file.xml")
+        root = ET.fromstring(xml_string)
+        accreditations = Accreditations(root)
+        kisaims = KisAims(root)
+        locations = Locations(root)
+        xml_string = get_string(
+            "fixtures/one_inst_one_course_with_crsecsturl.xml"
+        )
+        root = ET.fromstring(xml_string)
+        institution = get_first(root.iter("INSTITUTION"))
+        raw_inst_data = xmltodict.parse(ET.tostring(institution))[
+            "INSTITUTION"
+        ]
+        ukprn = raw_inst_data["UKPRN"]
+        course = get_first(institution.findall("KISCOURSE"))
+        raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
+        locids = get_locids(raw_course_data, ukprn)
+        expected_course_doc = json.loads(
+            get_string("fixtures/one_inst_one_course_with_crsecsturl.json")
+        )
+        course_doc = get_course_doc(
+            accreditations,
+            locations,
+            locids,
+            raw_inst_data,
+            raw_course_data,
+            kisaims,
         )
         course_doc = remove_variable_elements(course_doc)
         self.assertEqual(expected_course_doc, course_doc)

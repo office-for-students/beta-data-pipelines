@@ -39,23 +39,23 @@ class UkrlpClient:
     def get_matching_provider_records(ukprn):
         """Calls the UKRLP API to get records for the ukprn passed in"""
 
-        url = os.environ['UkRlpUrl']
-        ofs_id = os.environ['UkRlpOfsId']
+        url = os.environ["UkRlpUrl"]
+        ofs_id = os.environ["UkRlpOfsId"]
 
-
-        headers = {'Content-Type': 'text/xml'}
+        headers = {"Content-Type": "text/xml"}
 
         soap_req = UkrlpClient.get_soap_req(ukprn, ofs_id)
         response = requests.post(url, data=soap_req, headers=headers)
         if response.status_code != 200:
             return None
 
-        decoded_content = response.content.decode('utf-8')
+        decoded_content = response.content.decode("utf-8")
         enrichment_data_dict = xmltodict.parse(decoded_content)
 
         try:
-            provider_records = enrichment_data_dict['S:Envelope']['S:Body'][
-                'ns4:ProviderQueryResponse']['MatchingProviderRecords']
+            provider_records = enrichment_data_dict["S:Envelope"]["S:Body"][
+                "ns4:ProviderQueryResponse"
+            ]["MatchingProviderRecords"]
         except KeyError:
             return None
 

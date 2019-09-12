@@ -12,7 +12,7 @@
             "21": "There was not enough data to publish information specifically for this course. This is either because the course size is small or not enough students responded to a survey. For this reason, the data displayed is for all students in ",
             "22": "There was not enough data to publish information specifically for this course. This is either because the course size is small or not enough students responded to a survey. For this reason, the data displayed is for all students in ",
             "23": "There was not enough data to publish information specifically for this course. This is either because the course size is small or not enough students responded to a survey. For this reason, the data displayed is for all students in ",
-            "24": "Data for students in the last two years of this course has been combined, as there was not enough data to publish information for last year only."
+            "24": "We have combined data for two years of this course, as there was not enough to publish the most recent year’s data only."
         },
         "1": {
             "11": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in ",
@@ -30,5 +30,7 @@
             "22": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in ",
             "23": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in "
         }
-    }
+    },
+    "no-subject": "this subject",
+    "agg-over-two-years": " for the most recent two years."
 }

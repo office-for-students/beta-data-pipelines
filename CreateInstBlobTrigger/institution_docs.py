@@ -45,6 +45,8 @@ class InstitutionDocs:
     def get_contact_details(self, ukprn):
         if ukprn not in self.ukrlp_lookups:
             return {}
+        if "contact_details" not in self.ukrlp_lookups[ukprn]:
+            return {}
         contact_details = copy.deepcopy(
             self.ukrlp_lookups[ukprn]["contact_details"]
         )
@@ -53,6 +55,8 @@ class InstitutionDocs:
 
     def get_links(self, ukprn):
         if ukprn not in self.ukrlp_lookups:
+            return {}
+        if "contact_details" not in self.ukrlp_lookups[ukprn]:
             return {}
         contact_details = self.ukrlp_lookups[ukprn]["contact_details"]
         if "website" not in contact_details:

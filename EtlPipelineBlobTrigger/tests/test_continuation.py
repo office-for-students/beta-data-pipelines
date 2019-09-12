@@ -34,7 +34,9 @@ class TestGetContinuation(unittest.TestCase):
         root = ET.fromstring(xml_string)
         for institution in root.iter("INSTITUTION"):
             for course in institution.findall("KISCOURSE"):
-                raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
+                raw_course_data = xmltodict.parse(ET.tostring(course))[
+                    "KISCOURSE"
+                ]
                 self.continuation.get_stats(raw_course_data)
 
     def test_get_stats_no_subj(self):
@@ -48,9 +50,9 @@ class TestGetContinuation(unittest.TestCase):
         self.assertListEqual(continuation, expected_response)
 
     def test_get_stats_two_continuations_no_subj(self):
-        raw_course_xml = xmltodict.parse(get_string("fixtures/course_two_contins.xml"))[
-            "KISCOURSE"
-        ]
+        raw_course_xml = xmltodict.parse(
+            get_string("fixtures/course_two_contins.xml")
+        )["KISCOURSE"]
         expected_response = json.loads(
             get_string("fixtures/course_two_contins_resp.json")
         )
@@ -68,10 +70,12 @@ class TestGetContinuation(unittest.TestCase):
         self.assertListEqual(continuation, expected_response)
 
     def test_get_stats_agg_14(self):
-        raw_course_xml = xmltodict.parse(get_string("fixtures/course_532986.xml"))[
-            "KISCOURSE"
-        ]
-        expected_response = json.loads(get_string("fixtures/course_532986_resp.json"))
+        raw_course_xml = xmltodict.parse(
+            get_string("fixtures/course_532986.xml")
+        )["KISCOURSE"]
+        expected_response = json.loads(
+            get_string("fixtures/course_532986_resp.json")
+        )
         continuation = self.continuation.get_stats(raw_course_xml)
         self.assertListEqual(continuation, expected_response)
 

@@ -82,7 +82,9 @@ class TestNssGetStats(unittest.TestCase):
         root = ET.fromstring(xml_string)
         for institution in root.iter("INSTITUTION"):
             for course in institution.findall("KISCOURSE"):
-                raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
+                raw_course_data = xmltodict.parse(ET.tostring(course))[
+                    "KISCOURSE"
+                ]
                 self.nss.get_stats(raw_course_data)
 
     def test_get_stats_no_subj(self):
@@ -96,10 +98,12 @@ class TestNssGetStats(unittest.TestCase):
         self.assertEqual(json_obj[0], expected_response[0])
 
     def test_get_stats_subj(self):
-        raw_course_xml = xmltodict.parse(get_string("fixtures/course_nss_subj.xml"))[
-            "KISCOURSE"
-        ]
-        expected_response = json.loads(get_string("fixtures/course_nss_subj_resp.json"))
+        raw_course_xml = xmltodict.parse(
+            get_string("fixtures/course_nss_subj.xml")
+        )["KISCOURSE"]
+        expected_response = json.loads(
+            get_string("fixtures/course_nss_subj_resp.json")
+        )
         json_obj = self.nss.get_stats(raw_course_xml)
         self.assertDictEqual(json_obj[0], expected_response[0])
 

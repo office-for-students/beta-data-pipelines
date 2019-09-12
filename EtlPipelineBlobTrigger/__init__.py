@@ -96,7 +96,9 @@ def main(xmlblob: func.InputStream, context: func.Context):
         # Remove hardcoded version, should change as new data is loaded into service
         version = 1
         destination_blob_name = f"dataset-complete-{version}"
-        logging.info(f"Copy the XML we have processed to {destination_blob_name}")
+        logging.info(
+            f"Copy the XML we have processed to {destination_blob_name}"
+        )
 
         blob_service.create_blob_from_text(
             container_name=output_container_name,
@@ -107,7 +109,9 @@ def main(xmlblob: func.InputStream, context: func.Context):
         """ 4. CLEANUP """
 
         pipeline_end_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
-        logging.info("ETL Pipeline successfully finished on " + pipeline_end_datetime)
+        logging.info(
+            "ETL Pipeline successfully finished on " + pipeline_end_datetime
+        )
 
     except exceptions.StopEtlPipelineWarningException:
 
