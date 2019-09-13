@@ -1,4 +1,5 @@
 import inspect
+import logging
 import os
 import sys
 
@@ -27,6 +28,11 @@ class DataSetHelper:
         else:
             dataset_doc["builds"][item]["status"] = value
         self.cosmos_client.UpsertItem(self.collection_link, dataset_doc)
+        logging_msg = (
+            f"DataSetHelper: updated '{item}' to '{value}' in "
+            f"DataSet version {dataset_doc['version']}"
+        )
+        logging.info(logging_msg)
 
     def get_latest_doc(self):
         latest_version_number = self.get_latest_version_number()
