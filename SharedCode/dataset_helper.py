@@ -28,7 +28,7 @@ class DataSetHelper:
         else:
             dataset_doc["builds"][item]["status"] = value
         self.cosmos_client.UpsertItem(self.collection_link, dataset_doc)
-        logging.info (
+        logging.info(
             f"DataSetHelper: updated '{item}' to '{value}' for "
             f"DataSet version {dataset_doc['version']}"
         )
