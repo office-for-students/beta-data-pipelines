@@ -81,7 +81,7 @@ def main(xmlblob: func.InputStream, context: func.Context):
         version = dsh.get_latest_version_number()
         dsh.update_status("courses", "in progress")
 
-        course_docs.create_course_docs(xml_string)
+        course_docs.load_course_docs(xml_string, version)
 
         """ 4. Send new blob to kickoff course search builder """
 
