@@ -12,8 +12,10 @@ from distutils.util import strtobool
 import azure.functions as func
 from azure.storage.blob import BlockBlobService
 
-from . import course_docs, validators
+from SharedCode.dataset_helper import DataSetHelper
 from SharedCode import exceptions
+
+from . import course_docs, validators
 
 
 def main(xmlblob: func.InputStream, context: func.Context):
@@ -25,13 +27,15 @@ def main(xmlblob: func.InputStream, context: func.Context):
     Azure Functions chained/integrated and orchestrated using Azure Data Factory
     and/or Function App. """
 
-    logging.info(
-        f"EtlPipelineBlobTrigger Python BLOB trigger function processing BLOB \n"
-        f"Name: {xmlblob.name}\n"
-        f"Blob Size: {xmlblob.length} bytes"
-    )
-
     try:
+
+        dsh = DataSetHelper()
+
+        logging.info(
+            f"EtlPipelineBlobTrigger Python BLOB trigger function processing BLOB \n"
+            f"Name: {xmlblob.name}\n"
+            f"Blob Size: {xmlblob.length} bytes"
+        )
 
         """ 0. PREPARATION """
 
