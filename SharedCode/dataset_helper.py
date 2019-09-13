@@ -28,17 +28,15 @@ class DataSetHelper:
         else:
             dataset_doc["builds"][item]["status"] = value
         self.cosmos_client.UpsertItem(self.collection_link, dataset_doc)
-        logging_msg = (
-            f"DataSetHelper: updated '{item}' to '{value}' in "
+        logging.info (
+            f"DataSetHelper: updated '{item}' to '{value}' for "
             f"DataSet version {dataset_doc['version']}"
         )
-        logging.info(logging_msg)
 
     def get_latest_doc(self):
         latest_version_number = self.get_latest_version_number()
         query = f"SELECT * FROM c WHERE c.version = {latest_version_number}"
         options = {"enableCrossPartitionQuery": True}
-        print(f"cosmos_client type {type(self.cosmos_client)}")
         return list(
             self.cosmos_client.QueryItems(self.collection_link, query, options)
         )[0]
