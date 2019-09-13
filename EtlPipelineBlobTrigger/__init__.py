@@ -78,6 +78,9 @@ def main(xmlblob: func.InputStream, context: func.Context):
 
         """ 3. LOADING - Parse XML and create enriched JSON Documents in Document Database """
 
+        version = dsh.get_latest_version_number()
+        dsh.update_status("courses", "in progress")
+
         course_docs.create_course_docs(xml_string)
 
         """ 4. Send new blob to kickoff course search builder """
