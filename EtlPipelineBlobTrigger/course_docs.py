@@ -31,11 +31,11 @@ from course_stats import get_stats, SharedUtils
 from accreditations import Accreditations
 from kisaims import KisAims
 from locations import Locations
-from SharedCode import utils
 from ukrlp_enricher import UkRlpCourseEnricher
 from subject_enricher import SubjectCourseEnricher
 from course_subjects import get_subjects
 
+from SharedCode import utils
 from SharedCode.utils import get_english_welsh_item
 
 
@@ -256,15 +256,6 @@ def get_accreditations(raw_course_data, acc_lookup):
     return acc_list
 
 
-def get_institution(raw_inst_data):
-    return {
-        "pub_ukprn_name": "n/a",
-        "pub_ukprn": raw_inst_data["PUBUKPRN"],
-        "ukprn_name": "n/a",
-        "ukprn": raw_inst_data["UKPRN"],
-    }
-
-
 def get_country(raw_inst_data):
     country = {}
     if "COUNTRY" in raw_inst_data:
@@ -272,6 +263,24 @@ def get_country(raw_inst_data):
         country["code"] = code
         country["name"] = lookup.country_code[code]
     return country
+
+
+def get_code_label_entry(lookup_table_raw_xml, lookup_table_local, key):
+    entry = {}
+    if key in lookup_table_raw_xml:
+        code = get_code(lookup_table_raw_xml, key)
+        entry["code"] = code
+        entry["label"] = lookup_table_local[code]
+    return entry
+
+
+def get_institution(raw_inst_data):
+    return {
+        "pub_ukprn_name": "n/a",
+        "pub_ukprn": raw_inst_data["PUBUKPRN"],
+        "ukprn_name": "n/a",
+        "ukprn": raw_inst_data["UKPRN"],
+    }
 
 
 def get_links(raw_inst_data, raw_course_data):
@@ -352,15 +361,6 @@ def get_code(lookup_table_raw_xml, key):
     if code.isdigit():
         code = int(code)
     return code
-
-
-def get_code_label_entry(lookup_table_raw_xml, lookup_table_local, key):
-    entry = {}
-    if key in lookup_table_raw_xml:
-        code = get_code(lookup_table_raw_xml, key)
-        entry["code"] = code
-        entry["label"] = lookup_table_local[code]
-    return entry
 
 
 def get_qualification(lookup_table_raw_xml, kisaims):
