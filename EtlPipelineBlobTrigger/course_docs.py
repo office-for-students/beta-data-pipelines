@@ -31,30 +31,67 @@ from course_stats import get_stats, SharedUtils
 from accreditations import Accreditations
 from kisaims import KisAims
 from locations import Locations
-from SharedCode import utils
 from ukrlp_enricher import UkRlpCourseEnricher
 from subject_enricher import SubjectCourseEnricher
 from course_subjects import get_subjects
 
+from SharedCode import utils
 from SharedCode.utils import get_english_welsh_item
 
 
-def get_institution(raw_inst_data):
-    return {
-        "pub_ukprn_name": "n/a",
-        "pub_ukprn": raw_inst_data["PUBUKPRN"],
-        "ukprn_name": "n/a",
-        "ukprn": raw_inst_data["UKPRN"],
-    }
+def load_course_docs(xml_string, version):
+    """Parse HESA XML passed in and create JSON course docs in Cosmos DB."""
 
+    # TODO Investigate writing docs to CosmosDB in bulk to speed things up.
+    cosmosdb_client = utils.get_cosmos_client()
 
-def get_country(raw_inst_data):
-    country = {}
-    if "COUNTRY" in raw_inst_data:
-        code = raw_inst_data["COUNTRY"]
-        country["code"] = code
-        country["name"] = lookup.country_code[code]
-    return country
+    logging.info(
+        "adding ukrlp data into memory ahead of building course documents"
+    )
+    enricher = UkRlpCourseEnricher()
+    logging.info(
+        "adding subject data into memory ahead of building course documents"
+    )
+    subject_enricher = SubjectCourseEnricher()
+
+    collection_link = utils.get_collection_link(
+        "AzureCosmosDbDatabaseId", "AzureCosmosDbCoursesCollectionId"
+    )
+
+    # Import the XML dataset
+    root = ET.fromstring(xml_string)
+
+    # Import accreditations, common, kisaims and location nodes
+    accreditations = Accreditations(root)
+    kisaims = KisAims(root)
+    locations = Locations(root)
+
+    course_count = 0
+    for institution in root.iter("INSTITUTION"):
+
+        raw_inst_data = xmltodict.parse(ET.tostring(institution))[
+            "INSTITUTION"
+        ]
+        ukprn = raw_inst_data["UKPRN"]
+        for course in institution.findall("KISCOURSE"):
+
+            raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
+            locids = get_locids(raw_course_data, ukprn)
+            course_doc = get_course_doc(
+                accreditations,
+                locations,
+                locids,
+                raw_inst_data,
+                raw_course_data,
+                kisaims,
+                version,
+            )
+            enricher.enrich_course(course_doc)
+            subject_enricher.enrich_course(course_doc)
+            cosmosdb_client.CreateItem(collection_link, course_doc)
+            course_count += 1
+
+    logging.info(f"Processed {course_count} courses")
 
 
 def get_locids(raw_course_data, ukprn):
@@ -89,148 +126,19 @@ def get_locids(raw_course_data, ukprn):
     return locids
 
 
-def get_links(raw_inst_data, raw_course_data):
-    links = {}
-
-    item_details = [
-        ("ASSURL", "assessment_method", raw_course_data),
-        ("CRSECSTURL", "course_cost", raw_course_data),
-        ("CRSEURL", "course_page", raw_course_data),
-        ("EMPLOYURL", "employment_details", raw_course_data),
-        ("SUPPORTURL", "financial_support_details", raw_course_data),
-        ("LTURL", "learning_and_teaching_methods", raw_course_data),
-        ("SUURL", "student_union", raw_inst_data),
-    ]
-
-    for item_detail in item_details:
-        link_item = get_english_welsh_item(item_detail[0], item_detail[2])
-        if link_item:
-            links[item_detail[1]] = link_item
-
-    return links
-
-
-def get_location_items(locations, locids, raw_course_data, pub_ukprn):
-
-    location_items = []
-    if "COURSELOCATION" not in raw_course_data:
-        return location_items
-
-    course_locations = SharedUtils.get_raw_list(
-        raw_course_data, "COURSELOCATION"
-    )
-    item = {}
-    for course_location in course_locations:
-        if "LOCID" not in course_location:
-            continue
-
-        if "UCASCOURSEID" in course_location:
-            lookup_key = course_location["LOCID"] + pub_ukprn
-            item[lookup_key] = course_location["UCASCOURSEID"]
-
-    for locid in locids:
-        location_dict = {}
-        raw_location_data = locations.get_location_data_for_key(locid)
-
-        if raw_location_data is None:
-            logging.warning(f"failed to find location data in lookup table")
-
-        links, accommodation, student_union = {}, {}, {}
-        accommodation = get_english_welsh_item("ACCOMURL", raw_location_data)
-        if accommodation:
-            links["accommodation"] = accommodation
-
-        student_union = get_english_welsh_item("SUURL", raw_location_data)
-        if student_union:
-            links["student_union"] = student_union
-
-        if links:
-            location_dict["links"] = links
-
-        if "LATITUDE" in raw_location_data:
-            location_dict["latitude"] = raw_location_data["LATITUDE"]
-        if "LONGITUDE" in raw_location_data:
-            location_dict["longitude"] = raw_location_data["LONGITUDE"]
-
-        name = get_english_welsh_item("LOCNAME", raw_location_data)
-        if name:
-            location_dict["name"] = name
-
-        if locid in item:
-            location_dict["ucas_course_id"] = item[locid]
-
-        location_items.append(location_dict)
-    return location_items
-
-
-def get_code(lookup_table_raw_xml, key):
-    code = lookup_table_raw_xml[key]
-    if code.isdigit():
-        code = int(code)
-    return code
-
-
-def get_code_label_entry(lookup_table_raw_xml, lookup_table_local, key):
-    entry = {}
-    if key in lookup_table_raw_xml:
-        code = get_code(lookup_table_raw_xml, key)
-        entry["code"] = code
-        entry["label"] = lookup_table_local[code]
-    return entry
-
-
-def get_qualification(lookup_table_raw_xml, kisaims):
-    entry = {}
-    if "KISAIMCODE" in lookup_table_raw_xml:
-        code = lookup_table_raw_xml["KISAIMCODE"]
-        label = kisaims.get_kisaim_label_for_key(code)
-        entry["code"] = code
-        if label:
-            entry["label"] = label
-    return entry
-
-
-def get_accreditations(raw_course_data, acc_lookup):
-    acc_list = []
-    raw_xml_list = SharedUtils.get_raw_list(raw_course_data, "ACCREDITATION")
-
-    for xml_elem in raw_xml_list:
-        json_elem = {}
-
-        if "ACCTYPE" in xml_elem:
-            json_elem["type"] = xml_elem["ACCTYPE"]
-            accreditations = acc_lookup.get_accreditation_data_for_key(
-                xml_elem["ACCTYPE"]
-            )
-
-            if "ACCURL" in accreditations:
-                json_elem["accreditor_url"] = accreditations["ACCURL"]
-
-            text = get_english_welsh_item("ACCTEXT", accreditations)
-            json_elem["text"] = text
-
-        if "ACCDEPENDURL" in xml_elem or "ACCDEPENDURLW" in xml_elem:
-            urls = get_english_welsh_item("ACCDEPENDURL", xml_elem)
-            json_elem["url"] = urls
-
-        dependent_on = get_code_label_entry(
-            xml_elem, lookup.accreditation_code, "ACCDEPEND"
-        )
-        if dependent_on:
-            json_elem["dependent_on"] = dependent_on
-
-        acc_list.append(json_elem)
-
-    return acc_list
-
-
 def get_course_doc(
-    accreditations, locations, locids, raw_inst_data, raw_course_data, kisaims
+    accreditations,
+    locations,
+    locids,
+    raw_inst_data,
+    raw_course_data,
+    kisaims,
+    version,
 ):
     outer_wrapper = {}
     outer_wrapper["_id"] = utils.get_uuid()
     outer_wrapper["created_at"] = datetime.datetime.utcnow().isoformat()
-    outer_wrapper["version"] = 1
+    outer_wrapper["version"] = version
     outer_wrapper["institution_id"] = raw_inst_data["PUBUKPRN"]
     outer_wrapper["course_id"] = raw_course_data["KISCOURSEID"]
     outer_wrapper["course_mode"] = int(raw_course_data["KISMODE"])
@@ -314,56 +222,153 @@ def get_course_doc(
     return outer_wrapper
 
 
-def create_course_docs(xml_string):
-    """Parse HESA XML passed in and create JSON course docs in Cosmos DB."""
+def get_accreditations(raw_course_data, acc_lookup):
+    acc_list = []
+    raw_xml_list = SharedUtils.get_raw_list(raw_course_data, "ACCREDITATION")
 
-    # TODO Investigate writing docs to CosmosDB in bulk to speed things up.
-    cosmosdb_client = utils.get_cosmos_client()
+    for xml_elem in raw_xml_list:
+        json_elem = {}
 
-    logging.info(
-        "adding ukrlp data into memory ahead of building course documents"
-    )
-    enricher = UkRlpCourseEnricher()
-    logging.info(
-        "adding subject data into memory ahead of building course documents"
-    )
-    subject_enricher = SubjectCourseEnricher()
-
-    collection_link = utils.get_collection_link(
-        "AzureCosmosDbDatabaseId", "AzureCosmosDbCoursesCollectionId"
-    )
-
-    # Import the XML dataset
-    root = ET.fromstring(xml_string)
-
-    # Import accreditations, common, kisaims and location nodes
-    accreditations = Accreditations(root)
-    kisaims = KisAims(root)
-    locations = Locations(root)
-
-    course_count = 0
-    for institution in root.iter("INSTITUTION"):
-
-        raw_inst_data = xmltodict.parse(ET.tostring(institution))[
-            "INSTITUTION"
-        ]
-        ukprn = raw_inst_data["UKPRN"]
-        for course in institution.findall("KISCOURSE"):
-
-            raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
-            locids = get_locids(raw_course_data, ukprn)
-            course_doc = get_course_doc(
-                accreditations,
-                locations,
-                locids,
-                raw_inst_data,
-                raw_course_data,
-                kisaims,
+        if "ACCTYPE" in xml_elem:
+            json_elem["type"] = xml_elem["ACCTYPE"]
+            accreditations = acc_lookup.get_accreditation_data_for_key(
+                xml_elem["ACCTYPE"]
             )
 
-            enricher.enrich_course(course_doc)
-            subject_enricher.enrich_course(course_doc)
+            if "ACCURL" in accreditations:
+                json_elem["accreditor_url"] = accreditations["ACCURL"]
 
-            cosmosdb_client.CreateItem(collection_link, course_doc)
-            course_count += 1
-    logging.info(f"Processed {course_count} courses")
+            text = get_english_welsh_item("ACCTEXT", accreditations)
+            json_elem["text"] = text
+
+        if "ACCDEPENDURL" in xml_elem or "ACCDEPENDURLW" in xml_elem:
+            urls = get_english_welsh_item("ACCDEPENDURL", xml_elem)
+            json_elem["url"] = urls
+
+        dependent_on = get_code_label_entry(
+            xml_elem, lookup.accreditation_code, "ACCDEPEND"
+        )
+        if dependent_on:
+            json_elem["dependent_on"] = dependent_on
+
+        acc_list.append(json_elem)
+
+    return acc_list
+
+
+def get_country(raw_inst_data):
+    country = {}
+    if "COUNTRY" in raw_inst_data:
+        code = raw_inst_data["COUNTRY"]
+        country["code"] = code
+        country["name"] = lookup.country_code[code]
+    return country
+
+
+def get_code_label_entry(lookup_table_raw_xml, lookup_table_local, key):
+    entry = {}
+    if key in lookup_table_raw_xml:
+        code = get_code(lookup_table_raw_xml, key)
+        entry["code"] = code
+        entry["label"] = lookup_table_local[code]
+    return entry
+
+
+def get_institution(raw_inst_data):
+    return {
+        "pub_ukprn_name": "n/a",
+        "pub_ukprn": raw_inst_data["PUBUKPRN"],
+        "ukprn_name": "n/a",
+        "ukprn": raw_inst_data["UKPRN"],
+    }
+
+
+def get_links(raw_inst_data, raw_course_data):
+    links = {}
+
+    item_details = [
+        ("ASSURL", "assessment_method", raw_course_data),
+        ("CRSECSTURL", "course_cost", raw_course_data),
+        ("CRSEURL", "course_page", raw_course_data),
+        ("EMPLOYURL", "employment_details", raw_course_data),
+        ("SUPPORTURL", "financial_support_details", raw_course_data),
+        ("LTURL", "learning_and_teaching_methods", raw_course_data),
+        ("SUURL", "student_union", raw_inst_data),
+    ]
+
+    for item_detail in item_details:
+        link_item = get_english_welsh_item(item_detail[0], item_detail[2])
+        if link_item:
+            links[item_detail[1]] = link_item
+
+    return links
+
+
+def get_location_items(locations, locids, raw_course_data, pub_ukprn):
+    location_items = []
+    if "COURSELOCATION" not in raw_course_data:
+        return location_items
+
+    course_locations = SharedUtils.get_raw_list(
+        raw_course_data, "COURSELOCATION"
+    )
+    item = {}
+    for course_location in course_locations:
+        if "LOCID" not in course_location:
+            continue
+
+        if "UCASCOURSEID" in course_location:
+            lookup_key = course_location["LOCID"] + pub_ukprn
+            item[lookup_key] = course_location["UCASCOURSEID"]
+
+    for locid in locids:
+        location_dict = {}
+        raw_location_data = locations.get_location_data_for_key(locid)
+
+        if raw_location_data is None:
+            logging.warning(f"failed to find location data in lookup table")
+
+        links, accommodation, student_union = {}, {}, {}
+        accommodation = get_english_welsh_item("ACCOMURL", raw_location_data)
+        if accommodation:
+            links["accommodation"] = accommodation
+
+        student_union = get_english_welsh_item("SUURL", raw_location_data)
+        if student_union:
+            links["student_union"] = student_union
+
+        if links:
+            location_dict["links"] = links
+
+        if "LATITUDE" in raw_location_data:
+            location_dict["latitude"] = raw_location_data["LATITUDE"]
+        if "LONGITUDE" in raw_location_data:
+            location_dict["longitude"] = raw_location_data["LONGITUDE"]
+
+        name = get_english_welsh_item("LOCNAME", raw_location_data)
+        if name:
+            location_dict["name"] = name
+
+        if locid in item:
+            location_dict["ucas_course_id"] = item[locid]
+
+        location_items.append(location_dict)
+    return location_items
+
+
+def get_code(lookup_table_raw_xml, key):
+    code = lookup_table_raw_xml[key]
+    if code.isdigit():
+        code = int(code)
+    return code
+
+
+def get_qualification(lookup_table_raw_xml, kisaims):
+    entry = {}
+    if "KISAIMCODE" in lookup_table_raw_xml:
+        code = lookup_table_raw_xml["KISAIMCODE"]
+        label = kisaims.get_kisaim_label_for_key(code)
+        entry["code"] = code
+        if label:
+            entry["label"] = label
+    return entry

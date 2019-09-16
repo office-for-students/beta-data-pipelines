@@ -12,8 +12,11 @@ from distutils.util import strtobool
 import azure.functions as func
 from azure.storage.blob import BlockBlobService
 
-from . import course_docs, validators
+from SharedCode.blob_helper import BlobHelper
+from SharedCode.dataset_helper import DataSetHelper
 from SharedCode import exceptions
+
+from . import course_docs, validators
 
 
 def main(xmlblob: func.InputStream, context: func.Context):
@@ -25,13 +28,15 @@ def main(xmlblob: func.InputStream, context: func.Context):
     Azure Functions chained/integrated and orchestrated using Azure Data Factory
     and/or Function App. """
 
-    logging.info(
-        f"EtlPipelineBlobTrigger Python BLOB trigger function processing BLOB \n"
-        f"Name: {xmlblob.name}\n"
-        f"Blob Size: {xmlblob.length} bytes"
-    )
-
     try:
+
+        dsh = DataSetHelper()
+
+        logging.info(
+            f"EtlPipelineBlobTrigger Python BLOB trigger function processing BLOB \n"
+            f"Name: {xmlblob.name}\n"
+            f"Blob Size: {xmlblob.length} bytes"
+        )
 
         """ 0. PREPARATION """
 
@@ -74,39 +79,17 @@ def main(xmlblob: func.InputStream, context: func.Context):
 
         """ 3. LOADING - Parse XML and create enriched JSON Documents in Document Database """
 
-        course_docs.create_course_docs(xml_string)
+        version = dsh.get_latest_version_number()
+        dsh.update_status("courses", "in progress")
+        course_docs.load_course_docs(xml_string, version)
+        dsh.update_status("courses", "succeeded")
 
-        """ 4. Send new blob to kickoff course search builder """
+        """ 4. KICK OFF COURSE SEARCH BUILDER """
 
-        storage_account_name = os.environ["AzureStorageAccountName"]
-        storage_account_key = os.environ["AzureStorageAccountKey"]
+        blob_helper = BlobHelper()
+        blob_helper.create_blob_for_course_search_builder(version)
 
-        # Instantiate the Block Blob Service
-        blob_service = BlockBlobService(
-            account_name=storage_account_name, account_key=storage_account_key
-        )
-
-        logging.info(
-            "Created Block Blob Service to Azure Storage Account {storage_account_name}"
-        )
-
-        # Copy the dummy HESA XML we've just processed to the ETL input BLOB container
-        output_container_name = os.environ["CourseSearchBuilerContainerName"]
-
-        # Remove hardcoded version, should change as new data is loaded into service
-        version = 1
-        destination_blob_name = f"dataset-complete-{version}"
-        logging.info(
-            f"Copy the XML we have processed to {destination_blob_name}"
-        )
-
-        blob_service.create_blob_from_text(
-            container_name=output_container_name,
-            blob_name=destination_blob_name,
-            text=f'{{"version":{version}}}',
-        )
-
-        """ 4. CLEANUP """
+        """ 5. CLEANUP """
 
         pipeline_end_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
         logging.info(
@@ -115,6 +98,7 @@ def main(xmlblob: func.InputStream, context: func.Context):
 
     except exceptions.StopEtlPipelineWarningException:
 
+        dsh.update_status("courses", "failed")
         # A WARNING is raised during the ETL Pipeline and StopEtlPipelineOnWarning=True
         # For example, the incoming raw XML is not valid against its XSD
         error_message = (
@@ -124,5 +108,5 @@ def main(xmlblob: func.InputStream, context: func.Context):
         )
         logging.error(error_message)
         pipeline_fail_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
-        logging.error("ETL Pipeline failed on " + pipeline_fail_datetime)
+        logging.error(f"ETL Pipeline failed on {pipeline_fail_datetime}")
         raise Exception(error_message)

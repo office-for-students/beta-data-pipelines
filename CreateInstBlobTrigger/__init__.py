@@ -64,7 +64,7 @@ def main(xmlblob: func.InputStream, context: func.Context):
         dsh.update_status("institutions", "succeeded")
 
         """ PASS THE COMPRESSED XML TO NEXT AZURE FUNCTION IN THE PIPELINE"""
-        destination_container_name = os.environ["CoursesInputContainerName"]
+        destination_container_name = os.environ["EtlInputContainerName"]
         blob_helper = BlobHelper(xmlblob)
         blob_helper.create_output_blob(destination_container_name)
 
