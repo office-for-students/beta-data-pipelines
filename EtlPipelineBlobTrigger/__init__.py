@@ -82,6 +82,7 @@ def main(xmlblob: func.InputStream, context: func.Context):
         version = dsh.get_latest_version_number()
         dsh.update_status("courses", "in progress")
         course_docs.load_course_docs(xml_string, version)
+        dsh.update_status("courses", "succeeded")
 
         """ 4. KICK OFF COURSE SEARCH BUILDER """
 
@@ -97,6 +98,7 @@ def main(xmlblob: func.InputStream, context: func.Context):
 
     except exceptions.StopEtlPipelineWarningException:
 
+        dsh.update_status("courses", "failed")
         # A WARNING is raised during the ETL Pipeline and StopEtlPipelineOnWarning=True
         # For example, the incoming raw XML is not valid against its XSD
         error_message = (
