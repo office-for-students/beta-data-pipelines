@@ -4,7 +4,7 @@ from azure.storage.blob import BlockBlobService
 
 
 class BlobHelper:
-    def __init__(self, blob):
+    def __init__(self, blob=None):
         account_name = os.environ["AzureStorageAccountName"]
         account_key = os.environ["AzureStorageAccountKey"]
         self.blob_service = BlockBlobService(
@@ -26,3 +26,13 @@ class BlobHelper:
         blob_filename = self.blob.name.split("/")[1]
         datetime_str = datetime.today().strftime("%Y%m%d-%H%M%S")
         return f"{datetime_str}-{blob_filename}"
+
+    def create_blob_for_course_search_builder(self, version):
+        destination_blob_name = f"dataset-complete-{version}"
+        output_container_name = os.environ["CourseSearchBuilerContainerName"]
+
+        self.blob_service.create_blob_from_text(
+            container_name=output_container_name,
+            blob_name=destination_blob_name,
+            text=f'{{"version":{version}}}',
+        )
