@@ -55,6 +55,102 @@ class TestDataSetHelper(unittest.TestCase):
             expected_connection_link, expected_dataset_doc
         )
 
+    @mock.patch.dict(
+        "os.environ",
+        values={
+            "AzureCosmosDbDatabaseId": "test-db-id",
+            "AzureCosmosDbDataSetCollectionId": "test-dataset-collection-id",
+        },
+        clear=True,
+    )
+    @mock.patch("SharedCode.dataset_helper.get_cosmos_client")
+    def test_have_all_builds_succeeded_with_all_pending(
+        self, mock_get_cosmos_client
+    ):
+        dsh = DataSetHelper()
+
+        latest_dataset_doc = {}
+        latest_dataset_doc["version"] = 3
+        latest_dataset_doc["builds"] = {
+            "courses": {"status": "pending"},
+            "institutions": {"status": "pending"},
+            "search": {"status": "pending"},
+        }
+        dsh.get_latest_doc = mock.MagicMock(return_value=latest_dataset_doc)
+        self.assertFalse(dsh.have_all_builds_succeeded())
+
+    @mock.patch.dict(
+        "os.environ",
+        values={
+            "AzureCosmosDbDatabaseId": "test-db-id",
+            "AzureCosmosDbDataSetCollectionId": "test-dataset-collection-id",
+        },
+        clear=True,
+    )
+    @mock.patch("SharedCode.dataset_helper.get_cosmos_client")
+    def test_have_all_builds_succeeded_with_one_pending(
+        self, mock_get_cosmos_client
+    ):
+        dsh = DataSetHelper()
+
+        latest_dataset_doc = {}
+        latest_dataset_doc["version"] = 3
+        latest_dataset_doc["builds"] = {
+            "courses": {"status": "pending"},
+            "institutions": {"status": "succeeded"},
+            "search": {"status": "succeeded"},
+        }
+        dsh.get_latest_doc = mock.MagicMock(return_value=latest_dataset_doc)
+        self.assertFalse(dsh.have_all_builds_succeeded())
+
+    @mock.patch.dict(
+        "os.environ",
+        values={
+            "AzureCosmosDbDatabaseId": "test-db-id",
+            "AzureCosmosDbDataSetCollectionId": "test-dataset-collection-id",
+        },
+        clear=True,
+    )
+    @mock.patch("SharedCode.dataset_helper.get_cosmos_client")
+    def test_have_all_builds_succeeded_with_two_pending(
+        self, mock_get_cosmos_client
+    ):
+        dsh = DataSetHelper()
+
+        latest_dataset_doc = {}
+        latest_dataset_doc["version"] = 3
+        latest_dataset_doc["builds"] = {
+            "courses": {"status": "pending"},
+            "institutions": {"status": "pending"},
+            "search": {"status": "succeeded"},
+        }
+        dsh.get_latest_doc = mock.MagicMock(return_value=latest_dataset_doc)
+        self.assertFalse(dsh.have_all_builds_succeeded())
+
+    @mock.patch.dict(
+        "os.environ",
+        values={
+            "AzureCosmosDbDatabaseId": "test-db-id",
+            "AzureCosmosDbDataSetCollectionId": "test-dataset-collection-id",
+        },
+        clear=True,
+    )
+    @mock.patch("SharedCode.dataset_helper.get_cosmos_client")
+    def test_have_all_builds_succeeded_with_all_succeeded(
+        self, mock_get_cosmos_client
+    ):
+        dsh = DataSetHelper()
+
+        latest_dataset_doc = {}
+        latest_dataset_doc["version"] = 3
+        latest_dataset_doc["builds"] = {
+            "courses": {"status": "succeeded"},
+            "institutions": {"status": "succeeded"},
+            "search": {"status": "succeeded"},
+        }
+        dsh.get_latest_doc = mock.MagicMock(return_value=latest_dataset_doc)
+        self.assertTrue(dsh.have_all_builds_succeeded())
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -4,7 +4,9 @@ import sys
 import inspect
 import json
 
-CURRENTDIR = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+CURRENTDIR = os.path.dirname(
+    os.path.abspath(inspect.getfile(inspect.currentframe()))
+)
 PARENTDIR = os.path.dirname(CURRENTDIR)
 sys.path.insert(0, PARENTDIR)
 
@@ -57,7 +59,9 @@ class TestBuildLocations(unittest.TestCase):
         self.assertEqual(expected_search_locations, search_locations)
 
     def test_course_with_one_english_location_only(self):
-        input_course = {"locations": [{"name": {"english": "Bradford Campus"}}]}
+        input_course = {
+            "locations": [{"name": {"english": "Bradford Campus"}}]
+        }
 
         expected_search_locations = [{"name": {"english": "Bradford Campus"}}]
 
@@ -65,7 +69,9 @@ class TestBuildLocations(unittest.TestCase):
         self.assertEqual(expected_search_locations, search_locations)
 
     def test_course_with_one_welsh_location_only(self):
-        input_course = {"locations": [{"name": {"welsh": "Prifysgol Caerdydd"}}]}
+        input_course = {
+            "locations": [{"name": {"welsh": "Prifysgol Caerdydd"}}]
+        }
 
         expected_search_locations = [{"name": {"welsh": "Prifysgol Caerdydd"}}]
 
@@ -81,20 +87,37 @@ class TestBuildLocations(unittest.TestCase):
                         "welsh": "Prifysgol Caerdydd",
                     }
                 },
-                {"name": {"english": "Cardiff Campus", "welsh": "Campus Caerdydd"}},
+                {
+                    "name": {
+                        "english": "Cardiff Campus",
+                        "welsh": "Campus Caerdydd",
+                    }
+                },
             ]
         }
 
         expected_search_locations = [
-            {"name": {"english": "Cardiff University", "welsh": "Prifysgol Caerdydd"}},
-            {"name": {"english": "Cardiff Campus", "welsh": "Campus Caerdydd"}},
+            {
+                "name": {
+                    "english": "Cardiff University",
+                    "welsh": "Prifysgol Caerdydd",
+                }
+            },
+            {
+                "name": {
+                    "english": "Cardiff Campus",
+                    "welsh": "Campus Caerdydd",
+                }
+            },
         ]
 
         search_locations = build_locations(input_course)
         self.assertEqual(expected_search_locations, search_locations)
 
     def test_course_with_geo_long_lats_only(self):
-        input_course = {"locations": [{"latitude": "-1.45638", "longitude": "14.9431"}]}
+        input_course = {
+            "locations": [{"latitude": "-1.45638", "longitude": "14.9431"}]
+        }
 
         expected_search_locations = [
             {"geo": {"type": "Point", "coordinates": [14.9431, -1.45638]}}
@@ -172,7 +195,10 @@ class TestBuildLocations(unittest.TestCase):
                     "longitude": "14.9431",
                 },
                 {
-                    "name": {"english": "Cardiff Campus", "welsh": "Campus Caerdydd"},
+                    "name": {
+                        "english": "Cardiff Campus",
+                        "welsh": "Campus Caerdydd",
+                    },
                     "latitude": "-1.84578",
                     "longitude": "12.4536",
                 },
@@ -188,7 +214,10 @@ class TestBuildLocations(unittest.TestCase):
                 "geo": {"type": "Point", "coordinates": [14.9431, -1.45638]},
             },
             {
-                "name": {"english": "Cardiff Campus", "welsh": "Campus Caerdydd"},
+                "name": {
+                    "english": "Cardiff Campus",
+                    "welsh": "Campus Caerdydd",
+                },
                 "geo": {"type": "Point", "coordinates": [12.4536, -1.84578]},
             },
         ]
@@ -300,9 +329,14 @@ class TestBuildTitle(unittest.TestCase):
         self.assertEqual(expected_search_title, search_title)
 
     def test_course_with_english_and_welsh_title(self):
-        input_course = {"title": {"english": "mathematics", "welsh": "mathemateg"}}
+        input_course = {
+            "title": {"english": "mathematics", "welsh": "mathemateg"}
+        }
 
-        expected_search_title = {"english": "mathematics", "welsh": "mathemateg"}
+        expected_search_title = {
+            "english": "mathematics",
+            "welsh": "mathemateg",
+        }
 
         search_title = build_title(input_course)
         self.assertEqual(expected_search_title, search_title)
@@ -314,21 +348,27 @@ class TestBuildLengthOfCourse(unittest.TestCase):
         expected_search_length_of_course = {}
 
         search_length_of_course = build_length_of_course(input_course)
-        self.assertEqual(expected_search_length_of_course, search_length_of_course)
+        self.assertEqual(
+            expected_search_length_of_course, search_length_of_course
+        )
 
     def test_course_with_only_code_in_length_of_course(self):
         input_course = {"length_of_course": {"code": "1"}}
         expected_search_length_of_course = {}
 
         search_length_of_course = build_length_of_course(input_course)
-        self.assertEqual(expected_search_length_of_course, search_length_of_course)
+        self.assertEqual(
+            expected_search_length_of_course, search_length_of_course
+        )
 
     def test_course_with_only_label_in_length_of_course(self):
         input_course = {"length_of_course": {"label": "1st stage"}}
         expected_search_length_of_course = {}
 
         search_length_of_course = build_length_of_course(input_course)
-        self.assertEqual(expected_search_length_of_course, search_length_of_course)
+        self.assertEqual(
+            expected_search_length_of_course, search_length_of_course
+        )
 
     def test_course_with_valid_length_of_course(self):
         input_course = {"length_of_course": {"code": 1, "label": "1st stage"}}
@@ -336,15 +376,21 @@ class TestBuildLengthOfCourse(unittest.TestCase):
         expected_search_length_of_course = {"code": "1", "label": "1st stage"}
 
         search_length_of_course = build_length_of_course(input_course)
-        self.assertEqual(expected_search_length_of_course, search_length_of_course)
+        self.assertEqual(
+            expected_search_length_of_course, search_length_of_course
+        )
 
     def test_course_with_valid_length_of_course_but_as_string(self):
-        input_course = {"length_of_course": {"code": "1", "label": "1st stage"}}
+        input_course = {
+            "length_of_course": {"code": "1", "label": "1st stage"}
+        }
 
         expected_search_length_of_course = {"code": "1", "label": "1st stage"}
 
         search_length_of_course = build_length_of_course(input_course)
-        self.assertEqual(expected_search_length_of_course, search_length_of_course)
+        self.assertEqual(
+            expected_search_length_of_course, search_length_of_course
+        )
 
 
 def get_json(filename):

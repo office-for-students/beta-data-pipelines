@@ -16,6 +16,7 @@ from SharedCode.utils import get_cosmos_client, get_collection_link
 
 class DataSetHelper:
     def __init__(self):
+        logging.info("Init for DataSetHelper")
         self.cosmos_client = get_cosmos_client()
         self.collection_link = get_collection_link(
             "AzureCosmosDbDatabaseId", "AzureCosmosDbDataSetCollectionId"
@@ -57,3 +58,11 @@ class DataSetHelper:
 
     def create_item(self, dataset_doc):
         self.cosmos_client.CreateItem(self.collection_link, dataset_doc)
+
+    def have_all_builds_succeeded(self):
+        dataset_doc = self.get_latest_doc()
+        build_statuses = [
+            dataset_doc["builds"][item]["status"] == "succeeded"
+            for item in ("courses", "institutions", "search")
+        ]
+        return all(build_statuses)

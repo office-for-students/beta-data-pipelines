@@ -53,7 +53,7 @@ def main(xmlblob: func.InputStream, context: func.Context):
             f"XsdPath: {xsd_path}"
         )
 
-        """ 1. DECOMPRESSION - Decompress the compressed HESA XML """
+        """ DECOMPRESSION - Decompress the compressed HESA XML """
         # Note the HESA XML blob provided to this function will be gzip compressed.
         # This is a work around for a limitation discovered in Azure,
         # in that Functions written in Python do not get triggered
@@ -72,24 +72,24 @@ def main(xmlblob: func.InputStream, context: func.Context):
         # Decode the bytes into a string
         xml_string = decompressed_file.decode("utf-8")
 
-        """ 2. VALIDATION - Validate the HESA Raw XML against the XSD """
+        """ VALIDATION - Validate the HESA Raw XML against the XSD """
 
         # TODO fix failing validation.
         # validators.validate_xml(xsd_path, xml_string)
 
-        """ 3. LOADING - Parse XML and create enriched JSON Documents in Document Database """
+        """ LOADING - Parse XML and load enriched JSON docs to database """
 
         version = dsh.get_latest_version_number()
         dsh.update_status("courses", "in progress")
         course_docs.load_course_docs(xml_string, version)
         dsh.update_status("courses", "succeeded")
 
-        """ 4. KICK OFF COURSE SEARCH BUILDER """
+        """ KICK OFF COURSE SEARCH BUILDER """
 
         blob_helper = BlobHelper()
         blob_helper.create_blob_for_course_search_builder(version)
 
-        """ 5. CLEANUP """
+        """ CLEANUP """
 
         pipeline_end_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
         logging.info(
