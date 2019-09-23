@@ -1,0 +1,53 @@
+{
+    "UnitedKingdomProviderReferenceNumber": "10004079",
+    "ProviderName": "LONDON STUDIO CENTRE LIMITED",
+    "ProviderStatus": "Active",
+    "ProviderContact": [
+        {
+            "ContactType": "L",
+            "ContactAddress": {
+                "Address1": "New Bridge Street House",
+                "Address2": "30-34 New Bridge Street",
+                "Town": "London",
+                "PostCode": "EC4V 6BJ"
+            },
+            "ContactPersonalDetails": null,
+            "ContactTelephone1": "020 7837 7741",
+            "ContactFax": "020 7837 3248",
+            "LastUpdated": "2019-01-09T01:00:00.634+01:00"
+        },
+        {
+            "ContactType": "P",
+            "ContactAddress": {
+                "Address2": "5",
+                "Address3": "Nether Street",
+                "Town": "London",
+                "PostCode": "N12 0GA"
+            },
+            "ContactPersonalDetails": {
+                "ns3:PersonNameTitle": "Mr",
+                "ns3:PersonGivenName": "Nic",
+                "ns3:PersonFamilyName": "Espinosa"
+            },
+            "ContactRole": "Director",
+            "ContactTelephone1": "020 7837 7741",
+            "ContactWebsiteAddress": "www.londonstudiocentre.org",
+            "ContactEmail": "nic@londonstudiocentre.org",
+            "LastUpdated": "2016-02-19T16:46:57.634+01:00"
+        }
+    ],
+    "ProviderVerificationDate": "2019-07-30T23:37:03.634+01:00",
+    "ProviderAliases": {
+        "ProviderAlias": "London Studio Centre"
+    },
+    "VerificationDetails": [
+        {
+            "VerificationAuthority": "Companies House",
+            "VerificationID": "03787251"
+        },
+        {
+            "VerificationAuthority": "Government Statute",
+            "VerificationID": "2013/2993"
+        }
+    ]
+}
