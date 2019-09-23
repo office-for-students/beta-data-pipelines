@@ -53,7 +53,27 @@ class TestTitleCase(unittest.TestCase):
         self.assertTrue(LookupCreator.title_case(input_name), expected_name)
 
 
-# TODO Test more of the functionality - more lookups etc
+class TestGetContactDetails(unittest.TestCase):
+    def test_get_contact_details_for_10000794(self):
+        expected_contact_details = {
+            "address": {
+                "line_2": "Deane Road Campus",
+                "line_3": "Deane Road",
+                "town": "Bolton",
+                "post_code": "BL3 5BG",
+            },
+            "telephone": "01204 482000",
+            "website": "www.boltoncollege.ac.uk",
+        }
+
+        matching_provider_records = json.loads(
+            get_string("fixtures/ukrlp_10000794.json")
+        )
+        contact_details = LookupCreator.get_contact_details(
+            "1000079", matching_provider_records
+        )
+        self.assertDictEqual(contact_details, expected_contact_details)
+
 
 if __name__ == "__main__":
     unittest.main()
