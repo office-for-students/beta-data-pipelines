@@ -163,15 +163,34 @@ class LookupCreator:
     def get_contact_details(ukprn, matching_provider_records):
         """Returns the contact details element"""
 
+        logging.error(f"get_contact_details for {ukprn}")
         contact_details = {}
 
+        provider_contact = None
         try:
-            provider_contact = matching_provider_records["ProviderContact"][0]
+            for contact in matching_provider_records["ProviderContact"]:
+                if contact["ContactType"] == "L":
+                    provider_contact = contact
+                if contact["ContactType"] == "P":
+                    provider_contact = contact
+                    break
+
+            # provider_contact = matching_provider_records["ProviderContact"][0]
         except KeyError:
             logging.error(f"No ProviderContact from UKRLP for {ukprn}")
             return contact_details
 
+        if not provider_contact:
+            logging.error(
+                f"No ProviderContact with type L or P from UKRLP for {ukprn}"
+            )
+            return contact_details
+
+        if provider_contact["ContactType"] == "L":
+            logging.info(f"Using legal address for {ukprn}")
+
         address = provider_contact["ContactAddress"]
+        logging.info(f"address {address}")
 
         contact_details["address"] = LookupCreator.get_address(address)
         contact_details["telephone"] = provider_contact["ContactTelephone1"]
