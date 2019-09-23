@@ -74,14 +74,13 @@ class TestGetContactDetails(unittest.TestCase):
         )
         self.assertDictEqual(contact_details, expected_contact_details)
 
-
     def test_get_contact_details_for_10004079(self):
         expected_contact_details = {
             "address": {
                 "line_2": "5",
                 "line_3": "Nether Street",
                 "town": "London",
-                "post_code": "N12 0GA"
+                "post_code": "N12 0GA",
             },
             "telephone": "020 7837 7741",
             "website": "www.londonstudiocentre.org",
@@ -95,17 +94,16 @@ class TestGetContactDetails(unittest.TestCase):
         )
         self.assertDictEqual(contact_details, expected_contact_details)
 
-
     def test_get_contact_details_for_10001282(self):
         expected_contact_details = {
             "address": {
-                "line_2": "5",
-                "line_3": "Nether Street",
-                "town": "London",
-                "post_code": "N12 0GA"
+                "line_1": "Ellison Building",
+                "line_2": "Ellison Place",
+                "town": "Newcastle Upon Tyne",
+                "post_code": "NE1 8ST",
             },
-            "telephone": "020 7837 7741",
-            "website": "www.londonstudiocentre.org",
+            "telephone": "01912 326002",
+            "website": "www.northumbria.ac.uk",
         }
 
         matching_provider_records = json.loads(
@@ -114,7 +112,8 @@ class TestGetContactDetails(unittest.TestCase):
         contact_details = LookupCreator.get_contact_details(
             "10001282", matching_provider_records
         )
-        #self.assertDictEqual(contact_details, expected_contact_details)
+        self.assertDictEqual(contact_details, expected_contact_details)
+
 
 if __name__ == "__main__":
     unittest.main()
