@@ -35,6 +35,12 @@ class TestNeedTitleCase(unittest.TestCase):
         lookup_creator = LookupCreator(xml_string)
         self.assertTrue(lookup_creator.title_case_needed("BEXHILL COLLEGE"))
 
+class TestTitleCase(unittest.TestCase):
+    def test_title_case_with_bangor_university(self):
+        input_name = 'BANGOR UNIVERSITY'
+        expected_name = 'Bangor University'
+        self.assertTrue(LookupCreator.title_case(input_name), expected_name)
+
 
 # TODO Test more of the functionality - more lookups etc
 
