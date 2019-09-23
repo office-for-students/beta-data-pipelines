@@ -18,7 +18,7 @@ PARENTDIR = os.path.dirname(CURRENTDIR)
 sys.path.insert(0, CURRENTDIR)
 sys.path.insert(0, PARENTDIR)
 
-from SharedCode import utils
+from SharedCode.utils import get_collection_link, get_cosmos_client, get_uuid
 
 from ukrlp_client import UkrlpClient
 from helper import Helper
@@ -28,14 +28,157 @@ class LookupCreator:
     """Creates lookups for UKRLP data in Cosmos DB"""
 
     def __init__(self, xml_string):
-        self.cosmosdb_client = utils.get_cosmos_client()
+        self.cosmosdb_client = get_cosmos_client()
         self.xml_string = xml_string
         self.lookups_created = []
         self.ukrlp_no_info_list = []
         self.db_entries_list = []
-        self.collection_link = utils.get_collection_link(
+        self.collection_link = get_collection_link(
             "AzureCosmosDbDatabaseId", "AzureCosmosDbUkRlpCollectionId"
         )
+        __location__ = os.path.realpath(
+            os.path.join(os.getcwd(), os.path.dirname(__file__))
+        )
+        with open(
+            os.path.join(__location__, "institution_whitelist.txt")
+        ) as f:
+            institutions_whitelist = f.readlines()
+            self.institutions_whitelist = [
+                institution.strip() for institution in institutions_whitelist
+            ]
+
+    def create_ukrlp_lookups(self):
+        """Parse HESA XML and create JSON lookup table for UKRLP data."""
+
+        root = ET.fromstring(self.xml_string)
+
+        for institution in root.iter("INSTITUTION"):
+            raw_inst_data = xmltodict.parse(ET.tostring(institution))[
+                "INSTITUTION"
+            ]
+            ukprn = raw_inst_data.get("UKPRN")
+            pubukprn = raw_inst_data.get("PUBUKPRN")
+
+            if ukprn and not self.entry_exists(ukprn):
+                if self.create_ukrlp_lookup(ukprn):
+                    self.lookups_created.append(ukprn)
+
+            if pubukprn and not self.entry_exists(pubukprn):
+                if self.create_ukrlp_lookup(pubukprn):
+                    self.lookups_created.append(ukprn)
+
+        logging.info(f"lookups_created = {len(self.lookups_created)}")
+
+        if self.ukrlp_no_info_list:
+            logging.info(
+                f"UKRLP did not return info for the following "
+                f"{len(self.ukrlp_no_info_list)} ukprn(s)"
+            )
+            for ukprn in self.ukrlp_no_info_list:
+                logging.info(f"{ukprn}")
+
+        logging.info(
+            f"DB entries existed for {len(self.db_entries_list)} ukprns tried"
+        )
+
+    def entry_exists(self, ukprn):
+        """Check if the entry for a ukprn exists Cosmos DB"""
+
+        if ukprn in self.db_entries_list:
+            # This ukprn is already in the database so no need to query
+            logging.debug(f"{ukprn} is in the DB so no need to query")
+            return True
+
+        query = {"query": f"SELECT * FROM c where c.ukprn = '{ukprn}'"}
+        logging.debug(f"query: {query}")
+
+        options = {}
+        options["enableCrossPartitionQuery"] = True
+
+        res = list(
+            self.cosmosdb_client.QueryItems(
+                self.collection_link, query, options
+            )
+        )
+        if not res:
+            return False
+
+        logging.debug(f"Append {ukprn} to the list {self.db_entries_list}")
+        self.db_entries_list.append(ukprn)
+        return True
+
+    def create_ukrlp_lookup(self, ukprn):
+        """Get the UKRLP record, transform it, and write it to Cosmos DB"""
+
+        matching_provider_records = UkrlpClient.get_matching_provider_records(
+            ukprn
+        )
+
+        if not matching_provider_records:
+            logging.error(f"UKRLP did not return the data for {ukprn}")
+            if ukprn not in self.ukrlp_no_info_list:
+                self.ukrlp_no_info_list.append(ukprn)
+            return False
+
+        lookup_entry = self.get_lookup_entry(ukprn, matching_provider_records)
+
+        self.cosmosdb_client.CreateItem(self.collection_link, lookup_entry)
+        return True
+
+    def get_lookup_entry(self, ukprn, matching_provider_records):
+        """Returns the UKRLP lookup entry"""
+
+        lookup_item = {}
+        lookup_item["id"] = get_uuid()
+        lookup_item["created_at"] = datetime.datetime.utcnow().isoformat()
+        lookup_item["ukprn"] = ukprn
+
+        provider_name = Helper.get_provider_name(matching_provider_records)
+        if self.title_case_needed(provider_name):
+            provider_name = LookupCreator.title_case(provider_name)
+        lookup_item["ukprn_name"] = provider_name
+
+        lookup_item["contact_details"] = LookupCreator.get_contact_details(
+            ukprn, matching_provider_records
+        )
+
+        return lookup_item
+
+    def title_case_needed(self, name):
+        if name not in self.institutions_whitelist:
+            return True
+        return False
+
+    @staticmethod
+    def title_case(s):
+        exceptions = ["an", "and", "for", "in", "of", "the"]
+        s = s.lower()
+        word_list = s.split()
+        result = [word_list[0].capitalize()]
+        for word in word_list[1:]:
+            result.append(word if word in exceptions else word.capitalize())
+        return " ".join(result)
+
+    @staticmethod
+    def get_contact_details(ukprn, matching_provider_records):
+        """Returns the contact details element"""
+
+        contact_details = {}
+
+        try:
+            provider_contact = matching_provider_records["ProviderContact"][0]
+        except KeyError:
+            logging.error(f"No ProviderContact from UKRLP for {ukprn}")
+            return contact_details
+
+        address = provider_contact["ContactAddress"]
+
+        contact_details["address"] = LookupCreator.get_address(address)
+        contact_details["telephone"] = provider_contact["ContactTelephone1"]
+        contact_details["website"] = LookupCreator.get_website(
+            matching_provider_records
+        )
+        return contact_details
 
     @staticmethod
     def get_address(address):
@@ -83,122 +226,3 @@ class LookupCreator:
                 website = provider_contact["ContactWebsiteAddress"]
                 break
         return website
-
-    @staticmethod
-    def get_contact_details(ukprn, matching_provider_records):
-        """Returns the contact details element"""
-
-        contact_details = {}
-
-        try:
-            provider_contact = matching_provider_records["ProviderContact"][0]
-        except KeyError:
-            logging.error(f"No ProviderContact from UKRLP for {ukprn}")
-            return contact_details
-
-        address = provider_contact["ContactAddress"]
-
-        contact_details["address"] = LookupCreator.get_address(address)
-        contact_details["telephone"] = provider_contact["ContactTelephone1"]
-        contact_details["website"] = LookupCreator.get_website(
-            matching_provider_records
-        )
-        return contact_details
-
-    @staticmethod
-    def get_lookup_entry(ukprn, matching_provider_records):
-        """Returns the UKRLP lookup entry"""
-
-        lookup_item = {}
-        lookup_item["id"] = utils.get_uuid()
-        lookup_item["created_at"] = datetime.datetime.utcnow().isoformat()
-        lookup_item["ukprn"] = ukprn
-        lookup_item["ukprn_name"] = Helper.get_provider_name(
-            matching_provider_records
-        )
-
-        lookup_item["contact_details"] = LookupCreator.get_contact_details(
-            ukprn, matching_provider_records
-        )
-
-        return lookup_item
-
-    def entry_exists(self, ukprn):
-        """Check if the entry for a ukprn exists Cosmos DB"""
-
-        if ukprn in self.db_entries_list:
-            # This ukprn is already in the database so no need to query
-            logging.debug(f"{ukprn} is in the DB so no need to query")
-            return True
-
-        query = {"query": f"SELECT * FROM c where c.ukprn = '{ukprn}'"}
-        logging.debug(f"query: {query}")
-
-        options = {}
-        options["enableCrossPartitionQuery"] = True
-
-        res = list(
-            self.cosmosdb_client.QueryItems(
-                self.collection_link, query, options
-            )
-        )
-        if not res:
-            return False
-
-        logging.debug(f"Append {ukprn} to the list {self.db_entries_list}")
-        self.db_entries_list.append(ukprn)
-        return True
-
-    def create_ukrlp_lookup(self, ukprn):
-        """Get the UKRLP record, transform it, and write it to Cosmos DB"""
-
-        matching_provider_records = UkrlpClient.get_matching_provider_records(
-            ukprn
-        )
-
-        if not matching_provider_records:
-            logging.error(f"UKRLP did not return the data for {ukprn}")
-            if ukprn not in self.ukrlp_no_info_list:
-                self.ukrlp_no_info_list.append(ukprn)
-            return False
-
-        lookup_entry = LookupCreator.get_lookup_entry(
-            ukprn, matching_provider_records
-        )
-
-        self.cosmosdb_client.CreateItem(self.collection_link, lookup_entry)
-        return True
-
-    def create_ukrlp_lookups(self):
-        """Parse HESA XML and create JSON lookup table for UKRLP data."""
-
-        root = ET.fromstring(self.xml_string)
-
-        for institution in root.iter("INSTITUTION"):
-            raw_inst_data = xmltodict.parse(ET.tostring(institution))[
-                "INSTITUTION"
-            ]
-            ukprn = raw_inst_data.get("UKPRN")
-            pubukprn = raw_inst_data.get("PUBUKPRN")
-
-            if ukprn and not self.entry_exists(ukprn):
-                if self.create_ukrlp_lookup(ukprn):
-                    self.lookups_created.append(ukprn)
-
-            if pubukprn and not self.entry_exists(pubukprn):
-                if self.create_ukrlp_lookup(pubukprn):
-                    self.lookups_created.append(ukprn)
-
-        logging.info(f"lookups_created = {len(self.lookups_created)}")
-
-        if self.ukrlp_no_info_list:
-            logging.info(
-                f"UKRLP did not return info for the following "
-                f"{len(self.ukrlp_no_info_list)} ukprn(s)"
-            )
-            for ukprn in self.ukrlp_no_info_list:
-                logging.info(f"{ukprn}")
-
-        logging.info(
-            f"DB entries existed for {len(self.db_entries_list)} ukprns tried"
-        )
