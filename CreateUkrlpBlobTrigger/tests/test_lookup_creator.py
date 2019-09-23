@@ -70,7 +70,28 @@ class TestGetContactDetails(unittest.TestCase):
             get_string("fixtures/ukrlp_10000794.json")
         )
         contact_details = LookupCreator.get_contact_details(
-            "1000079", matching_provider_records
+            "10000794", matching_provider_records
+        )
+        self.assertDictEqual(contact_details, expected_contact_details)
+
+
+    def test_get_contact_details_for_10004079(self):
+        expected_contact_details = {
+            "address": {
+                "line_2": "5",
+                "line_3": "Nether Street",
+                "town": "London",
+                "post_code": "N12 0GA"
+            },
+            "telephone": "020 7837 7741",
+            "website": "www.londonstudiocentre.org",
+        }
+
+        matching_provider_records = json.loads(
+            get_string("fixtures/ukrlp_10004079.json")
+        )
+        contact_details = LookupCreator.get_contact_details(
+            "10004079", matching_provider_records
         )
         self.assertDictEqual(contact_details, expected_contact_details)
 
