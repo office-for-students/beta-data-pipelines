@@ -35,10 +35,21 @@ class TestNeedTitleCase(unittest.TestCase):
         lookup_creator = LookupCreator(xml_string)
         self.assertTrue(lookup_creator.title_case_needed("BEXHILL COLLEGE"))
 
+
 class TestTitleCase(unittest.TestCase):
     def test_title_case_with_bangor_university(self):
-        input_name = 'BANGOR UNIVERSITY'
-        expected_name = 'Bangor University'
+        input_name = "BANGOR UNIVERSITY"
+        expected_name = "Bangor University"
+        self.assertTrue(LookupCreator.title_case(input_name), expected_name)
+
+    def test_title_case_with_blackpool_and_flyde_college(self):
+        input_name = "BLACKPOOL AND THE FYLDE COLLEGE"
+        expected_name = "Blackpool and the Fylde College"
+        self.assertTrue(LookupCreator.title_case(input_name), expected_name)
+
+    def test_title_case_with_british_college_of_osteopathic_medicine(self):
+        input_name = "British College Of Osteopathic Medicine"
+        expected_name = "British College of Osteopathic Medicine"
         self.assertTrue(LookupCreator.title_case(input_name), expected_name)
 
 
