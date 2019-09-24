@@ -114,6 +114,25 @@ class TestGetContactDetails(unittest.TestCase):
         )
         self.assertDictEqual(contact_details, expected_contact_details)
 
+    def test_get_contact_details_for_10013109(self):
+        expected_contact_details = {
+            "address": {
+                "line_1": "53 Farringdon Road",
+                "town": "London",
+                "post_code": "EC1M 3JB",
+            },
+            "telephone": "020 7378 1000",
+            "website": "No website available",
+        }
+
+        matching_provider_records = json.loads(
+            get_string("fixtures/ukrlp_10013109.json")
+        )
+        contact_details = LookupCreator.get_contact_details(
+            "10001282", matching_provider_records
+        )
+        self.assertDictEqual(contact_details, expected_contact_details)
+
 
 if __name__ == "__main__":
     unittest.main()
