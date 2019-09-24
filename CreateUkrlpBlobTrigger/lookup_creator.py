@@ -166,15 +166,17 @@ class LookupCreator:
         contact_details = {}
 
         provider_contact = None
+        contacts = Helper.get_list(
+            matching_provider_records["ProviderContact"]
+        )
         try:
-            for contact in matching_provider_records["ProviderContact"]:
+            for contact in contacts:
                 if contact["ContactType"] == "L" and contact["ContactAddress"]:
                     provider_contact = contact
                 if contact["ContactType"] == "P" and contact["ContactAddress"]:
                     provider_contact = contact
                     break
 
-            # provider_contact = matching_provider_records["ProviderContact"][0]
         except KeyError:
             logging.error(f"No ProviderContact from UKRLP for {ukprn}")
             return contact_details
