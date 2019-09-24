@@ -165,11 +165,30 @@ class LookupCreator:
 
         contact_details = {}
 
+        provider_contact = None
+        contacts = Helper.get_list(
+            matching_provider_records["ProviderContact"]
+        )
         try:
-            provider_contact = matching_provider_records["ProviderContact"][0]
+            for contact in contacts:
+                if contact["ContactType"] == "L" and contact["ContactAddress"]:
+                    provider_contact = contact
+                if contact["ContactType"] == "P" and contact["ContactAddress"]:
+                    provider_contact = contact
+                    break
+
         except KeyError:
             logging.error(f"No ProviderContact from UKRLP for {ukprn}")
             return contact_details
+
+        if not provider_contact:
+            logging.error(
+                f"No ProviderContact with type L or P from UKRLP for {ukprn}"
+            )
+            return contact_details
+
+        if provider_contact["ContactType"] == "L":
+            logging.info(f"Using legal address for this {ukprn}")
 
         address = provider_contact["ContactAddress"]
 

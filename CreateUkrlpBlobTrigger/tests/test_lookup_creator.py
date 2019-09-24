@@ -53,7 +53,86 @@ class TestTitleCase(unittest.TestCase):
         self.assertTrue(LookupCreator.title_case(input_name), expected_name)
 
 
-# TODO Test more of the functionality - more lookups etc
+class TestGetContactDetails(unittest.TestCase):
+    def test_get_contact_details_for_10000794(self):
+        expected_contact_details = {
+            "address": {
+                "line_2": "Deane Road Campus",
+                "line_3": "Deane Road",
+                "town": "Bolton",
+                "post_code": "BL3 5BG",
+            },
+            "telephone": "01204 482000",
+            "website": "www.boltoncollege.ac.uk",
+        }
+
+        matching_provider_records = json.loads(
+            get_string("fixtures/ukrlp_10000794.json")
+        )
+        contact_details = LookupCreator.get_contact_details(
+            "10000794", matching_provider_records
+        )
+        self.assertDictEqual(contact_details, expected_contact_details)
+
+    def test_get_contact_details_for_10004079(self):
+        expected_contact_details = {
+            "address": {
+                "line_2": "5",
+                "line_3": "Nether Street",
+                "town": "London",
+                "post_code": "N12 0GA",
+            },
+            "telephone": "020 7837 7741",
+            "website": "www.londonstudiocentre.org",
+        }
+
+        matching_provider_records = json.loads(
+            get_string("fixtures/ukrlp_10004079.json")
+        )
+        contact_details = LookupCreator.get_contact_details(
+            "10004079", matching_provider_records
+        )
+        self.assertDictEqual(contact_details, expected_contact_details)
+
+    def test_get_contact_details_for_10001282(self):
+        expected_contact_details = {
+            "address": {
+                "line_1": "Ellison Building",
+                "line_2": "Ellison Place",
+                "town": "Newcastle Upon Tyne",
+                "post_code": "NE1 8ST",
+            },
+            "telephone": "01912 326002",
+            "website": "www.northumbria.ac.uk",
+        }
+
+        matching_provider_records = json.loads(
+            get_string("fixtures/ukrlp_10001282.json")
+        )
+        contact_details = LookupCreator.get_contact_details(
+            "10001282", matching_provider_records
+        )
+        self.assertDictEqual(contact_details, expected_contact_details)
+
+    def test_get_contact_details_for_10013109(self):
+        expected_contact_details = {
+            "address": {
+                "line_1": "53 Farringdon Road",
+                "town": "London",
+                "post_code": "EC1M 3JB",
+            },
+            "telephone": "020 7378 1000",
+            "website": "No website available",
+        }
+
+        matching_provider_records = json.loads(
+            get_string("fixtures/ukrlp_10013109.json")
+        )
+        contact_details = LookupCreator.get_contact_details(
+            "10001282", matching_provider_records
+        )
+        self.assertDictEqual(contact_details, expected_contact_details)
+
 
 if __name__ == "__main__":
     unittest.main()
