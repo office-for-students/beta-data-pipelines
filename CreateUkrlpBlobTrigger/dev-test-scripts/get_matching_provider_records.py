@@ -14,6 +14,7 @@ sys.path.insert(0, GRANDPARENTDIR)
 
 from ukrlp_client import UkrlpClient
 
-ukprn = "10004079"
-records = UkrlpClient.get_matching_provider_records(ukprn)
-print(json.dumps(records, indent=4))
+def get_provider_record():
+    ukprn = "10004079"
+    records = UkrlpClient.get_matching_provider_records(ukprn)
+    print(json.dumps(records, indent=4))
