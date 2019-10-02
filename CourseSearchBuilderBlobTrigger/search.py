@@ -44,9 +44,7 @@ class Index:
     def delete_if_already_exists(self):
 
         try:
-            delete_url = (
-                self.url + "/indexes/" + self.index_name + self.query_string
-            )
+            delete_url = self.url + "/indexes/" + self.index_name + self.query_string
 
             response = requests.delete(delete_url, headers=self.headers)
 
@@ -132,10 +130,7 @@ class Load:
             search_course = models.build_course_search_doc(doc)
             search_courses.append(search_course)
 
-            if (
-                course_count % bulk_course_count == 0
-                or course_count == number_of_docs
-            ):
+            if course_count % bulk_course_count == 0 or course_count == number_of_docs:
 
                 documents["value"] = search_courses
 
@@ -163,9 +158,7 @@ class Load:
             logging.info(f"url: {url}")
             response = requests.post(url, headers=self.headers, json=documents)
         except requests.exceptions.RequestException as e:
-            logging.exception(
-                "unexpected error loading bulk index", exc_info=True
-            )
+            logging.exception("unexpected error loading bulk index", exc_info=True)
             raise exceptions.StopEtlPipelineErrorException(e)
 
         if response.status_code != 200:
@@ -197,21 +190,14 @@ class SynonymMap:
 
         try:
             update_url = (
-                self.url
-                + "/synonymmaps/"
-                + self.synonym_name
-                + self.query_string
+                self.url + "/synonymmaps/" + self.synonym_name + self.query_string
             )
             response = requests.put(
-                update_url,
-                headers=self.headers,
-                json=self.course_synonym_schema,
+                update_url, headers=self.headers, json=self.course_synonym_schema
             )
 
         except requests.exceptions.RequestException as e:
-            logging.exception(
-                "unexpected error creating course synonym", exc_info=True
-            )
+            logging.exception("unexpected error creating course synonym", exc_info=True)
             raise exceptions.StopEtlPipelineErrorException(e)
 
         if response.status_code == 201:
@@ -244,15 +230,11 @@ class SynonymMap:
         try:
             create_url = self.url + "/synonymmaps" + self.query_string
             response = requests.put(
-                create_url,
-                headers=self.headers,
-                json=self.course_synonym_schema,
+                create_url, headers=self.headers, json=self.course_synonym_schema
             )
 
         except requests.exceptions.RequestException as e:
-            logging.exception(
-                "unexpected error creating course synonym", exc_info=True
-            )
+            logging.exception("unexpected error creating course synonym", exc_info=True)
             raise exceptions.StopEtlPipelineErrorException(e)
 
         if response.status_code != 201:
@@ -267,9 +249,7 @@ class SynonymMap:
 
     def get_synonym(self):
         cwd = os.path.dirname(os.path.abspath(__file__))
-        with open(
-            os.path.join(cwd, "schemas/course_synonym.json")
-        ) as json_file:
+        with open(os.path.join(cwd, "schemas/course_synonym.json")) as json_file:
             schema = json.load(json_file)
             schema["name"] = self.synonym_name
             schema["synonyms"] = self.get_synonym_list()
@@ -284,12 +264,10 @@ class SynonymMap:
         )
         mental_health_nursing_synonyms = "registered mental health nursing(RMN), mental health nurse, dual diagnosis, mental health => mental health nursing"
         pharmacology_synonyms = "pharmacology, psychopharmacology, pharmacological medicine, pharmacokenetics, pharmacodynamics, medical speciality, toxicology, substances, drugs => pharmacology"
-        toxicology_synonyms = (
-            "pharmacology, pharmacological medicine => toxicology"
-        )
+        toxicology_synonyms = "pharmacology, pharmacological medicine => toxicology"
         pharmacy_synonyms = "pharmacy, pharmacist, chemist => pharmacy"
         chemistry_synonyms = "chemical science, inorganic chemistry, surface chemistry, geochemistry, natural science, radiochemistry, thermochemistry, organic chemistry, physical chemistry, photochemistry, chemoimmunology, immunochemistry, femtochemistry => chemistry"
-        mathematics_synonyms = "maths, math, applied mathematics, pure maths, pure math, pure mathematics, applied maths, applied math => mathematics"
+        mathematics_synonyms = "stat, stats, statistic, statistics, maths, math, applied mathematics, pure maths, pure math, pure mathematics, applied maths, applied math => mathematics"
         civil_engineering_synonyms = "construction, roads, bridges, applied science, engineering science, engineering, hydrolic engineering => civil engineering"
 
         synonyms = {
