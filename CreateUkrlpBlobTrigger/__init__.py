@@ -77,8 +77,8 @@ def main(xmlblob: func.InputStream):
             "Created Block Blob Service to Azure Storage Account {storage_account_name}"
         )
 
-        # Copy the dummy HESA XML we've just processed to the ETL input BLOB container
-        output_container_name = os.environ["EtlInputContainerName"]
+        # Copy the dummy HESA XML we've just processed to the Institution input BLOB container
+        output_container_name = os.environ["InstInputContainerName"]
         dummy_etl_blob_name = os.environ["DummyEtlBlobName"]
         source_url = os.environ["CreateUkrlpSourceUrl"]
 

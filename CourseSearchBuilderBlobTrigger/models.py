@@ -25,12 +25,20 @@ def build_course_search_doc(course):
                     "label": course["course"]["distance_learning"]["label"],
                 },
                 "foundation_year_availability": {
-                    "code": course["course"]["foundation_year_availability"]["code"],
-                    "label": course["course"]["foundation_year_availability"]["label"],
+                    "code": course["course"]["foundation_year_availability"][
+                        "code"
+                    ],
+                    "label": course["course"]["foundation_year_availability"][
+                        "label"
+                    ],
                 },
-                "honours_award_provision": course["course"]["honours_award_provision"],
+                "honours_award_provision": course["course"][
+                    "honours_award_provision"
+                ],
                 "institution": {
-                    "pub_ukprn_name": course["course"]["institution"]["pub_ukprn_name"],
+                    "pub_ukprn_name": course["course"]["institution"][
+                        "pub_ukprn_name"
+                    ],
                     "sort_pub_ukprn_name": sort_pub_ukprn_name,
                     "pub_ukprn": course["course"]["institution"]["pub_ukprn"],
                 },
@@ -150,7 +158,9 @@ def build_length_of_course(course):
             ):
                 code = str(course["length_of_course"]["code"])
                 search_length_of_course["code"] = code
-                search_length_of_course["label"] = course["length_of_course"]["label"]
+                search_length_of_course["label"] = course["length_of_course"][
+                    "label"
+                ]
 
         return search_length_of_course
 

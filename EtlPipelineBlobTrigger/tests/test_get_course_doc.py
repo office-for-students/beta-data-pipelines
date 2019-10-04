@@ -13,6 +13,7 @@ from kisaims import KisAims
 
 class TestGetCourseDoc(unittest.TestCase):
     def test_with_large_file(self):
+        version = 1729
         xml_string = get_string("fixtures/large-test-file.xml")
         root = ET.fromstring(xml_string)
         accreditations = Accreditations(root)
@@ -35,10 +36,12 @@ class TestGetCourseDoc(unittest.TestCase):
                     raw_inst_data,
                     raw_course_data,
                     kisaims,
+                    version,
                 )
                 self.assertTrue("institution_id" in course_doc)
 
     def test_specific_10000047_course(self):
+        version = 56
         xml_string = get_string("fixtures/large-test-file.xml")
         root = ET.fromstring(xml_string)
         accreditations = Accreditations(root)
@@ -64,11 +67,13 @@ class TestGetCourseDoc(unittest.TestCase):
             raw_inst_data,
             raw_course_data,
             kisaims,
+            version,
         )
         course_doc = remove_variable_elements(course_doc)
         self.assertEqual(expected_course_doc, course_doc)
 
     def test_specific_10000047_with_new_crsecsturl_field(self):
+        version = 63
         xml_string = get_string("fixtures/large-test-file.xml")
         root = ET.fromstring(xml_string)
         accreditations = Accreditations(root)
@@ -96,6 +101,7 @@ class TestGetCourseDoc(unittest.TestCase):
             raw_inst_data,
             raw_course_data,
             kisaims,
+            version,
         )
         course_doc = remove_variable_elements(course_doc)
         self.assertEqual(expected_course_doc, course_doc)
