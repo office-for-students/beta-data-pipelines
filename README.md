@@ -96,6 +96,7 @@ Add the following to your local.settings.json:
 | AzureCosmosDbCoursesCollectionId           | courses                   | The name of the collection in which courses are uploaded to                                                  |
 | AzureCosmosDbUkRlpCollectionId             | ukrlp                     | The name of the collection in which ukrlp docs are uploaded to                                               |
 | AzureCosmosDbSubjectsCollectionId          | subjects                  | The name of the collection in which subjects are uploaded to                                                 |
+| AzureCosmosDbDataSetCollectionId           | datasets                  | The name of the collection in which datasets are loaded                                                      |
 | AzureStorageAccountName                    | {retrieve from portal}    | The name of the storage account instance                                                                     |
 | AzureStorageAccountKey                     | {retrieve from portal}    | The key in which to connect to the storage account                                                           |
 | AzureStorageAccountConnectionString        | {retrieve from portal}    | The connection string to access storage account                                                              |
@@ -115,6 +116,12 @@ Add the following to your local.settings.json:
 | AzureSearchAPIVersion                      | 2019-05-06                | The azure search API version for instance                                                                    |
 | XsdFilename                                | {name}.xsd                | The xsd file location and name to validate incoming xml                                                      |
 | StopEtlPipelineOnWarning                   | false                     | Boolean flag to stop function worker on a warning                                                            |
+| InstInputContainerName                     | inst-input                 | The name of the storage container Create Institutions is triggered from                                                    |
+| CoursesInputContainerName                  | courses-input                 | The name of the storage container the creation of courses is triggered from                                                    |
+| UkrlpInputContainerName                    | ukrlp-input               | The name of the storage container UKRLP is triggered from                                                    |
+| StorageUrl                                 | {retrieve from portal}    | The url to the top level storage                                                                             |
+| TimeInMinsToWaitBeforeCreateNewDataSet     | 120                       | You may need to reduce this time if you wish to run more frequently -e.g., to retry after a fix              |
+
 
 #### Running Service
 
