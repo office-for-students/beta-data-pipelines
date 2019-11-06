@@ -1,6 +1,6 @@
 import unittest
 from unittest import mock
-from SharedCode.utils import get_collection_link
+from __app__.SharedCode.utils import get_collection_link
 
 
 class TestGetCollectionLink(unittest.TestCase):

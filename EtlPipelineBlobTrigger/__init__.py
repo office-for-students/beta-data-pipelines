@@ -12,9 +12,9 @@ from distutils.util import strtobool
 import azure.functions as func
 from azure.storage.blob import BlockBlobService
 
-from SharedCode.blob_helper import BlobHelper
-from SharedCode.dataset_helper import DataSetHelper
-from SharedCode import exceptions
+from __app__.SharedCode.blob_helper import BlobHelper
+from __app__.SharedCode.dataset_helper import DataSetHelper
+from __app__.SharedCode import exceptions
 
 from . import course_docs, validators
 

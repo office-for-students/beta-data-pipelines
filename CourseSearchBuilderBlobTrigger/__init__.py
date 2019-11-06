@@ -3,8 +3,8 @@ import logging
 import traceback
 
 import azure.functions as func
-from SharedCode.dataset_helper import DataSetHelper
-from SharedCode import utils
+from __app__.SharedCode.dataset_helper import DataSetHelper
+from __app__.SharedCode import utils
 from . import search
 
 

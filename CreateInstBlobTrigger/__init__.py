@@ -7,9 +7,9 @@ from datetime import datetime
 
 import azure.functions as func
 
-from SharedCode import exceptions
-from SharedCode.dataset_helper import DataSetHelper
-from SharedCode.blob_helper import BlobHelper
+from __app__.SharedCode import exceptions
+from __app__.SharedCode.dataset_helper import DataSetHelper
+from __app__.SharedCode.blob_helper import BlobHelper
 
 from .institution_docs import InstitutionDocs
 

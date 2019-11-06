@@ -83,8 +83,8 @@ class TestHasEnoughTimeElapsedSinceLastDataSetCreated(unittest.TestCase):
     @mock.patch.dict(
         os.environ, {"TimeInMinsToWaitBeforeCreateNewDataSet": "120"}
     )
-    @mock.patch("SharedCode.dataset_helper.get_collection_link")
-    @mock.patch("SharedCode.dataset_helper.get_cosmos_client")
+    @mock.patch("__app__.SharedCode.dataset_helper.get_collection_link")
+    @mock.patch("__app__.SharedCode.dataset_helper.get_cosmos_client")
     def test_has_enough_time_elapsed_with_60(self, mock_get_cosmos_client, mock_get_collection_link):
         dt_in_past = datetime.now(timezone.utc) - timedelta(hours=1)
         dsc = DataSetCreator()
@@ -99,8 +99,8 @@ class TestHasEnoughTimeElapsedSinceLastDataSetCreated(unittest.TestCase):
     @mock.patch.dict(
         os.environ, {"TimeInMinsToWaitBeforeCreateNewDataSet": "120"}
     )
-    @mock.patch("SharedCode.dataset_helper.get_collection_link")
-    @mock.patch("SharedCode.dataset_helper.get_cosmos_client")
+    @mock.patch("__app__.SharedCode.dataset_helper.get_collection_link")
+    @mock.patch("__app__.SharedCode.dataset_helper.get_cosmos_client")
     def test_has_enough_time_elapsed_with_120(self, mock_get_cosmos_client, mock_get_collection_link):
         dt_in_past = datetime.now(timezone.utc) - timedelta(hours=2)
         dsc = DataSetCreator()

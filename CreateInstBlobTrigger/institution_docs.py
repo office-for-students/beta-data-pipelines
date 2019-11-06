@@ -26,14 +26,14 @@ sys.path.insert(0, PARENTDIR)
 
 from EtlPipelineBlobTrigger import course_lookup_tables as lookup
 from CreateInstBlobTrigger.locations import Locations
-from SharedCode.utils import (
+from __app__.SharedCode.utils import (
     get_collection_link,
     get_cosmos_client,
     get_ukrlp_lookups,
     get_uuid,
     get_english_welsh_item,
 )
-from SharedCode.dataset_helper import DataSetHelper
+from __app__.SharedCode.dataset_helper import DataSetHelper
 
 
 class InstitutionDocs:

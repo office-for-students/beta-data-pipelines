@@ -35,8 +35,8 @@ from ukrlp_enricher import UkRlpCourseEnricher
 from subject_enricher import SubjectCourseEnricher
 from course_subjects import get_subjects
 
-from SharedCode import utils
-from SharedCode.utils import get_english_welsh_item
+from __app__.SharedCode import utils
+from __app__.SharedCode.utils import get_english_welsh_item
 
 
 def load_course_docs(xml_string, version):
