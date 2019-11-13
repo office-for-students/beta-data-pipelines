@@ -1,7 +1,7 @@
 {
     "no-data": {
-        "0": "There is not enough data available to publish for this course. This is either because the course is small or we have not had enough survey responses.  This does not reflect on the quality of the course.",
-        "1": "There is no data available for this course, as the course has either not run yet, or has not been running long enough for this data to be available.  This does not reflect on the quality of the course.",
+        "0": "There is not enough data available to publish for this course. This is either because the course is small or we have not had enough survey responses. This does not reflect on the quality of the course.",
+        "1": "There is no data available for this course, as the course has either not run yet, or has not been running long enough for this data to be available. This does not reflect on the quality of the course.",
         "2": "There is no data available for this course. This does not reflect on the quality of the course."
     },
     "data": {
