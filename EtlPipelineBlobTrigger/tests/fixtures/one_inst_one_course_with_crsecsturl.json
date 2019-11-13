@@ -375,7 +375,7 @@
                     ],
                     "unavailable": {
                         "code": 0,
-                        "reason_english": "We have combined data for two years of this course, as there was not enough to publish the most recent year’s data only.",
+                        "reason_english": "We have combined data for two years of this course, as there was not enough to publish the most recent year's data only.",
                         "reason_welsh": "Rydym wedi cyfuno data ar gyfer dwy flynedd o'r cwrs hwn gan nad oedd digon ar gael i gyhoeddi data'r flwyddyn ddiweddaraf yn unig."
                     }
                 }
