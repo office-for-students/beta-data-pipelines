@@ -371,8 +371,8 @@ class Leo:
         unavailable["reason_welsh"] = self.get_unavailable_reason_str_welsh(unavail_reason_code)
 
         if self.course_outside_england():
-            unavailable["find_more_english"] = self.unavail_reason_english["find_out_more"]
-            unavailable["find_more_english"] = self.unavail_reason_welsh["find_out_more"]
+            unavailable["find_out_more_english"] = self.unavail_reason_english["find_out_more"]
+            unavailable["find_out_more_welsh"] = self.unavail_reason_welsh["find_out_more"]
             unavailable["url_english"] = self.unavail_reason_english["url"]
             unavailable["url_welsh"] = self.unavail_reason_welsh["url"]
 
