@@ -367,12 +367,15 @@ class Leo:
         validate_leo_unavailable_reason_code(unavail_reason_code)
 
         unavailable["code"] = int(unavail_reason_code)
-        unavailable[
-            "reason_english"
-        ] = self.get_unavailable_reason_str_english(unavail_reason_code)
-        unavailable["reason_welsh"] = self.get_unavailable_reason_str_welsh(
-            unavail_reason_code
-        )
+        unavailable["reason_english"] = self.get_unavailable_reason_str_english(unavail_reason_code)
+        unavailable["reason_welsh"] = self.get_unavailable_reason_str_welsh(unavail_reason_code)
+
+        if self.course_outside_england():
+            unavailable["find_more_english"] = self.unavail_reason_english["find_out_more"]
+            unavailable["find_more_english"] = self.unavail_reason_welsh["find_out_more"]
+            unavailable["url_english"] = self.unavail_reason_english["url"]
+            unavailable["url_welsh"] = self.unavail_reason_welsh["url"]
+
         return unavailable
 
     def need_unavailable(self, xml_elem):

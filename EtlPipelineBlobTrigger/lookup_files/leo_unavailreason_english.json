@@ -1,5 +1,7 @@
 {
-    "outside_england": "We only have this data for English universities and colleges. This is because of differences in either policy or legislation relating to this data in the other countries of the UK. Find out more",
+    "outside_england": "We only have this data for English universities and colleges. This is because of differences in either policy or legislation relating to this data in the other countries of the UK. ",
+    "find_out_more": "Find out more",
+    "url": "/about-our-data",
     "1": "There is no data available for the subject area of this course. This may be because we only have data for a small number of students or because we do not yet have data. This does not reflect on the quality of the course.",
     "2": "There is no data available for the subject area of this course. This may be because we only have data for a small number of students or because we do not yet have data. This does not reflect on the quality of the course."
 }
