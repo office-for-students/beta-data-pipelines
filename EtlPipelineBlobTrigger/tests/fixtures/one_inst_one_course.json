@@ -288,7 +288,7 @@
                 {
                     "unavailable": {
                         "code": 0,
-                        "reason_english": "There is not enough data available to publish for this course. This is either because the course is small or we have not had enough survey responses.  This does not reflect on the quality of the course.",
+                        "reason_english": "There is not enough data available to publish for this course. This is either because the course is small or we have not had enough survey responses. This does not reflect on the quality of the course.",
                         "reason_welsh": "Nid oes digon o ddata ar gael i'w gyhoeddi ar gyfer y cwrs hwn. Mae hyn naill ai oherwydd bod maint y cwrs yn fach neu am nad ydym wedi derbyn digon o ymatebion i'r arolwg. Nid yw hyn yn adlewyrchu ansawdd y cwrs."
                     }
                 }
@@ -371,7 +371,7 @@
                     ],
                     "unavailable": {
                         "code": 0,
-                        "reason_english": "We have combined data for two years of this course, as there was not enough to publish the most recent year’s data only.",
+                        "reason_english": "We have combined data for two years of this course, as there was not enough to publish the most recent year's data only.",
                         "reason_welsh": "Rydym wedi cyfuno data ar gyfer dwy flynedd o'r cwrs hwn gan nad oedd digon ar gael i gyhoeddi data'r flwyddyn ddiweddaraf yn unig."
                     }
                 }
