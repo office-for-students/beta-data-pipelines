@@ -51,7 +51,7 @@ EXPECTED_COURSE = {
         "country": {"code": "XF", "name": "England"},
         "distance_learning": {
             "code": "0",
-            "label": "Course is availble other than by distance learning",
+            "label": "Course is available other than by distance learning",
         },
         "foundation_year_availability": {
             "code": "0",
@@ -117,7 +117,7 @@ test_course = {
         "country": {"code": "XF", "name": "England"},
         "distance_learning": {
             "code": "0",
-            "label": "Course is availble other than by distance learning",
+            "label": "Course is available other than by distance learning",
         },
         "foundation_year_availability": {
             "code": "0",
