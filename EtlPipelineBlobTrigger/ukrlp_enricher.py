@@ -23,6 +23,6 @@ class UkRlpCourseEnricher:
     def get_ukprn_name(self, ukprn):
         """Returns a name for the ukprn"""
         if ukprn not in self.ukrlp_lookups:
-            return "not availble"
+            return "not available"
 
         return self.ukrlp_lookups[ukprn].get("ukprn_name", "not available")

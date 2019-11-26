@@ -81,9 +81,9 @@ def validate_leo_element_with_data(xml_elem, country_code):
 
 
 def validate_agg(unavail_reason_code, agg, lookup):
-    """Check the agg code is valid for an unavailble string"""
+    """Check the agg code is valid for an unavailable string"""
 
-    # The valid values for agg depends on if there is data availble and the
+    # The valid values for agg depends on if there is data available and the
     # unavail reason code.
 
     validate_unavailable_reason_code(unavail_reason_code)
