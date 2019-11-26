@@ -143,10 +143,10 @@ class InstitutionDocs:
             new_docs.append(self.get_institution_doc(institution, version))
             if sproc_count == 100:
                 cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
+                logging.info(f"Successfully loaded another {sproc_count} documents")
                 # Reset values
                 new_docs = []
                 sproc_count = 0
-                logging.info(f"Successfully loaded another {sproc_count} documents")
 
         if sproc_count > 0:
             cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
