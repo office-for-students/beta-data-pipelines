@@ -29,6 +29,7 @@ class TestNeedTitleCase(unittest.TestCase):
 
     @mock.patch("lookup_creator.get_collection_link")
     @mock.patch("lookup_creator.get_cosmos_client")
+    @mock.patch("SharedCode.dataset_helper.get_cosmos_client")
     def test_title_case_needed_with_bexhill_college(
         self, mock_get_cosmos_client, mock_get_collection_link
     ):
