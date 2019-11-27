@@ -10,6 +10,7 @@
     "institution_id": "string", // course.institution.pub_ukprn
     "course_id": "string", // course.kis_course_id
     "course_mode": "string", // course.mode.code
+    "partition_key": "string", // version
     "course": {
         "accreditation": [
             {

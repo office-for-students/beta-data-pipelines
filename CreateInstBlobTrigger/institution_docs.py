@@ -115,26 +115,43 @@ class InstitutionDocs:
         institution_doc["created_at"] = datetime.datetime.utcnow().isoformat()
         institution_doc["version"] = version
         institution_doc["institution_id"] = raw_inst_data["PUBUKPRN"]
+        institution_doc["partition_key"] = str(version)
         institution_doc["institution"] = self.get_institution_element(
             institution
         )
+
         return institution_doc
 
     def create_institution_docs(self, version):
         """Parse HESA XML and create JSON institution docs in Cosmos DB."""
 
-        # TODO Investigate writing docs to CosmosDB in bulk to speed things up.
         cosmosdb_client = get_cosmos_client()
 
         collection_link = get_collection_link(
             "AzureCosmosDbDatabaseId", "AzureCosmosDbInstitutionsCollectionId"
         )
+        
+        options = {"partitionKey": str(version)}
+        sproc_link = collection_link + "/sprocs/bulkImport"
 
         institution_count = 0
+        new_docs = []
+        sproc_count = 0
         for institution in self.root.iter("INSTITUTION"):
             institution_count += 1
-            institution_doc = self.get_institution_doc(institution, version)
-            cosmosdb_client.CreateItem(collection_link, institution_doc)
+            sproc_count += 1
+            new_docs.append(self.get_institution_doc(institution, version))
+            if sproc_count == 100:
+                cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
+                logging.info(f"Successfully loaded another {sproc_count} documents")
+                # Reset values
+                new_docs = []
+                sproc_count = 0
+
+        if sproc_count > 0:
+            cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
+            logging.info(f"Successfully loaded another {sproc_count} documents")
+
         logging.info(f"Processed {institution_count} institutions")
 
 

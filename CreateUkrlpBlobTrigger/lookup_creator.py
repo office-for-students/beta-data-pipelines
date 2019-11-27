@@ -9,6 +9,8 @@ import defusedxml.ElementTree as ET
 
 import xmltodict
 
+from SharedCode.dataset_helper import DataSetHelper
+
 
 # TODO investigate setting PATH in Azure so can remove this
 CURRENTDIR = os.path.dirname(
@@ -29,6 +31,7 @@ class LookupCreator:
 
     def __init__(self, xml_string):
         self.cosmosdb_client = get_cosmos_client()
+        self.dsh = DataSetHelper()
         self.xml_string = xml_string
         self.lookups_created = []
         self.ukrlp_no_info_list = []
@@ -49,8 +52,13 @@ class LookupCreator:
 
     def create_ukrlp_lookups(self):
         """Parse HESA XML and create JSON lookup table for UKRLP data."""
-
         root = ET.fromstring(self.xml_string)
+        
+        options = {"partitionKey": str(self.dsh.get_latest_version_number())}
+        sproc_link = self.collection_link + "/sprocs/bulkImport"
+
+        new_docs = []
+        sproc_count = 0
 
         for institution in root.iter("INSTITUTION"):
             raw_inst_data = xmltodict.parse(ET.tostring(institution))[
@@ -60,12 +68,27 @@ class LookupCreator:
             pubukprn = raw_inst_data.get("PUBUKPRN")
 
             if ukprn and not self.entry_exists(ukprn):
-                if self.create_ukrlp_lookup(ukprn):
+                result, ukrlp_doc = self.create_ukrlp_lookup(ukprn)
+
+                if result:
                     self.lookups_created.append(ukprn)
+                    new_docs.append(ukrlp_doc)
+                    sproc_count += 1
 
             if pubukprn and not self.entry_exists(pubukprn):
-                if self.create_ukrlp_lookup(pubukprn):
-                    self.lookups_created.append(ukprn)
+                result, ukrlp_doc = self.create_ukrlp_lookup(pubukprn)
+
+                if result:
+                    self.lookups_created.append(pubukprn)
+                    new_docs.append(ukrlp_doc)
+                    sproc_count += 1
+
+            if sproc_count >= 100:
+                self.cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)       
+                logging.info(f"Successfully loaded another {sproc_count} documents")
+                # Reset values
+                new_docs = []
+                sproc_count = 0
 
         logging.info(f"lookups_created = {len(self.lookups_created)}")
 
@@ -118,12 +141,11 @@ class LookupCreator:
             logging.error(f"UKRLP did not return the data for {ukprn}")
             if ukprn not in self.ukrlp_no_info_list:
                 self.ukrlp_no_info_list.append(ukprn)
-            return False
+            return False, None
 
         lookup_entry = self.get_lookup_entry(ukprn, matching_provider_records)
 
-        self.cosmosdb_client.CreateItem(self.collection_link, lookup_entry)
-        return True
+        return True, lookup_entry
 
     def get_lookup_entry(self, ukprn, matching_provider_records):
         """Returns the UKRLP lookup entry"""
@@ -132,6 +154,7 @@ class LookupCreator:
         lookup_item["id"] = get_uuid()
         lookup_item["created_at"] = datetime.datetime.utcnow().isoformat()
         lookup_item["ukprn"] = ukprn
+        lookup_item["partition_key"] = self.dsh.get_latest_version_number()
 
         provider_name = Helper.get_provider_name(matching_provider_records)
         if self.title_case_needed(provider_name):
