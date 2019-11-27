@@ -84,11 +84,20 @@ class LookupCreator:
                     sproc_count += 1
 
             if sproc_count >= 100:
-                self.cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)       
+                logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
+                self.cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
                 logging.info(f"Successfully loaded another {sproc_count} documents")
                 # Reset values
                 new_docs = []
                 sproc_count = 0
+
+        if sproc_count > 0:
+            logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
+            self.cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
+            logging.info(f"Successfully loaded another {sproc_count} documents")
+            # Reset values
+            new_docs = []
+            sproc_count = 0
 
         logging.info(f"lookups_created = {len(self.lookups_created)}")
 
@@ -154,7 +163,7 @@ class LookupCreator:
         lookup_item["id"] = get_uuid()
         lookup_item["created_at"] = datetime.datetime.utcnow().isoformat()
         lookup_item["ukprn"] = ukprn
-        lookup_item["partition_key"] = self.dsh.get_latest_version_number()
+        lookup_item["partition_key"] = str(self.dsh.get_latest_version_number())
 
         provider_name = Helper.get_provider_name(matching_provider_records)
         if self.title_case_needed(provider_name):
