@@ -6,7 +6,7 @@ to invoke it via the Azure function.
 """
 
 
-import #logging
+#import logging
 import inspect
 import os
 import sys

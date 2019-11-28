@@ -4,7 +4,7 @@
 
 import gzip
 import io
-import #logging
+#import logging
 import os
 from datetime import datetime
 from distutils.util import strtobool

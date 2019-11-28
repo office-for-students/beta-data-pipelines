@@ -1,7 +1,7 @@
 """Contains the entry point for Create UKRLP lookups Azure Function implementation"""
 
 from datetime import datetime
-import #logging
+#import logging
 import os
 import io
 import gzip

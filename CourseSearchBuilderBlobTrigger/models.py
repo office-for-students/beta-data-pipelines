@@ -1,4 +1,4 @@
-import #logging
+#import logging
 
 
 def build_course_search_doc(course):
