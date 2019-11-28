@@ -1,7 +1,6 @@
 """Contains the entry point for Create UKRLP lookups Azure Function implementation"""
 
 from datetime import datetime
-import logging
 import os
 import io
 import gzip
@@ -32,18 +31,8 @@ def main(xmlblob: func.InputStream):
     """
 
     try:
-        logging.info(
-            f"CreateUkrlpBlobTrigger creating UKRLP lookups\n"
-            f"Name: {xmlblob.name}\n"
-            f"Blob Size: {xmlblob.length} bytes"
-        )
-
         create_ukrlp_start_datetime = datetime.today().strftime(
             "%Y%m%d %H%M%S"
-        )
-
-        logging.info(
-            f"CreateUkrlp function started on {create_ukrlp_start_datetime}"
         )
 
         # Read the compressed Blob into a BytesIO object
@@ -73,10 +62,6 @@ def main(xmlblob: func.InputStream):
             account_name=storage_account_name, account_key=storage_account_key
         )
 
-        logging.info(
-            "Created Block Blob Service to Azure Storage Account {storage_account_name}"
-        )
-
         # Copy the dummy HESA XML we've just processed to the Institution input BLOB container
         output_container_name = os.environ["InstInputContainerName"]
         dummy_etl_blob_name = os.environ["DummyEtlBlobName"]
@@ -87,9 +72,6 @@ def main(xmlblob: func.InputStream):
         destination_blob_name = (
             f"{create_ukrlp_start_datetime}-{blob_filename}"
         )
-        logging.info(
-            f"Copy the XML we have processed to {destination_blob_name}"
-        )
 
         blob_service.copy_blob(
             container_name=output_container_name,
@@ -98,14 +80,7 @@ def main(xmlblob: func.InputStream):
         )
 
         create_ukrlp_end_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
-        logging.info(
-            f"CreateUkrlp successfully finished on {create_ukrlp_end_datetime}"
-        )
 
     except Exception as e:
-        # Unexpected exception
-        logging.error("Unexpected exception")
-        logging.error(traceback.format_exc())
-
         # Raise to Azure
         raise e
