@@ -4,7 +4,7 @@
 
 import os
 import azure.functions as func
-#import logging
+import #logging
 import json
 
 from .utils import get_url_from_req, OfsMissingUrlError

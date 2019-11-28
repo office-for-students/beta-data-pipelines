@@ -3,7 +3,7 @@
 
 import gzip
 import io
-#import logging
+import #logging
 import os
 
 import azure.functions as func
