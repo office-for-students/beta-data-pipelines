@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import gzip
 import io
-import logging
+import #logging
 import os
 from datetime import datetime
 
@@ -19,7 +19,7 @@ def main(xmlblob: func.InputStream, context: func.Context):
     try:
         dsh = DataSetHelper()
 
-        logging.info(
+        #logging.info(
             f"CreateInstBlobTrigger processing BLOB \n"
             f"Name: {xmlblob.name}\n"
             f"Blob Size: {xmlblob.length} bytes"
@@ -29,7 +29,7 @@ def main(xmlblob: func.InputStream, context: func.Context):
         xsd_filename = os.environ["XsdFilename"]
         xsd_path = os.path.join(context.function_directory, xsd_filename)
 
-        logging.info(
+        #logging.info(
             f"CreateInstBlobTrigger configuration values \n"
             f"XsdFilename: {xsd_filename}\n"
             f"XsdPath: {xsd_path}"
@@ -56,7 +56,7 @@ def main(xmlblob: func.InputStream, context: func.Context):
         """ LOADING - extract data and load JSON Documents """
 
         version = dsh.get_latest_version_number()
-        logging.info(f"using version number: {version}")
+        #logging.info(f"using version number: {version}")
         dsh.update_status("institutions", "in progress")
 
         inst_docs = InstitutionDocs(xml_string)
@@ -68,7 +68,7 @@ def main(xmlblob: func.InputStream, context: func.Context):
         blob_helper = BlobHelper(xmlblob)
         blob_helper.create_output_blob(destination_container_name)
 
-        logging.info("CreateInstBlobTrigger successfully finished.")
+        #logging.info("CreateInstBlobTrigger successfully finished.")
 
     except exceptions.StopEtlPipelineWarningException:
 
@@ -80,15 +80,15 @@ def main(xmlblob: func.InputStream, context: func.Context):
             "The function will be stopped since StopEtlPipelineOnWarning is "
             "set to TRUE in the Application Settings."
         )
-        logging.error(error_message)
-        logging.error("CreateInstBlobTrigger stopped")
+        #logging.error(error_message)
+        #logging.error("CreateInstBlobTrigger stopped")
         dsh.update_status("institutions", "failed")
         raise Exception(error_message)
 
     except Exception as e:
         # Unexpected exception
         dsh.update_status("institutions", "failed")
-        logging.error(
+        #logging.error(
             "CreateInstBlogTrigger unexpected exception ", exc_info=True
         )
 

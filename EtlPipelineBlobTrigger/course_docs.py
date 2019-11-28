@@ -10,7 +10,7 @@ during development and testing.
 """
 import datetime
 import inspect
-import logging
+import #logging
 import os
 import sys
 import defusedxml.ElementTree as ET
@@ -45,11 +45,11 @@ def load_course_docs(xml_string, version):
     # TODO Investigate writing docs to CosmosDB in bulk to speed things up.
     cosmosdb_client = utils.get_cosmos_client()
 
-    logging.info(
+    #logging.info(
         "adding ukrlp data into memory ahead of building course documents"
     )
     enricher = UkRlpCourseEnricher()
-    logging.info(
+    #logging.info(
         "adding subject data into memory ahead of building course documents"
     )
     subject_enricher = SubjectCourseEnricher()
@@ -91,7 +91,7 @@ def load_course_docs(xml_string, version):
             cosmosdb_client.CreateItem(collection_link, course_doc)
             course_count += 1
 
-    logging.info(f"Processed {course_count} courses")
+    #logging.info(f"Processed {course_count} courses")
 
 
 def get_locids(raw_course_data, ukprn):
@@ -326,7 +326,7 @@ def get_location_items(locations, locids, raw_course_data, pub_ukprn):
         raw_location_data = locations.get_location_data_for_key(locid)
 
         if raw_location_data is None:
-            logging.warning(f"failed to find location data in lookup table")
+            #logging.warning(f"failed to find location data in lookup table")
 
         links, accommodation, student_union = {}, {}, {}
         accommodation = get_english_welsh_item("ACCOMURL", raw_location_data)

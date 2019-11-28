@@ -3,7 +3,7 @@
 
 import gzip
 import io
-import logging
+import #logging
 import os
 
 import azure.functions as func
@@ -20,7 +20,7 @@ from . import validators
 
 def main(xmlblob: func.InputStream, context: func.Context):
 
-    logging.info(
+    #logging.info(
         f"CreateDataSetBlobTrigger processing BLOB \n"
         f"Name: {xmlblob.name}\n"
         f"Blob Size: {xmlblob.length} bytes"
@@ -40,7 +40,7 @@ def main(xmlblob: func.InputStream, context: func.Context):
         try:
             validators.parse_xml_data(xml_string)
         except XmlValidationError:
-            logging.error("Error unable to parse the XML data from HESA.")
+            #logging.error("Error unable to parse the XML data from HESA.")
             raise StopEtlPipelineErrorException
 
         """ CREATE NEW DATASET """
@@ -48,17 +48,17 @@ def main(xmlblob: func.InputStream, context: func.Context):
         try:
             data_set_creator.load_new_dataset_doc()
         except DataSetTooEarlyError:
-            logging.error("It's too soon to create another DataSet.")
+            #logging.error("It's too soon to create another DataSet.")
             error_message = (
                 "See the documentation for information on the environment "
                 "variable that controls how frequently new DataSets "
                 "can be created. "
             )
-            logging.error(error_message)
-            logging.info("CreateDataSetBlobTrigger is being stopped.")
+            #logging.error(error_message)
+            #logging.info("CreateDataSetBlobTrigger is being stopped.")
             return
 
-        logging.info("CreateDataSetBlobTrigger successfully finished.")
+        #logging.info("CreateDataSetBlobTrigger successfully finished.")
 
         """ PASS THE COMPRESSED XML TO NEXT AZURE FUNCTION IN THE PIPELINE"""
         destination_container_name = os.environ["UkrlpInputContainerName"]
@@ -66,7 +66,7 @@ def main(xmlblob: func.InputStream, context: func.Context):
         blob_helper.create_output_blob(destination_container_name)
 
     except StopEtlPipelineErrorException as e:
-        logging.error(
+        #logging.error(
             "CreateDataSetBlogTrigger an error has stopped the pipeline",
             exc_info=True,
         )
@@ -78,7 +78,7 @@ def main(xmlblob: func.InputStream, context: func.Context):
         raise Exception(error_message)
 
     except Exception as e:
-        logging.error(
+        #logging.error(
             "CreateDataSetBlogTrigger unexpected exception raised",
             exc_info=True,
         )

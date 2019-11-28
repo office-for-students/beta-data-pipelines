@@ -1,4 +1,4 @@
-import logging
+import #logging
 import requests
 import json
 import os
@@ -49,11 +49,11 @@ class Index:
             response = requests.delete(delete_url, headers=self.headers)
 
         except requests.exceptions.RequestException as e:
-            logging.exception("unexpected error deleting index", exc_info=True)
+            #logging.exception("unexpected error deleting index", exc_info=True)
             raise exceptions.StopEtlPipelineErrorException(e)
 
         if response.status_code == 204:
-            logging.warn(
+            #logging.warn(
                 f"course search index already exists, successful deletion\
                            prior to recreation\n index: {self.index_name}"
             )
@@ -61,7 +61,7 @@ class Index:
         elif response.status_code != 404:
             # 404 is the expected response, because normally the
             # course search index will not exist
-            logging.error(
+            #logging.error(
                 f"unexpected response when deleting existing search index,\
                             search_response: {response.json()}\nindex-name:\
                             {self.index_name}\nstatus: {response.status_code}"
@@ -79,11 +79,11 @@ class Index:
             )
 
         except requests.exceptions.RequestException as e:
-            logging.exception("unexpected error creating index", exc_info=True)
+            #logging.exception("unexpected error creating index", exc_info=True)
             raise exceptions.StopEtlPipelineErrorException(e)
 
         if response.status_code != 201:
-            logging.error(
+            #logging.error(
                 f"failed to create search index\n\
                             index-name: {self.index_name}\n\
                             status: {response.status_code}\n\
@@ -136,7 +136,7 @@ class Load:
 
                 self.bulk_create_courses(documents)
 
-                logging.info(
+                #logging.info(
                     f"successfully loaded {course_count} courses into azure search\n\
                         index: {self.index_name}\n"
                 )
@@ -155,14 +155,14 @@ class Load:
                 + "/docs/index"
                 + self.query_string
             )
-            logging.info(f"url: {url}")
+            #logging.info(f"url: {url}")
             response = requests.post(url, headers=self.headers, json=documents)
         except requests.exceptions.RequestException as e:
-            logging.exception("unexpected error loading bulk index", exc_info=True)
+            #logging.exception("unexpected error loading bulk index", exc_info=True)
             raise exceptions.StopEtlPipelineErrorException(e)
 
         if response.status_code != 200:
-            logging.error(
+            #logging.error(
                 f"failed to bulk load course search documents\n\
                             index-name: {self.index_name}\n\
                             status: {response.status_code}\n\
@@ -197,7 +197,7 @@ class SynonymMap:
             )
 
         except requests.exceptions.RequestException as e:
-            logging.exception("unexpected error creating course synonym", exc_info=True)
+            #logging.exception("unexpected error creating course synonym", exc_info=True)
             raise exceptions.StopEtlPipelineErrorException(e)
 
         if response.status_code == 201:
@@ -208,7 +208,7 @@ class SynonymMap:
             return
 
         if response.status_code == 404:
-            logging.warning(
+            #logging.warning(
                 f"failed to update course search synonyms, unable to find synonym; try creating synonym\n\
                             synonym-name: {self.synonym_name}\n\
                             status: {response.status_code}\n\
@@ -217,7 +217,7 @@ class SynonymMap:
 
             self.create()
         else:
-            logging.error(
+            #logging.error(
                 f"failed to update course search synonyms\n\
                             synonym-name: {self.synonym_name}\n\
                             status: {response.status_code}\n\
@@ -234,11 +234,11 @@ class SynonymMap:
             )
 
         except requests.exceptions.RequestException as e:
-            logging.exception("unexpected error creating course synonym", exc_info=True)
+            #logging.exception("unexpected error creating course synonym", exc_info=True)
             raise exceptions.StopEtlPipelineErrorException(e)
 
         if response.status_code != 201:
-            logging.error(
+            #logging.error(
                 f"failed to create course search synonyms, after failing to update synonyms\n\
                             synonym-name: {self.synonym_name}\n\
                             status: {response.status_code}\n\

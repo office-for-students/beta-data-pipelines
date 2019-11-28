@@ -6,12 +6,12 @@ to invoke the Azure function.
 """
 
 
-import logging
+import #logging
 import inspect
 import os
 import sys
 
-logging.basicConfig(level=logging.DEBUG)
+#logging.basicConfig(level=#logging.DEBUG)
 
 
 CURRENTDIR = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))

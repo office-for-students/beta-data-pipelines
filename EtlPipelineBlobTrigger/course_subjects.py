@@ -1,4 +1,4 @@
-import logging
+import #logging
 
 
 def get_subjects(raw_course_data):
