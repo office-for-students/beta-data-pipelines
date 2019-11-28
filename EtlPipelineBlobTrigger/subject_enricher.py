@@ -1,5 +1,3 @@
-import logging
-
 from SharedCode import utils
 
 

@@ -4,7 +4,6 @@
 
 import os
 import azure.functions as func
-import logging
 import json
 
 from .utils import get_url_from_req, OfsMissingUrlError
@@ -20,7 +19,6 @@ __email__ = "jillur.quddus@methods.co.uk"
 __status__ = "Development"
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
-    logging.info('IngestRawXmlHttpTrigger Python HTTP trigger function processed a request.')
 
     """ An Azure Function invoked by a HTTP Trigger that will make a HTTP request to 
     the HESA HTTP/REST endpoint in order to retrieve the raw XML data and thereafter
@@ -70,8 +68,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         blob_service = BlockBlobService(
             account_name = storage_account_name, 
             account_key = storage_account_key)
-        logging.info("Created Block Blob Service to Azure Storage Account '%s'", 
-            storage_account_name)
 
         # Copy the dummy raw HESA XML from the dummy to the landing BLOB container
         # Prefix the output BLOB name with the datetime it is being ingested
@@ -80,8 +76,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             container_name = output_container_name, 
             blob_name = output_blob_name_prefix + ingest_datetime + '-' + dummy_input_blob_name,
             copy_source = dummy_input_blob_url)
-        logging.info("Ingested raw HESA XML into Azure Storage Account Container '%s'", 
-            output_container_name)
 
         # Return an OK HTTP Response
         return func.HttpResponse(
@@ -90,8 +84,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
     except OfsMissingUrlError:
         # Return a Bad Request HTTP Response
-        logging.error(
-            "A URL to retrieve the raw XML data from HESA was not found in the POST request", exc_info=True)
         error_data = {
             'errors': [
                 {'resource_url': 'The URL to fetch the XML was not provided.'},
@@ -101,7 +93,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
     except Exception:
         # Return an Internal Server Error HTTP Response
-        logging.error("Raw HESA XML could not be ingested", exc_info=True)
         return func.HttpResponse(
             "Raw HESA XML could not be ingested",
             status_code=500)
