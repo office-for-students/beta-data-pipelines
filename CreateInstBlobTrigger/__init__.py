@@ -20,20 +20,20 @@ def main(xmlblob: func.InputStream, context: func.Context):
         dsh = DataSetHelper()
 
         #logging.info(
-        #    f"CreateInstBlobTrigger processing BLOB \n"
-        #    f"Name: {xmlblob.name}\n"
-        #    f"Blob Size: {xmlblob.length} bytes"
-        #)
+            f"CreateInstBlobTrigger processing BLOB \n"
+            f"Name: {xmlblob.name}\n"
+            f"Blob Size: {xmlblob.length} bytes"
+        )
 
         """ PREPARATION """
         xsd_filename = os.environ["XsdFilename"]
         xsd_path = os.path.join(context.function_directory, xsd_filename)
 
         #logging.info(
-        #    f"CreateInstBlobTrigger configuration values \n"
-        #    f"XsdFilename: {xsd_filename}\n"
-        #    f"XsdPath: {xsd_path}"
-        #)
+            f"CreateInstBlobTrigger configuration values \n"
+            f"XsdFilename: {xsd_filename}\n"
+            f"XsdPath: {xsd_path}"
+        )
 
         """ DECOMPRESSION - Decompress the compressed HESA XML """
         # The XML blob provided to this function will be gzip compressed.
@@ -89,8 +89,8 @@ def main(xmlblob: func.InputStream, context: func.Context):
         # Unexpected exception
         dsh.update_status("institutions", "failed")
         #logging.error(
-        #    "CreateInstBlogTrigger unexpected exception ", exc_info=True
-        #)
+            "CreateInstBlogTrigger unexpected exception ", exc_info=True
+        )
 
         # Raise to Azure
         raise e

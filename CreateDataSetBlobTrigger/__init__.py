@@ -21,10 +21,10 @@ from . import validators
 def main(xmlblob: func.InputStream, context: func.Context):
 
     #logging.info(
-    #    f"CreateDataSetBlobTrigger processing BLOB \n"
-    #    f"Name: {xmlblob.name}\n"
-    #    f"Blob Size: {xmlblob.length} bytes"
-    #)
+        f"CreateDataSetBlobTrigger processing BLOB \n"
+        f"Name: {xmlblob.name}\n"
+        f"Blob Size: {xmlblob.length} bytes"
+    )
     try:
 
         """ DECOMPRESSION - Decompress the compressed XML data"""
@@ -67,9 +67,9 @@ def main(xmlblob: func.InputStream, context: func.Context):
 
     except StopEtlPipelineErrorException as e:
         #logging.error(
-        #    "CreateDataSetBlogTrigger an error has stopped the pipeline",
-        #    exc_info=True,
-        #)
+            "CreateDataSetBlogTrigger an error has stopped the pipeline",
+            exc_info=True,
+        )
         error_message = (
             "An ERROR has been encountered during "
             "CreateDataSetBlobTrigger. "
@@ -79,8 +79,8 @@ def main(xmlblob: func.InputStream, context: func.Context):
 
     except Exception as e:
         #logging.error(
-        #    "CreateDataSetBlogTrigger unexpected exception raised",
-        #    exc_info=True,
-        #)
+            "CreateDataSetBlogTrigger unexpected exception raised",
+            exc_info=True,
+        )
         # Raise to Azure
         raise e

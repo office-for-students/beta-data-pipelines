@@ -15,10 +15,10 @@ def main(dataset: func.InputStream):
         dsh = DataSetHelper()
 
         #logging.info(
-        #    f"Python blob trigger function processed blob \n"
-        #    f"Name: {dataset.name}\n"
-        #    f"Blob Size: {dataset.length} bytes\n"
-        #)
+            f"Python blob trigger function processed blob \n"
+            f"Name: {dataset.name}\n"
+            f"Blob Size: {dataset.length} bytes\n"
+        )
 
         api_key = os.environ["SearchAPIKey"]
         search_url = os.environ["SearchURL"]
@@ -37,9 +37,9 @@ def main(dataset: func.InputStream):
         number_of_courses = len(courses)
 
         #logging.info(
-        #    f"attempting to load courses to azure search\n\
-        #                number_of_courses: {number_of_courses}\n"
-        #)
+            f"attempting to load courses to azure search\n\
+                        number_of_courses: {number_of_courses}\n"
+        )
 
         search.load_index(search_url, api_key, api_version, version, courses)
         dsh.update_status("search", "succeeded")

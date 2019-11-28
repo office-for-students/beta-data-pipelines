@@ -33,10 +33,10 @@ def main(xmlblob: func.InputStream, context: func.Context):
         dsh = DataSetHelper()
 
         #logging.info(
-        #    f"EtlPipelineBlobTrigger Python BLOB trigger function processing BLOB \n"
-        #    f"Name: {xmlblob.name}\n"
-        #    f"Blob Size: {xmlblob.length} bytes"
-        #)
+            f"EtlPipelineBlobTrigger Python BLOB trigger function processing BLOB \n"
+            f"Name: {xmlblob.name}\n"
+            f"Blob Size: {xmlblob.length} bytes"
+        )
 
         """ 0. PREPARATION """
 
@@ -48,10 +48,10 @@ def main(xmlblob: func.InputStream, context: func.Context):
         xsd_path = os.path.join(context.function_directory, xsd_filename)
 
         #logging.info(
-        #    f"EtlPipelineBlobTrigger configuration values \n"
-        #    f"XsdFilename: {xsd_filename}\n"
-        #    f"XsdPath: {xsd_path}"
-        #)
+            f"EtlPipelineBlobTrigger configuration values \n"
+            f"XsdFilename: {xsd_filename}\n"
+            f"XsdPath: {xsd_path}"
+        )
 
         """ DECOMPRESSION - Decompress the compressed HESA XML """
         # Note the HESA XML blob provided to this function will be gzip compressed.
@@ -93,8 +93,8 @@ def main(xmlblob: func.InputStream, context: func.Context):
 
         pipeline_end_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
         #logging.info(
-        #    "ETL Pipeline successfully finished on " + pipeline_end_datetime
-        #)
+            "ETL Pipeline successfully finished on " + pipeline_end_datetime
+        )
 
     except exceptions.StopEtlPipelineWarningException:
 

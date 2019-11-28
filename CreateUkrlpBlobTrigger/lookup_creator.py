@@ -103,15 +103,15 @@ class LookupCreator:
 
         if self.ukrlp_no_info_list:
             #logging.info(
-            #    f"UKRLP did not return info for the following "
-            #    f"{len(self.ukrlp_no_info_list)} ukprn(s)"
-            #)
+                f"UKRLP did not return info for the following "
+                f"{len(self.ukrlp_no_info_list)} ukprn(s)"
+            )
             for ukprn in self.ukrlp_no_info_list:
                 #logging.info(f"{ukprn}")
 
         #logging.info(
-        #    f"DB entries existed for {len(self.db_entries_list)} ukprns tried"
-        #)
+            f"DB entries existed for {len(self.db_entries_list)} ukprns tried"
+        )
 
     def entry_exists(self, ukprn):
         """Check if the entry for a ukprn exists Cosmos DB"""
@@ -215,8 +215,8 @@ class LookupCreator:
 
         if not provider_contact:
             #logging.error(
-            #    f"No ProviderContact with type L or P from UKRLP for {ukprn}"
-            #)
+                f"No ProviderContact with type L or P from UKRLP for {ukprn}"
+            )
             return contact_details
 
         if provider_contact["ContactType"] == "L":
