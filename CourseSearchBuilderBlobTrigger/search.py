@@ -54,18 +54,18 @@ class Index:
 
         if response.status_code == 204:
             #logging.warn(
-                f"course search index already exists, successful deletion\
-                           prior to recreation\n index: {self.index_name}"
-            )
+                #f"course search index already exists, successful deletion\
+                #           prior to recreation\n index: {self.index_name}"
+            #)
 
         elif response.status_code != 404:
             # 404 is the expected response, because normally the
             # course search index will not exist
             #logging.error(
-                f"unexpected response when deleting existing search index,\
-                            search_response: {response.json()}\nindex-name:\
-                            {self.index_name}\nstatus: {response.status_code}"
-            )
+                #f"unexpected response when deleting existing search index,\
+                 #           search_response: {response.json()}\nindex-name:\
+                #            {self.index_name}\nstatus: {response.status_code}"
+            #)
 
             raise exceptions.StopEtlPipelineErrorException
 
@@ -84,11 +84,11 @@ class Index:
 
         if response.status_code != 201:
             #logging.error(
-                f"failed to create search index\n\
-                            index-name: {self.index_name}\n\
-                            status: {response.status_code}\n\
-                            error: {requests.exceptions.HTTPError(response.text)}"
-            )
+            #    f"failed to create search index\n\
+            #                index-name: {self.index_name}\n\
+            #                status: {response.status_code}\n\
+            #                error: {requests.exceptions.HTTPError(response.text)}"
+            #)
 
             raise exceptions.StopEtlPipelineErrorException
 
@@ -137,9 +137,9 @@ class Load:
                 self.bulk_create_courses(documents)
 
                 #logging.info(
-                    f"successfully loaded {course_count} courses into azure search\n\
-                        index: {self.index_name}\n"
-                )
+                #    f"successfully loaded {course_count} courses into azure search\n\
+                #        index: {self.index_name}\n"
+                #)
 
                 # Empty variables
                 documents = {}
@@ -163,11 +163,11 @@ class Load:
 
         if response.status_code != 200:
             #logging.error(
-                f"failed to bulk load course search documents\n\
-                            index-name: {self.index_name}\n\
-                            status: {response.status_code}\n\
-                            error: {requests.exceptions.HTTPError(response.text)}"
-            )
+            #    f"failed to bulk load course search documents\n\
+            #                index-name: {self.index_name}\n\
+            #                status: {response.status_code}\n\
+            #                error: {requests.exceptions.HTTPError(response.text)}"
+            #)
 
             raise exceptions.StopEtlPipelineErrorException()
 
@@ -209,20 +209,20 @@ class SynonymMap:
 
         if response.status_code == 404:
             #logging.warning(
-                f"failed to update course search synonyms, unable to find synonym; try creating synonym\n\
-                            synonym-name: {self.synonym_name}\n\
-                            status: {response.status_code}\n\
-                            error: {requests.exceptions.HTTPError(response.text)}"
-            )
+            #    f"failed to update course search synonyms, unable to find synonym; try creating synonym\n\
+            #                synonym-name: {self.synonym_name}\n\
+            #                status: {response.status_code}\n\
+            #                error: {requests.exceptions.HTTPError(response.text)}"
+            #)
 
             self.create()
         else:
             #logging.error(
-                f"failed to update course search synonyms\n\
-                            synonym-name: {self.synonym_name}\n\
-                            status: {response.status_code}\n\
-                            error: {requests.exceptions.HTTPError(response.text)}"
-            )
+            #    f"failed to update course search synonyms\n\
+            #                synonym-name: {self.synonym_name}\n\
+            #                status: {response.status_code}\n\
+            #                error: {requests.exceptions.HTTPError(response.text)}"
+            #)
 
             raise exceptions.StopEtlPipelineErrorException
 
@@ -239,11 +239,11 @@ class SynonymMap:
 
         if response.status_code != 201:
             #logging.error(
-                f"failed to create course search synonyms, after failing to update synonyms\n\
-                            synonym-name: {self.synonym_name}\n\
-                            status: {response.status_code}\n\
-                            error: {requests.exceptions.HTTPError(response.text)}"
-            )
+            #    f"failed to create course search synonyms, after failing to update synonyms\n\
+            #                synonym-name: {self.synonym_name}\n\
+            #                status: {response.status_code}\n\
+            #                error: {requests.exceptions.HTTPError(response.text)}"
+            #)
 
             raise exceptions.StopEtlPipelineErrorException
 

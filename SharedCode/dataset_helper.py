@@ -30,9 +30,9 @@ class DataSetHelper:
             dataset_doc["builds"][item]["status"] = value
         self.cosmos_client.UpsertItem(self.collection_link, dataset_doc)
         #logging.info(
-            f"DataSetHelper: updated '{item}' to '{value}' for "
-            f"DataSet version {dataset_doc['version']}"
-        )
+        #    f"DataSetHelper: updated '{item}' to '{value}' for "
+        #    f"DataSet version {dataset_doc['version']}"
+        #)
 
     def get_latest_doc(self):
         latest_version_number = self.get_latest_version_number()

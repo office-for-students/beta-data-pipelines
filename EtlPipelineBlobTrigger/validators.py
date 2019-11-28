@@ -52,9 +52,9 @@ def validate_unavailable_reason_code(unavail_reason_code):
     valid_codes = ["0", "1", "2"]
     if unavail_reason_code not in valid_codes:
         #logging.error(
-            f"The unavailable reason code is invalid {unavail_reason_code}",
-            exc_info=True,
-        )
+        #    f"The unavailable reason code is invalid {unavail_reason_code}",
+        #    exc_info=True,
+        #)
         raise exceptions.StopEtlPipelineErrorException
 
 
@@ -64,9 +64,9 @@ def validate_leo_unavailable_reason_code(unavail_reason_code):
     valid_codes = ["1", "2"]
     if unavail_reason_code not in valid_codes:
         #logging.error(
-            f"The unavailable reason code is invalid {unavail_reason_code}",
-            exc_info=True,
-        )
+        #    f"The unavailable reason code is invalid {unavail_reason_code}",
+        #    exc_info=True,
+        #)
         raise exceptions.StopEtlPipelineErrorException
 
 
@@ -74,9 +74,9 @@ def validate_leo_element_with_data(xml_elem, country_code):
     """Check the country code is XF is we have data"""
     if country_code != "XF":
         #logging.error(
-            f"Unexpected country_code {country_code} with LEO data {xml_elem}",
-            exc_info=True,
-        )
+        #    f"Unexpected country_code {country_code} with LEO data {xml_elem}",
+        #    exc_info=True,
+        #)
         raise exceptions.StopEtlPipelineErrorException
 
 

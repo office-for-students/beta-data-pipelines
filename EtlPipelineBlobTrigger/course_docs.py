@@ -46,12 +46,12 @@ def load_course_docs(xml_string, version):
     cosmosdb_client = utils.get_cosmos_client()
 
     #logging.info(
-        "adding ukrlp data into memory ahead of building course documents"
-    )
+    #    "adding ukrlp data into memory ahead of building course documents"
+    #)
     enricher = UkRlpCourseEnricher()
     #logging.info(
-        "adding subject data into memory ahead of building course documents"
-    )
+    #    "adding subject data into memory ahead of building course documents"
+    #)
     subject_enricher = SubjectCourseEnricher()
 
     collection_link = utils.get_collection_link(
