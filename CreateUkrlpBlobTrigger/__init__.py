@@ -1,7 +1,7 @@
 """Contains the entry point for Create UKRLP lookups Azure Function implementation"""
 
 from datetime import datetime
-import #logging
+import logging
 import os
 import io
 import gzip
@@ -32,7 +32,7 @@ def main(xmlblob: func.InputStream):
     """
 
     try:
-        #logging.info(
+        logging.info(
             f"CreateUkrlpBlobTrigger creating UKRLP lookups\n"
             f"Name: {xmlblob.name}\n"
             f"Blob Size: {xmlblob.length} bytes"
@@ -42,7 +42,7 @@ def main(xmlblob: func.InputStream):
             "%Y%m%d %H%M%S"
         )
 
-        #logging.info(
+        logging.info(
             f"CreateUkrlp function started on {create_ukrlp_start_datetime}"
         )
 
@@ -73,7 +73,7 @@ def main(xmlblob: func.InputStream):
             account_name=storage_account_name, account_key=storage_account_key
         )
 
-        #logging.info(
+        logging.info(
             "Created Block Blob Service to Azure Storage Account {storage_account_name}"
         )
 
@@ -87,7 +87,7 @@ def main(xmlblob: func.InputStream):
         destination_blob_name = (
             f"{create_ukrlp_start_datetime}-{blob_filename}"
         )
-        #logging.info(
+        logging.info(
             f"Copy the XML we have processed to {destination_blob_name}"
         )
 
@@ -98,14 +98,14 @@ def main(xmlblob: func.InputStream):
         )
 
         create_ukrlp_end_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
-        #logging.info(
+        logging.info(
             f"CreateUkrlp successfully finished on {create_ukrlp_end_datetime}"
         )
 
     except Exception as e:
         # Unexpected exception
-        #logging.error("Unexpected exception")
-        #logging.error(traceback.format_exc())
+        logging.error("Unexpected exception")
+        logging.error(traceback.format_exc())
 
         # Raise to Azure
         raise e

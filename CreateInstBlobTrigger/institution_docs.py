@@ -8,7 +8,7 @@ bubble up.
 import copy
 import datetime
 import inspect
-import #logging
+import logging
 import os
 import sys
 
@@ -143,16 +143,16 @@ class InstitutionDocs:
             new_docs.append(self.get_institution_doc(institution, version))
             if sproc_count == 100:
                 cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
-                #logging.info(f"Successfully loaded another {sproc_count} documents")
+                logging.info(f"Successfully loaded another {sproc_count} documents")
                 # Reset values
                 new_docs = []
                 sproc_count = 0
 
         if sproc_count > 0:
             cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
-            #logging.info(f"Successfully loaded another {sproc_count} documents")
+            logging.info(f"Successfully loaded another {sproc_count} documents")
 
-        #logging.info(f"Processed {institution_count} institutions")
+        logging.info(f"Processed {institution_count} institutions")
 
 
 def get_country(code):

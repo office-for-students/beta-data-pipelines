@@ -1,5 +1,5 @@
 import inspect
-import #logging
+import logging
 import os
 import sys
 
@@ -16,7 +16,7 @@ from SharedCode.utils import get_cosmos_client, get_collection_link
 
 class DataSetHelper:
     def __init__(self):
-        #logging.info("Init for DataSetHelper")
+        logging.info("Init for DataSetHelper")
         self.cosmos_client = get_cosmos_client()
         self.collection_link = get_collection_link(
             "AzureCosmosDbDatabaseId", "AzureCosmosDbDataSetCollectionId"
@@ -29,7 +29,7 @@ class DataSetHelper:
         else:
             dataset_doc["builds"][item]["status"] = value
         self.cosmos_client.UpsertItem(self.collection_link, dataset_doc)
-        #logging.info(
+        logging.info(
             f"DataSetHelper: updated '{item}' to '{value}' for "
             f"DataSet version {dataset_doc['version']}"
         )

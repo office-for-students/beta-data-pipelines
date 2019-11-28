@@ -1,5 +1,5 @@
 import inspect
-import #logging
+import logging
 import os
 import sys
 
@@ -29,7 +29,7 @@ class DataSetCreator:
             if not self.has_enough_time_elaspsed_since_last_dataset_created():
                 raise DataSetTooEarlyError
         self.dsh.create_item(dataset_doc)
-        #logging.info(f"Created new vertsion {dataset_doc['version']} DataSet")
+        logging.info(f"Created new vertsion {dataset_doc['version']} DataSet")
 
     def get_next_dataset_doc(self):
         next_version_number = self.get_next_dataset_version_number()
