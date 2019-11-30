@@ -1,3 +1,5 @@
+import logging
+
 import defusedxml.ElementTree as ET
 
 from SharedCode.exceptions import XmlValidationError
@@ -9,4 +11,5 @@ def parse_xml_data(xml_string):
     try:
         ET.fromstring(xml_string)
     except ET.ParseError as e:
+        logging.error("Error unable to parse the XML.")
         raise XmlValidationError
