@@ -4,6 +4,7 @@
 
 import gzip
 import io
+import logging
 import os
 from datetime import datetime
 from distutils.util import strtobool
@@ -31,13 +32,26 @@ def main(xmlblob: func.InputStream, context: func.Context):
 
         dsh = DataSetHelper()
 
+        logging.info(
+            f"EtlPipelineBlobTrigger Python BLOB trigger function processing BLOB \n"
+            f"Name: {xmlblob.name}\n"
+            f"Blob Size: {xmlblob.length} bytes"
+        )
+
         """ 0. PREPARATION """
 
         # Log the start of the ETL Pipeline execution
         pipeline_start_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
+        logging.info("ETL Pipeline started on " + pipeline_start_datetime)
 
         xsd_filename = os.environ["XsdFilename"]
         xsd_path = os.path.join(context.function_directory, xsd_filename)
+
+        logging.info(
+            f"EtlPipelineBlobTrigger configuration values \n"
+            f"XsdFilename: {xsd_filename}\n"
+            f"XsdPath: {xsd_path}"
+        )
 
         """ DECOMPRESSION - Decompress the compressed HESA XML """
         # Note the HESA XML blob provided to this function will be gzip compressed.
@@ -78,6 +92,9 @@ def main(xmlblob: func.InputStream, context: func.Context):
         """ CLEANUP """
 
         pipeline_end_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
+        logging.info(
+            "ETL Pipeline successfully finished on " + pipeline_end_datetime
+        )
 
     except exceptions.StopEtlPipelineWarningException:
 
@@ -89,4 +106,7 @@ def main(xmlblob: func.InputStream, context: func.Context):
             "The Pipeline will be stopped since StopEtlPipelineOnWarning has been "
             "set to TRUE in the Application Settings."
         )
+        logging.error(error_message)
+        pipeline_fail_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
+        logging.error(f"ETL Pipeline failed on {pipeline_fail_datetime}")
         raise Exception(error_message)

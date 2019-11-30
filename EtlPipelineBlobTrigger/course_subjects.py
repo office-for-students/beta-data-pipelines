@@ -1,3 +1,6 @@
+import logging
+
+
 def get_subjects(raw_course_data):
     """Extracts and transforms the SBJ entries in a KISCOURSE"""
 
