@@ -85,7 +85,7 @@ class LookupCreator:
 
             if sproc_count >= 100:
                 logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-                #self.cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
+                self.cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
                 logging.info(f"Successfully loaded another {sproc_count} documents")
                 # Reset values
                 new_docs = []
@@ -93,7 +93,7 @@ class LookupCreator:
 
         if sproc_count > 0:
             logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-            #self.cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
+            self.cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
             logging.info(f"Successfully loaded another {sproc_count} documents")
             # Reset values
             new_docs = []
