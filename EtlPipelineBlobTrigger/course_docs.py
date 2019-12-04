@@ -98,7 +98,7 @@ def load_course_docs(xml_string, version):
             sproc_count += 1
             course_count += 1
 
-            if sproc_count >= 100:
+            if sproc_count >= 70:
                 logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
                 cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
                 logging.info(f"Successfully loaded another {sproc_count} documents")
