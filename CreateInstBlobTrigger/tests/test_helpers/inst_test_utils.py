@@ -16,7 +16,7 @@ def get_first(Node):
         return x
 
 def remove_variable_elements(inst):
-    keys_to_delete = ['_id', 'created_at']
+    keys_to_delete = ['_id', 'created_at', 'partition_key']
     for key in keys_to_delete:
         del inst[key]
     return inst
