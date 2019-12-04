@@ -13,6 +13,7 @@ import inspect
 import logging
 import os
 import sys
+import time
 import defusedxml.ElementTree as ET
 
 import xmltodict
@@ -105,6 +106,7 @@ def load_course_docs(xml_string, version):
                 # Reset values
                 new_docs = []
                 sproc_count = 0
+                time.sleep(3)
 
 
     if sproc_count > 0:
