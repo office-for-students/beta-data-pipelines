@@ -42,7 +42,6 @@ from SharedCode.utils import get_english_welsh_item
 def load_course_docs(xml_string, version):
     """Parse HESA XML passed in and create JSON course docs in Cosmos DB."""
 
-    # TODO Investigate writing docs to CosmosDB in bulk to speed things up.
     cosmosdb_client = utils.get_cosmos_client()
 
     logging.info(
@@ -60,6 +59,12 @@ def load_course_docs(xml_string, version):
 
     # Import the XML dataset
     root = ET.fromstring(xml_string)
+
+    options = {"partitionKey": str(version)}
+    sproc_link = collection_link + "/sprocs/bulkImport"
+
+    new_docs = []
+    sproc_count = 0
 
     # Import accreditations, common, kisaims and location nodes
     accreditations = Accreditations(root)
@@ -88,8 +93,27 @@ def load_course_docs(xml_string, version):
             )
             enricher.enrich_course(course_doc)
             subject_enricher.enrich_course(course_doc)
-            cosmosdb_client.CreateItem(collection_link, course_doc)
+
+            new_docs.append(course_doc)
+            sproc_count += 1
             course_count += 1
+
+            if sproc_count >= 100:
+                logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
+                cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
+                logging.info(f"Successfully loaded another {sproc_count} documents")
+                # Reset values
+                new_docs = []
+                sproc_count = 0
+
+    
+    if sproc_count > 0:
+        logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
+        cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
+        logging.info(f"Successfully loaded another {sproc_count} documents")
+        # Reset values
+        new_docs = []
+        sproc_count = 0
 
     logging.info(f"Processed {course_count} courses")
 
@@ -142,6 +166,7 @@ def get_course_doc(
     outer_wrapper["institution_id"] = raw_inst_data["PUBUKPRN"]
     outer_wrapper["course_id"] = raw_course_data["KISCOURSEID"]
     outer_wrapper["course_mode"] = int(raw_course_data["KISMODE"])
+    outer_wrapper["partition_key"] = str(version)
 
     course = {}
 

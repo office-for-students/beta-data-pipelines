@@ -142,6 +142,7 @@ class InstitutionDocs:
             sproc_count += 1
             new_docs.append(self.get_institution_doc(institution, version))
             if sproc_count == 100:
+                logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
                 cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
                 logging.info(f"Successfully loaded another {sproc_count} documents")
                 # Reset values
@@ -149,6 +150,7 @@ class InstitutionDocs:
                 sproc_count = 0
 
         if sproc_count > 0:
+            logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
             cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
             logging.info(f"Successfully loaded another {sproc_count} documents")
 
