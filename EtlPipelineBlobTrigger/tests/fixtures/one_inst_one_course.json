@@ -3,6 +3,7 @@
     "institution_id": "10000047",
     "course_id": "PSSFDOPTDIS",
     "course_mode": 1,
+    "partition_key": "56",
     "course": {
         "country": {
             "code": "XF",
