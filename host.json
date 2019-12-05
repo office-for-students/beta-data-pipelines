@@ -1,13 +1,13 @@
 {
   "version": "2.0",
   "extensionBundle": {
-    "id": "Microsoft.Azure.Functions.ExtensionBundle",
-    "version": "[1.*, 2.0.0)"
+    "id": "Microsoft.Azure.Functions.ExtensionBundle ",
+    "version": "1.0"
   },
   "functionTimeout": "04:00:00",
   "extensions": {
         "queues": {
-            "maxPollingInterval": "00:00:02",
+            "maxPollingInterval": "00:01:00",
             "visibilityTimeout" : "00:00:05",
             "batchSize": 1,
             "maxDequeueCount": 1
