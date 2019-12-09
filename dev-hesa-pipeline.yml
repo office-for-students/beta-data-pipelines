@@ -63,7 +63,7 @@ steps:
     cleanDestinationFolder: false
 
 
-- task: PythonScript@2
+- task: PythonScript@0
   displayName: 'Find latest kis.xml'
   inputs:
     scriptSource: 'inline'
@@ -84,7 +84,7 @@ steps:
       print('Found latest file!')
 
 
-- task: ArchiveFiles@3
+- task: ArchiveFiles@2
   displayName: 'Archive latest kis.xml'
   inputs:
     rootFolderOrFile: '$(Agent.TempDirectory)\latest_kis.xml'
@@ -95,7 +95,7 @@ steps:
     verbose: true
 
 
-- task: PythonScript@2
+- task: PythonScript@0
   displayName: 'Process kis.xml.tar'
   inputs:
     scriptSource: 'inline'
@@ -115,7 +115,7 @@ steps:
       print('Processed latest_kis.xml.tar!')
 
 
-- task: AzureFileCopy@5
+- task: AzureFileCopy@3
   displayName: 'Copy kis archive to storage blob'
   inputs:
     SourcePath: '$(Agent.TempDirectory)\latest_kis.xml.tar'
