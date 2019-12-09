@@ -82,3 +82,22 @@ steps:
           shutil.copy(kis_file, '$(Agent.TempDirectory)/latest_kis.xml')
 
       print('Found latest file!')
+
+
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Agent.TempDirectory)/latest_kis.xml'
+    includeRootFolder: false
+    archiveType: 'tar'
+    archiveFile: '$(Agent.TempDirectory)/latest_kis.xml.gz'
+    replaceExistingArchive: true
+    verbose: true
+
+
+- task: AzureFileCopy@3
+  inputs:
+    SourcePath: '$(Agent.TempDirectory)/latest_kis.xml.gz'
+    azureSubscription: '$(AzureSubscription)'
+    Destination: 'AzureBlob'
+    storage: '$(AzureStorageAccount)'
+    ContainerName: 'hesa-raw-xml-ingest'
