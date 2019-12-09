@@ -91,7 +91,6 @@ steps:
     includeRootFolder: false
     archiveType: 'tar'
     tarCompression: 'gz'
-    archiveFile: '$(Agent.TempDirectory)\latest_kis.xml.tar.gz'
     replaceExistingArchive: true
     verbose: true
 
@@ -99,7 +98,7 @@ steps:
 - task: AzureFileCopy@3
   displayName: 'Copy kis archive to storage blob'
   inputs:
-    SourcePath: '$(Agent.TempDirectory)\latest_kis.xml.tar.gz'
+    SourcePath: '$(Agent.TempDirectory)\latest_kis.xml.tar'
     azureSubscription: '$(AzureSubscription)'
     Destination: 'AzureBlob'
     storage: '$(AzureStorageAccount)'
