@@ -103,7 +103,7 @@ steps:
 - task: AzureFileCopy@3
   displayName: 'Copy kis archive to storage blob'
   inputs:
-    SourcePath: '$(Agent.TempDirectory)\latest.tar.gz'
+    SourcePath: '$(Agent.TempDirectory)\latest.xml.gz'
     azureSubscription: '$(AzureSubscription)'
     Destination: 'AzureBlob'
     storage: '$(AzureStorageAccount)'
