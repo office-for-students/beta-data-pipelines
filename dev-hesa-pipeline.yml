@@ -96,7 +96,7 @@ steps:
       print('Archiving file...')
 
       with open(r'$(Agent.TempDirectory)\latest.xml', 'rb') as f_in:
-          with tarfile.open(r'$(Agent.TempDirectory)\latest.xml.gz', 'wb') as f_out:
+          with gzip.open(r'$(Agent.TempDirectory)\latest.xml.gz', 'wb') as f_out:
               shutil.copyfileobj(f_in, f_out)
 
       print('Archive complete!')
