@@ -90,12 +90,14 @@ steps:
     scriptSource: 'inline'
     script: |
       """Archive the latest HESA kis xml file"""
-      import tarfile
+      import gzip
+      import shutil
   
       print('Archiving file...')
 
-      with tarfile.open(r'$(Agent.TempDirectory)\latest.xml.gz', 'w:gz') as f:
-          f.add(r'$(Agent.TempDirectory)\latest.xml')
+      with open(r'$(Agent.TempDirectory)\latest.xml', 'rb') as f_in:
+          with tarfile.open(r'$(Agent.TempDirectory)\latest.xml.gz', 'wb') as f_out:
+              shutil.copyfileobj(f_in, f_out)
 
       print('Archive complete!')
 
