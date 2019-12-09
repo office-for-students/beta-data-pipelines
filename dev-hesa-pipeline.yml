@@ -74,7 +74,7 @@ steps:
   
       print('Looking for file...')
 
-      for file in glob.glob('$(Agent.TempDirectory)\\latest_hesa_data/on_*'):
+      for file in glob.glob(r'$(Agent.TempDirectory)\latest_hesa_data\on_*'):
         for kis_file in glob.glob(r(file + '\kis*.xml')):
           print(r('Found matching file: ' + kis_file))
           print('Moving matching file...')
