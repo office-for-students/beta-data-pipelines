@@ -90,35 +90,16 @@ steps:
     rootFolderOrFile: '$(Agent.TempDirectory)\latest_kis.xml'
     includeRootFolder: true
     archiveType: 'tar'
-    archiveFile: '$(Agent.TempDirectory)\latest.tar.gz'
+    tarCompression: 'none'
+    archiveFile: '$(Agent.TempDirectory)\latest.tar'
     replaceExistingArchive: true
     verbose: true
-
-
-- task: PythonScript@0
-  displayName: 'Process kis.xml.tar'
-  inputs:
-    scriptSource: 'inline'
-    script: |
-      """Find the latest kis.xml from the HESA archive"""
-      import glob
-      import shutil
-  
-      print('Looking for file...')
-
-      for file in glob.glob(r'$(Agent.TempDirectory)\*.tar'):
-        print('Found matching file: ' + file)
-        print('Moving matching file...')
-
-        shutil.copy(file, r'$(Agent.TempDirectory)\latest_kis.xml.tar')
-
-      print('Processed latest_kis.xml.tar!')
 
 
 - task: AzureFileCopy@3
   displayName: 'Copy kis archive to storage blob'
   inputs:
-    SourcePath: '$(Agent.TempDirectory)\latest_kis.xml.tar'
+    SourcePath: '$(Agent.TempDirectory)\latest.tar'
     azureSubscription: '$(AzureSubscription)'
     Destination: 'AzureBlob'
     storage: '$(AzureStorageAccount)'
