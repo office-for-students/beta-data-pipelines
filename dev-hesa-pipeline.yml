@@ -1,11 +1,5 @@
 # DevOps Pipeline definition for the OFS Beta Backend Data Pipeline 
 
-# The code branch that will trigger a build
-schedules:
-- develop
-
-pr: none
-
 # Build Agent Resources
 pool:
   vmImage: 'ubuntu-latest'
@@ -59,7 +53,4 @@ steps:
               f.write(data)
 
       print('Download complete!')
-
-      
-            
 
