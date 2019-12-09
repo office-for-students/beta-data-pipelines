@@ -88,9 +88,9 @@ steps:
   displayName: 'Archive latest kis.xml'
   inputs:
     rootFolderOrFile: '$(Agent.TempDirectory)\latest_kis.xml'
-    includeRootFolder: false
+    includeRootFolder: true
     archiveType: 'tar'
-    archiveFile: '$(Agent.TempDirectory)\latest_kis.xml.tar'
+    archiveFile: '$(Agent.TempDirectory)\'
     replaceExistingArchive: true
     verbose: true
 
