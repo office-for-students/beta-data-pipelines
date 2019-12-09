@@ -88,6 +88,7 @@ steps:
   displayName: 'Archive latest kis.xml'
   inputs:
     rootFolderOrFile: '$(Agent.TempDirectory)\latest_kis.xml'
+    archiveFile: 'latest_kis.xml.tar'
     includeRootFolder: false
     archiveType: 'tar'
     tarCompression: 'gz'
