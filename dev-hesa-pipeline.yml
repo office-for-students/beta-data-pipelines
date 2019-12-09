@@ -63,7 +63,7 @@ steps:
     cleanDestinationFolder: false
 
 
-- task: PythonScript@0
+- task: PythonScript@2
   displayName: 'Find latest kis.xml'
   inputs:
     scriptSource: 'inline'
@@ -84,11 +84,10 @@ steps:
       print('Found latest file!')
 
 
-- task: ArchiveFiles@2
+- task: ArchiveFiles@3
   displayName: 'Archive latest kis.xml'
   inputs:
     rootFolderOrFile: '$(Agent.TempDirectory)\latest_kis.xml'
-    archiveFile: 'latest_kis.xml.tar'
     includeRootFolder: false
     archiveType: 'tar'
     tarCompression: 'gz'
@@ -96,7 +95,27 @@ steps:
     verbose: true
 
 
-- task: AzureFileCopy@3
+- task: PythonScript@2
+  displayName: 'Process kis.xml.tar'
+  inputs:
+    scriptSource: 'inline'
+    script: |
+      """Find the latest kis.xml from the HESA archive"""
+      import glob
+      import shutil
+  
+      print('Looking for file...')
+
+      for file in glob.glob(r'$(Agent.TempDirectory)\*.tar'):
+        print('Found matching file: ' + kis_file)
+        print('Moving matching file...')
+
+        shutil.copy(kis_file, r'$(Agent.TempDirectory)\latest_kis.xml.tar')
+
+      print('Processed latest_kis.xml.tar!')
+
+
+- task: AzureFileCopy@5
   displayName: 'Copy kis archive to storage blob'
   inputs:
     SourcePath: '$(Agent.TempDirectory)\latest_kis.xml.tar'
