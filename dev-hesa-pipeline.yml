@@ -90,7 +90,7 @@ steps:
     rootFolderOrFile: '$(Agent.TempDirectory)\latest_kis.xml'
     includeRootFolder: false
     archiveType: 'tar'
-    tarCompression: 'gz'
+    archiveFile: '$(Agent.TempDirectory)\latest_kis.xml.tar'
     replaceExistingArchive: true
     verbose: true
 
@@ -123,3 +123,4 @@ steps:
     Destination: 'AzureBlob'
     storage: '$(AzureStorageAccount)'
     ContainerName: 'hesa-raw-xml-ingest'
+
