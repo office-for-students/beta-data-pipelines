@@ -107,10 +107,10 @@ steps:
       print('Looking for file...')
 
       for file in glob.glob(r'$(Agent.TempDirectory)\*.tar'):
-        print('Found matching file: ' + kis_file)
+        print('Found matching file: ' + file)
         print('Moving matching file...')
 
-        shutil.copy(kis_file, r'$(Agent.TempDirectory)\latest_kis.xml.tar')
+        shutil.copy(file, r'$(Agent.TempDirectory)\latest_kis.xml.tar')
 
       print('Processed latest_kis.xml.tar!')
 
