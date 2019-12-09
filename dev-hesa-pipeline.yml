@@ -21,7 +21,7 @@ steps:
   displayName: 'Use Python $(python.version)'
 
 
-- task: DownloadHesaFile@0
+- task: PythonScript@0
   displayName: 'Export project path'
   inputs:
     scriptSource: 'inline'
