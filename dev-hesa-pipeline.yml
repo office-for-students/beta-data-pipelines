@@ -76,7 +76,7 @@ steps:
 
       for file in glob.glob(r'$(Agent.TempDirectory)\latest_hesa_data\on_*'):
         for kis_file in glob.glob(file + '\\kis*.xml'):
-          print(r('Found matching file: ' + kis_file))
+          print('Found matching file: ' + kis_file)
           print('Moving matching file...')
 
           shutil.copy(kis_file, r'$(Agent.TempDirectory)\latest_kis.xml')
