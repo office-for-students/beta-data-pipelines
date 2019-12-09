@@ -85,6 +85,7 @@ steps:
 
 
 - task: ArchiveFiles@2
+  displayName: 'Archive latest kis.xml'
   inputs:
     rootFolderOrFile: '$(Agent.TempDirectory)\latest_kis.xml'
     includeRootFolder: false
@@ -96,6 +97,7 @@ steps:
 
 
 - task: AzureFileCopy@3
+  displayName: 'Copy kis archive to storage blob'
   inputs:
     SourcePath: '$(Agent.TempDirectory)\latest_kis.xml.gz'
     azureSubscription: '$(AzureSubscription)'
