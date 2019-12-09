@@ -90,7 +90,7 @@ steps:
     rootFolderOrFile: '$(Agent.TempDirectory)\latest_kis.xml'
     includeRootFolder: true
     archiveType: 'tar'
-    archiveFile: '$(Agent.TempDirectory)\'
+    archiveFile: '$(Agent.TempDirectory)\latest_kis.xml.tar'
     replaceExistingArchive: true
     verbose: true
 
