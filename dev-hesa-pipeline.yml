@@ -45,7 +45,7 @@ steps:
       
       print('Beginning file download...')
 
-      with open('$(Agent.TempDirectory)' + 'hesa_data.zip', 'wb') as f:
+      with open('$(Agent.TempDirectory)/hesa_data.zip', 'wb') as f:
           while True:
               data = hesa_response.read(1024)
               if not data:
