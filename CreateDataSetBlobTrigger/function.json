@@ -2,10 +2,16 @@
   "scriptFile": "__init__.py",
   "bindings": [
     {
-      "name": "xmlblob",
-      "type": "blobTrigger",
+      "name": "functimer",
+      "type": "timerTrigger",
       "direction": "in",
-      "path": "hesa-raw-xml-ingest/{name}",
+      "schedule": "0 0 23 * * *"
+    },
+    {
+      "name": "msgout",
+      "type": "queue",
+      "direction": "out",
+      "queueName": "data-pipeline-ukrlp-queue",
       "connection": "AzureStorageAccountConnectionString"
     }
   ]

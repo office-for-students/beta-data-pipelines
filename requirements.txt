@@ -1,3 +1,4 @@
+azure==4.0.0
 azure-cosmos==3.1.1
 azure-functions==1.0.3
 azure-functions-worker==1.0.0

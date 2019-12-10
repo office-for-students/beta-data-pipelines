@@ -14,25 +14,18 @@ from SharedCode.blob_helper import BlobHelper
 from .institution_docs import InstitutionDocs
 
 
-def main(xmlblob: func.InputStream, context: func.Context):
+def main(msgin: func.QueueMessage, msgout: func.Out[str]):
 
     try:
         dsh = DataSetHelper()
 
         logging.info(
-            f"CreateInstBlobTrigger processing BLOB \n"
-            f"Name: {xmlblob.name}\n"
-            f"Blob Size: {xmlblob.length} bytes"
+            f"CreateInstBlobTrigger message queue triggered\n"
         )
 
-        """ PREPARATION """
-        xsd_filename = os.environ["XsdFilename"]
-        xsd_path = os.path.join(context.function_directory, xsd_filename)
-
+        function_start_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
         logging.info(
-            f"CreateInstBlobTrigger configuration values \n"
-            f"XsdFilename: {xsd_filename}\n"
-            f"XsdPath: {xsd_path}"
+            f"CreateInstBlobTrigger function started on {function_start_datetime}"
         )
 
         """ DECOMPRESSION - Decompress the compressed HESA XML """
@@ -41,17 +34,9 @@ def main(xmlblob: func.InputStream, context: func.Context):
         # where Functions written in Python do not get triggered # correctly with large blobs. Tests showed this is not a limitation
         # with Funtions written in C#.
 
-        # Read the compressed Blob into a BytesIO object
-        compressed_file = io.BytesIO(xmlblob.read())
+        blob_helper = BlobHelper()
 
-        # Read the compressed file into a GzipFile object
-        compressed_gzip = gzip.GzipFile(fileobj=compressed_file)
-
-        # Decompress the data
-        decompressed_file = compressed_gzip.read()
-
-        # Decode the bytes into a string
-        xml_string = decompressed_file.decode("utf-8")
+        xml_string = blob_helper.get_hesa_xml()
 
         """ LOADING - extract data and load JSON Documents """
 
@@ -63,12 +48,12 @@ def main(xmlblob: func.InputStream, context: func.Context):
         inst_docs.create_institution_docs(version)
         dsh.update_status("institutions", "succeeded")
 
-        """ PASS THE COMPRESSED XML TO NEXT AZURE FUNCTION IN THE PIPELINE"""
-        destination_container_name = os.environ["EtlInputContainerName"]
-        blob_helper = BlobHelper(xmlblob)
-        blob_helper.create_output_blob(destination_container_name)
+        function_end_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
+        logging.info(
+            f"CreateInstBlobTrigger successfully finished on {function_end_datetime}"
+        )
 
-        logging.info("CreateInstBlobTrigger successfully finished.")
+        msgout.set(f"CreateInstBlobTrigger successfully finished on {function_end_datetime}")
 
     except exceptions.StopEtlPipelineWarningException:
 
