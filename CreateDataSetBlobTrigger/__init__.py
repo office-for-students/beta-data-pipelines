@@ -6,7 +6,11 @@ import io
 import logging
 import os
 
+from datetime import datetime
+
 import azure.functions as func
+
+from azure.storage.blob import BlockBlobService
 
 from SharedCode.exceptions import (
     XmlValidationError,
@@ -18,23 +22,21 @@ from .dataset_creator import DataSetCreator
 from . import validators
 
 
-def main(xmlblob: func.InputStream, context: func.Context):
+def main(functimer: func.TimerRequest, msgout: func.Out[str]) -> None:
 
     logging.info(
-        f"CreateDataSetBlobTrigger processing BLOB \n"
-        f"Name: {xmlblob.name}\n"
-        f"Blob Size: {xmlblob.length} bytes"
+        f"CreateDataSetBlobTrigger timer triggered\n"
     )
+
+    function_start_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
+    logging.info(
+        f"CreateDataSetBlobTrigger function started on {function_start_datetime}"
+    )
+
     try:
+        blob_helper = BlobHelper()
 
-        """ DECOMPRESSION - Decompress the compressed XML data"""
-        compressed_file = io.BytesIO(xmlblob.read())
-
-        compressed_gzip = gzip.GzipFile(fileobj=compressed_file)
-
-        decompressed_file = compressed_gzip.read()
-
-        xml_string = decompressed_file.decode("utf-8")
+        xml_string = blob_helper.get_hesa_xml()
 
         """ BASIC XML Validation """
         try:
@@ -58,12 +60,12 @@ def main(xmlblob: func.InputStream, context: func.Context):
             logging.info("CreateDataSetBlobTrigger is being stopped.")
             return
 
-        logging.info("CreateDataSetBlobTrigger successfully finished.")
+        function_end_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
+        logging.info(
+            f"CreateDataSetBlobTrigger successfully finished on {function_end_datetime}"
+        )
 
-        """ PASS THE COMPRESSED XML TO NEXT AZURE FUNCTION IN THE PIPELINE"""
-        destination_container_name = os.environ["UkrlpInputContainerName"]
-        blob_helper = BlobHelper(xmlblob)
-        blob_helper.create_output_blob(destination_container_name)
+        msgout.set(f"CreateDataSetBlobTrigger successfully finished on {function_end_datetime}")
 
     except StopEtlPipelineErrorException as e:
         logging.error(

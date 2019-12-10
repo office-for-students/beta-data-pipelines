@@ -2,10 +2,17 @@
   "scriptFile": "__init__.py",
   "bindings": [
     {
-      "name": "xmlblob",
-      "type": "blobTrigger",
+      "name": "msgin",
+      "type": "queueTrigger",
       "direction": "in",
-      "path": "ukrlp-input/{name}",
+      "queueName": "data-pipeline-ukrlp-queue",
+      "connection": "AzureStorageAccountConnectionString"
+    },
+    {
+      "name": "msgout",
+      "type": "queue",
+      "direction": "out",
+      "queueName": "data-pipeline-institutions-queue",
       "connection": "AzureStorageAccountConnectionString"
     }
   ]

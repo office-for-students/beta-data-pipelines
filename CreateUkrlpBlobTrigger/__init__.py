@@ -11,10 +11,12 @@ import azure.functions as func
 
 from azure.storage.blob import BlockBlobService
 
+from SharedCode.blob_helper import BlobHelper
+
 from .lookup_creator import LookupCreator
 
 
-def main(xmlblob: func.InputStream):
+def main(msgin: func.QueueMessage, msgout: func.Out[str]):
     """Creates the UKRLP lookup tables for later use
 
     This Azure Function carries out the following steps:
@@ -33,74 +35,28 @@ def main(xmlblob: func.InputStream):
 
     try:
         logging.info(
-            f"CreateUkrlpBlobTrigger creating UKRLP lookups\n"
-            f"Name: {xmlblob.name}\n"
-            f"Blob Size: {xmlblob.length} bytes"
+            f"CreateUkrlpBlobTrigger message queue triggered"
         )
 
-        create_ukrlp_start_datetime = datetime.today().strftime(
-            "%Y%m%d %H%M%S"
-        )
-
+        function_start_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
         logging.info(
-            f"CreateUkrlp function started on {create_ukrlp_start_datetime}"
+            f"CreateUkrlp function started on {function_start_datetime}"
         )
 
-        # Read the compressed Blob into a BytesIO object
-        compressed_file = io.BytesIO(xmlblob.read())
-
-        # Read the compressed file into a GzipFile object
-        compressed_gzip = gzip.GzipFile(fileobj=compressed_file)
-
-        # Decompress the data
-        decompressed_file = compressed_gzip.read()
-
-        # Decode the bytes into a string
-        xml_string = decompressed_file.decode("utf-8")
+        blob_helper = BlobHelper()
+        
+        xml_string = blob_helper.get_hesa_xml()
 
         # Parse the xml and create the lookups
         lookup_creator = LookupCreator(xml_string)
         lookup_creator.create_ukrlp_lookups()
 
-        #
-        # Copy the compressed HESA XML to the Blob storage monitored by Etl pipeline
-        #
-        storage_account_name = os.environ["AzureStorageAccountName"]
-        storage_account_key = os.environ["AzureStorageAccountKey"]
-
-        # Instantiate the Block Blob Service
-        blob_service = BlockBlobService(
-            account_name=storage_account_name, account_key=storage_account_key
-        )
-
+        function_end_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
         logging.info(
-            "Created Block Blob Service to Azure Storage Account {storage_account_name}"
+            f"CreateUkrlp successfully finished on {function_end_datetime}"
         )
 
-        # Copy the dummy HESA XML we've just processed to the Institution input BLOB container
-        output_container_name = os.environ["InstInputContainerName"]
-        dummy_etl_blob_name = os.environ["DummyEtlBlobName"]
-        source_url = os.environ["CreateUkrlpSourceUrl"]
-
-        source_url += xmlblob.name
-        blob_filename = xmlblob.name.split("/")[1]
-        destination_blob_name = (
-            f"{create_ukrlp_start_datetime}-{blob_filename}"
-        )
-        logging.info(
-            f"Copy the XML we have processed to {destination_blob_name}"
-        )
-
-        blob_service.copy_blob(
-            container_name=output_container_name,
-            blob_name=destination_blob_name,
-            copy_source=source_url,
-        )
-
-        create_ukrlp_end_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
-        logging.info(
-            f"CreateUkrlp successfully finished on {create_ukrlp_end_datetime}"
-        )
+        msgout.set(f"CreateUkrlp successfully finished on {function_end_datetime}")
 
     except Exception as e:
         # Unexpected exception

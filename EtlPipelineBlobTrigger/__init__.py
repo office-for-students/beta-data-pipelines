@@ -19,7 +19,7 @@ from SharedCode import exceptions
 from . import course_docs, validators
 
 
-def main(xmlblob: func.InputStream, context: func.Context):
+def main(msgin: func.QueueMessage, msgout: func.Out[str]):
 
     """ Master ETL Pipeline - note that currently, the end-to-end ETL pipeline is
     executed via this single Azure Function which calls other Python functions
@@ -33,24 +33,12 @@ def main(xmlblob: func.InputStream, context: func.Context):
         dsh = DataSetHelper()
 
         logging.info(
-            f"EtlPipelineBlobTrigger Python BLOB trigger function processing BLOB \n"
-            f"Name: {xmlblob.name}\n"
-            f"Blob Size: {xmlblob.length} bytes"
+            f"EtlPipelineBlobTrigger message queue triggered\n"
         )
 
-        """ 0. PREPARATION """
-
-        # Log the start of the ETL Pipeline execution
-        pipeline_start_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
-        logging.info("ETL Pipeline started on " + pipeline_start_datetime)
-
-        xsd_filename = os.environ["XsdFilename"]
-        xsd_path = os.path.join(context.function_directory, xsd_filename)
-
+        function_start_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
         logging.info(
-            f"EtlPipelineBlobTrigger configuration values \n"
-            f"XsdFilename: {xsd_filename}\n"
-            f"XsdPath: {xsd_path}"
+            f"EtlPipelineBlobTrigger function started on {function_start_datetime}"
         )
 
         """ DECOMPRESSION - Decompress the compressed HESA XML """
@@ -60,22 +48,9 @@ def main(xmlblob: func.InputStream, context: func.Context):
         # correctly with large blobs. Tests showed this is not a limitation
         # with Funtions written in C#.
 
-        # Read the compressed Blob into a BytesIO object
-        compressed_file = io.BytesIO(xmlblob.read())
+        blob_helper = BlobHelper()
 
-        # Read the compressed file into a GzipFile object
-        compressed_gzip = gzip.GzipFile(fileobj=compressed_file)
-
-        # Decompress the data
-        decompressed_file = compressed_gzip.read()
-
-        # Decode the bytes into a string
-        xml_string = decompressed_file.decode("utf-8")
-
-        """ VALIDATION - Validate the HESA Raw XML against the XSD """
-
-        # TODO fix failing validation.
-        # validators.validate_xml(xsd_path, xml_string)
+        xml_string = blob_helper.get_hesa_xml()
 
         """ LOADING - Parse XML and load enriched JSON docs to database """
 
@@ -84,17 +59,12 @@ def main(xmlblob: func.InputStream, context: func.Context):
         course_docs.load_course_docs(xml_string, version)
         dsh.update_status("courses", "succeeded")
 
-        """ KICK OFF COURSE SEARCH BUILDER """
-
-        blob_helper = BlobHelper()
-        blob_helper.create_blob_for_course_search_builder(version)
-
-        """ CLEANUP """
-
-        pipeline_end_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
+        function_end_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
         logging.info(
-            "ETL Pipeline successfully finished on " + pipeline_end_datetime
+            f"EtlPipelineBlobTrigger successfully finished on {function_end_datetime}"
         )
+
+        msgout.set(f"EtlPipelineBlobTrigger successfully finished on {function_end_datetime}")
 
     except exceptions.StopEtlPipelineWarningException:
 
@@ -108,5 +78,5 @@ def main(xmlblob: func.InputStream, context: func.Context):
         )
         logging.error(error_message)
         pipeline_fail_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
-        logging.error(f"ETL Pipeline failed on {pipeline_fail_datetime}")
+        logging.error(f"EtlPipelineBlobTrigger failed on {pipeline_fail_datetime}")
         raise Exception(error_message)
