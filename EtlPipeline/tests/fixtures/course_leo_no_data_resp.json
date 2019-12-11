@@ -1,0 +1,9 @@
+[
+    {
+        "unavailable": {
+            "code": 1,
+            "reason_english": "There is no data available for the subject area of this course. This may be because we only have data for a small number of students or because we do not yet have data. This does not reflect on the quality of the course.",
+            "reason_welsh": "Nid oes data ar gael ar gyfer maes pwnc y cwrs hwn. Gallai hyn fod oherwydd bod gennym ddata ar gyfer nifer fechan o fyfyrwyr yn unig neu am nad oes gennym ddata eto. Nid yw hyn yn adlewyrchu ansawdd y cwrs."
+        }
+    }
+]

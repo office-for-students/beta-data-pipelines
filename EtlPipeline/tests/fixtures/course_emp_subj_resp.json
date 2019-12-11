@@ -1,0 +1,23 @@
+[
+    {
+        "aggregation_level": 13,
+        "assumed_to_be_unemployed": 0,
+        "in_study": 15,
+        "in_work": 75,
+        "in_work_and_study": 10,
+        "in_work_or_study": 100,
+        "not_available_for_work_or_study": 0,
+        "number_of_students": 20,
+        "response_rate": 88,
+        "subject": {
+            "code": "CAH06-01-01",
+            "english_label": "Animal science",
+            "welsh_label": "Gwyddorau anifeiliaid"
+        },
+        "unavailable": {
+            "code": 0,
+            "reason_english": "There was not enough data to publish information specifically for this course. This is either because the course size is small or not enough students responded to a survey. For this reason, the data displayed is for all students in Animal science.",
+            "reason_welsh": "Nid oedd digon o ddata ar gael i gyhoeddi gwybodaeth yn benodol ar gyfer y cwrs hwn. Mae hyn naill ai oherwydd bod maint y cwrs yn fach neu am nad ymatebodd digon o fyfyrwyr i arolwg. Am y rheswm hwn, mae'r data a ddangosir ar gyfer yr holl fyfyrwyr mewn Gwyddorau anifeiliaid."
+        }
+    }
+]

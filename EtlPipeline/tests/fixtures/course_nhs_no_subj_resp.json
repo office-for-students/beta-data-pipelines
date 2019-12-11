@@ -1,0 +1,31 @@
+[
+    {
+        "aggregation_level": 14,
+        "number_of_students": 385,
+        "question_1": {
+            "description": "I received sufficient preparatory information prior to my placement(s)",
+            "agree_or_strongly_agree": 83
+        },
+        "question_2": {
+            "description": "I was allocated placement(s) suitable for my course",
+            "agree_or_strongly_agree": 87
+        },
+        "question_3": {
+            "description": "I received appropriate supervision on placement(s)",
+            "agree_or_strongly_agree": 79
+        },
+        "question_4": {
+            "description": "I was given opportunities to meet my required practice learning outcomes/competences",
+            "agree_or_strongly_agree": 89
+        },
+        "question_5": {
+            "description": "My contribution during placement(s) as part of a clinical team was valued",
+            "agree_or_strongly_agree": 86
+        },
+        "question_6": {
+            "description": "My practice supervisor(s) understood how my placement(s) related to the broader requirements of my course",
+            "agree_or_strongly_agree": 82
+        },
+        "response_rate": 89
+    }
+]

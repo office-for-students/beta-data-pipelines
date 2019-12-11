@@ -103,4 +103,6 @@ steps:
     azureSubscription: '$(AzureSubscription)'
     Destination: 'AzureBlob'
     storage: '$(AzureStorageAccount)'
-    ContainerName: 'hesa-raw-xml-ingest'
+    ContainerName: '$(AzureStorageBlob)'
+
+    
