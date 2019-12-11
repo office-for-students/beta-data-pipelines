@@ -2,7 +2,7 @@ import unittest
 import defusedxml.ElementTree as ET
 
 from inst_test_utils import get_string
-from CreateInstBlobTrigger.locations import Locations
+from CreateInst.locations import Locations
 
 
 class TestLocationLookup(unittest.TestCase):
