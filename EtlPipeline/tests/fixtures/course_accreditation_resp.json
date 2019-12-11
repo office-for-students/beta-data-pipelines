@@ -1,0 +1,34 @@
+[
+    {
+        "type": "01105",
+        "accreditor_url": "http://www.engc.org.uk/informationfor/students-apprentices-and-graduates/",
+        "text": {
+            "english": "Accredited by BCS, the Chartered Institute for IT on behalf of the Engineering Council for the purposes of fully meeting the academic requirement for Incorporated Engineer and partially meeting the academic requirement for a Chartered Engineer.",
+            "welsh": "Cydnabuwyd gan BCS, y Sefydliad Siartredig ar gyfer TG ar ran y Cyngor Peirianneg at bwrpasau cwrdd yn llawn â'r gofyniad academaidd ar gyfer Peiriannydd Corfforedig a chwrdd yn rhannol â'r gofyniad academaidd ar gyfer Peiriannydd Siartredig."
+        },
+        "url": {
+            "english": "http://www.swansea.ac.uk/undergraduate/courses/science/computer-science/bsc-computer-science-g400/",
+            "welsh": "http://www.swansea.ac.uk/cy/israddedig/cyrsiau/gwyddoniaeth/cyfrifiadureg/bsc-cyfrifiadureg-g400/"
+        },
+        "dependent_on": {
+            "code": 1,
+            "label": "Accreditation is dependent on student choice"
+        }
+    },
+    {
+        "type": "01101",
+        "accreditor_url": "http://www.bcs.org/accredited",
+        "text": {
+            "english": "Accredited by BCS, the Chartered Institute for IT for the purposes of fully meeting the academic requirement for registration as a Chartered IT Professional.",
+            "welsh": "Achredir gan BCS, Sefydliad Siartredig TG at ddibenion llawn cwrdd â'r gofynion academaidd ar gyfer cofrestru fel TG Proffesiynol Siartredig."
+        },
+        "url": {
+            "english": "http://www.swansea.ac.uk/undergraduate/courses/science/computer-science/bsc-computer-science-g400/",
+            "welsh": "http://www.swansea.ac.uk/cy/israddedig/cyrsiau/gwyddoniaeth/cyfrifiadureg/bsc-cyfrifiadureg-g400/"
+        },
+        "dependent_on": {
+            "code": 0,
+            "label": "Accreditation is not dependent on student choice"
+        }
+    }
+]

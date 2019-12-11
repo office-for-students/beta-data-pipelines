@@ -1,8 +1,0 @@
-{
-    "LEOAGG": ["aggregation_level", "M"],
-    "LEOUQ": ["higher_quartile", "O"],
-    "LEOLQ": ["lower_quartile", "O"],
-    "LEOMED": ["median", "O"],
-    "LEOPOP": ["number_of_graduates", "M"],
-    "LEOSBJ": ["subject", "O"]
-}

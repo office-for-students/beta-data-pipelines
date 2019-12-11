@@ -1,0 +1,203 @@
+[
+    {
+        "aggregation_level": 23,
+        "list": [
+            {
+                "job": "Sports and fitness occupations",
+                "percentage_of_students": "20",
+                "order": "1"
+            },
+            {
+                "job": "Health associate professionals",
+                "percentage_of_students": "15",
+                "order": "2"
+            },
+            {
+                "job": "Elementary occupations",
+                "percentage_of_students": "15",
+                "order": "3"
+            },
+            {
+                "job": "Therapy professionals",
+                "percentage_of_students": "10",
+                "order": "4"
+            },
+            {
+                "job": "Administrative occupations",
+                "percentage_of_students": "10",
+                "order": "5"
+            },
+            {
+                "job": "Caring personal services",
+                "percentage_of_students": "10",
+                "order": "6"
+            },
+            {
+                "job": "Health professionals",
+                "percentage_of_students": "5",
+                "order": "7"
+            },
+            {
+                "job": "Business and public service associate professionals",
+                "percentage_of_students": "5",
+                "order": "8"
+            },
+            {
+                "job": "Sales occupations",
+                "percentage_of_students": "5",
+                "order": "9"
+            },
+            {
+                "job": "Customer service occupations",
+                "percentage_of_students": "5",
+                "order": "10"
+            }
+        ],
+        "number_of_students": 20,
+        "response_rate": 75,
+        "subject": {
+            "code": "CAH02-03-12",
+            "english_label": "Subjects allied to medicine (other)",
+            "welsh_label": "Pynciau\u2019n gysylltiedig \u00e2 meddygaeth (arall)"
+        },
+        "unavailable": {
+            "code": 1,
+            "reason_english": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in Subjects allied to medicine (other) for the most recent two years.",
+            "reason_welsh": "Nid oes data ar gael ar gyfer y cwrs hwn. Mae hyn oherwydd nad yw'r cwrs wedi'i gynnal eto neu am nad yw wedi cael ei gynnal yn ddigon hir i'r data hwn fod ar gael. Am y rheswm hwn, mae'r data a ddangosir ar gyfer myfyrwyr ar gyrsiau eraill mewn Pynciau\u2019n gysylltiedig \u00e2 meddygaeth (arall) ar gyfer y ddwy flynedd fwyaf diweddar."
+        }
+    },
+    {
+        "aggregation_level": 13,
+        "list": [
+            {
+                "job": "Elementary occupations",
+                "percentage_of_students": "30",
+                "order": "1"
+            },
+            {
+                "job": "Business and public service associate professionals",
+                "percentage_of_students": "10",
+                "order": "2"
+            },
+            {
+                "job": "Childcare and related personal services",
+                "percentage_of_students": "10",
+                "order": "3"
+            },
+            {
+                "job": "Sales occupations",
+                "percentage_of_students": "10",
+                "order": "4"
+            },
+            {
+                "job": "Natural and social science professionals",
+                "percentage_of_students": "10",
+                "order": "5"
+            },
+            {
+                "job": "Secretarial and related occupations",
+                "percentage_of_students": "10",
+                "order": "6"
+            },
+            {
+                "job": "Skilled trades occupations",
+                "percentage_of_students": "10",
+                "order": "7"
+            },
+            {
+                "job": "Teaching and educational professionals",
+                "percentage_of_students": "5",
+                "order": "8"
+            },
+            {
+                "job": "Science, engineering and technology associate professionals",
+                "percentage_of_students": "5",
+                "order": "9"
+            },
+            {
+                "job": "Administrative occupations",
+                "percentage_of_students": "5",
+                "order": "10"
+            }
+        ],
+        "number_of_students": 25,
+        "response_rate": 85,
+        "subject": {
+            "code": "CAH03-01-10",
+            "english_label": "Biosciences (other)",
+            "welsh_label": "Biowyddorau (arall)"
+        },
+        "unavailable": {
+            "code": 1,
+            "reason_english": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in Biosciences (other).",
+            "reason_welsh": "Nid oes data ar gael ar gyfer y cwrs hwn. Mae hyn oherwydd nad yw'r cwrs wedi'i gynnal eto neu am nad yw wedi cael ei gynnal yn ddigon hir i'r data hwn fod ar gael. Am y rheswm hwn, mae'r data a ddangosir ar gyfer myfyrwyr ar gyrsiau eraill mewn Biowyddorau (arall)."
+        }
+    },
+    {
+        "aggregation_level": 13,
+        "list": [
+            {
+                "job": "Engineering professionals",
+                "percentage_of_students": "55",
+                "order": "1"
+            },
+            {
+                "job": "Science, engineering and technology associate professionals",
+                "percentage_of_students": "15",
+                "order": "2"
+            },
+            {
+                "job": "Business, research and administrative professionals",
+                "percentage_of_students": "5",
+                "order": "3"
+            },
+            {
+                "job": "Skilled trades occupations",
+                "percentage_of_students": "5",
+                "order": "4"
+            },
+            {
+                "job": "Elementary occupations",
+                "percentage_of_students": "5",
+                "order": "5"
+            },
+            {
+                "job": "Managers, directors and senior officials",
+                "percentage_of_students": "5",
+                "order": "6"
+            },
+            {
+                "job": "Information technology and telecommunications professionals",
+                "percentage_of_students": "5",
+                "order": "7"
+            },
+            {
+                "job": "Quality and regulatory professionals",
+                "percentage_of_students": "5",
+                "order": "8"
+            },
+            {
+                "job": "Artistic, literary and media occupations",
+                "percentage_of_students": "5",
+                "order": "9"
+            },
+            {
+                "job": "Business and public service associate professionals",
+                "percentage_of_students": "5",
+                "order": "10"
+            }
+        ],
+        "number_of_students": 20,
+        "response_rate": 80,
+        "subject": {
+            "code": "CAH10-01-01",
+            "english_label": "Engineering (non-specific)",
+            "welsh_label": "Peirianneg (amhenodol)"
+        },
+        "unavailable": {
+            "code": 1,
+            "reason_english": "There is no data available for this course. This is because the course has not yet run or has not been running long enough for this data to be available. For this reason, the data displayed is for students on other courses in Engineering (non-specific).",
+            "reason_welsh": "Nid oes data ar gael ar gyfer y cwrs hwn. Mae hyn oherwydd nad yw'r cwrs wedi'i gynnal eto neu am nad yw wedi cael ei gynnal yn ddigon hir i'r data hwn fod ar gael. Am y rheswm hwn, mae'r data a ddangosir ar gyfer myfyrwyr ar gyrsiau eraill mewn Peirianneg (amhenodol)."
+        }
+    }
+]

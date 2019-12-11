@@ -30,18 +30,8 @@ class BlobHelper:
         datetime_str = datetime.today().strftime("%Y%m%d-%H%M%S")
         return f"{datetime_str}-{blob_filename}"
 
-    def create_blob_for_course_search_builder(self, version):
-        destination_blob_name = f"dataset-complete-{version}"
-        output_container_name = os.environ["CourseSearchBuilerContainerName"]
-
-        self.blob_service.create_blob_from_text(
-            container_name=output_container_name,
-            blob_name=destination_blob_name,
-            text=f'{{"version":{version}}}',
-        )
-
     def get_hesa_xml(self):
-        storage_container_name = os.environ["AzureStorageAccountOutputContainerName"]
+        storage_container_name = os.environ["AzureStorageAccountHesaContainerName"]
         storage_blob_name = os.environ["AzureStorageBlobName"]
 
         compressed_file = io.BytesIO()
