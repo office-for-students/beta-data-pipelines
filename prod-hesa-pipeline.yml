@@ -7,9 +7,6 @@ strategy:
   matrix:
     Python36:
       python.version: '3.6'
-
-variables:
-  hesaURL: 'https://unistatsdataset.hesa.ac.uk/api/UnistatsDatasetDownload'
       
 # Build Process Tree
 steps:
@@ -36,7 +33,7 @@ steps:
       'Accept-Language': 'en-US,en;q=0.8',
       'Connection': 'keep-alive'}
 
-      url = '$(hesaURL)'
+      url = '$(HesaURL)'
 
       print('Fetching file...')
 

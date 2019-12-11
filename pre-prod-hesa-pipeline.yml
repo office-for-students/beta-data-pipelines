@@ -7,9 +7,6 @@ strategy:
   matrix:
     Python36:
       python.version: '3.6'
-
-variables:
-  hesaURL: 'https://unistatsdataset.hesa.ac.uk/api/UnistatsDatasetDownload'
       
 # Build Process Tree
 steps:
@@ -36,7 +33,7 @@ steps:
       'Accept-Language': 'en-US,en;q=0.8',
       'Connection': 'keep-alive'}
 
-      url = '$(hesaURL)'
+      url = '$(HesaURL)'
 
       print('Fetching file...')
 
@@ -75,34 +72,39 @@ steps:
       print('Looking for file...')
 
       for file in glob.glob(r'$(Agent.TempDirectory)\latest_hesa_data\on_*'):
-        for kis_file in glob.glob(file + '\\kis*.xml'):
-          print('Found matching file: ' + kis_file)
-          print('Moving matching file...')
+          for kis_file in glob.glob(file + '\\kis*.xml'):
+              print('Found matching file: ' + kis_file)
+              print('Moving matching file...')
 
-          shutil.copy(kis_file, r'$(Agent.TempDirectory)\latest_kis.xml')
+          shutil.copy(kis_file, r'$(Agent.TempDirectory)\latest.xml')
 
       print('Found latest file!')
 
 
-- task: ArchiveFiles@2
-  displayName: 'Archive latest kis.xml'
+- task: PythonScript@0
+  displayName: 'Archive latest kis xml file'
   inputs:
-    rootFolderOrFile: '$(Agent.TempDirectory)\latest_kis.xml'
-    includeRootFolder: false
-    archiveType: 'tar'
-    tarCompression: 'gz'
-    archiveFile: '$(Agent.TempDirectory)\latest_kis.xml.gz'
-    replaceExistingArchive: true
-    verbose: true
+    scriptSource: 'inline'
+    script: |
+      """Archive the latest HESA kis xml file"""
+      import gzip
+      import shutil
+  
+      print('Archiving file...')
+
+      with open(r'$(Agent.TempDirectory)\latest.xml', 'rb') as f_in:
+          with gzip.open(r'$(Agent.TempDirectory)\latest.xml.gz', 'wb') as f_out:
+              shutil.copyfileobj(f_in, f_out)
+
+      print('Archive complete!')
 
 
 - task: AzureFileCopy@3
   displayName: 'Copy kis archive to storage blob'
   inputs:
-    SourcePath: '$(Agent.TempDirectory)\latest_kis.xml.gz'
+    SourcePath: '$(Agent.TempDirectory)\latest.xml.gz'
     azureSubscription: '$(AzureSubscription)'
     Destination: 'AzureBlob'
     storage: '$(AzureStorageAccount)'
     ContainerName: '$(AzureStorageBlob)'
 
-    
