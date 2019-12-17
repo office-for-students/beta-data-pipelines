@@ -1,5 +1,14 @@
 # DevOps Pipeline definition for the OFS Beta Backend Data Pipeline 
 
+#Schedules
+schedules:
+  - cron: "0 0 * * *"
+    displayName: Daily Dev Data Import
+    branches:
+      include:
+        - dev
+    always: true
+
 # Build Agent Resources
 pool:
   vmImage: 'windows-latest'
