@@ -22,7 +22,7 @@ from .dataset_creator import DataSetCreator
 from . import validators
 
 
-def main(functimer: func.TimerRequest, msgout: func.Out[str]) -> None:
+def main(req: func.HttpRequest, msgout: func.Out[str]) -> func.HttpResponse:
 
     logging.info(
         f"CreateDataSet timer triggered\n"
@@ -66,6 +66,8 @@ def main(functimer: func.TimerRequest, msgout: func.Out[str]) -> None:
         )
 
         msgout.set(f"CreateDataSet successfully finished on {function_end_datetime}")
+
+        return func.HttpResponse()
 
     except StopEtlPipelineErrorException as e:
         logging.error(
