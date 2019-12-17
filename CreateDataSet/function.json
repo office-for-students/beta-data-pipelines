@@ -2,10 +2,10 @@
   "scriptFile": "__init__.py",
   "bindings": [
     {
-      "name": "functimer",
-      "type": "timerTrigger",
+      "name": "req",
+      "type": "httpTrigger",
       "direction": "in",
-      "schedule": "0 30 8 * * *"
+      "methods": ["get"]
     },
     {
       "name": "msgout",
