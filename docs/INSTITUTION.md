@@ -8,6 +8,7 @@
     "created_at": "date",
     "version": "integer",
     "institution_id": "string", // institution.publ_ukprn
+    "partition_key": "string", // version
     "institution": {
         "apr_outcome": "string",
         "contact_details": {
