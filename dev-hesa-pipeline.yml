@@ -1,13 +1,19 @@
 # DevOps Pipeline definition for the OFS Beta Backend Data Pipeline 
 
+#Disable CI
+trigger: none
+
+#Disable PR
+pr: none
+
 #Schedules
 schedules:
-  - cron: "0 0 * * *"
-    displayName: Daily Dev Data Import
-    branches:
-      include:
-        - dev
-    always: true
+- cron: "0 0 * * *"
+  displayName: Daily Dev Data Import
+  branches:
+    include:
+    - dev
+  always: true
 
 # Build Agent Resources
 pool:
