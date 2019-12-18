@@ -2,11 +2,10 @@
   "scriptFile": "__init__.py",
   "bindings": [
     {
-      "name": "postcodeblob",
-      "type": "blobTrigger",
+      "name": "req",
+      "type": "httpTrigger",
       "direction": "in",
-      "path": "postcodes/{name}",
-      "connection": "AzureStorageAccountConnectionString"
+      "methods": ["get"]
     }
   ]
 }

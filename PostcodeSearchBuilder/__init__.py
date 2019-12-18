@@ -14,7 +14,7 @@ from SharedCode.blob_helper import BlobHelper
 from . import search
 
 
-def main(postcodeblob: func.InputStream):
+def main(req: func.HttpRequest,) -> None:
     """Create the postcode search index"""
 
     logging.info(f"PostcodeSearchBuilder request triggered")
@@ -60,7 +60,7 @@ def main(postcodeblob: func.InputStream):
 
         pipeline_end_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
         logging.info(
-            "PostcodeSearchBuilderBlobTrigger successfully finished on "
+            "PostcodeSearchBuilder successfully finished on "
             + pipeline_end_datetime
         )
 
