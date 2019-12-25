@@ -85,6 +85,14 @@ Add the following to your local.settings.json:
 | AzureWebJobsStorage                        | {retrieve from portal}    | The default endpoint to access storage account                                                               |
 | AzureStorageAccountHesaContainerName       | hesa-raw-xml-ingest       | The name of the storage container in which the latest HESA xml is located  
           |
+| AzureStorageAccountSubjectsContainerName   | subjects                  | The name of the storage container in which the latest subjects csv file is located
+          |
+| AzureStorageAccountPostcodesContainerName  | postcodes                 | The name of the storage container in which the latest subjects csv file is located
+          |
+| DatabaseThroughput                         | 400                       | The throughput (RU/s) for subjects collection 
+          |
+| PostcodeIndexName                          | postcodes                 | The name of the search index for postcodes 
+          |
 | UkRlpUrl                                   | {retrieve from ukrlp}     | The url to the UKRLP API service                                                                             |
 | UkRlpOfsId                                 | {retrieve from ukrlp}     | The organisation id calling the UKRLP API, unique to each organisation                                       |
 | SearchURL                                  | {retrieve from portal}    | The uri to the azure search instance                                                                         |
