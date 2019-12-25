@@ -10,7 +10,7 @@ CURRENTDIR = os.path.dirname(
 PARENTDIR = os.path.dirname(CURRENTDIR)
 sys.path.insert(0, PARENTDIR)
 
-from models import (
+from CourseSearchBuilder.models import (
     build_course_search_doc,
     create_sortable_name,
     build_locations,

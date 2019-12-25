@@ -4,17 +4,17 @@ import sys
 import inspect
 
 CURRENTDIR = os.path.dirname(
-    os.path.abspath(inspect.getfile(inspect.currentframe())))
+    os.path.abspath(inspect.getfile(inspect.currentframe()))
+)
 PARENTDIR = os.path.dirname(CURRENTDIR)
 sys.path.insert(0, PARENTDIR)
 
-from models import (
+from PostcodeSearchBuilder.models import (
     build_postcode_search_doc,
     validate_latitude,
     validate_longitude,
     validate_header
 )
-
 
 class TestValidateLatitude(unittest.TestCase):
     def test_within_latitudinal_range(self):
