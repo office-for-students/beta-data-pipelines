@@ -14,6 +14,7 @@ from azure.storage.blob import BlockBlobService
 
 from SharedCode.blob_helper import BlobHelper
 from SharedCode.dataset_helper import DataSetHelper
+from SharedCode.mail_helper import MailHelper
 from SharedCode import exceptions
 
 from . import course_docs, validators
@@ -36,7 +37,11 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
             f"EtlPipeline message queue triggered\n"
         )
 
-        function_start_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
+        function_start_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
+
+        mail_helper = MailHelper()
+        environment = os.environ["Environment"]
+
         logging.info(
             f"EtlPipeline function started on {function_start_datetime}"
         )
@@ -59,7 +64,8 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
         course_docs.load_course_docs(xml_string, version)
         dsh.update_status("courses", "succeeded")
 
-        function_end_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
+        function_end_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
+
         logging.info(
             f"EtlPipeline successfully finished on {function_end_datetime}"
         )
@@ -77,6 +83,12 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
             "set to TRUE in the Application Settings."
         )
         logging.error(error_message)
-        pipeline_fail_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
-        logging.error(f"EtlPipeline failed on {pipeline_fail_datetime}")
+
+        function_fail_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
+        function_fail_date = datetime.today().strftime("%d.%m.%Y")
+
+        mail_helper = MailHelper()
+        mail_helper.send_message(f"Automated data import failed on {function_fail_datetime} at EtlPipeline", f"Data Import {environment} - {function_fail_date} - Failed")
+
+        logging.error(f"EtlPipeline failed on {function_fail_datetime}")
         raise Exception(error_message)

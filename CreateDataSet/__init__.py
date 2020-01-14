@@ -18,6 +18,7 @@ from SharedCode.exceptions import (
     DataSetTooEarlyError,
 )
 from SharedCode.blob_helper import BlobHelper
+from SharedCode.mail_helper import MailHelper
 from .dataset_creator import DataSetCreator
 from . import validators
 
@@ -28,7 +29,13 @@ def main(req: func.HttpRequest, msgout: func.Out[str]) -> None:
         f"CreateDataSet timer triggered\n"
     )
 
-    function_start_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
+    function_start_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
+    function_start_date = datetime.today().strftime("%d.%m.%Y")
+
+    mail_helper = MailHelper()
+    environment = os.environ["Environment"]
+    mail_helper.send_message(f"Automated data import started on {function_start_datetime}", f"Data Import {environment} - {function_start_date} - Started")
+
     logging.info(
         f"CreateDataSet function started on {function_start_datetime}"
     )
@@ -57,7 +64,14 @@ def main(req: func.HttpRequest, msgout: func.Out[str]) -> None:
                 "can be created. "
             )
             logging.error(error_message)
-            logging.info("CreateDataSet is being stopped.")
+
+            function_fail_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
+            function_fail_date = datetime.today().strftime("%d.%m.%Y")
+
+            mail_helper = MailHelper()
+            mail_helper.send_message(f"Automated data import failed on {function_fail_datetime} at EtlPipeline", f"Data Import {environment} - {function_fail_date} - Failed")
+
+            logging.info(f"CreateDataSet failed on {function_fail_datetime}")
             return
 
         function_end_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
@@ -68,8 +82,14 @@ def main(req: func.HttpRequest, msgout: func.Out[str]) -> None:
         msgout.set(f"CreateDataSet successfully finished on {function_end_datetime}")
 
     except StopEtlPipelineErrorException as e:
+        function_fail_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
+        function_fail_date = datetime.today().strftime("%d.%m.%Y")
+
+        mail_helper = MailHelper()
+        mail_helper.send_message(f"Automated data import failed on {function_fail_datetime} at EtlPipeline", f"Data Import {environment} - {function_fail_date} - Failed")
+
         logging.error(
-            "CreateDataSet an error has stopped the pipeline",
+            f"CreateDataSet failed on {function_fail_datetime}",
             exc_info=True,
         )
         error_message = (
@@ -78,10 +98,15 @@ def main(req: func.HttpRequest, msgout: func.Out[str]) -> None:
             "The CreateDataSet will be stopped."
         )
         raise Exception(error_message)
-
     except Exception as e:
+        function_fail_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
+        function_fail_date = datetime.today().strftime("%d.%m.%Y")
+
+        mail_helper = MailHelper()
+        mail_helper.send_message(f"Automated data import failed on {function_fail_datetime} at EtlPipeline", f"Data Import {environment} - {function_fail_date} - Failed")
+
         logging.error(
-            "CreateDataSet unexpected exception raised",
+            f"CreateDataSet failed on {function_fail_datetime}",
             exc_info=True,
         )
         # Raise to Azure

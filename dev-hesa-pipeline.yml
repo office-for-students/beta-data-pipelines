@@ -136,6 +136,6 @@ steps:
       print('Sending request to pipeline...')
 
       pipeline_request = urllib.request.Request(url, headers=hdr)
-      pipeline_response = urllib.request.urlopen(pipeline_request, timeout=60)
+      pipeline_response = urllib.request.urlopen(pipeline_request, timeout=120)
 
       print('Request sent!')

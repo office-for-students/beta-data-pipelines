@@ -12,6 +12,7 @@ import azure.functions as func
 from azure.storage.blob import BlockBlobService
 
 from SharedCode.blob_helper import BlobHelper
+from SharedCode.mail_helper import MailHelper
 
 from .lookup_creator import LookupCreator
 
@@ -38,20 +39,25 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
             f"CreateUkrlp message queue triggered"
         )
 
-        function_start_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
+        function_start_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
+
+        mail_helper = MailHelper()
+        environment = os.environ["Environment"]
+
         logging.info(
             f"CreateUkrlp function started on {function_start_datetime}"
         )
 
         blob_helper = BlobHelper()
-        
+
         xml_string = blob_helper.get_hesa_xml()
 
         # Parse the xml and create the lookups
         lookup_creator = LookupCreator(xml_string)
         lookup_creator.create_ukrlp_lookups()
 
-        function_end_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
+        function_end_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
+
         logging.info(
             f"CreateUkrlp successfully finished on {function_end_datetime}"
         )
@@ -60,7 +66,13 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
 
     except Exception as e:
         # Unexpected exception
-        logging.error("Unexpected exception")
+        function_fail_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
+        function_fail_date = datetime.today().strftime("%d.%m.%Y")
+
+        mail_helper = MailHelper()
+        mail_helper.send_message(f"Automated data import failed on {function_fail_datetime} at CreateUkrlp", f"Data Import {environment} - {function_fail_date} - Failed")
+
+        logging.error(f"CreateUkrlp faile on {function_fail_datetime}")
         logging.error(traceback.format_exc())
 
         # Raise to Azure
