@@ -33,7 +33,8 @@ def main(req: func.HttpRequest, msgout: func.Out[str]) -> None:
     function_start_date = datetime.today().strftime("%d.%m.%Y")
 
     mail_helper = MailHelper()
-    mail_helper.send_message(f"Automated data import started on {function_start_datetime}", f"Data Import - {function_start_date} - Started")
+    environment = os.environ["Environment"]
+    mail_helper.send_message(f"Automated data import started on {function_start_datetime}", f"Data Import {environment} - {function_start_date} - Started")
 
     logging.info(
         f"CreateDataSet function started on {function_start_datetime}"
@@ -68,7 +69,7 @@ def main(req: func.HttpRequest, msgout: func.Out[str]) -> None:
             function_fail_date = datetime.today().strftime("%d.%m.%Y")
 
             mail_helper = MailHelper()
-            mail_helper.send_message(f"Automated data import failed on {function_fail_datetime} at EtlPipeline", f"Data Import - {function_fail_date} - Failed")
+            mail_helper.send_message(f"Automated data import failed on {function_fail_datetime} at EtlPipeline", f"Data Import {environment} - {function_fail_date} - Failed")
 
             logging.info(f"CreateDataSet failed on {function_fail_datetime}")
             return
@@ -85,7 +86,7 @@ def main(req: func.HttpRequest, msgout: func.Out[str]) -> None:
         function_fail_date = datetime.today().strftime("%d.%m.%Y")
 
         mail_helper = MailHelper()
-        mail_helper.send_message(f"Automated data import failed on {function_fail_datetime} at EtlPipeline", f"Data Import - {function_fail_date} - Failed")
+        mail_helper.send_message(f"Automated data import failed on {function_fail_datetime} at EtlPipeline", f"Data Import {environment} - {function_fail_date} - Failed")
 
         logging.error(
             f"CreateDataSet failed on {function_fail_datetime}",
@@ -102,7 +103,7 @@ def main(req: func.HttpRequest, msgout: func.Out[str]) -> None:
         function_fail_date = datetime.today().strftime("%d.%m.%Y")
 
         mail_helper = MailHelper()
-        mail_helper.send_message(f"Automated data import failed on {function_fail_datetime} at EtlPipeline", f"Data Import - {function_fail_date} - Failed")
+        mail_helper.send_message(f"Automated data import failed on {function_fail_datetime} at EtlPipeline", f"Data Import {environment} - {function_fail_date} - Failed")
 
         logging.error(
             f"CreateDataSet failed on {function_fail_datetime}",

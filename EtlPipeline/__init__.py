@@ -40,6 +40,7 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
         function_start_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
 
         mail_helper = MailHelper()
+        environment = os.environ["Environment"]
 
         logging.info(
             f"EtlPipeline function started on {function_start_datetime}"
@@ -87,7 +88,7 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
         function_fail_date = datetime.today().strftime("%d.%m.%Y")
 
         mail_helper = MailHelper()
-        mail_helper.send_message(f"Automated data import failed on {function_fail_datetime} at EtlPipeline", f"Data Import - {function_fail_date} - Failed")
+        mail_helper.send_message(f"Automated data import failed on {function_fail_datetime} at EtlPipeline", f"Data Import {environment} - {function_fail_date} - Failed")
 
         logging.error(f"EtlPipeline failed on {function_fail_datetime}")
         raise Exception(error_message)
