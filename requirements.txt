@@ -12,3 +12,4 @@ xmldict==0.4.1
 pytest==4.6.3
 python-dateutil==2.8.0
 pytz==2019.2
+sendgrid==6.1.0
