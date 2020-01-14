@@ -24,6 +24,7 @@ def main(msgin: func.QueueMessage):
         function_start_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
 
         mail_helper = MailHelper()
+        environment = os.environ["Environment"]
 
         logging.info(
             f"CourseSearchBuilder function started on {function_start_datetime}"
@@ -61,8 +62,7 @@ def main(msgin: func.QueueMessage):
         function_end_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
         function_end_date = datetime.today().strftime("%d.%m.%Y")
 
-        mail_helper = MailHelper()
-        mail_helper.send_message(f"Automated data import completed on {function_end_datetime}", f"Data Import - {function_end_date} - Completed")
+        mail_helper.send_message(f"Automated data import completed on {function_end_datetime}", f"Data Import {environment} - {function_end_date} - Completed")
 
         logging.info(
             f"CourseSearchBuilder successfully finished on {function_end_datetime}"
@@ -76,8 +76,7 @@ def main(msgin: func.QueueMessage):
         function_fail_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
         function_fail_date = datetime.today().strftime("%d.%m.%Y")
 
-        mail_helper = MailHelper()
-        mail_helper.send_message(f"Automated data import failed on {function_fail_datetime} at CourseSearchBuilder", f"Data Import - {function_fail_date} - Failed")
+        mail_helper.send_message(f"Automated data import failed on {function_fail_datetime} at CourseSearchBuilder", f"Data Import {environment} - {function_fail_date} - Failed")
 
         logging.error(f"CourseSearchBuilder failed on {function_fail_datetime}")
         logging.error(traceback.format_exc())
