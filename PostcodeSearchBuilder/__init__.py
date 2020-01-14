@@ -10,6 +10,7 @@ from datetime import datetime
 import azure.functions as func
 
 from SharedCode.blob_helper import BlobHelper
+from SharedCode.mail_helper import MailHelper
 
 from . import search
 
@@ -18,6 +19,14 @@ def main(req: func.HttpRequest,) -> None:
     """Create the postcode search index"""
 
     logging.info(f"PostcodeSearchBuilder request triggered")
+
+    mail_helper = MailHelper()
+    environment = os.environ["Environment"]
+    mail_helper.send_message(f"Postcode search builder started on {function_start_datetime}", f"Postcode Search Builder {environment} - {function_start_date} - Started")
+
+    logging.info(
+        f"PostcodeSearchBuilder function started on {function_start_datetime}"
+    )
 
     api_key = os.environ['SearchAPIKey']
     search_url = os.environ['SearchURL']
@@ -58,15 +67,24 @@ def main(req: func.HttpRequest,) -> None:
                         number_of_postcodes: {number_of_postcodes}\n')
         search.load_index(search_url, api_key, api_version, index_name, rows)
 
-        pipeline_end_datetime = datetime.today().strftime("%Y%m%d %H%M%S")
+        function_end_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
+        function_end_date = datetime.today().strftime("%d.%m.%Y")
+
+        mail_helper.send_message(f"Postcode search builder completed on {function_end_datetime}", f"Postcode Search Builder {environment} - {function_end_date} - Completed")
+
         logging.info(
-            "PostcodeSearchBuilder successfully finished on "
-            + pipeline_end_datetime
+            f"PostcodeSearchBuilder successfully finished on {function_end_datetime}"
         )
 
     except Exception as e:
         # Unexpected exception
-        logging.error('Unexpected extension')
+        function_fail_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
+        function_fail_date = datetime.today().strftime("%d.%m.%Y")
+
+        mail_helper.send_message(f"Postcode search builder failed on {function_fail_datetime} at EtlPipeline", f"Postcode Search Builder {environment} - {function_fail_date} - Failed")
+
+        logging.error(f"PostcodeSearchBuilder failed on {function_fail_datetime} ", exc_info=True)
+
         logging.error(traceback.format_exc())
 
         # Raise to Azure

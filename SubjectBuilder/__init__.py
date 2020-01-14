@@ -3,15 +3,29 @@ import os
 import io
 import csv
 
+from datetime import datetime
+
 import azure.functions as func
 
 from SharedCode.blob_helper import BlobHelper
+from SharedCode.mail_helper import MailHelper
 
 from . import validate, database, exceptions
 
 
 def main(req: func.HttpRequest,) -> None:
     logging.info(f"SubjectBuilder request triggered")
+
+    function_start_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
+    function_start_date = datetime.today().strftime("%d.%m.%Y")
+
+    mail_helper = MailHelper()
+    environment = os.environ["Environment"]
+    mail_helper.send_message(f"Subject builder started on {function_start_datetime}", f"Subject Builder {environment} - {function_start_date} - Started")
+
+    logging.info(
+        f"SubjectBuilder function started on {function_start_datetime}"
+    )
 
     cosmosdb_uri = os.environ["AzureCosmosDbUri"]
     cosmosdb_key = os.environ["AzureCosmosDbKey"]
@@ -61,9 +75,24 @@ def main(req: func.HttpRequest,) -> None:
 
         logging.info(f"Successfully loaded in {number_of_subjects} subject documents")
 
+        function_end_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
+        function_end_date = datetime.today().strftime("%d.%m.%Y")
+
+        mail_helper.send_message(f"Subject builder completed on {function_end_datetime}", f"Subject Builder {environment} - {function_end_date} - Completed")
+
+        logging.info(
+            f"SubjectBuilder successfully finished on {function_end_datetime}"
+        )
+
     except Exception as e:
         # Unexpected exception
-        logging.error("SubjectBuilder unexpected exception ", exc_info=True)
+
+        function_fail_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
+        function_fail_date = datetime.today().strftime("%d.%m.%Y")
+
+        mail_helper.send_message(f"Search builder failed on {function_fail_datetime} at EtlPipeline", f"Search Builder {environment} - {function_fail_date} - Failed")
+
+        logging.error(f"SubjectBuilder failed on {function_fail_datetime} ", exc_info=True)
 
         # Raise to Azure
         raise e
