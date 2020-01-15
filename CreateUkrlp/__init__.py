@@ -34,15 +34,15 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
 
     """
 
+    mail_helper = MailHelper()
+    environment = os.environ["Environment"]
+
     try:
         logging.info(
             f"CreateUkrlp message queue triggered"
         )
 
         function_start_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
-
-        mail_helper = MailHelper()
-        environment = os.environ["Environment"]
 
         logging.info(
             f"CreateUkrlp function started on {function_start_datetime}"
