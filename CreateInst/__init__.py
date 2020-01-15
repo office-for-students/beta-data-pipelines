@@ -17,6 +17,9 @@ from .institution_docs import InstitutionDocs
 
 def main(msgin: func.QueueMessage, msgout: func.Out[str]):
 
+    mail_helper = MailHelper()
+    environment = os.environ["Environment"]
+
     try:
         dsh = DataSetHelper()
 
@@ -25,9 +28,6 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
         )
 
         function_start_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
-
-        mail_helper = MailHelper()
-        environment = os.environ["Environment"]
 
         logging.info(
             f"CreateInst function started on {function_start_datetime}"
