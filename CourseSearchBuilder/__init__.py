@@ -13,6 +13,9 @@ from . import search
 
 def main(msgin: func.QueueMessage):
 
+    mail_helper = MailHelper()
+    environment = os.environ["Environment"]
+
     try:
 
         dsh = DataSetHelper()
@@ -22,9 +25,6 @@ def main(msgin: func.QueueMessage):
         )
 
         function_start_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
-
-        mail_helper = MailHelper()
-        environment = os.environ["Environment"]
 
         logging.info(
             f"CourseSearchBuilder function started on {function_start_datetime}"
