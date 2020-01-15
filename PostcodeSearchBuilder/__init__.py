@@ -81,7 +81,7 @@ def main(req: func.HttpRequest,) -> None:
         function_fail_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
         function_fail_date = datetime.today().strftime("%d.%m.%Y")
 
-        mail_helper.send_message(f"Postcode search builder failed on {function_fail_datetime} at EtlPipeline", f"Postcode Search Builder {environment} - {function_fail_date} - Failed")
+        mail_helper.send_message(f"Postcode search builder failed on {function_fail_datetime}", f"Postcode Search Builder {environment} - {function_fail_date} - Failed")
 
         logging.error(f"PostcodeSearchBuilder failed on {function_fail_datetime} ", exc_info=True)
 
