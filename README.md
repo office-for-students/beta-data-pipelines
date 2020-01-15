@@ -91,6 +91,8 @@ Add the following to your local.settings.json:
           |
 | DatabaseThroughput                         | 400                       | The throughput (RU/s) for subjects collection 
           |
+| Environment                                |                           | The environment that is running the function 
+          |
 | PostcodeIndexName                          | postcodes                 | The name of the search index for postcodes 
           |
 | UkRlpUrl                                   | {retrieve from ukrlp}     | The url to the UKRLP API service                                                                             |
@@ -98,6 +100,10 @@ Add the following to your local.settings.json:
 | SearchURL                                  | {retrieve from portal}    | The uri to the azure search instance                                                                         |
 | SearchAPIKey                               | {retrieve from portal}    | The api key to access the azure search instance                                                              |
 | AzureSearchAPIVersion                      | 2019-05-06                | The azure search API version for instance                                                                    |
+| SendGridAPIKey                             | {retrieve from portal}    | The API key for the SendGrid client                                                                          |
+| SendGridFromEmail                          |                           | The address from which SendGrid will send automated e-mails                                                  |
+| SendGridFromName                           |                           | The name from used by SendGrid to send automated e-mails                                                     |
+| SendGridToEmailList                        |                           | The list used by SendGrid to send automated e-mails, separated by ";"                                        |
 | StopEtlPipelineOnWarning                   | false                     | Boolean flag to stop function worker on a warning                                                            |
 | StorageUrl                                 | {retrieve from portal}    | The url to the top level storage                                                                             |
 | TimeInMinsToWaitBeforeCreateNewDataSet     | 120                       | You may need to reduce this time if you wish to run more frequently -e.g., to retry after a fix    

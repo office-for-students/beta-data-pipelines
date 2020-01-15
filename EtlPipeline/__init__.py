@@ -29,6 +29,9 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
     Azure Functions chained/integrated and orchestrated using Azure Data Factory
     and/or Function App. """
 
+    mail_helper = MailHelper()
+    environment = os.environ["Environment"]
+
     try:
 
         dsh = DataSetHelper()
@@ -38,9 +41,6 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
         )
 
         function_start_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
-
-        mail_helper = MailHelper()
-        environment = os.environ["Environment"]
 
         logging.info(
             f"EtlPipeline function started on {function_start_datetime}"
