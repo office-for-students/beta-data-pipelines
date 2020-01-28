@@ -37,19 +37,10 @@ def main(req: func.HttpRequest,) -> None:
         blob_helper = BlobHelper()
 
         # Read the Blob into a BytesIO object
-        storage_container_name = os.environ["AzureStorageAccountSubjectsContainerName"]
-        storage_blob_name = os.environ["AzureStorageBlobName"]
+        storage_container_name = os.environ["AzureStorageSubjectsContainerName"]
+        storage_blob_name = os.environ["AzureStorageSubjectsBlobName"]
 
-        subject_file = io.BytesIO()
-
-        blob_helper.blob_service.get_blob_to_stream(storage_container_name, storage_blob_name, subject_file, max_connections=1)
-
-        subject_file.seek(0)
-
-        csv_bytes = subject_file.read()
-
-        # Decode the bytes into a string
-        csv_string = csv_bytes.decode("utf-8-sig")
+        csv_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
 
         rows = csv_string.splitlines()
         number_of_subjects = len(rows) - 1

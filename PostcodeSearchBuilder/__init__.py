@@ -37,24 +37,10 @@ def main(req: func.HttpRequest,) -> None:
         blob_helper = BlobHelper()
 
         # Read the Blob into a BytesIO object
-        storage_container_name = os.environ["AzureStorageAccountPostcodesContainerName"]
-        storage_blob_name = os.environ["AzureStorageBlobName"]
+        storage_container_name = os.environ["AzureStoragePostcodesContainerName"]
+        storage_blob_name = os.environ["AzureStoragePostcodesBlobName"]
 
-        # Read the compressed Blob into a BytesIO object
-        compressed_file = io.BytesIO()
-
-        blob_helper.blob_service.get_blob_to_stream(storage_container_name, storage_blob_name, compressed_file, max_connections=1)
-
-        compressed_file.seek(0)
-
-        # Read the compressed file into a GzipFile object
-        compressed_gzip = gzip.GzipFile(fileobj=compressed_file)
-
-        # Decompress the data
-        decompressed_file = compressed_gzip.read()
-
-        # Decode the bytes into a string
-        csv_string = decompressed_file.decode("utf-8")
+        csv_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
 
         rows = csv_string.splitlines()
         number_of_postcodes = len(rows)

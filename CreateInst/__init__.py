@@ -41,7 +41,10 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
 
         blob_helper = BlobHelper()
 
-        xml_string = blob_helper.get_hesa_xml()
+        storage_container_name = os.environ["AzureStorageHesaContainerName"]
+        storage_blob_name = os.environ["AzureStorageHesaBlobName"]
+
+        xml_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
 
         """ LOADING - extract data and load JSON Documents """
 

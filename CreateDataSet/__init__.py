@@ -42,8 +42,11 @@ def main(req: func.HttpRequest, msgout: func.Out[str]) -> None:
 
     try:
         blob_helper = BlobHelper()
+        
+        storage_container_name = os.environ["AzureStorageHesaContainerName"]
+        storage_blob_name = os.environ["AzureStorageHesaBlobName"]
 
-        xml_string = blob_helper.get_hesa_xml()
+        xml_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
 
         """ BASIC XML Validation """
         try:
