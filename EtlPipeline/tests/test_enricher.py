@@ -181,7 +181,7 @@ class TestEnricher(unittest.TestCase):
         """Test a course is updated correctly with lookup data"""
 
         mock_utils.get_ukrlp_lookups.return_value = TEST_LOOKUP
-        ukrlp_course_enricher = ukrlp_enricher.UkRlpCourseEnricher()
+        ukrlp_course_enricher = ukrlp_enricher.UkRlpCourseEnricher(1)
         ukrlp_course_enricher.enrich_course(test_course)
         self.assertDictEqual(test_course, EXPECTED_COURSE)
 

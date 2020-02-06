@@ -51,7 +51,7 @@ class LookupCreator:
                 institution.strip() for institution in institutions_whitelist
             ]
 
-    def create_ukrlp_lookups(self):
+    def create_ukrlp_lookups(self, version):
         """Parse HESA XML and create JSON lookup table for UKRLP data."""
         root = ET.fromstring(self.xml_string)
         
@@ -68,16 +68,16 @@ class LookupCreator:
             ukprn = raw_inst_data.get("UKPRN")
             pubukprn = raw_inst_data.get("PUBUKPRN")
 
-            if ukprn and not self.entry_exists(ukprn):
-                result, ukrlp_doc = self.create_ukrlp_lookup(ukprn)
+            if ukprn:
+                result, ukrlp_doc = self.create_ukrlp_lookup(ukprn, version)
 
                 if result:
                     self.lookups_created.append(ukprn)
                     new_docs.append(ukrlp_doc)
                     sproc_count += 1
 
-            if pubukprn and not self.entry_exists(pubukprn):
-                result, ukrlp_doc = self.create_ukrlp_lookup(pubukprn)
+            if pubukprn:
+                result, ukrlp_doc = self.create_ukrlp_lookup(pubukprn, version)
 
                 if result:
                     self.lookups_created.append(pubukprn)

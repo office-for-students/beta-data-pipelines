@@ -2,10 +2,18 @@
   "scriptFile": "__init__.py",
   "bindings": [
     {
-      "name": "req",
-      "type": "httpTrigger",
+      "name": "msgin",
+      "type": "queueTrigger",
       "direction": "in",
-      "methods": ["get"]
+      "queueName": "data-pipeline-subjects-queue",
+      "connection": "AzureStorageAccountConnectionString"
+    },
+    {
+      "name": "msgout",
+      "type": "queue",
+      "direction": "out",
+      "queueName": "data-pipeline-institutions-queue",
+      "connection": "AzureStorageAccountConnectionString"
     }
   ]
 }

@@ -6,8 +6,8 @@ from SharedCode import utils
 class SubjectCourseEnricher:
     """Handles enriching courses with UKRLP data"""
 
-    def __init__(self):
-        self.subject_lookups = utils.get_subject_lookups()
+    def __init__(self, version):
+        self.subject_lookups = utils.get_subject_lookups(version)
 
     def enrich_course(self, course):
         """Takes a course and enriches subject object with subject names"""

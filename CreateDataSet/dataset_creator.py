@@ -85,6 +85,7 @@ def get_builds_value():
     builds["courses"] = get_initial_build_value()
     builds["institutions"] = get_initial_build_value()
     builds["search"] = get_initial_build_value()
+    builds["subjects"] = get_initial_build_value()
     return builds
 
 

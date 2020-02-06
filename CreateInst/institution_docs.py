@@ -38,8 +38,9 @@ from SharedCode.dataset_helper import DataSetHelper
 
 
 class InstitutionDocs:
-    def __init__(self, xml_string):
-        self.ukrlp_lookups = get_ukrlp_lookups()
+    def __init__(self, xml_string, version):
+        self.version = version
+        self.ukrlp_lookups = get_ukrlp_lookups(version)
         self.root = ET.fromstring(xml_string)
         self.location_lookup = Locations(self.root)
 
@@ -107,23 +108,23 @@ class InstitutionDocs:
         )
         return institution_element
 
-    def get_institution_doc(self, institution, version):
+    def get_institution_doc(self, institution):
         raw_inst_data = xmltodict.parse(ET.tostring(institution))[
             "INSTITUTION"
         ]
         institution_doc = {}
         institution_doc["_id"] = get_uuid()
         institution_doc["created_at"] = datetime.datetime.utcnow().isoformat()
-        institution_doc["version"] = version
+        institution_doc["version"] = self.version
         institution_doc["institution_id"] = raw_inst_data["PUBUKPRN"]
-        institution_doc["partition_key"] = str(version)
+        institution_doc["partition_key"] = str(self.version)
         institution_doc["institution"] = self.get_institution_element(
             institution
         )
 
         return institution_doc
 
-    def create_institution_docs(self, version):
+    def create_institution_docs(self):
         """Parse HESA XML and create JSON institution docs in Cosmos DB."""
 
         cosmosdb_client = get_cosmos_client()
@@ -132,7 +133,7 @@ class InstitutionDocs:
             "AzureCosmosDbDatabaseId", "AzureCosmosDbInstitutionsCollectionId"
         )
         
-        options = {"partitionKey": str(version)}
+        options = {"partitionKey": str(self.version)}
         sproc_link = collection_link + "/sprocs/bulkImport"
 
         institution_count = 0
@@ -141,7 +142,7 @@ class InstitutionDocs:
         for institution in self.root.iter("INSTITUTION"):
             institution_count += 1
             sproc_count += 1
-            new_docs.append(self.get_institution_doc(institution, version))
+            new_docs.append(self.get_institution_doc(institution))
             if sproc_count == 100:
                 logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
                 cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
