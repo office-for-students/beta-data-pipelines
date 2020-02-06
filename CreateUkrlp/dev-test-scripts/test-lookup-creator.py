@@ -30,7 +30,7 @@ def test_lookup_creator():
     #with open('../../test-data/institutions.xml', 'r') as file:
         xml_string = file.read()
 
-    lookup_creator = LookupCreator(xml_string)
+    lookup_creator = LookupCreator(xml_string, 1)
     lookup_creator.create_ukrlp_lookups()
 
 
