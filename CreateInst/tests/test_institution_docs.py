@@ -103,7 +103,7 @@ class TestCreateInstitutionDocs(unittest.TestCase):
         inst_docs = InstitutionDocs(kis_xml_string, 1)
 
         inst_docs.create_institution_docs()
-        mock_get_ukrlp_lookups.assert_called_once(1)
+        mock_get_ukrlp_lookups.assert_called_once()
         mock_get_cosmos_client.assert_called_once()
         mock_get_collection_link.assert_called_once()
         mock_get_institution_doc.assert_called()
