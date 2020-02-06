@@ -10,7 +10,6 @@ import defusedxml.ElementTree as ET
 
 import xmltodict
 
-from SharedCode.dataset_helper import DataSetHelper
 
 
 # TODO investigate setting PATH in Azure so can remove this
@@ -30,9 +29,9 @@ from helper import Helper
 class LookupCreator:
     """Creates lookups for UKRLP data in Cosmos DB"""
 
-    def __init__(self, xml_string):
+    def __init__(self, xml_string, version):
+        self.version = version
         self.cosmosdb_client = get_cosmos_client()
-        self.dsh = DataSetHelper()
         self.xml_string = xml_string
         self.lookups_created = []
         self.ukrlp_no_info_list = []
@@ -51,11 +50,11 @@ class LookupCreator:
                 institution.strip() for institution in institutions_whitelist
             ]
 
-    def create_ukrlp_lookups(self, version):
+    def create_ukrlp_lookups(self):
         """Parse HESA XML and create JSON lookup table for UKRLP data."""
         root = ET.fromstring(self.xml_string)
         
-        options = {"partitionKey": str(self.dsh.get_latest_version_number())}
+        options = {"partitionKey": str(self.version)}
         sproc_link = self.collection_link + "/sprocs/bulkImport"
 
         new_docs = []
@@ -69,7 +68,7 @@ class LookupCreator:
             pubukprn = raw_inst_data.get("PUBUKPRN")
 
             if ukprn:
-                result, ukrlp_doc = self.create_ukrlp_lookup(ukprn, version)
+                result, ukrlp_doc = self.create_ukrlp_lookup(ukprn)
 
                 if result:
                     self.lookups_created.append(ukprn)
@@ -77,7 +76,7 @@ class LookupCreator:
                     sproc_count += 1
 
             if pubukprn:
-                result, ukrlp_doc = self.create_ukrlp_lookup(pubukprn, version)
+                result, ukrlp_doc = self.create_ukrlp_lookup(pubukprn)
 
                 if result:
                     self.lookups_created.append(pubukprn)
@@ -165,7 +164,8 @@ class LookupCreator:
         lookup_item["id"] = get_uuid()
         lookup_item["created_at"] = datetime.datetime.utcnow().isoformat()
         lookup_item["ukprn"] = ukprn
-        lookup_item["partition_key"] = str(self.dsh.get_latest_version_number())
+        lookup_item["partition_key"] = str(self.version)
+        lookup_item["version"] = self.version
 
         provider_name = Helper.get_provider_name(matching_provider_records)
         if self.title_case_needed(provider_name):
