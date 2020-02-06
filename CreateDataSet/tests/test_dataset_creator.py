@@ -76,6 +76,7 @@ class TestBuildSection(unittest.TestCase):
         expected_value["courses"] = {"status": "pending"}
         expected_value["institutions"] = {"status": "pending"}
         expected_value["search"] = {"status": "pending"}
+        expected_value["subjects"] = {"status": "pending"}
         self.assertEqual(builds_value, expected_value)
 
 
