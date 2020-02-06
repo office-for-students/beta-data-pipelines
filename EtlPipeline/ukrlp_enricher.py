@@ -4,8 +4,8 @@ from SharedCode import utils
 class UkRlpCourseEnricher:
     """Handles enriching courses with UKRLP data"""
 
-    def __init__(self):
-        self.ukrlp_lookups = utils.get_ukrlp_lookups()
+    def __init__(self, version):
+        self.ukrlp_lookups = utils.get_ukrlp_lookups(version)
 
     def enrich_course(self, course):
         """Takes a course and enriches ukprn names with UKRLP data"""

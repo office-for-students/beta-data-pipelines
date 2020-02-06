@@ -63,6 +63,6 @@ class DataSetHelper:
         dataset_doc = self.get_latest_doc()
         build_statuses = [
             dataset_doc["builds"][item]["status"] == "succeeded"
-            for item in ("courses", "institutions", "search")
+            for item in ("courses", "institutions", "search", "subjects")
         ]
         return all(build_statuses)

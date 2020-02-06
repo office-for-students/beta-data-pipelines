@@ -48,11 +48,11 @@ def load_course_docs(xml_string, version):
     logging.info(
         "adding ukrlp data into memory ahead of building course documents"
     )
-    enricher = UkRlpCourseEnricher()
+    enricher = UkRlpCourseEnricher(version)
     logging.info(
         "adding subject data into memory ahead of building course documents"
     )
-    subject_enricher = SubjectCourseEnricher()
+    subject_enricher = SubjectCourseEnricher(version)
 
     collection_link = utils.get_collection_link(
         "AzureCosmosDbDatabaseId", "AzureCosmosDbCoursesCollectionId"

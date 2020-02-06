@@ -47,3 +47,6 @@ class BlobHelper:
         file_string = decompressed_file.decode("utf-8")
 
         return file_string
+
+    def write_stream_file(self, storage_container_name, storage_blob_name, encoded_file):
+        self.blob_service.create_blob_from_bytes(storage_container_name, storage_blob_name, encoded_file, max_connections=1)

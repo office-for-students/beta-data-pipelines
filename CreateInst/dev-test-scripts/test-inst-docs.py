@@ -30,7 +30,7 @@ def test_create_inst_docs():
     with open('institutions.xml', 'r') as file:
         xml_string = file.read()
 
-    institution_docs = InstitutionDocs()
+    institution_docs = InstitutionDocs(1)
     institution_docs.create_institution_docs(xml_string)
 
 test_create_inst_docs()
