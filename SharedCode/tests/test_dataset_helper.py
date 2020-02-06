@@ -75,6 +75,7 @@ class TestDataSetHelper(unittest.TestCase):
             "courses": {"status": "pending"},
             "institutions": {"status": "pending"},
             "search": {"status": "pending"},
+            "subjects": {"status": "pending"},
         }
         dsh.get_latest_doc = mock.MagicMock(return_value=latest_dataset_doc)
         self.assertFalse(dsh.have_all_builds_succeeded())
@@ -99,6 +100,7 @@ class TestDataSetHelper(unittest.TestCase):
             "courses": {"status": "pending"},
             "institutions": {"status": "succeeded"},
             "search": {"status": "succeeded"},
+            "subjects": {"status": "succeeded"},
         }
         dsh.get_latest_doc = mock.MagicMock(return_value=latest_dataset_doc)
         self.assertFalse(dsh.have_all_builds_succeeded())
@@ -123,6 +125,7 @@ class TestDataSetHelper(unittest.TestCase):
             "courses": {"status": "pending"},
             "institutions": {"status": "pending"},
             "search": {"status": "succeeded"},
+            "subjects": {"status": "succeeded"},
         }
         dsh.get_latest_doc = mock.MagicMock(return_value=latest_dataset_doc)
         self.assertFalse(dsh.have_all_builds_succeeded())
@@ -147,6 +150,7 @@ class TestDataSetHelper(unittest.TestCase):
             "courses": {"status": "succeeded"},
             "institutions": {"status": "succeeded"},
             "search": {"status": "succeeded"},
+            "subjects": {"status": "succeeded"},
         }
         dsh.get_latest_doc = mock.MagicMock(return_value=latest_dataset_doc)
         self.assertTrue(dsh.have_all_builds_succeeded())
