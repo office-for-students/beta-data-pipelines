@@ -30,7 +30,6 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
 
     cosmosdb_uri = os.environ["AzureCosmosDbUri"]
     cosmosdb_key = os.environ["AzureCosmosDbKey"]
-    throughput = os.environ["DatabaseThroughput"]
     db_id = os.environ["AzureCosmosDbDatabaseId"]
     collection_id = os.environ["AzureCosmosDbSubjectsCollectionId"]
 
