@@ -62,8 +62,8 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
         version = dsh.get_latest_version_number()
         logging.info(f"using version number: {version}")
         dsh.update_status("institutions", "in progress")
-        lookup_creator = LookupCreator(xml_string)
-        lookup_creator.create_ukrlp_lookups(version)
+        lookup_creator = LookupCreator(xml_string, version)
+        lookup_creator.create_ukrlp_lookups()
 
         function_end_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
 
