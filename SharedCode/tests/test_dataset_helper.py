@@ -1,8 +1,8 @@
 import unittest
 from unittest import mock
 
-# import __app__.SharedCode
-from __app__.SharedCode.dataset_helper import DataSetHelper
+# import SharedCode
+from SharedCode.dataset_helper import DataSetHelper
 
 
 class TestDataSetHelper(unittest.TestCase):
@@ -14,7 +14,7 @@ class TestDataSetHelper(unittest.TestCase):
         },
         clear=True,
     )
-    @mock.patch("__app__.SharedCode.dataset_helper.get_cosmos_client")
+    @mock.patch("SharedCode.dataset_helper.get_cosmos_client")
     def test_initialisation(self, mock_get_cosmos_client):
         mock_get_cosmos_client.return_value = mock.MagicMock()
         try:
@@ -32,7 +32,7 @@ class TestDataSetHelper(unittest.TestCase):
         },
         clear=True,
     )
-    @mock.patch("__app__.SharedCode.dataset_helper.get_cosmos_client")
+    @mock.patch("SharedCode.dataset_helper.get_cosmos_client")
     def test_update_status(self, mock_get_cosmos_client):
         dsh = DataSetHelper()
 
@@ -63,7 +63,7 @@ class TestDataSetHelper(unittest.TestCase):
         },
         clear=True,
     )
-    @mock.patch("__app__.SharedCode.dataset_helper.get_cosmos_client")
+    @mock.patch("SharedCode.dataset_helper.get_cosmos_client")
     def test_have_all_builds_succeeded_with_all_pending(
         self, mock_get_cosmos_client
     ):
@@ -88,7 +88,7 @@ class TestDataSetHelper(unittest.TestCase):
         },
         clear=True,
     )
-    @mock.patch("__app__.SharedCode.dataset_helper.get_cosmos_client")
+    @mock.patch("SharedCode.dataset_helper.get_cosmos_client")
     def test_have_all_builds_succeeded_with_one_pending(
         self, mock_get_cosmos_client
     ):
@@ -113,7 +113,7 @@ class TestDataSetHelper(unittest.TestCase):
         },
         clear=True,
     )
-    @mock.patch("__app__.SharedCode.dataset_helper.get_cosmos_client")
+    @mock.patch("SharedCode.dataset_helper.get_cosmos_client")
     def test_have_all_builds_succeeded_with_two_pending(
         self, mock_get_cosmos_client
     ):
@@ -138,7 +138,7 @@ class TestDataSetHelper(unittest.TestCase):
         },
         clear=True,
     )
-    @mock.patch("__app__.SharedCode.dataset_helper.get_cosmos_client")
+    @mock.patch("SharedCode.dataset_helper.get_cosmos_client")
     def test_have_all_builds_succeeded_with_all_succeeded(
         self, mock_get_cosmos_client
     ):

@@ -3,7 +3,7 @@ import requests
 import json
 import os
 
-from __app__.SharedCode import exceptions
+from SharedCode import exceptions
 from . import models
 
 

@@ -2,7 +2,7 @@ import logging
 
 import defusedxml.ElementTree as ET
 
-from __app__.SharedCode.exceptions import XmlValidationError
+from SharedCode.exceptions import XmlValidationError
 
 
 def parse_xml_data(xml_string):

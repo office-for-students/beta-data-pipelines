@@ -5,9 +5,9 @@ import io
 import os
 import re
 
-from __app__.SharedCode.utils import get_collection_link, get_cosmos_client
-from __app__.SharedCode.dataset_helper import DataSetHelper
-from __app__.SharedCode.blob_helper import BlobHelper
+from SharedCode.utils import get_collection_link, get_cosmos_client
+from SharedCode.dataset_helper import DataSetHelper
+from SharedCode.blob_helper import BlobHelper
 
 
 def build_institutions_json_files():

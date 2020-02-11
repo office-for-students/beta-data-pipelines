@@ -11,7 +11,7 @@ PARENTDIR = os.path.dirname(CURRENTDIR)
 sys.path.insert(0, CURRENTDIR)
 sys.path.insert(0, PARENTDIR)
 
-from __app__.SharedCode.utils import get_cosmos_client, get_collection_link
+from SharedCode.utils import get_cosmos_client, get_collection_link
 
 
 class DataSetHelper:

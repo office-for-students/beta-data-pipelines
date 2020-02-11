@@ -27,14 +27,14 @@ sys.path.insert(0, PARENTDIR)
 
 from EtlPipeline import course_lookup_tables as lookup
 from CreateInst.locations import Locations
-from __app__.SharedCode.utils import (
+from SharedCode.utils import (
     get_collection_link,
     get_cosmos_client,
     get_ukrlp_lookups,
     get_uuid,
     get_english_welsh_item,
 )
-from __app__.SharedCode.dataset_helper import DataSetHelper
+from SharedCode.dataset_helper import DataSetHelper
 
 
 class InstitutionDocs:

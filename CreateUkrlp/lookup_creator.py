@@ -21,8 +21,8 @@ PARENTDIR = os.path.dirname(CURRENTDIR)
 sys.path.insert(0, CURRENTDIR)
 sys.path.insert(0, PARENTDIR)
 
-from __app__.SharedCode.utils import get_collection_link, get_cosmos_client, get_uuid
-from __app__.SharedCode import exceptions
+from SharedCode.utils import get_collection_link, get_cosmos_client, get_uuid
+from SharedCode import exceptions
 
 from ukrlp_client import UkrlpClient
 from helper import Helper
