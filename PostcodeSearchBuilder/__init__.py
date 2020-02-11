@@ -9,8 +9,8 @@ from datetime import datetime
 
 import azure.functions as func
 
-from SharedCode.blob_helper import BlobHelper
-from SharedCode.mail_helper import MailHelper
+from __app__.SharedCode.blob_helper import BlobHelper
+from __app__.SharedCode.mail_helper import MailHelper
 
 from . import search
 

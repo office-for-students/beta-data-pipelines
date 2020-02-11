@@ -11,9 +11,9 @@ import azure.functions as func
 
 from azure.storage.blob import BlockBlobService
 
-from SharedCode.dataset_helper import DataSetHelper
-from SharedCode.blob_helper import BlobHelper
-from SharedCode.mail_helper import MailHelper
+from __app__.SharedCode.dataset_helper import DataSetHelper
+from __app__.SharedCode.blob_helper import BlobHelper
+from __app__.SharedCode.mail_helper import MailHelper
 
 from .lookup_creator import LookupCreator
 
@@ -58,11 +58,16 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
 
         xml_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
 
+        storage_container_name = os.environ["AzureStorageWelshUnisContainerName"]
+        storage_blob_name = os.environ["AzureStorageWelshUnisBlobName"]
+
+        csv_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
+
         # Parse the xml and create the lookups
         version = dsh.get_latest_version_number()
         logging.info(f"using version number: {version}")
         dsh.update_status("institutions", "in progress")
-        lookup_creator = LookupCreator(xml_string, version)
+        lookup_creator = LookupCreator(xml_string, csv_string, version)
         lookup_creator.create_ukrlp_lookups()
 
         function_end_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")

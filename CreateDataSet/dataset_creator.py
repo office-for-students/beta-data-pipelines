@@ -13,10 +13,10 @@ PARENTDIR = os.path.dirname(CURRENTDIR)
 sys.path.insert(0, CURRENTDIR)
 sys.path.insert(0, PARENTDIR)
 
-# from SharedCode.utils import get_cosmos_client, get_collection_link
-from SharedCode.dataset_helper import DataSetHelper
+# from __app__.SharedCode.utils import get_cosmos_client, get_collection_link
+from __app__.SharedCode.dataset_helper import DataSetHelper
 
-from SharedCode.exceptions import DataSetTooEarlyError
+from __app__.SharedCode.exceptions import DataSetTooEarlyError
 
 
 class DataSetCreator:

@@ -1,6 +1,6 @@
 import logging
 
-from SharedCode import utils
+from __app__.SharedCode import utils
 
 
 class SubjectCourseEnricher:

@@ -36,8 +36,8 @@ from ukrlp_enricher import UkRlpCourseEnricher
 from subject_enricher import SubjectCourseEnricher
 from course_subjects import get_subjects
 
-from SharedCode import utils
-from SharedCode.utils import get_english_welsh_item
+from __app__.SharedCode import utils
+from __app__.SharedCode.utils import get_english_welsh_item
 
 
 def load_course_docs(xml_string, version):
@@ -304,8 +304,10 @@ def get_code_label_entry(lookup_table_raw_xml, lookup_table_local, key):
 def get_institution(raw_inst_data):
     return {
         "pub_ukprn_name": "n/a",
+        "pub_ukprn_welsh_name": "n/a",
         "pub_ukprn": raw_inst_data["PUBUKPRN"],
         "ukprn_name": "n/a",
+        "ukprn_welsh_name": "n/a",
         "ukprn": raw_inst_data["UKPRN"],
     }
 

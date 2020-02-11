@@ -2,7 +2,7 @@ import unittest
 
 from dataset_test_utils import get_string
 from CreateDataSet.validators import parse_xml_data
-from SharedCode.exceptions import XmlValidationError
+from __app__.SharedCode.exceptions import XmlValidationError
 
 
 class TestParseXmlData(unittest.TestCase):

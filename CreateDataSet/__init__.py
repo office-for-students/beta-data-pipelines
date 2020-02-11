@@ -12,13 +12,13 @@ import azure.functions as func
 
 from azure.storage.blob import BlockBlobService
 
-from SharedCode.exceptions import (
+from __app__.SharedCode.exceptions import (
     XmlValidationError,
     StopEtlPipelineErrorException,
     DataSetTooEarlyError,
 )
-from SharedCode.blob_helper import BlobHelper
-from SharedCode.mail_helper import MailHelper
+from __app__.SharedCode.blob_helper import BlobHelper
+from __app__.SharedCode.mail_helper import MailHelper
 from .dataset_creator import DataSetCreator
 from . import validators
 

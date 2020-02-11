@@ -27,14 +27,14 @@ sys.path.insert(0, PARENTDIR)
 
 from EtlPipeline import course_lookup_tables as lookup
 from CreateInst.locations import Locations
-from SharedCode.utils import (
+from __app__.SharedCode.utils import (
     get_collection_link,
     get_cosmos_client,
     get_ukrlp_lookups,
     get_uuid,
     get_english_welsh_item,
 )
-from SharedCode.dataset_helper import DataSetHelper
+from __app__.SharedCode.dataset_helper import DataSetHelper
 
 
 class InstitutionDocs:
@@ -70,6 +70,15 @@ class InstitutionDocs:
             return {"No name available": f"UKPRN: {ukprn}"}
         return self.ukrlp_lookups[ukprn]["ukprn_name"]
 
+    def get_ukprn_welsh_name(self, ukprn):
+        if ukprn not in self.ukrlp_lookups:
+            return {"No name available": f"UKPRN: {ukprn}"}
+
+        if not self.ukrlp_lookups[ukprn]["ukprn_welsh_name"]:
+            return {"No name available": f"UKPRN: {ukprn}"}
+
+        return self.ukrlp_lookups[ukprn]["ukprn_welsh_name"]
+
     def get_institution_element(self, institution):
         raw_inst_data = xmltodict.parse(ET.tostring(institution))[
             "INSTITUTION"
@@ -90,6 +99,7 @@ class InstitutionDocs:
                 self.location_lookup, institution
             )
         institution_element["pub_ukprn_name"] = self.get_ukprn_name(pubukprn)
+        institution_element["pub_ukprn_welsh_name"] = self.get_ukprn_welsh_name(pubukprn)
         institution_element["pub_ukprn"] = pubukprn
         institution_element["pub_ukprn_country"] = get_country(
             raw_inst_data["PUBUKPRNCOUNTRY"]
@@ -100,6 +110,9 @@ class InstitutionDocs:
             "total_number_of_courses"
         ] = get_total_number_of_courses(institution)
         institution_element["ukprn_name"] = self.get_ukprn_name(
+            raw_inst_data["UKPRN"]
+        )
+        institution_element["ukprn_welsh_name"] = self.get_ukprn_welsh_name(
             raw_inst_data["UKPRN"]
         )
         institution_element["ukprn"] = raw_inst_data["UKPRN"]

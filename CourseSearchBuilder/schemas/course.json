@@ -78,7 +78,21 @@
                 "searchable": "true",
                 "sortable": "false"
             }, {
+                "name": "pub_ukprn_welsh_name",
+                "type": "Edm.String",
+                "facetable": "true",
+                "filterable": "true",
+                "searchable": "true",
+                "sortable": "true"
+            }, {
                 "name": "sort_pub_ukprn_name",
+                "type": "Edm.String",
+                "facetable": "true",
+                "filterable": "false",
+                "searchable": "false",
+                "sortable": "true"
+            }, {
+                "name": "sort_pub_ukprn_welsh_name",
                 "type": "Edm.String",
                 "facetable": "true",
                 "filterable": "false",
