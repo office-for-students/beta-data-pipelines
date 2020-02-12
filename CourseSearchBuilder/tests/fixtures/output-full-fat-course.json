@@ -18,6 +18,8 @@
         "institution": {
             "pub_ukprn_name": "ABDO College of Education",
             "sort_pub_ukprn_name": "abdo college of education",
+            "pub_ukprn_welsh_name": "ABDO College of Education",
+            "sort_pub_ukprn_welsh_name": "abdo college of education",
             "pub_ukprn": "10000047"
         },
         "kis_course_id": "PSSFDOPTDIS",

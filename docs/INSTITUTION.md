@@ -85,6 +85,7 @@
             }
         ],
         "publ_ukprn_name" : "string",
+        "publ_ukprn_welsh_name" : "string",
         "publ_ukprn" : "string", // doc is unique based on the public_ukprn 
         "publ_ukprn_country": {
             "code": "string",
@@ -93,6 +94,7 @@
         "tef_outcome": "string",
         "total_number_of_courses": "integer",
         "ukprn_name" : "string",
+        "ukprn_welsh_name": "string",
         "ukprn" : "string",
         "ukprn_country": {
             "code": "string",

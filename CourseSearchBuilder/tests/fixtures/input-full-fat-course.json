@@ -21,8 +21,10 @@
         "honours_award_provision": 0,
         "institution": {
             "pub_ukprn_name": "ABDO College of Education",
+            "pub_ukprn_welsh_name": "ABDO College of Education",
             "pub_ukprn": "10000047",
             "ukprn_name": "CANTERBURY CHRIST CHURCH UNIVERSITY",
+            "ukprn_welsh_name": "CANTERBURY CHRIST CHURCH UNIVERSITY",
             "ukprn": "10001143"
         },
         "kis_course_id": "PSSFDOPTDIS",
