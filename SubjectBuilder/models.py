@@ -11,6 +11,7 @@ def build_subject_doc(subject_list, version):
         "level": int(subject_list[2]),
         "updated_at": datetime.datetime.utcnow().isoformat(),
         "welsh_name": subject_list[3],
+        "partition_key": str(version),
         "version": version,
     }
 

@@ -6,6 +6,7 @@ import logging
 import os
 import sys
 import time
+import csv
 import defusedxml.ElementTree as ET
 
 import xmltodict
@@ -21,6 +22,7 @@ sys.path.insert(0, CURRENTDIR)
 sys.path.insert(0, PARENTDIR)
 
 from SharedCode.utils import get_collection_link, get_cosmos_client, get_uuid
+from SharedCode import exceptions
 
 from ukrlp_client import UkrlpClient
 from helper import Helper
@@ -29,7 +31,7 @@ from helper import Helper
 class LookupCreator:
     """Creates lookups for UKRLP data in Cosmos DB"""
 
-    def __init__(self, xml_string, version):
+    def __init__(self, xml_string, welsh_uni_string, version):
         self.version = version
         self.cosmosdb_client = get_cosmos_client()
         self.xml_string = xml_string
@@ -49,6 +51,49 @@ class LookupCreator:
             self.institutions_whitelist = [
                 institution.strip() for institution in institutions_whitelist
             ]
+
+        if welsh_uni_string:
+            rows = welsh_uni_string.splitlines()
+
+            # csv header row
+            if not self.validate_column_headers(rows[0]):
+                logging.error(
+                    "file headers are incorrect, expecting the following: code, english_label, level, welsh_label"
+                )
+                raise exceptions.StopEtlPipelineErrorException
+
+            self.welsh_uni = csv.reader(rows)
+        else:
+            self.welsh_uni = []
+
+
+    def validate_column_headers(self, header_row):
+        logging.info(f"Validating header row, headers: {header_row}")
+        header_list = header_row.split(",")
+
+        try:
+            valid = True
+            if header_list[0] != "ukprn":
+                logging.info(f"got in ukprn: {header_list[0]}")
+                valid = False
+
+            if header_list[1] != "welsh_name":
+                logging.info(f"got in welsh_name: {header_list[1]}")
+                valid = False
+        except IndexError:
+            logging.exception(f"index out of range\nheader_row:{header_row}")
+            valid = False
+
+        return valid
+
+
+    def get_welsh_uni_name(self, ukprn):
+        for row in self.welsh_uni:
+            if row[0] == str(ukprn):
+                return row[1]
+        
+        return ""
+
 
     def create_ukrlp_lookups(self):
         """Parse HESA XML and create JSON lookup table for UKRLP data."""
@@ -114,31 +159,6 @@ class LookupCreator:
             f"DB entries existed for {len(self.db_entries_list)} ukprns tried"
         )
 
-    def entry_exists(self, ukprn):
-        """Check if the entry for a ukprn exists Cosmos DB"""
-
-        if ukprn in self.db_entries_list:
-            # This ukprn is already in the database so no need to query
-            logging.debug(f"{ukprn} is in the DB so no need to query")
-            return True
-
-        query = {"query": f"SELECT * FROM c where c.ukprn = '{ukprn}'"}
-        logging.debug(f"query: {query}")
-
-        options = {}
-        options["enableCrossPartitionQuery"] = True
-
-        res = list(
-            self.cosmosdb_client.QueryItems(
-                self.collection_link, query, options
-            )
-        )
-        if not res:
-            return False
-
-        logging.debug(f"Append {ukprn} to the list {self.db_entries_list}")
-        self.db_entries_list.append(ukprn)
-        return True
 
     def create_ukrlp_lookup(self, ukprn):
         """Get the UKRLP record, transform it, and write it to Cosmos DB"""
@@ -157,6 +177,7 @@ class LookupCreator:
 
         return True, lookup_entry
 
+
     def get_lookup_entry(self, ukprn, matching_provider_records):
         """Returns the UKRLP lookup entry"""
 
@@ -171,6 +192,9 @@ class LookupCreator:
         if self.title_case_needed(provider_name):
             provider_name = LookupCreator.title_case(provider_name)
         lookup_item["ukprn_name"] = provider_name
+        lookup_item["ukprn_welsh_name"] = self.get_welsh_uni_name(ukprn)
+        if not lookup_item["ukprn_welsh_name"]:
+            lookup_item["ukprn_welsh_name"] = provider_name
 
         lookup_item["contact_details"] = LookupCreator.get_contact_details(
             ukprn, matching_provider_records
@@ -178,10 +202,12 @@ class LookupCreator:
 
         return lookup_item
 
+
     def title_case_needed(self, name):
         if name not in self.institutions_whitelist:
             return True
         return False
+
 
     @staticmethod
     def title_case(s):
@@ -192,6 +218,7 @@ class LookupCreator:
         for word in word_list[1:]:
             result.append(word if word in exceptions else word.capitalize())
         return " ".join(result)
+
 
     @staticmethod
     def get_contact_details(ukprn, matching_provider_records):
@@ -233,6 +260,7 @@ class LookupCreator:
         )
         return contact_details
 
+
     @staticmethod
     def get_address(address):
         """Returns the address element"""
@@ -263,6 +291,7 @@ class LookupCreator:
                 address_item[to_key] = address[from_key]
 
         return address_item
+
 
     @staticmethod
     def get_website(matching_provider_records):

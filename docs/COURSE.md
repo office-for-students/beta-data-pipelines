@@ -46,8 +46,10 @@
         "honours_award_provision": "boolean",
         "institution": {
             "pub_ukprn_name": "string",
+            "pub_ukprn_welsh_name": "string",
             "pub_ukprn": "string",
             "ukprn_name": "string",
+            "ukprn_welsh_name": "string",
             "ukprn": "string"
         },
         "kis_course_id": "string",

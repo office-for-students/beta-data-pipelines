@@ -44,7 +44,7 @@ class BlobHelper:
         compressed_file.close()
         compressed_gzip.close()
 
-        file_string = decompressed_file.decode("utf-8")
+        file_string = decompressed_file.decode("utf-8-sig")
 
         return file_string
 
