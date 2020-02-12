@@ -25,7 +25,7 @@ class TestNeedTitleCase(unittest.TestCase):
         self, mock_get_cosmos_client, mock_get_collection_link, mock_dsh__get_collection_link, mock_dsh_get_cosmos_client
     ):
         xml_string = get_string("fixtures/one_inst_one_course.xml")
-        lookup_creator = LookupCreator(xml_string, 1)
+        lookup_creator = LookupCreator(xml_string, "", 1)
         self.assertFalse(lookup_creator.title_case_needed("LIPA"))
 
     @mock.patch("lookup_creator.get_collection_link")
@@ -36,7 +36,7 @@ class TestNeedTitleCase(unittest.TestCase):
         self, mock_get_cosmos_client, mock_get_collection_link, mock_dsh__get_collection_link, mock_dsh_get_cosmos_client
     ):
         xml_string = get_string("fixtures/one_inst_one_course.xml")
-        lookup_creator = LookupCreator(xml_string, 1)
+        lookup_creator = LookupCreator(xml_string, "", 1)
         self.assertTrue(lookup_creator.title_case_needed("BEXHILL COLLEGE"))
 
 

@@ -4,6 +4,7 @@
         "created_at": "2019-07-02T09:50:26.871179",
         "ukprn": "10001143",
         "ukprn_name": "Institution name for 10001143",
+        "ukprn_welsh_name": "Institution name for 10001143",
         "contact_details": {
             "address": {
                 "line_1": "Flat 1",
@@ -23,6 +24,7 @@
         "created_at": "2019-07-02T09:50:22.459071",
         "ukprn": "10000047",
         "ukprn_name": "Institution name for 10000047",
+        "ukprn_welsh_name": "Institution name for 10000047",
         "contact_details": {
             "address": {
                 "line_1": "Flat 1",
