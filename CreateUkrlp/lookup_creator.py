@@ -62,7 +62,9 @@ class LookupCreator:
                 )
                 raise exceptions.StopEtlPipelineErrorException
 
-        self.welsh_uni = csv.reader(rows)
+            self.welsh_uni = csv.reader(rows)
+        else:
+            self.welsh_uni = []
 
 
     def validate_column_headers(self, header_row):
