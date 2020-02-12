@@ -14,6 +14,9 @@ class UkRlpCourseEnricher:
         course["course"]["institution"]["ukprn_name"] = self.get_ukprn_name(
             ukprn
         )
+        course["course"]["institution"]["ukprn_welsh_name"] = self.get_ukprn_welsh_name(
+            ukprn
+        )
 
         pub_ukprn = course["course"]["institution"]["pub_ukprn"]
         course["course"]["institution"][

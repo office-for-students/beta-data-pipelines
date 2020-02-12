@@ -52,14 +52,15 @@ class LookupCreator:
                 institution.strip() for institution in institutions_whitelist
             ]
 
-        rows = welsh_uni_string.splitlines()
+        if welsh_uni_string:
+            rows = welsh_uni_string.splitlines()
 
-        # csv header row
-        if not self.validate_column_headers(rows[0]):
-            logging.error(
-                "file headers are incorrect, expecting the following: code, english_label, level, welsh_label"
-            )
-            raise exceptions.StopEtlPipelineErrorException
+            # csv header row
+            if not self.validate_column_headers(rows[0]):
+                logging.error(
+                    "file headers are incorrect, expecting the following: code, english_label, level, welsh_label"
+                )
+                raise exceptions.StopEtlPipelineErrorException
 
         self.welsh_uni = csv.reader(rows)
 
