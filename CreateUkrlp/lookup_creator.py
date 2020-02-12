@@ -62,7 +62,7 @@ class LookupCreator:
                 )
                 raise exceptions.StopEtlPipelineErrorException
 
-            self.welsh_uni = csv.reader(rows)
+            self.welsh_uni = rows
         else:
             self.welsh_uni = []
 
@@ -88,10 +88,11 @@ class LookupCreator:
 
 
     def get_welsh_uni_name(self, ukprn):
-        for row in self.welsh_uni:
-            if row[0] == str(ukprn):
+        rows = csv.reader(self.welsh_uni)
+        for row in rows:
+            if row[0] == ukprn:
+                logging.info(f"Found welsh name for {ukprn}")
                 return row[1]
-        
         return ""
 
 
