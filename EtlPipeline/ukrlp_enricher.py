@@ -38,7 +38,4 @@ class UkRlpCourseEnricher:
         if ukprn not in self.ukrlp_lookups:
             return "not available"
 
-        if not self.ukrlp_lookups[ukprn]["ukprn_welsh_name"]:
-            return "not available"
-
         return self.ukrlp_lookups[ukprn].get("ukprn_welsh_name", "not available")
