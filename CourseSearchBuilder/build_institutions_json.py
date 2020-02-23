@@ -4,6 +4,7 @@ import json
 import io
 import os
 import re
+import logging
 
 from SharedCode.utils import get_collection_link, get_cosmos_client
 from SharedCode.dataset_helper import DataSetHelper
@@ -49,11 +50,17 @@ def build_institutions_json_files():
     institutions = []
     for val in institution_list:
         institution = val["institution"]
-        if isinstance(institution["pub_ukprn_welsh_name"], str):
-            inst_entry = get_inst_entry(institution["pub_ukprn_welsh_name"])
+        isnt_name = institution["pub_ukprn_name"]
+        inst_welsh_name = institution["pub_ukprn_welsh_name"]
+
+        logging.info(
+            f"Institution name: {isnt_name}; welsh name: {inst_welsh_name}"
+        )
+        if isinstance(inst_welsh_name, str):
+            inst_entry = get_inst_entry(inst_welsh_name)
             institutions.append(inst_entry)
-        elif isinstance(institution["pub_ukprn_name"], str):
-            inst_entry = get_inst_entry(institution["pub_ukprn_name"])
+        elif isinstance(isnt_name, str):
+            inst_entry = get_inst_entry(isnt_name)
             institutions.append(inst_entry)
 
     institutions.sort(key=lambda x: x["order_by_name"])
