@@ -33,7 +33,7 @@ def get_uuid():
     return str(uuid.uuid1())
 
 
-def get_ukrlp_lookups():
+def get_ukrlp_lookups(version):
     """Returns a dictionary of UKRLP lookups"""
 
     cosmos_db_client = get_cosmos_client()
@@ -41,7 +41,7 @@ def get_ukrlp_lookups():
         "AzureCosmosDbDatabaseId", "AzureCosmosDbUkRlpCollectionId"
     )
 
-    query = "SELECT * from c "
+    query = f"SELECT * from c WHERE c.version = {version}"
 
     options = {"enableCrossPartitionQuery": True}
 
@@ -52,7 +52,7 @@ def get_ukrlp_lookups():
     return {lookup["ukprn"]: lookup for lookup in lookup_list}
 
 
-def get_subject_lookups():
+def get_subject_lookups(version):
     """Returns a dictionary of UKRLP lookups"""
 
     cosmos_db_client = get_cosmos_client()
@@ -60,7 +60,7 @@ def get_subject_lookups():
         "AzureCosmosDbDatabaseId", "AzureCosmosDbSubjectsCollectionId"
     )
 
-    query = "SELECT * from c "
+    query = f"SELECT * from c WHERE c.version = {version}"
 
     options = {"enableCrossPartitionQuery": True}
 

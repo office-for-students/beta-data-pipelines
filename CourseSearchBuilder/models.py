@@ -6,6 +6,9 @@ def build_course_search_doc(course):
         sort_pub_ukprn_name = create_sortable_name(
             course["course"]["institution"]["pub_ukprn_name"]
         )
+        sort_pub_ukprn_welsh_name = create_sortable_name(
+            course["course"]["institution"]["pub_ukprn_welsh_name"]
+        )
 
         locations = build_locations(course["course"])
         title = build_title(course["course"])
@@ -39,7 +42,11 @@ def build_course_search_doc(course):
                     "pub_ukprn_name": course["course"]["institution"][
                         "pub_ukprn_name"
                     ],
+                    "pub_ukprn_welsh_name": course["course"]["institution"][
+                        "pub_ukprn_welsh_name"
+                    ],
                     "sort_pub_ukprn_name": sort_pub_ukprn_name,
+                    "sort_pub_ukprn_welsh_name": sort_pub_ukprn_welsh_name,
                     "pub_ukprn": course["course"]["institution"]["pub_ukprn"],
                 },
                 "kis_course_id": course["course"]["kis_course_id"],
@@ -80,6 +87,11 @@ def create_sortable_name(name):
     # remove unwanted prefixes
     sortable_name = sortable_name.replace("the university of ", "")
     sortable_name = sortable_name.replace("university of ", "")
+    sortable_name = sortable_name.replace("the ", "")
+    sortable_name = sortable_name.replace("prifysgol ", "")
+    sortable_name = sortable_name.replace("coleg ", "")
+    sortable_name = sortable_name.replace("y coleg ", "")
+    sortable_name = sortable_name.replace("brifysgol ", "")
 
     # remove unwanted commas
     sortable_name = sortable_name.replace(",", "")

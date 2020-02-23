@@ -30,10 +30,7 @@ class BlobHelper:
         datetime_str = datetime.today().strftime("%Y%m%d-%H%M%S")
         return f"{datetime_str}-{blob_filename}"
 
-    def get_hesa_xml(self):
-        storage_container_name = os.environ["AzureStorageAccountHesaContainerName"]
-        storage_blob_name = os.environ["AzureStorageBlobName"]
-
+    def get_str_file(self, storage_container_name, storage_blob_name):
         compressed_file = io.BytesIO()
 
         self.blob_service.get_blob_to_stream(storage_container_name, storage_blob_name, compressed_file, max_connections=1)
@@ -47,6 +44,9 @@ class BlobHelper:
         compressed_file.close()
         compressed_gzip.close()
 
-        xml_string = decompressed_file.decode("utf-8")
+        file_string = decompressed_file.decode("utf-8-sig")
 
-        return xml_string
+        return file_string
+
+    def write_stream_file(self, storage_container_name, storage_blob_name, encoded_file):
+        self.blob_service.create_blob_from_bytes(storage_container_name, storage_blob_name, encoded_file, max_connections=1)

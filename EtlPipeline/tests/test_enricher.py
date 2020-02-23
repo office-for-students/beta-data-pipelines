@@ -8,6 +8,7 @@ TEST_LOOKUP = {
         "created_at": "2019-07-02T09:50:26.871179",
         "ukprn": "10002863",
         "ukprn_name": "ACME TESTING COLLEGE",
+        "ukprn_welsh_name": "ACME TESTING COLLEGE",
         "contact_details": {
             "address": {
                 "line_1": "Flat 1",
@@ -26,6 +27,7 @@ TEST_LOOKUP = {
         "created_at": "2019-07-02T09:50:22.459071",
         "ukprn": "10002718",
         "ukprn_name": "GOLDSMITHS' COLLEGE, UNIVERSITY OF LONDON",
+        "ukprn_welsh_name": "GOLDSMITHS' COLLEGE, UNIVERSITY OF LONDON",
         "contact_details": {
             "address": {
                 "line_1": "Flat 1",
@@ -60,8 +62,10 @@ EXPECTED_COURSE = {
         "honours_award_provision": "0",
         "institution": {
             "pub_ukprn_name": "ACME TESTING COLLEGE",
+            "pub_ukprn_welsh_name": "ACME TESTING COLLEGE",
             "pub_ukprn": "10002863",
             "ukprn_name": "ACME TESTING COLLEGE",
+            "ukprn_welsh_name": "ACME TESTING COLLEGE",
             "ukprn": "10002863",
         },
         "kis_course_id": "AB20",
@@ -126,8 +130,10 @@ test_course = {
         "honours_award_provision": "0",
         "institution": {
             "pub_ukprn_name": "n/a",
+            "pub_ukprn_welsh_name": "n/a",
             "pub_ukprn": "10002863",
             "ukprn_name": "n/a",
+            "ukprn_welsh_name": "n/a",
             "ukprn": "10002863",
         },
         "kis_course_id": "AB20",
@@ -181,7 +187,7 @@ class TestEnricher(unittest.TestCase):
         """Test a course is updated correctly with lookup data"""
 
         mock_utils.get_ukrlp_lookups.return_value = TEST_LOOKUP
-        ukrlp_course_enricher = ukrlp_enricher.UkRlpCourseEnricher()
+        ukrlp_course_enricher = ukrlp_enricher.UkRlpCourseEnricher(1)
         ukrlp_course_enricher.enrich_course(test_course)
         self.assertDictEqual(test_course, EXPECTED_COURSE)
 

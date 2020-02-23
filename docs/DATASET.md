@@ -17,6 +17,10 @@
         "search": {
             "number_of_resources_loaded": "integer",
             "status": "string"
+        },
+        "subjects": {
+            "number_of_resources_loaded": "integer",
+            "status": "string"
         }
     },
     "created_at": "date",
@@ -37,6 +41,8 @@
 | builds.institutions.status                     | pending                    |
 | builds.search.number_of_resources_loaded       | 0                          |
 | builds.search.status                           | pending                    |
+| builds.subjects.number_of_resources_loaded     | 0                          |
+| builds.subjects.status                         | pending                    |
 | created_at                                     | datetimestamp              |
 | status                                         | in-progress                |
 | total_number_of_courses                        | To be calculated           |

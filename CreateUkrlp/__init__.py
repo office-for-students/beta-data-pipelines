@@ -11,6 +11,7 @@ import azure.functions as func
 
 from azure.storage.blob import BlockBlobService
 
+from SharedCode.dataset_helper import DataSetHelper
 from SharedCode.blob_helper import BlobHelper
 from SharedCode.mail_helper import MailHelper
 
@@ -42,6 +43,8 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
             f"CreateUkrlp message queue triggered"
         )
 
+        dsh = DataSetHelper()
+
         function_start_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
 
         logging.info(
@@ -50,10 +53,21 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
 
         blob_helper = BlobHelper()
 
-        xml_string = blob_helper.get_hesa_xml()
+        storage_container_name = os.environ["AzureStorageHesaContainerName"]
+        storage_blob_name = os.environ["AzureStorageHesaBlobName"]
+
+        xml_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
+
+        storage_container_name = os.environ["AzureStorageWelshUnisContainerName"]
+        storage_blob_name = os.environ["AzureStorageWelshUnisBlobName"]
+
+        csv_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
 
         # Parse the xml and create the lookups
-        lookup_creator = LookupCreator(xml_string)
+        version = dsh.get_latest_version_number()
+        logging.info(f"using version number: {version}")
+        dsh.update_status("institutions", "in progress")
+        lookup_creator = LookupCreator(xml_string, csv_string, version)
         lookup_creator.create_ukrlp_lookups()
 
         function_end_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")

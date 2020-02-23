@@ -65,14 +65,14 @@ class TestGetInstitutionDoc(unittest.TestCase):
             )
             institution_docs.get_ukrlp_lookups.return_value = mock_ukrlp_lookup
             kis_xml_string = get_string("fixtures/large_test_file.xml")
-            self.institution_docs = InstitutionDocs(kis_xml_string)
+            self.institution_docs = InstitutionDocs(kis_xml_string, 1)
 
     def test_with_large_file(self):
         """Initial smoke test"""
         xml_string = get_string("fixtures/large_test_file.xml")
         root = ET.fromstring(xml_string)
         for institution in root.iter("INSTITUTION"):
-            self.institution_docs.get_institution_doc(institution, 1)
+            self.institution_docs.get_institution_doc(institution)
 
     def test_get_institution_doc(self):
         xml_string = get_string("fixtures/one_inst_one_course.xml")
@@ -82,7 +82,7 @@ class TestGetInstitutionDoc(unittest.TestCase):
             get_string("fixtures/one_inst_one_course.json")
         )
         expected_resp = remove_variable_elements(expected_resp)
-        resp = self.institution_docs.get_institution_doc(institution, 1)
+        resp = self.institution_docs.get_institution_doc(institution)
         resp = remove_variable_elements(resp)
         self.assertEqual(expected_resp, resp)
 
@@ -100,9 +100,9 @@ class TestCreateInstitutionDocs(unittest.TestCase):
         mock_get_institution_doc,
     ):
         kis_xml_string = get_string("fixtures/large_test_file.xml")
-        inst_docs = InstitutionDocs(kis_xml_string)
+        inst_docs = InstitutionDocs(kis_xml_string, 1)
 
-        inst_docs.create_institution_docs(1)
+        inst_docs.create_institution_docs()
         mock_get_ukrlp_lookups.assert_called_once()
         mock_get_cosmos_client.assert_called_once()
         mock_get_collection_link.assert_called_once()

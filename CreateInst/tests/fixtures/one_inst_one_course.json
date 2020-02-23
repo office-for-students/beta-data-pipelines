@@ -31,6 +31,7 @@
             }
         ],
         "pub_ukprn_name": "Institution name for 10000047",
+        "pub_ukprn_welsh_name": "Institution name for 10000047",
         "pub_ukprn": "10000047",
         "pub_ukprn_country": {
             "code": "XF",
@@ -39,6 +40,7 @@
         "tef_outcome": "Did not participate",
         "total_number_of_courses": 1,
         "ukprn_name": "Institution name for 10001143",
+        "ukprn_welsh_name": "Institution name for 10001143",
         "ukprn": "10001143"
     }
 }

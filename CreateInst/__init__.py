@@ -21,11 +21,11 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
     environment = os.environ["Environment"]
 
     try:
-        dsh = DataSetHelper()
-
         logging.info(
             f"CreateInst message queue triggered\n"
         )
+
+        dsh = DataSetHelper()
 
         function_start_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
 
@@ -41,7 +41,10 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
 
         blob_helper = BlobHelper()
 
-        xml_string = blob_helper.get_hesa_xml()
+        storage_container_name = os.environ["AzureStorageHesaContainerName"]
+        storage_blob_name = os.environ["AzureStorageHesaBlobName"]
+
+        xml_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
 
         """ LOADING - extract data and load JSON Documents """
 
@@ -49,8 +52,8 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
         logging.info(f"using version number: {version}")
         dsh.update_status("institutions", "in progress")
 
-        inst_docs = InstitutionDocs(xml_string)
-        inst_docs.create_institution_docs(version)
+        inst_docs = InstitutionDocs(xml_string, version)
+        inst_docs.create_institution_docs()
         dsh.update_status("institutions", "succeeded")
 
         function_end_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")

@@ -5,10 +5,14 @@ import traceback
 from datetime import datetime
 
 import azure.functions as func
+
 from SharedCode.dataset_helper import DataSetHelper
 from SharedCode.mail_helper import MailHelper
 from SharedCode import utils
 from . import search
+from .build_institutions_json import build_institutions_json_files
+from .build_subjects_json import build_subjects_json_file
+from .build_version_json import build_version_json_file
 
 
 def main(msgin: func.QueueMessage):
@@ -53,8 +57,13 @@ def main(msgin: func.QueueMessage):
 
         search.load_index(search_url, api_key, api_version, version, courses)
         dsh.update_status("search", "succeeded")
+        courses = None
 
         if dsh.have_all_builds_succeeded():
+            build_institutions_json_files()
+            build_subjects_json_file()
+            build_version_json_file()
+
             dsh.update_status("root", "succeeded")
         else:
             dsh.update_status("root", "failed")

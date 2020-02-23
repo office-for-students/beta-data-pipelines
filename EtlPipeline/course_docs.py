@@ -48,11 +48,11 @@ def load_course_docs(xml_string, version):
     logging.info(
         "adding ukrlp data into memory ahead of building course documents"
     )
-    enricher = UkRlpCourseEnricher()
+    enricher = UkRlpCourseEnricher(version)
     logging.info(
         "adding subject data into memory ahead of building course documents"
     )
-    subject_enricher = SubjectCourseEnricher()
+    subject_enricher = SubjectCourseEnricher(version)
 
     collection_link = utils.get_collection_link(
         "AzureCosmosDbDatabaseId", "AzureCosmosDbCoursesCollectionId"
@@ -304,8 +304,10 @@ def get_code_label_entry(lookup_table_raw_xml, lookup_table_local, key):
 def get_institution(raw_inst_data):
     return {
         "pub_ukprn_name": "n/a",
+        "pub_ukprn_welsh_name": "n/a",
         "pub_ukprn": raw_inst_data["PUBUKPRN"],
         "ukprn_name": "n/a",
+        "ukprn_welsh_name": "n/a",
         "ukprn": raw_inst_data["UKPRN"],
     }
 
