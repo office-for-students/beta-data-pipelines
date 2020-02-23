@@ -74,9 +74,6 @@ class InstitutionDocs:
         if ukprn not in self.ukrlp_lookups:
             return {"No name available": f"UKPRN: {ukprn}"}
 
-        if not self.ukrlp_lookups[ukprn].get("ukprn_welsh_name",""):
-            return {"No name available": f"UKPRN: {ukprn}"}
-
         return self.ukrlp_lookups[ukprn]["ukprn_welsh_name"]
 
     def get_institution_element(self, institution):
