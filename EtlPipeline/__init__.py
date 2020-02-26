@@ -75,7 +75,7 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
 
         msgout.set(f"EtlPipeline successfully finished on {function_end_datetime}")
 
-    except exceptions.StopEtlPipelineWarningException:
+    except Exception as e:
 
         dsh.update_status("courses", "failed")
         # A WARNING is raised during the ETL Pipeline and StopEtlPipelineOnWarning=True

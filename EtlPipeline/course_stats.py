@@ -4,6 +4,8 @@ import json
 import os
 import unicodedata
 from collections import OrderedDict
+from SharedCode.dataset_helper import DataSetHelper
+from SharedCode.utils import get_subject_lookups
 
 from validators import (
     validate_agg,
@@ -694,8 +696,7 @@ class SharedUtils:
         self.xml_subj_key = xml_subj_key
         self.xml_agg_key = xml_agg_key
         self.xml_unavail_reason_key = xml_unavail_reason_key
-        self.subj_code_english = self.get_lookup("subj_code_english")
-        self.subj_code_welsh = self.get_lookup("subj_code_welsh")
+        self.subj_codes = get_subject_lookups(DataSetHelper().get_latest_version_number())
         self.unavail_reason_english = self.get_lookup("unavail_reason_english")
         self.unavail_reason_welsh = self.get_lookup("unavail_reason_welsh")
 
@@ -730,10 +731,10 @@ class SharedUtils:
         return subject
 
     def get_english_sbj_label(self, code):
-        return self.subj_code_english[code]
+        return self.subj_codes[code].get("english_name")
 
     def get_welsh_sbj_label(self, code):
-        return self.subj_code_welsh[code]
+        return self.subj_codes[code].get("welsh_name")
 
     def get_json_list(self, raw_course_data, get_key):
         """Returns a list of JSON objects (as dicts) for this stats element"""
