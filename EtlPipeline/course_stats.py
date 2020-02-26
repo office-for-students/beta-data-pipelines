@@ -684,6 +684,11 @@ class Tariff:
 class SharedUtils:
     """Functionality required by several stats related classes"""
 
+    try:
+        subj_codes = get_subject_lookups(DataSetHelper().get_latest_version_number())
+    except Exception:
+        subj_codes = {}
+
     def __init__(
         self,
         xml_element_key,
@@ -701,10 +706,6 @@ class SharedUtils:
         self.unavail_reason_english = self.get_lookup("unavail_reason_english")
         self.unavail_reason_welsh = self.get_lookup("unavail_reason_welsh")
 
-        try:
-            self.subj_codes = get_subject_lookups(DataSetHelper().get_latest_version_number())
-        except Exception:
-            self.subj_codes = {}
 
     @staticmethod
     def get_lookup(lookup_name):
@@ -737,13 +738,13 @@ class SharedUtils:
         return subject
 
     def get_english_sbj_label(self, code):
-        if self.subj_codes != {}:
-            return self.subj_codes[code].get("english_name")
+        if SharedUtils.subj_codes != {}:
+            return SharedUtils.subj_codes[code].get("english_name")
         return self.subj_code_english[code]
 
     def get_welsh_sbj_label(self, code):
-        if self.subj_codes != {}:
-            return self.subj_codes[code].get("welsh_name")
+        if SharedUtils.subj_codes != {}:
+            return SharedUtils.subj_codes[code].get("welsh_name")
         return self.subj_code_welsh[code]
 
     def get_json_list(self, raw_course_data, get_key):
