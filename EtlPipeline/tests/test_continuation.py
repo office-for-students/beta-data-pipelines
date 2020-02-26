@@ -4,12 +4,17 @@ import unittest
 import defusedxml.ElementTree as ET
 import xmltodict
 
+from unittest import mock
 from course_stats import Continuation
 from testing_utils import get_string
 
 
 class TestGetContinuationKey(unittest.TestCase):
-    def setUp(self):
+    @mock.patch("SharedCode.dataset_helper.get_collection_link")
+    @mock.patch("SharedCode.dataset_helper.get_cosmos_client")
+    @mock.patch("SharedCode.dataset_helper.get_latest_version_number")
+    @mock.patch("SharedCode.utils.get_subject_lookups")
+    def setUp(self, mock_get_subjects_lookups, mock_get_latest_version_number, mock_get_cosmos_client, mock_get_collection_link):
         self.continuation = Continuation()
 
     def test_with_valid_key(self):
