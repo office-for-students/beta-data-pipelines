@@ -696,9 +696,15 @@ class SharedUtils:
         self.xml_subj_key = xml_subj_key
         self.xml_agg_key = xml_agg_key
         self.xml_unavail_reason_key = xml_unavail_reason_key
-        self.subj_codes = get_subject_lookups(DataSetHelper().get_latest_version_number())
+        self.subj_code_english = self.get_lookup("subj_code_english")
+        self.subj_code_welsh = self.get_lookup("subj_code_welsh")
         self.unavail_reason_english = self.get_lookup("unavail_reason_english")
         self.unavail_reason_welsh = self.get_lookup("unavail_reason_welsh")
+
+        try:
+            self.subj_codes = get_subject_lookups(DataSetHelper().get_latest_version_number())
+        except Exception:
+            self.subj_codes = {}
 
     @staticmethod
     def get_lookup(lookup_name):
@@ -731,10 +737,14 @@ class SharedUtils:
         return subject
 
     def get_english_sbj_label(self, code):
-        return self.subj_codes[code].get("english_name")
+        if self.subj_codes != {}:
+            return self.subj_codes[code].get("english_name")
+        return self.subj_code_english[code]
 
     def get_welsh_sbj_label(self, code):
-        return self.subj_codes[code].get("welsh_name")
+        if self.subj_codes != {}:
+            return self.subj_codes[code].get("welsh_name")
+        return self.subj_code_welsh[code]
 
     def get_json_list(self, raw_course_data, get_key):
         """Returns a list of JSON objects (as dicts) for this stats element"""

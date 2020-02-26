@@ -4,6 +4,7 @@ import unittest
 import defusedxml.ElementTree as ET
 import xmltodict
 
+from unittest import mock
 from course_stats import Continuation
 from testing_utils import get_string
 
