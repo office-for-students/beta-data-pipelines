@@ -80,34 +80,36 @@ def load_course_docs(xml_string, version):
         ]
         ukprn = raw_inst_data["UKPRN"]
         for course in institution.findall("KISCOURSE"):
+            try:
+                raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
+                locids = get_locids(raw_course_data, ukprn)
+                course_doc = get_course_doc(
+                    accreditations,
+                    locations,
+                    locids,
+                    raw_inst_data,
+                    raw_course_data,
+                    kisaims,
+                    version,
+                )
+                enricher.enrich_course(course_doc)
+                subject_enricher.enrich_course(course_doc)
 
-            raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
-            locids = get_locids(raw_course_data, ukprn)
-            course_doc = get_course_doc(
-                accreditations,
-                locations,
-                locids,
-                raw_inst_data,
-                raw_course_data,
-                kisaims,
-                version,
-            )
-            enricher.enrich_course(course_doc)
-            subject_enricher.enrich_course(course_doc)
+                new_docs.append(course_doc)
+                sproc_count += 1
+                course_count += 1
 
-            new_docs.append(course_doc)
-            sproc_count += 1
-            course_count += 1
-
-            if sproc_count >= 50:
-                logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-                cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
-                logging.info(f"Successfully loaded another {sproc_count} documents")
-                # Reset values
-                new_docs = []
-                sproc_count = 0
-                time.sleep(3)
-
+                if sproc_count >= 50:
+                    logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
+                    cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
+                    logging.info(f"Successfully loaded another {sproc_count} documents")
+                    # Reset values
+                    new_docs = []
+                    sproc_count = 0
+                    time.sleep(3)
+            except Exception as e:
+                course_id = raw_course_data["KISCOURSEID"]
+                logging.info(f"There was an error when creating the course document for course with id: {course_id}")
 
     if sproc_count > 0:
         logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
