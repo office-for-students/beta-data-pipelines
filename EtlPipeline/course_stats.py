@@ -3,6 +3,7 @@
 import json
 import os
 import unicodedata
+import logging
 from collections import OrderedDict
 from SharedCode.dataset_helper import DataSetHelper
 from SharedCode.utils import get_subject_lookups
@@ -686,7 +687,9 @@ class SharedUtils:
 
     try:
         subj_codes = get_subject_lookups(DataSetHelper().get_latest_version_number())
+        logging.info("Using database subject codes.")
     except Exception:
+        logging.info("Using local subject codes.")
         subj_codes = {}
 
     def __init__(
