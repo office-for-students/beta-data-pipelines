@@ -80,12 +80,6 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
         dsh.update_status("courses", "failed")
         # A WARNING is raised during the ETL Pipeline and StopEtlPipelineOnWarning=True
         # For example, the incoming raw XML is not valid against its XSD
-        error_message = (
-            "A WARNING has been encountered during the ETL Pipeline. "
-            "The Pipeline will be stopped since StopEtlPipelineOnWarning has been "
-            "set to TRUE in the Application Settings."
-        )
-        logging.error(error_message)
 
         function_fail_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
         function_fail_date = datetime.today().strftime("%d.%m.%Y")
@@ -93,4 +87,5 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
         mail_helper.send_message(f"Automated data import failed on {function_fail_datetime} at EtlPipeline", f"Data Import {environment} - {function_fail_date} - Failed")
 
         logging.error(f"EtlPipeline failed on {function_fail_datetime}")
-        raise Exception(error_message)
+
+        raise e
