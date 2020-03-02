@@ -26,7 +26,7 @@ class SubjectCourseEnricher:
                 subjects.append(subject)
                 continue
 
-            level = str(self.subject_lookups[code].get("level", ""))
+            level = self.subject_lookups[code].get("level", "")
             english = self.subject_lookups[code].get("english_name", "")
             welsh = self.subject_lookups[code].get("welsh_name", "")
 
