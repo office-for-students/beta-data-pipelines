@@ -48,5 +48,5 @@ def get_subject_entry(subject):
     entry["code"] = subject["code"]
     entry["english_name"] = subject["english_name"]
     entry["welsh_name"] = subject["welsh_name"]
-    entry["level"] = subject["level"]
+    entry["level"] = str(subject["level"])
     return entry
