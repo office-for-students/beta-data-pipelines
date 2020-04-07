@@ -80,6 +80,7 @@ Add the following to your local.settings.json:
 | AzureCosmosDbUkRlpCollectionId             | ukrlp_static              | The name of the collection in which ukrlp docs are uploaded to                                               |
 | AzureCosmosDbSubjectsCollectionId          | subjects                  | The name of the collection in which subjects are uploaded to                                                 |
 | AzureCosmosDbDataSetCollectionId           | datasets                  | The name of the collection in which datasets are loaded                                                      |
+| AzureSearchAPIVersion                      | 2019-05-06                | The azure search API version for instance                                                                    |
 | AzureStorageAccountName                    | {retrieve from portal}    | The name of the storage account instance                                                                     |
 | AzureStorageAccountKey                     | {retrieve from portal}    | The key in which to connect to the storage account                                                           |
 | AzureStorageAccountConnectionString        | {retrieve from portal}    | The connection string to access storage account                                                              |
@@ -100,8 +101,8 @@ Add the following to your local.settings.json:
 | UkRlpOfsId                                 | {retrieve from ukrlp}     | The organisation id calling the UKRLP API, unique to each organisation                                       |
 | SearchURL                                  | {retrieve from portal}    | The uri to the azure search instance                                                                         |
 | SearchAPIKey                               | {retrieve from portal}    | The api key to access the azure search instance                                                              |
-| AzureSearchAPIVersion                      | 2019-05-06                | The azure search API version for instance                                                                    |
 | SendGridAPIKey                             | {retrieve from portal}    | The API key for the SendGrid client                                                                          |
+| SendGridEnabled                            |                           | The boolean that defines if automated e-mails are enabled                                                    |
 | SendGridFromEmail                          |                           | The address from which SendGrid will send automated e-mails                                                  |
 | SendGridFromName                           |                           | The name from used by SendGrid to send automated e-mails                                                     |
 | SendGridToEmailList                        |                           | The list used by SendGrid to send automated e-mails, separated by ";"                                        |
