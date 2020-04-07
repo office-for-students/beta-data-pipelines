@@ -37,7 +37,6 @@ class LookupCreator:
         self.xml_string = xml_string
         self.lookups_created = []
         self.ukrlp_no_info_list = []
-        self.db_entries_list = []
         self.collection_link = get_collection_link(
             "AzureCosmosDbDatabaseId", "AzureCosmosDbUkRlpCollectionId"
         )
@@ -155,10 +154,6 @@ class LookupCreator:
             )
             for ukprn in self.ukrlp_no_info_list:
                 logging.info(f"{ukprn}")
-
-        logging.info(
-            f"DB entries existed for {len(self.db_entries_list)} ukprns tried"
-        )
 
         return self.ukrlp_no_info_list
 
