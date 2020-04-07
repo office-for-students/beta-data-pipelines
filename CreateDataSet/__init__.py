@@ -25,6 +25,8 @@ from . import validators
 
 def main(req: func.HttpRequest, msgout: func.Out[str]) -> None:
 
+    msgerror = ""
+
     logging.info(
         f"CreateDataSet timer triggered\n"
     )
@@ -34,7 +36,10 @@ def main(req: func.HttpRequest, msgout: func.Out[str]) -> None:
 
     mail_helper = MailHelper()
     environment = os.environ["Environment"]
-    mail_helper.send_message(f"Automated data import started on {function_start_datetime}", f"Data Import {environment} - {function_start_date} - Started")
+    mail_helper.send_message(
+        f"Automated data import started on {function_start_datetime}",
+        f"Data Import {environment} - {function_start_date} - Started"
+    )
 
     logging.info(
         f"CreateDataSet function started on {function_start_datetime}"
@@ -42,7 +47,7 @@ def main(req: func.HttpRequest, msgout: func.Out[str]) -> None:
 
     try:
         blob_helper = BlobHelper()
-        
+
         storage_container_name = os.environ["AzureStorageHesaContainerName"]
         storage_blob_name = os.environ["AzureStorageHesaBlobName"]
 
@@ -71,7 +76,10 @@ def main(req: func.HttpRequest, msgout: func.Out[str]) -> None:
             function_fail_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
             function_fail_date = datetime.today().strftime("%d.%m.%Y")
 
-            mail_helper.send_message(f"Automated data import failed on {function_fail_datetime} at CreateDataSet", f"Data Import {environment} - {function_fail_date} - Failed")
+            mail_helper.send_message(
+                f"Automated data import failed on {function_fail_datetime} at CreateDataSet" + msgerror,
+                f"Data Import {environment} - {function_fail_date} - Failed"
+            )
 
             logging.info(f"CreateDataSet failed on {function_fail_datetime}")
             return
@@ -81,13 +89,16 @@ def main(req: func.HttpRequest, msgout: func.Out[str]) -> None:
             f"CreateDataSet successfully finished on {function_end_datetime}"
         )
 
-        msgout.set(f"CreateDataSet successfully finished on {function_end_datetime}")
+        msgout.set(msgerror + "\n")
 
     except StopEtlPipelineErrorException as e:
         function_fail_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
         function_fail_date = datetime.today().strftime("%d.%m.%Y")
 
-        mail_helper.send_message(f"Automated data import failed on {function_fail_datetime} at CreateDataSet", f"Data Import {environment} - {function_fail_date} - Failed")
+        mail_helper.send_message(
+            f"Automated data import failed on {function_fail_datetime} at CreateDataSet" + msgerror,
+            f"Data Import {environment} - {function_fail_date} - Failed"
+        )
 
         logging.error(
             f"CreateDataSet failed on {function_fail_datetime}",
@@ -103,7 +114,10 @@ def main(req: func.HttpRequest, msgout: func.Out[str]) -> None:
         function_fail_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
         function_fail_date = datetime.today().strftime("%d.%m.%Y")
 
-        mail_helper.send_message(f"Automated data import failed on {function_fail_datetime} at CreateDataSet", f"Data Import {environment} - {function_fail_date} - Failed")
+        mail_helper.send_message(
+            f"Automated data import failed on {function_fail_datetime} at CreateDataSet" + msgerror ,
+            f"Data Import {environment} - {function_fail_date} - Failed"
+        )
 
         logging.error(
             f"CreateDataSet failed on {function_fail_datetime}",

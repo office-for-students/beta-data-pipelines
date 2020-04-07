@@ -34,7 +34,8 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
       the compressed XML passed in to a Blob storage monitored by the Etl function.
 
     """
-
+    msgerror = ""
+    
     mail_helper = MailHelper()
     environment = os.environ["Environment"]
 
@@ -76,14 +77,17 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
             f"CreateUkrlp successfully finished on {function_end_datetime}"
         )
 
-        msgout.set(f"CreateUkrlp successfully finished on {function_end_datetime}")
+        msgout.set(msgin.get_body.decode("utf-8") + msgerror)
 
     except Exception as e:
         # Unexpected exception
         function_fail_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
         function_fail_date = datetime.today().strftime("%d.%m.%Y")
 
-        mail_helper.send_message(f"Automated data import failed on {function_fail_datetime} at CreateUkrlp", f"Data Import {environment} - {function_fail_date} - Failed")
+        mail_helper.send_message(
+            f"Automated data import failed on {function_fail_datetime} at CreateUkrlp" + msgin.get_body.decode("utf-8") + msgerror,
+            f"Data Import {environment} - {function_fail_date} - Failed"
+        )
 
         logging.error(f"CreateUkrlp faile on {function_fail_datetime}")
         logging.error(traceback.format_exc())
