@@ -77,6 +77,7 @@ Add the following to your local.settings.json:
 | AzureCosmosDbInstitutionsCollectionId      | institutions              | The name of the collection in which institutions are uploaded to                                             |
 | AzureCosmosDbCoursesCollectionId           | courses                   | The name of the collection in which courses are uploaded to                                                  |
 | AzureCosmosDbUkRlpCollectionId             | ukrlp                     | The name of the collection in which ukrlp docs are uploaded to                                               |
+| AzureCosmosDbUkRlpCollectionId             | ukrlp_static              | The name of the collection in which ukrlp docs are uploaded to                                               |
 | AzureCosmosDbSubjectsCollectionId          | subjects                  | The name of the collection in which subjects are uploaded to                                                 |
 | AzureCosmosDbDataSetCollectionId           | datasets                  | The name of the collection in which datasets are loaded                                                      |
 | AzureStorageAccountName                    | {retrieve from portal}    | The name of the storage account instance                                                                     |
