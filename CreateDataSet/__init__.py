@@ -115,7 +115,7 @@ def main(req: func.HttpRequest, msgout: func.Out[str]) -> None:
         function_fail_date = datetime.today().strftime("%d.%m.%Y")
 
         mail_helper.send_message(
-            f"Automated data import failed on {function_fail_datetime} at CreateDataSet" + msgerror ,
+            f"Automated data import failed on {function_fail_datetime} at CreateDataSet" + msgerror,
             f"Data Import {environment} - {function_fail_date} - Failed"
         )
 

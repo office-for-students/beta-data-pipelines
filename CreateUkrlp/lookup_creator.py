@@ -160,6 +160,8 @@ class LookupCreator:
             f"DB entries existed for {len(self.db_entries_list)} ukprns tried"
         )
 
+        return self.ukrlp_no_info_list
+
 
     def create_ukrlp_lookup(self, ukprn):
         """Get the UKRLP record, transform it, and write it to Cosmos DB"""

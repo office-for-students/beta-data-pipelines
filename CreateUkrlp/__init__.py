@@ -69,7 +69,12 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
         logging.info(f"using version number: {version}")
         dsh.update_status("institutions", "in progress")
         lookup_creator = LookupCreator(xml_string, csv_string, version)
-        lookup_creator.create_ukrlp_lookups()
+        ukrlp_no_info_list = lookup_creator.create_ukrlp_lookups()
+
+        msgerror += f"\n\nUKRLP did not return info for the following {len(ukrlp_no_info_list)} ukprn(s):\n"
+
+        for ukprn in ukrlp_no_info_list:
+            msgerror += f"\t{ukprn}\n"
 
         function_end_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
 
