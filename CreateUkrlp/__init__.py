@@ -82,7 +82,7 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
             f"CreateUkrlp successfully finished on {function_end_datetime}"
         )
 
-        msgout.set(msgin.get_body.decode("utf-8") + msgerror)
+        msgout.set(msgin.get_body().decode("utf-8") + msgerror)
 
     except Exception as e:
         # Unexpected exception
@@ -90,7 +90,7 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
         function_fail_date = datetime.today().strftime("%d.%m.%Y")
 
         mail_helper.send_message(
-            f"Automated data import failed on {function_fail_datetime} at CreateUkrlp" + msgin.get_body.decode("utf-8") + msgerror,
+            f"Automated data import failed on {function_fail_datetime} at CreateUkrlp" + msgin.get_body().decode("utf-8") + msgerror,
             f"Data Import {environment} - {function_fail_date} - Failed"
         )
 
