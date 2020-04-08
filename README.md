@@ -85,18 +85,12 @@ Add the following to your local.settings.json:
 | AzureStorageAccountKey                     | {retrieve from portal}    | The key in which to connect to the storage account                                                           |
 | AzureStorageAccountConnectionString        | {retrieve from portal}    | The connection string to access storage account                                                              |
 | AzureWebJobsStorage                        | {retrieve from portal}    | The default endpoint to access storage account                                                               |
-| AzureStorageAccountHesaContainerName       | hesa-raw-xml-ingest       | The name of the storage container in which the latest HESA xml is located  
-          |
-| AzureStorageAccountSubjectsContainerName   | subjects                  | The name of the storage container in which the latest subjects csv file is located
-          |
-| AzureStorageAccountPostcodesContainerName  | postcodes                 | The name of the storage container in which the latest subjects csv file is located
-          |
-| DatabaseThroughput                         | 400                       | The throughput (RU/s) for subjects collection 
-          |
-| Environment                                |                           | The environment that is running the function 
-          |
-| PostcodeIndexName                          | postcodes                 | The name of the search index for postcodes 
-          |
+| AzureStorageAccountHesaContainerName       | hesa-raw-xml-ingest       | The name of the storage container in which the latest HESA xml is located                                    |
+| AzureStorageAccountSubjectsContainerName   | subjects                  | The name of the storage container in which the latest subjects csv file is located                           |
+| AzureStorageAccountPostcodesContainerName  | postcodes                 | The name of the storage container in which the latest postcodes csv file is located                          |
+| DatabaseThroughput                         | 400                       | The throughput (RU/s) for subjects collection                                                                |
+| Environment                                |                           | The environment that is running the function                                                                 |
+| PostcodeIndexName                          | postcodes                 | The name of the search index for postcodes                                                                   |
 | UkRlpUrl                                   | {retrieve from ukrlp}     | The url to the UKRLP API service                                                                             |
 | UkRlpOfsId                                 | {retrieve from ukrlp}     | The organisation id calling the UKRLP API, unique to each organisation                                       |
 | SearchURL                                  | {retrieve from portal}    | The uri to the azure search instance                                                                         |
@@ -108,7 +102,7 @@ Add the following to your local.settings.json:
 | SendGridToEmailList                        |                           | The list used by SendGrid to send automated e-mails, separated by ";"                                        |
 | StopEtlPipelineOnWarning                   | false                     | Boolean flag to stop function worker on a warning                                                            |
 | StorageUrl                                 | {retrieve from portal}    | The url to the top level storage                                                                             |
-| TimeInMinsToWaitBeforeCreateNewDataSet     | 120                       | You may need to reduce this time if you wish to run more frequently -e.g., to retry after a fix    
+| TimeInMinsToWaitBeforeCreateNewDataSet     | 120                       | You may need to reduce this time if you wish to run more frequently -e.g., to retry after a fix              |
 
 
 #### Running Service
