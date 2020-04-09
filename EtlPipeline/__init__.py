@@ -29,6 +29,8 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
     Azure Functions chained/integrated and orchestrated using Azure Data Factory
     and/or Function App. """
 
+    msgerror = ""
+
     mail_helper = MailHelper()
     environment = os.environ["Environment"]
 
@@ -73,7 +75,7 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
             f"EtlPipeline successfully finished on {function_end_datetime}"
         )
 
-        msgout.set(f"EtlPipeline successfully finished on {function_end_datetime}")
+        msgout.set(msgin.get_body().decode("utf-8") + msgerror)
 
     except Exception as e:
 
@@ -84,7 +86,10 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
         function_fail_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
         function_fail_date = datetime.today().strftime("%d.%m.%Y")
 
-        mail_helper.send_message(f"Automated data import failed on {function_fail_datetime} at EtlPipeline", f"Data Import {environment} - {function_fail_date} - Failed")
+        mail_helper.send_message(
+            f"Automated data import failed on {function_fail_datetime} at EtlPipeline" + msgin.get_body().decode("utf-8") + msgerror,
+            f"Data Import {environment} - {function_fail_date} - Failed"
+        )
 
         logging.error(f"EtlPipeline failed on {function_fail_datetime}")
 

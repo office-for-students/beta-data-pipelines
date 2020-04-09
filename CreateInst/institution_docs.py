@@ -142,7 +142,7 @@ class InstitutionDocs:
         collection_link = get_collection_link(
             "AzureCosmosDbDatabaseId", "AzureCosmosDbInstitutionsCollectionId"
         )
-        
+
         options = {"partitionKey": str(self.version)}
         sproc_link = collection_link + "/sprocs/bulkImport"
 
