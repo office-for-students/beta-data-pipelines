@@ -34,7 +34,8 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
       the compressed XML passed in to a Blob storage monitored by the Etl function.
 
     """
-
+    msgerror = ""
+    
     mail_helper = MailHelper()
     environment = os.environ["Environment"]
 
@@ -68,7 +69,12 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
         logging.info(f"using version number: {version}")
         dsh.update_status("institutions", "in progress")
         lookup_creator = LookupCreator(xml_string, csv_string, version)
-        lookup_creator.create_ukrlp_lookups()
+        ukrlp_no_info_list = lookup_creator.create_ukrlp_lookups()
+
+        msgerror += f"\n\nUKRLP did not return info for the following {len(ukrlp_no_info_list)} ukprn(s):\n"
+
+        for ukprn in ukrlp_no_info_list:
+            msgerror += f"\t{ukprn}\n"
 
         function_end_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
 
@@ -76,14 +82,17 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
             f"CreateUkrlp successfully finished on {function_end_datetime}"
         )
 
-        msgout.set(f"CreateUkrlp successfully finished on {function_end_datetime}")
+        msgout.set(msgin.get_body().decode("utf-8") + msgerror)
 
     except Exception as e:
         # Unexpected exception
         function_fail_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
         function_fail_date = datetime.today().strftime("%d.%m.%Y")
 
-        mail_helper.send_message(f"Automated data import failed on {function_fail_datetime} at CreateUkrlp", f"Data Import {environment} - {function_fail_date} - Failed")
+        mail_helper.send_message(
+            f"Automated data import failed on {function_fail_datetime} at CreateUkrlp" + msgin.get_body().decode("utf-8") + msgerror,
+            f"Data Import {environment} - {function_fail_date} - Failed"
+        )
 
         logging.error(f"CreateUkrlp faile on {function_fail_datetime}")
         logging.error(traceback.format_exc())

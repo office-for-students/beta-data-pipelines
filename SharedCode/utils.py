@@ -37,6 +37,7 @@ def get_ukrlp_lookups(version):
     """Returns a dictionary of UKRLP lookups"""
 
     cosmos_db_client = get_cosmos_client()
+
     collection_link = get_collection_link(
         "AzureCosmosDbDatabaseId", "AzureCosmosDbUkRlpCollectionId"
     )
@@ -48,6 +49,20 @@ def get_ukrlp_lookups(version):
     lookup_list = list(
         cosmos_db_client.QueryItems(collection_link, query, options)
     )
+
+    collection_link = get_collection_link(
+        "AzureCosmosDbDatabaseId", "AzureCosmosDbUkRlpStaticCollectionId"
+    )
+
+    query = f"SELECT * from c"
+
+    options = {"enableCrossPartitionQuery": True}
+
+    static_lookup_list = list(
+        cosmos_db_client.QueryItems(collection_link, query, options)
+    )
+
+    lookup_list.extend(static_lookup_list)
 
     return {lookup["ukprn"]: lookup for lookup in lookup_list}
 

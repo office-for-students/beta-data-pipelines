@@ -53,9 +53,6 @@ def build_institutions_json_files():
         isnt_name = institution["pub_ukprn_name"]
         inst_welsh_name = institution["pub_ukprn_welsh_name"]
 
-        logging.info(
-            f"Institution name: {isnt_name}; welsh name: {inst_welsh_name}"
-        )
         if isinstance(inst_welsh_name, str):
             inst_entry = get_inst_entry(inst_welsh_name)
             institutions.append(inst_entry)
