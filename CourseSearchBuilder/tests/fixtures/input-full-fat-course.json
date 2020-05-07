@@ -68,7 +68,8 @@
         },
         "qualification": {
             "code": "030",
-            "label": "FD"
+            "label": "FD",
+            "level": "first-degree"
         },
         "sandwich_year": {
             "code": 0,

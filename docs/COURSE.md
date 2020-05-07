@@ -124,7 +124,8 @@
         },
         "qualification": {
             "code": "string",
-            "label": "string"
+            "label": "string",
+            "level": "string",
         },
         "sandwich_year": {
             "code": "string",
@@ -212,6 +213,7 @@
 | nhs_funded.label                           | See NHS Code values                                   | N/A              |
 | qualification.code                         | KIS.INSTITUTION.KISCOURSE.KISAIMCODE                  | KISAIMCODE       |
 | qualification.label                        | KIS.KISAIM.KISAIMLABEL                                | KISAIMLABEL      |
+| qualification.level                        | See qualiifications-levels.csv                        | N/A              |
 | sandwich_year.code                         | KIS.INSTITUTION.KISCOURSE.SANDWICH                    | SANDWICH         |
 | sandwich_year.label                        | See Sandwich Years Code values                        | N/A              |
 | subject.code                               | KIS.INSTITUTION.KISCOURSE.SBJ                         | SBJ              |

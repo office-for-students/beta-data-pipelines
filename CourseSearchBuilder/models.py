@@ -59,6 +59,7 @@ def build_course_search_doc(course):
                 "qualification": {
                     "code": course["course"]["qualification"]["code"],
                     "label": course["course"]["qualification"]["label"],
+                    "level": course["course"]["qualification"]["level"],
                 },
                 "sandwich_year": {
                     "code": course["course"]["sandwich_year"]["code"],
