@@ -85,9 +85,19 @@ Add the following to your local.settings.json:
 | AzureStorageAccountKey                     | {retrieve from portal}    | The key in which to connect to the storage account                                                           |
 | AzureStorageAccountConnectionString        | {retrieve from portal}    | The connection string to access storage account                                                              |
 | AzureWebJobsStorage                        | {retrieve from portal}    | The default endpoint to access storage account                                                               |
-| AzureStorageAccountHesaContainerName       | hesa-raw-xml-ingest       | The name of the storage container in which the latest HESA xml is located                                    |
-| AzureStorageAccountSubjectsContainerName   | subjects                  | The name of the storage container in which the latest subjects csv file is located                           |
-| AzureStorageAccountPostcodesContainerName  | postcodes                 | The name of the storage container in which the latest postcodes csv file is located                          |
+| AzureStorageHesaContainerName              | hesa-raw-xml-ingest       | The name of the storage container in which the latest HESA xml is located                                    |
+| AzureStorageSubjectsContainerName          | subjects                  | The name of the storage container in which the latest subjects csv file is located                           |
+| AzureStoragePostcodesContainerName         | postcodes                 | The name of the storage container in which the latest postcodes csv file is located                          |
+| AzureStorageJSONFilesContainerName         | jsonfiles                 | The name of the storage container in which the json files will be generated                                  |
+| AzureStorageQualificationsContainerName    | qualifications            | The name of the storage container in which the latest qualification level csv file is located                |
+| AzureStorageWelshUnisContainerName         | welsh-unis                | The name of the storage container in which the latest welsh university csv file is located                   |
+| AzureStorageInstitutionsCYJSONFileBlobName | institutions_cy.json      | The name of the storage blob for the welsh institution json file                                             |
+| AzureStorageInstitutionsENJSONFileBlobName | institutions_en.json      | The name of the storage blob for the english institution json file                                           |
+| AzureStoragePostcodesBlobName              |                           | The name of the storage blob for the postcode file                                                           |
+| AzureStorageQualificationsBlobName         | qualification-levels.csv  | The name of the storage blob for the qualification levels file                                               |
+| AzureStorageSubjectsBlobName               |                           | The name of the storage blob for the subject labels file                                                     |
+| AzureStorageSubjectsJSONFileBlobName       | subjects.json             | The name of the storage blob for the subject json file                                                       |
+| AzureStorageWelshUnisBlobName              |                           | The name of the storage blob for the welsh institutions file                                                 |
 | DatabaseThroughput                         | 400                       | The throughput (RU/s) for subjects collection                                                                |
 | Environment                                |                           | The environment that is running the function                                                                 |
 | PostcodeIndexName                          | postcodes                 | The name of the search index for postcodes                                                                   |
