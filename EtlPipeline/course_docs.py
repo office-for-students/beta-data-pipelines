@@ -34,6 +34,7 @@ from kisaims import KisAims
 from locations import Locations
 from ukrlp_enricher import UkRlpCourseEnricher
 from subject_enricher import SubjectCourseEnricher
+from qualification_enricher import QualificationCourseEnricher
 from course_subjects import get_subjects
 
 from SharedCode import utils
@@ -49,10 +50,16 @@ def load_course_docs(xml_string, version):
         "adding ukrlp data into memory ahead of building course documents"
     )
     enricher = UkRlpCourseEnricher(version)
+
     logging.info(
         "adding subject data into memory ahead of building course documents"
     )
     subject_enricher = SubjectCourseEnricher(version)
+
+    logging.info(
+        "adding qualification data into memory ahead of building course documents"
+    )
+    qualification_enricher = QualificationCourseEnricher()
 
     collection_link = utils.get_collection_link(
         "AzureCosmosDbDatabaseId", "AzureCosmosDbCoursesCollectionId"
@@ -94,6 +101,7 @@ def load_course_docs(xml_string, version):
                 )
                 enricher.enrich_course(course_doc)
                 subject_enricher.enrich_course(course_doc)
+                qualification_enricher.enrich_course(course_doc)
 
                 new_docs.append(course_doc)
                 sproc_count += 1
