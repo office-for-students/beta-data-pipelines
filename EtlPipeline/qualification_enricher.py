@@ -9,7 +9,7 @@ from SharedCode import exceptions
 class QualificationCourseEnricher:
     """Handles enriching courses with Qualification data"""
 
-    def __init__(self, version):
+    def __init__(self):
         blob_helper = BlobHelper()
 
         storage_container_name = os.environ["AzureStorageQualificationsContainerName"]
