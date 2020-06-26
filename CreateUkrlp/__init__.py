@@ -57,7 +57,9 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
         storage_container_name = os.environ["AzureStorageHesaContainerName"]
         storage_blob_name = os.environ["AzureStorageHesaBlobName"]
 
-        xml_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
+        # xml_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
+        mock_xml_source_file = open("sample_course_data.xml","r")
+        xml_string = mock_xml_source_file.read()
 
         storage_container_name = os.environ["AzureStorageWelshUnisContainerName"]
         storage_blob_name = os.environ["AzureStorageWelshUnisBlobName"]

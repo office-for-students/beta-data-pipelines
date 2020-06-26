@@ -2,10 +2,11 @@
   "scriptFile": "__init__.py",
   "bindings": [
     {
-      "name": "req",
-      "type": "httpTrigger",
+      "name": "msgin",
+      "type": "queueTrigger",
       "direction": "in",
-      "methods": ["get"]
+      "queueName": "data-pipeline-etl-queue",
+      "connection": "AzureStorageAccountConnectionString"
     },
     {
       "name": "msgout",

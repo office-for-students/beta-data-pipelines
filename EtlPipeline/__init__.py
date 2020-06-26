@@ -20,7 +20,8 @@ from SharedCode import exceptions
 from . import course_docs, validators
 
 
-def main(msgin: func.QueueMessage, msgout: func.Out[str]):
+# def main(msgin: func.QueueMessage, msgout: func.Out[str]):
+def main(req: func.HttpRequest, msgout: func.Out[str]) -> None:
 
     """ Master ETL Pipeline - note that currently, the end-to-end ETL pipeline is
     executed via this single Azure Function which calls other Python functions
@@ -60,11 +61,14 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
         storage_container_name = os.environ["AzureStorageHesaContainerName"]
         storage_blob_name = os.environ["AzureStorageHesaBlobName"]
 
-        xml_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
+        # xml_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
+        mock_xml_source_file = open("sample_course_data.xml","r")
+        xml_string = mock_xml_source_file.read()
 
         """ LOADING - Parse XML and load enriched JSON docs to database """
 
-        version = dsh.get_latest_version_number()
+        # version = dsh.get_latest_version_number()
+        version = 1
         dsh.update_status("courses", "in progress")
         course_docs.load_course_docs(xml_string, version)
         dsh.update_status("courses", "succeeded")
@@ -75,7 +79,7 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
             f"EtlPipeline successfully finished on {function_end_datetime}"
         )
 
-        msgout.set(msgin.get_body().decode("utf-8") + msgerror)
+        # msgout.set(msgin.get_body().decode("utf-8") + msgerror)
 
     except Exception as e:
 

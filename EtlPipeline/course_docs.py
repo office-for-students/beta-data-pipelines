@@ -206,6 +206,14 @@ def get_course_doc(
         course["honours_award_provision"] = int(raw_course_data["HONOURS"])
     course["institution"] = get_institution(raw_inst_data)
     course["kis_course_id"] = raw_course_data["KISCOURSEID"]
+
+    # new_node = get_code_label_entry(
+    #     raw_course_data, lookup.sandwich_year, "NEW_NODE"
+    # )
+    new_node = raw_course_data["NEW_NODE"]
+    if new_node:
+        course["new_node"] = new_node
+
     length_of_course = get_code_label_entry(
         raw_course_data, lookup.length_of_course, "NUMSTAGE"
     )

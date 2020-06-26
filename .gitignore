@@ -134,11 +134,18 @@ beta-data-pipelines.zip
 # Visual Studio Code
 .vscode/
 
+# PyCharm
+.idea/
+
 # Local setup files
 setup_env_vars.sh
+*.dev*
 
 # Test files
 test-output.xml
 
 # config file - used to config black
 pyproject.toml
+
+azure-functions-core-tools/
+azure-functions-core-tools/

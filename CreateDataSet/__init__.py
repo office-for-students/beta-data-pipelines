@@ -12,13 +12,13 @@ import azure.functions as func
 
 from azure.storage.blob import BlockBlobService
 
-from SharedCode.exceptions import (
+from ..SharedCode.exceptions import (
     XmlValidationError,
     StopEtlPipelineErrorException,
     DataSetTooEarlyError,
 )
-from SharedCode.blob_helper import BlobHelper
-from SharedCode.mail_helper import MailHelper
+from ..SharedCode.blob_helper import BlobHelper
+from ..SharedCode.mail_helper import MailHelper
 from .dataset_creator import DataSetCreator
 from . import validators
 
@@ -51,7 +51,9 @@ def main(req: func.HttpRequest, msgout: func.Out[str]) -> None:
         storage_container_name = os.environ["AzureStorageHesaContainerName"]
         storage_blob_name = os.environ["AzureStorageHesaBlobName"]
 
-        xml_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
+        # xml_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
+        mock_xml_source_file = open("sample_course_data.xml","r")
+        xml_string = mock_xml_source_file.read()
 
         """ BASIC XML Validation """
         try:
