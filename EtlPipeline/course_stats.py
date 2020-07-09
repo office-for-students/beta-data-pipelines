@@ -374,7 +374,7 @@ class Leo:
         unavailable["reason_welsh"] = self.get_unavailable_reason_str_welsh(unavail_reason_code)
 
         if self.course_outside_england():
-            unavailable["find_out_more_english"] = self.unavail_reason_english["find_out_more"]
+            unavailable["find_out_more_english"] = self.["find_out_more"]
             unavailable["find_out_more_welsh"] = self.unavail_reason_welsh["find_out_more"]
             unavailable["url_english"] = self.unavail_reason_english["url"]
             unavailable["url_welsh"] = self.unavail_reason_welsh["url"]
@@ -830,15 +830,17 @@ class SharedUtils:
 
         # Handle unavailable reason for aggregation over 2 years
         if agg in ["21", "22", "23"]:
-            return (
-                partial_reason_str
-                + subj
-                + unavail_reason_lookup["agg-over-two-years"]
-            )
+            # return (
+            #     partial_reason_str
+            #     + subj
+            #     + unavail_reason_lookup["agg-over-two-years"]
+            # )
+            return partial_reason_str.replace("[Subject]", subj)
         if agg == "24":
             return partial_reason_str
 
-        return partial_reason_str + subj + "."
+        # return partial_reason_str + subj + "."
+        return partial_reason_str.replace("[Subject]", subj)
 
     def get_unavailable_reason_subj_english(self, sbj_key):
         if sbj_key:
