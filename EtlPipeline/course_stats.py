@@ -829,15 +829,15 @@ class SharedUtils:
             subj = self.get_unavailable_reason_subj_english(subj_key)
 
         # Handle unavailable reason for aggregation over 2 years
-        if agg in ["21", "22", "23"]:
+        # if agg in ["21", "22", "23"]:
             # return (
             #     partial_reason_str
             #     + subj
             #     + unavail_reason_lookup["agg-over-two-years"]
             # )
-            return partial_reason_str.replace("[Subject]", subj)
-        if agg == "24":
-            return partial_reason_str
+        #     return partial_reason_str.replace("[Subject]", subj)
+        # if agg == "24":
+        #     return partial_reason_str
 
         # return partial_reason_str + subj + "."
         return partial_reason_str.replace("[Subject]", subj)
