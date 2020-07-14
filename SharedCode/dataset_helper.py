@@ -35,7 +35,15 @@ class DataSetHelper:
         )
 
     def get_latest_doc(self):
-        latest_version_number = self.get_latest_version_number()
+        # TODO: Ensure that UseLocalTestXMLFile is set to false in local.settings.json before going live.
+        use_local_test_XML_file = os.environ.get('UseLocalTestXMLFile')
+        use_local_test_version = os.environ.get('UseLocalTestVersion')
+
+        if use_local_test_XML_file:
+            latest_version_number = use_local_test_version
+        else:
+            latest_version_number = self.get_latest_version_number()
+
         query = f"SELECT * FROM c WHERE c.version = {latest_version_number}"
         options = {"enableCrossPartitionQuery": True}
         return list(

@@ -686,7 +686,18 @@ class SharedUtils:
     """Functionality required by several stats related classes"""
 
     try:
-        subj_codes = get_subject_lookups(DataSetHelper().get_latest_version_number())
+        # TODO: Ensure that UseLocalTestXMLFile is set to false in local.settings.json before going live.
+        use_local_test_XML_file = os.environ.get('UseLocalTestXMLFile')
+        use_local_test_version = os.environ.get('UseLocalTestVersion')
+        
+        if use_local_test_XML_file:
+            version = use_local_test_version
+        else:
+            version = dsh.get_latest_version_number()
+
+        #subj_codes = get_subject_lookups(DataSetHelper().get_latest_version_number())
+        subj_codes = get_subject_lookups(version)
+        
         logging.info("Using database subject codes.")
     except Exception:
         logging.info("Using local subject codes.")
@@ -829,16 +840,18 @@ class SharedUtils:
             subj = self.get_unavailable_reason_subj_english(subj_key)
 
         # Handle unavailable reason for aggregation over 2 years
-        if agg in ["21", "22", "23"]:
-            return (
-                partial_reason_str
-                + subj
-                + unavail_reason_lookup["agg-over-two-years"]
-            )
-        if agg == "24":
-            return partial_reason_str
+        # if agg in ["21", "22", "23"]:
+            # return (
+            #     partial_reason_str
+            #     + subj
+            #     + unavail_reason_lookup["agg-over-two-years"]
+            # )
+        #     return partial_reason_str.replace("[Subject]", subj)
+        # if agg == "24":
+        #     return partial_reason_str
 
-        return partial_reason_str + subj + "."
+        # return partial_reason_str + subj + "."
+        return partial_reason_str.replace("[Subject]", subj)
 
     def get_unavailable_reason_subj_english(self, sbj_key):
         if sbj_key:

@@ -34,6 +34,10 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
       the compressed XML passed in to a Blob storage monitored by the Etl function.
 
     """
+    # TODO: Ensure that UseLocalTestXMLFile is set to false in local.settings.json before going live.
+    use_local_test_XML_file = os.environ.get('UseLocalTestXMLFile')
+    use_local_test_version = os.environ.get('UseLocalTestVersion')
+
     msgerror = ""
     
     mail_helper = MailHelper()
@@ -57,7 +61,13 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
         storage_container_name = os.environ["AzureStorageHesaContainerName"]
         storage_blob_name = os.environ["AzureStorageHesaBlobName"]
 
-        xml_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
+        if use_local_test_XML_file:
+            mock_xml_source_file = open("sample_course_data.xml","r")
+            xml_string = mock_xml_source_file.read()
+            version = use_local_test_version
+        else:
+            xml_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
+            version = dsh.get_latest_version_number()
 
         storage_container_name = os.environ["AzureStorageWelshUnisContainerName"]
         storage_blob_name = os.environ["AzureStorageWelshUnisBlobName"]
@@ -65,7 +75,7 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
         csv_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
 
         # Parse the xml and create the lookups
-        version = dsh.get_latest_version_number()
+
         logging.info(f"using version number: {version}")
         dsh.update_status("institutions", "in progress")
         lookup_creator = LookupCreator(xml_string, csv_string, version)

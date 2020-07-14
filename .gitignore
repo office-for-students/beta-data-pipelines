@@ -142,3 +142,6 @@ test-output.xml
 
 # config file - used to config black
 pyproject.toml
+Example_Salaryxml (1).xml
+requirements.dev.txt
+.DS_Store

@@ -16,6 +16,10 @@ from .institution_docs import InstitutionDocs
 
 
 def main(msgin: func.QueueMessage, msgout: func.Out[str]):
+    # TODO: Ensure that UseLocalTestXMLFile is set to false in local.settings.json before going live.
+    use_local_test_XML_file = os.environ.get('UseLocalTestXMLFile')
+    use_local_test_version = os.environ.get('UseLocalTestVersion')
+
     msgerror = ""
 
     mail_helper = MailHelper()
@@ -45,11 +49,16 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
         storage_container_name = os.environ["AzureStorageHesaContainerName"]
         storage_blob_name = os.environ["AzureStorageHesaBlobName"]
 
-        xml_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
+        if use_local_test_XML_file:
+            mock_xml_source_file = open("sample_course_data.xml","r")
+            xml_string = mock_xml_source_file.read()
+            version = use_local_test_version
+        else:
+            xml_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
+            version = dsh.get_latest_version_number()
 
         """ LOADING - extract data and load JSON Documents """
 
-        version = dsh.get_latest_version_number()
         logging.info(f"using version number: {version}")
         dsh.update_status("institutions", "in progress")
 

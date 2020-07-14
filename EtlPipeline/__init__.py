@@ -28,6 +28,10 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
     TO DO: Investigate if/how this pipeline can be broken down into individual
     Azure Functions chained/integrated and orchestrated using Azure Data Factory
     and/or Function App. """
+    
+    # TODO: Ensure that UseLocalTestXMLFile is set to false in local.settings.json before going live.
+    use_local_test_XML_file = os.environ.get('UseLocalTestXMLFile')
+    use_local_test_version = os.environ.get('UseLocalTestVersion')
 
     msgerror = ""
 
@@ -60,11 +64,16 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
         storage_container_name = os.environ["AzureStorageHesaContainerName"]
         storage_blob_name = os.environ["AzureStorageHesaBlobName"]
 
-        xml_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
+        if use_local_test_XML_file:
+            mock_xml_source_file = open("sample_course_data.xml","r")
+            xml_string = mock_xml_source_file.read()
+            version = use_local_test_version
+        else:
+            xml_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
+            version = dsh.get_latest_version_number()
 
         """ LOADING - Parse XML and load enriched JSON docs to database """
 
-        version = dsh.get_latest_version_number()
         dsh.update_status("courses", "in progress")
         course_docs.load_course_docs(xml_string, version)
         dsh.update_status("courses", "succeeded")

@@ -16,6 +16,10 @@ from .build_version_json import build_version_json_file
 
 
 def main(msgin: func.QueueMessage):
+    # TODO: Ensure that UseLocalTestXMLFile is set to false in local.settings.json before going live.
+    use_local_test_XML_file = os.environ.get('UseLocalTestXMLFile')
+    use_local_test_version = os.environ.get('UseLocalTestVersion')
+
     msgerror = ""
 
     mail_helper = MailHelper()
@@ -39,7 +43,10 @@ def main(msgin: func.QueueMessage):
         search_url = os.environ["SearchURL"]
         api_version = os.environ["AzureSearchAPIVersion"]
 
-        version = dsh.get_latest_version_number()
+        if use_local_test_XML_file:
+            version = use_local_test_version
+        else:
+            version = dsh.get_latest_version_number()
 
         dsh.update_status("search", "in progress")
 

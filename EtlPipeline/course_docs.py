@@ -206,6 +206,11 @@ def get_course_doc(
         course["honours_award_provision"] = int(raw_course_data["HONOURS"])
     course["institution"] = get_institution(raw_inst_data)
     course["kis_course_id"] = raw_course_data["KISCOURSEID"]
+
+    go_voice_work_node = raw_course_data["GOVOICEWORK"]
+    if go_voice_work_node:
+        course["go_voice_work"] = get_go_voice_work(go_voice_work_node)
+
     length_of_course = get_code_label_entry(
         raw_course_data, lookup.length_of_course, "NUMSTAGE"
     )
@@ -300,6 +305,17 @@ def get_country(raw_inst_data):
         country["code"] = code
         country["name"] = lookup.country_code[code]
     return country
+
+
+def get_go_voice_work(raw_go_voice_work_data):
+    go_voice_work = {}
+    if raw_go_voice_work_data:
+        go_voice_work["go_work_skills"] = raw_go_voice_work_data["GOWORKSKILLS"]
+        go_voice_work["go_work_mean"] = raw_go_voice_work_data["GOWORKMEAN"]
+        go_voice_work["go_work_on_track"] = raw_go_voice_work_data["GOWORKONTRACK"]
+        go_voice_work["go_work_pop"] = raw_go_voice_work_data["GOWORKPOP"]
+        go_voice_work["go_work_resp_rate"] = raw_go_voice_work_data["GOWORKRESP_RATE"]
+    return go_voice_work
 
 
 def get_code_label_entry(lookup_table_raw_xml, lookup_table_local, key):
