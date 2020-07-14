@@ -132,7 +132,7 @@ local.settings.json.*
 beta-data-pipelines.zip
 
 # Visual Studio Code
-.vscode/
+#.vscode/
 
 # Local setup files
 setup_env_vars.sh
