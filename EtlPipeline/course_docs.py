@@ -27,6 +27,10 @@ sys.path.insert(0, CURRENTDIR)
 sys.path.insert(0, PARENTDIR)
 
 
+# TODO: apw: Remove the leo and salary mappings once they are no longer needed by the front end.
+#   i.e. when we make the Sept 2020 changes to the course comparison page.
+
+
 import course_lookup_tables as lookup
 from course_stats import get_stats, SharedUtils
 from accreditations import Accreditations
@@ -36,6 +40,10 @@ from ukrlp_enricher import UkRlpCourseEnricher
 from subject_enricher import SubjectCourseEnricher
 from qualification_enricher import QualificationCourseEnricher
 from course_subjects import get_subjects
+
+from go_salary_sector import GoSalarySector
+from leo3_sector import Leo3Sector
+from leo5_sector import Leo5Sector
 
 from SharedCode import utils
 from SharedCode.utils import get_english_welsh_item
@@ -90,6 +98,12 @@ def load_course_docs(xml_string, version):
             try:
                 raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
                 locids = get_locids(raw_course_data, ukprn)
+
+                # Extract the appropriate sector-level earnings data for the current course.
+                go_salary_sector = GoSalarySector(root, raw_course_data).get_matching_sector()
+                leo3_sector = Leo3Sector(root, raw_course_data).get_matching_sector()
+                leo5_sector = Leo5Sector(root, raw_course_data).get_matching_sector()
+
                 course_doc = get_course_doc(
                     accreditations,
                     locations,
@@ -98,6 +112,9 @@ def load_course_docs(xml_string, version):
                     raw_course_data,
                     kisaims,
                     version,
+                    go_salary_sector,
+                    leo3_sector,
+                    leo5_sector,
                 )
                 enricher.enrich_course(course_doc)
                 subject_enricher.enrich_course(course_doc)
@@ -170,6 +187,9 @@ def get_course_doc(
     raw_course_data,
     kisaims,
     version,
+    go_salary_sector, # A single <GOSALARY> node.
+    leo3_sector, # A single <LEO3> node.
+    leo5_sector, # A single <LEO5> node.
 ):
     outer_wrapper = {}
     outer_wrapper["_id"] = utils.get_uuid()
@@ -206,6 +226,18 @@ def get_course_doc(
         course["honours_award_provision"] = int(raw_course_data["HONOURS"])
     course["institution"] = get_institution(raw_inst_data)
     course["kis_course_id"] = raw_course_data["KISCOURSEID"]
+
+    go_salary_node = raw_course_data["GOSALARY"]
+    if go_salary_node:
+        course["go_salary_inst"] = get_go_salary(go_salary_node)
+
+    leo3_node = raw_course_data["LEO3"]
+    if leo3_node:
+        course["leo3_inst"] = get_leo3(leo3_node)
+
+    leo5_node = raw_course_data["LEO5"]
+    if leo5_node:
+        course["leo5_inst"] = get_leo5(leo5_node)
 
     go_voice_work_node = raw_course_data["GOVOICEWORK"]
     if go_voice_work_node:
@@ -260,6 +292,24 @@ def get_course_doc(
         raw_course_data, course["country"]["code"]
     )
 
+    go_salary_sector_items = get_go_salary_sector_items(
+        go_salary_sector
+    )
+    if go_salary_sector_items:
+        course["go_salary_sector"] = go_salary_sector_items
+
+    leo3_sector_items = get_leo3_sector_items(
+        leo3_sector
+    )
+    if leo3_sector_items:
+        course["leo3_salary_sector"] = leo3_sector_items
+
+    leo5_sector_items = get_leo5_sector_items(
+        leo5_sector
+    )
+    if leo5_sector_items:
+        course["leo5_salary_sector"] = leo5_sector_items
+
     outer_wrapper["course"] = course
     return outer_wrapper
 
@@ -305,6 +355,53 @@ def get_country(raw_inst_data):
         country["code"] = code
         country["name"] = lookup.country_code[code]
     return country
+
+
+def get_go_salary(raw_go_salary_data):
+    go_salary = {}
+    if raw_go_salary_data:
+        go_salary["unavail_reason"] = raw_go_salary_data["SALUNAVAILREASON"]
+        go_salary["pop"] = raw_go_salary_data["SALPOP"]
+        go_salary["resp_rate"] = raw_go_salary_data["SALRESP_RATE"]
+        go_salary["agg"] = raw_go_salary_data["SALAGG"]
+        go_salary["sbj"] = raw_go_salary_data["SALSBJ"]
+        go_salary["lq"] = raw_go_salary_data["INSTLQ"]
+        go_salary["med"] = raw_go_salary_data["INSTMED"]
+        go_salary["uq"] = raw_go_salary_data["INSTUQ"]
+        go_salary["go_inst_prov_pc_uk"] = raw_go_salary_data["GOPROV_PC_UK"]
+        go_salary["go_inst_prov_pc_e"] = raw_go_salary_data["GOPROV_PC_E"]
+        go_salary["go_inst_prov_pc_s"] = raw_go_salary_data["GOPROV_PC_S"]
+        go_salary["go_inst_prov_pc_w"] = raw_go_salary_data["GOPROV_PC_W"]
+        go_salary["go_inst_prov_pc_ni"] = raw_go_salary_data["GOPROV_PC_NI"]
+    return go_salary
+
+
+def get_leo3(raw_leo3_data):
+    leo3 = {}
+    if raw_leo3_data:
+        leo3["unavail_reason"] = raw_leo3_data["LEO3UNAVAILREASON"]
+        leo3["pop"] = raw_leo3_data["LEO3POP"]
+        leo3["resp_rate"] = raw_leo3_data["LEO3RESP_RATE"]
+        leo3["agg"] = raw_leo3_data["LEO3AGG"]
+        leo3["sbj"] = raw_leo3_data["LEO3SBJ"]
+        leo3["lq"] = raw_leo3_data["LEO3INSTLQ"]
+        leo3["med"] = raw_leo3_data["LEO3INSTMED"]
+        leo3["uq"] = raw_leo3_data["LEO3INSTUQ"]
+    return leo3
+
+
+def get_leo5(raw_leo5_data):
+    leo5 = {}
+    if raw_leo5_data:
+        leo5["unavail_reason"] = raw_leo5_data["LEO5UNAVAILREASON"]
+        leo5["pop"] = raw_leo5_data["LEO5POP"]
+        leo5["resp_rate"] = raw_leo5_data["LEO5RESP_RATE"]
+        leo5["agg"] = raw_leo5_data["LEO5AGG"]
+        leo5["sbj"] = raw_leo5_data["LEO5SBJ"]
+        leo5["lq"] = raw_leo5_data["LEO5INSTLQ"]
+        leo5["med"] = raw_leo5_data["LEO5INSTMED"]
+        leo5["uq"] = raw_leo5_data["LEO5INSTUQ"]
+    return leo5
 
 
 def get_go_voice_work(raw_go_voice_work_data):
@@ -409,6 +506,138 @@ def get_location_items(locations, locids, raw_course_data, pub_ukprn):
 
         location_items.append(location_dict)
     return location_items
+
+
+def get_go_salary_sector_items(go_salary_sector):
+    go_salary = {}
+    if go_salary_sector:
+        go_salary["unavail_reason"] = go_salary_sector["SALUNAVAILREASON"]
+        go_salary["pop"] = go_salary_sector["SALPOP"]
+        go_salary["resp_rate"] = go_salary_sector["SALRESP_RATE"]
+        go_salary["agg"] = go_salary_sector["SALAGG"]
+        go_salary["sbj"] = go_salary_sector["SBJ"]
+        go_salary["mode"] = go_salary_sector["MODE"]
+        go_salary["level"] = go_salary_sector["LEVEL"]
+
+        go_salary["lq_uk"] = go_salary_sector["GOSECLQ_UK"]
+        go_salary["med_uk"] = go_salary_sector["GOSECMED_UK"]
+        go_salary["uq_uk"] = go_salary_sector["GOSECUQ_UK"]
+        go_salary["pop_uk"] = go_salary_sector["GOSECPOP_UK"]
+        go_salary["resp_uk"] = go_salary_sector["GOSECRESP_UK"]
+
+        go_salary["lq_e"] = go_salary_sector["GOSECLQ_E"]
+        go_salary["med_e"] = go_salary_sector["GOSECMED_E"]
+        go_salary["uq_e"] = go_salary_sector["GOSECUQ_E"]
+        go_salary["pop_e"] = go_salary_sector["GOSECPOP_E"]
+        go_salary["resp_e"] = go_salary_sector["GOSECRESP_E"]
+
+        go_salary["lq_s"] = go_salary_sector["GOSECLQ_S"]
+        go_salary["med_s"] = go_salary_sector["GOSECMED_S"]
+        go_salary["uq_s"] = go_salary_sector["GOSECUQ_S"]
+        go_salary["pop_s"] = go_salary_sector["GOSECPOP_S"]
+        go_salary["resp_s"] = go_salary_sector["GOSECRESP_S"]
+
+        go_salary["lq_w"] = go_salary_sector["GOSECLQ_W"]
+        go_salary["med_w"] = go_salary_sector["GOSECMED_W"]
+        go_salary["uq_w"] = go_salary_sector["GOSECUQ_W"]
+        go_salary["pop_w"] = go_salary_sector["GOSECPOP_W"]
+        go_salary["resp_w"] = go_salary_sector["GOSECRESP_W"]
+
+        go_salary["lq_ni"] = go_salary_sector["GOSECLQ_NI"]
+        go_salary["med_ni"] = go_salary_sector["GOSECMED_NI"]
+        go_salary["uq_ni"] = go_salary_sector["GOSECUQ_NI"]
+        go_salary["pop_ni"] = go_salary_sector["GOSECPOP_NI"]
+        go_salary["resp_ni"] = go_salary_sector["GOSECRESP_NI"]
+
+    return go_salary
+
+
+def get_leo3_sector_items(leo3_sector):
+    leo3 = {}
+    if leo3_sector:
+        leo3["unavail_reason"] = leo3_sector["UNAVAILREASON"]
+        leo3["pop"] = leo3_sector["POP"]
+        leo3["resp_rate"] = leo3_sector["RESP_RATE"]
+        leo3["agg"] = leo3_sector["SALAGG"]
+        leo3["sbj"] = leo3_sector["SBJ"]
+        leo3["mode"] = leo3_sector["MODE"]
+        leo3["level"] = leo3_sector["LEVEL"]
+
+        leo3["lq_uk"] = leo3_sector["LEO3SECLQ_UK"]
+        leo3["med_uk"] = leo3_sector["LEO3SECMED_UK"]
+        leo3["uq_uk"] = leo3_sector["LEO3SECUQ_UK"]
+        leo3["pop_uk"] = leo3_sector["LEO3SECPOP_UK"]
+        leo3["resp_uk"] = leo3_sector["LEO3SECRESP_UK"]
+
+        leo3["lq_e"] = leo3_sector["LEO3SECLQ_E"]
+        leo3["med_e"] = leo3_sector["LEO3SECMED_E"]
+        leo3["uq_e"] = leo3_sector["LEO3SECUQ_E"]
+        leo3["pop_e"] = leo3_sector["LEO3SECPOP_E"]
+        leo3["resp_e"] = leo3_sector["LEO3SECRESP_E"]
+
+        leo3["lq_s"] = leo3_sector["LEO3SECLQ_S"]
+        leo3["med_s"] = leo3_sector["LEO3SECMED_S"]
+        leo3["uq_s"] = leo3_sector["LEO3SECUQ_S"]
+        leo3["pop_s"] = leo3_sector["LEO3SECPOP_S"]
+        leo3["resp_s"] = leo3_sector["LEO3SECRESP_S"]
+
+        leo3["lq_w"] = leo3_sector["LEO3SECLQ_W"]
+        leo3["med_w"] = leo3_sector["LEO3SECMED_W"]
+        leo3["uq_w"] = leo3_sector["LEO3SECUQ_W"]
+        leo3["pop_w"] = leo3_sector["LEO3SECPOP_W"]
+        leo3["resp_w"] = leo3_sector["LEO3SECRESP_W"]
+
+        leo3["lq_ni"] = leo3_sector["LEO3SECLQ_NI"]
+        leo3["med_ni"] = leo3_sector["LEO3SECMED_NI"]
+        leo3["uq_ni"] = leo3_sector["LEO3SECUQ_NI"]
+        leo3["pop_ni"] = leo3_sector["LEO3SECPOP_NI"]
+        leo3["resp_ni"] = leo3_sector["LEO3SECRESP_NI"]
+
+    return leo3
+
+
+def get_leo5_sector_items(leo5_sector):
+    leo5 = {}
+    if leo5_sector:
+        leo5["unavail_reason"] = leo5_sector["UNAVAILREASON"]
+        leo5["pop"] = leo5_sector["POP"]
+        leo5["resp_rate"] = leo5_sector["RESP_RATE"]
+        leo5["agg"] = leo5_sector["SALAGG"]
+        leo5["sbj"] = leo5_sector["SBJ"]
+        leo5["mode"] = leo5_sector["MODE"]
+        leo5["level"] = leo5_sector["LEVEL"]
+
+        leo5["lq_uk"] = leo5_sector["LEO5SECLQ_UK"]
+        leo5["med_uk"] = leo5_sector["LEO5SECMED_UK"]
+        leo5["uq_uk"] = leo5_sector["LEO5SECUQ_UK"]
+        leo5["pop_uk"] = leo5_sector["LEO5SECPOP_UK"]
+        leo5["resp_uk"] = leo5_sector["LEO5SECRESP_UK"]
+
+        leo5["lq_e"] = leo5_sector["LEO5SECLQ_E"]
+        leo5["med_e"] = leo5_sector["LEO5SECMED_E"]
+        leo5["uq_e"] = leo5_sector["LEO5SECUQ_E"]
+        leo5["pop_e"] = leo5_sector["LEO5SECPOP_E"]
+        leo5["resp_e"] = leo5_sector["LEO5SECRESP_E"]
+
+        leo5["lq_s"] = leo5_sector["LEO5SECLQ_S"]
+        leo5["med_s"] = leo5_sector["LEO5SECMED_S"]
+        leo5["uq_s"] = leo5_sector["LEO5SECUQ_S"]
+        leo5["pop_s"] = leo5_sector["LEO5SECPOP_S"]
+        leo5["resp_s"] = leo5_sector["LEO5SECRESP_S"]
+
+        leo5["lq_w"] = leo5_sector["LEO5SECLQ_W"]
+        leo5["med_w"] = leo5_sector["LEO5SECMED_W"]
+        leo5["uq_w"] = leo5_sector["LEO5SECUQ_W"]
+        leo5["pop_w"] = leo5_sector["LEO5SECPOP_W"]
+        leo5["resp_w"] = leo5_sector["LEO5SECRESP_W"]
+
+        leo5["lq_ni"] = leo5_sector["LEO5SECLQ_NI"]
+        leo5["med_ni"] = leo5_sector["LEO5SECMED_NI"]
+        leo5["uq_ni"] = leo5_sector["LEO5SECUQ_NI"]
+        leo5["pop_ni"] = leo5_sector["LEO5SECPOP_NI"]
+        leo5["resp_ni"] = leo5_sector["LEO5SECRESP_NI"]
+
+    return leo5
 
 
 def get_code(lookup_table_raw_xml, key):

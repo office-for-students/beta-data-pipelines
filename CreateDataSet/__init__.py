@@ -24,9 +24,8 @@ from . import validators
 
 
 def main(req: func.HttpRequest, msgout: func.Out[str]) -> None:
-    # TODO: Ensure that UseLocalTestXMLFile is set to false in local.settings.json before going live.
+    # TODO: apw: Ensure that UseLocalTestXMLFile is set to false in local.settings.json before going live.
     use_local_test_XML_file = os.environ.get('UseLocalTestXMLFile')
-    use_local_test_version = os.environ.get('UseLocalTestVersion')
 
     msgerror = ""
 
@@ -57,10 +56,8 @@ def main(req: func.HttpRequest, msgout: func.Out[str]) -> None:
         if use_local_test_XML_file:
             mock_xml_source_file = open("sample_course_data.xml","r")
             xml_string = mock_xml_source_file.read()
-            #version = use_local_test_version
         else:
             xml_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
-            #version = dsh.get_latest_version_number()
 
         """ BASIC XML Validation """
         try:

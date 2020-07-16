@@ -15,10 +15,6 @@ from . import validate, database, exceptions
 
 
 def main(msgin: func.QueueMessage, msgout: func.Out[str]):
-    # TODO: Ensure that UseLocalTestXMLFile is set to false in local.settings.json before going live.
-    use_local_test_XML_file = os.environ.get('UseLocalTestXMLFile')
-    use_local_test_version = os.environ.get('UseLocalTestVersion')
-
     msgerror = ""
 
     dsh = DataSetHelper()
@@ -59,11 +55,7 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
             raise exceptions.StopEtlPipelineErrorException
 
         reader = csv.reader(rows)
-
-        if use_local_test_XML_file:
-            version = use_local_test_version
-        else:
-            version = dsh.get_latest_version_number()
+        version = dsh.get_latest_version_number()
         
         logging.info(f"using version number: {version}")
         dsh.update_status("subjects", "in progress")

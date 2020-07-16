@@ -551,7 +551,7 @@
             <HONOURS>1</HONOURS>
             <KISCOURSEID>ART002-F-UOB-SX</KISCOURSEID>
             <KISMODE>1</KISMODE>
-            <KISLEVEL>3</KISLEVEL>
+            <KISLEVEL>2</KISLEVEL>
             <LOCCHNGE>0</LOCCHNGE>
             <LTURL>http://courses.bolton.ac.uk/course/ART002-F-UOB-SX/2020-21/#teaching-assessment</LTURL>
             <NUMSTAGE>3</NUMSTAGE>
@@ -561,13 +561,13 @@
             <UCASPROGID>A09-C13</UCASPROGID>
             <YEARABROAD>0</YEARABROAD>
             <KISAIMCODE>000</KISAIMCODE>
-            <SBJ>CAH25-01-03</SBJ>
+            <SBJ>CAH01-01-01</SBJ>
             <COMMON>
                 <COMUNAVAILREASON>1</COMUNAVAILREASON>
                 <COMPOP>25</COMPOP>
                 <COMRESP_RATE>100</COMRESP_RATE>
                 <COMAGG>13</COMAGG>
-                <COMSBJ>CAH25-01-03</COMSBJ>
+                <COMSBJ>CAH01-01-01</COMSBJ>
                 <JOBLIST>
                     <JOB>Design occupations</JOB>
                     <PERC>40</PERC>
@@ -628,7 +628,7 @@
                 <EMPPOP>35</EMPPOP>
                 <EMPRESP_RATE>95</EMPRESP_RATE>
                 <EMPAGG>13</EMPAGG>
-                <EMPSBJ>CAH25-01-03</EMPSBJ>
+                <EMPSBJ>CAH01-01-01</EMPSBJ>
                 <WORKSTUDY>80</WORKSTUDY>
                 <STUDY>15</STUDY>
                 <ASSUNEMP>20</ASSUNEMP>
@@ -654,7 +654,7 @@
                 <JOBPOP>25</JOBPOP>
                 <JOBRESP_RATE>95</JOBRESP_RATE>
                 <JOBAGG>13</JOBAGG>
-                <JOBSBJ>CAH25-01-03</JOBSBJ>
+                <JOBSBJ>CAH01-01-01</JOBSBJ>
                 <PROFMAN>55</PROFMAN>
                 <OTHERJOB>45</OTHERJOB>
                 <UNKWN>0</UNKWN>
@@ -702,7 +702,7 @@
                 <SALPOP>10</SALPOP>
                 <SALRESP_RATE>85</SALRESP_RATE>
                 <SALAGG>13</SALAGG>
-                <SALSBJ>CAH25-01-03</SALSBJ>
+                <SALSBJ>CAH01-01-01</SALSBJ>
                 <LQ>16000</LQ>
                 <MED>18000</MED>
                 <UQ>20000</UQ>
@@ -714,7 +714,7 @@
                 <LEOUNAVAILREASON>0</LEOUNAVAILREASON>
                 <LEOPOP>175</LEOPOP>
                 <LEOAGG>21</LEOAGG>
-                <LEOSBJ>CAH25</LEOSBJ>
+                <LEOSBJ>CAH01</LEOSBJ>
                 <LEOLQ>11500</LEOLQ>
                 <LEOMED>15500</LEOMED>
                 <LEOUQ>19500</LEOUQ>

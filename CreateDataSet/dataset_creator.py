@@ -25,9 +25,14 @@ class DataSetCreator:
 
     def load_new_dataset_doc(self):
         dataset_doc = self.get_next_dataset_doc()
-        if dataset_doc["version"] != 1:
-            if not self.has_enough_time_elaspsed_since_last_dataset_created():
-                raise DataSetTooEarlyError
+
+        # TODO: apw: Ensure that UseLocalTestXMLFile is set to false in local.settings.json before going live.
+        use_local_test_XML_file = os.environ.get('UseLocalTestXMLFile')
+        if use_local_test_XML_file:
+            if dataset_doc["version"] != 1:
+                if not self.has_enough_time_elaspsed_since_last_dataset_created():
+                    raise DataSetTooEarlyError
+
         self.dsh.create_item(dataset_doc)
         logging.info(f"Created new vertsion {dataset_doc['version']} DataSet")
 
@@ -45,15 +50,7 @@ class DataSetCreator:
         if self.get_number_of_dataset_docs() == 0:
             return 1
 
-        # TODO: Ensure that UseLocalTestXMLFile is set to false in local.settings.json before going live.
-        use_local_test_XML_file = os.environ.get('UseLocalTestXMLFile')
-        use_local_test_version = os.environ.get('UseLocalTestVersion')
-
-        if use_local_test_XML_file:
-            version = use_local_test_version
-        else:
-            version = self.dsh.get_latest_version_number() + 1
-
+        version = int(self.dsh.get_latest_version_number()) + 1
         return version
         #return self.dsh.get_latest_version_number() + 1
 
@@ -75,15 +72,7 @@ class DataSetCreator:
         return True
 
     def get_datetime_of_latest_dataset_doc(self):
-        # TODO: Ensure that UseLocalTestXMLFile is set to false in local.settings.json before going live.
-        use_local_test_XML_file = os.environ.get('UseLocalTestXMLFile')
-        use_local_test_version = os.environ.get('UseLocalTestVersion')
-
-        if use_local_test_XML_file:
-            max_version_number = use_local_test_version
-        else:
-            max_version_number = self.dsh.get_latest_version_number()
-
+        max_version_number = self.dsh.get_latest_version_number()
         query = f"SELECT * FROM c WHERE c.version = {max_version_number}"
         latest_doc = self.dsh.query_items(query)[0]
         return convert_dt_str_to_dt_object(latest_doc["created_at"])

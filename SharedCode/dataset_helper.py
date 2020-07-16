@@ -35,20 +35,15 @@ class DataSetHelper:
         )
 
     def get_latest_doc(self):
-        # TODO: Ensure that UseLocalTestXMLFile is set to false in local.settings.json before going live.
-        use_local_test_XML_file = os.environ.get('UseLocalTestXMLFile')
-        use_local_test_version = os.environ.get('UseLocalTestVersion')
-
-        if use_local_test_XML_file:
-            latest_version_number = use_local_test_version
-        else:
-            latest_version_number = self.get_latest_version_number()
-
+        latest_version_number = self.get_latest_version_number()
         query = f"SELECT * FROM c WHERE c.version = {latest_version_number}"
         options = {"enableCrossPartitionQuery": True}
-        return list(
-            self.cosmos_client.QueryItems(self.collection_link, query, options)
-        )[0]
+        the_list = list(self.cosmos_client.QueryItems(self.collection_link, query, options))
+        the_list_item = the_list[0]
+        return the_list_item
+        # return list(
+        #     self.cosmos_client.QueryItems(self.collection_link, query, options)
+        # )[0]
 
     def get_latest_version_number(self):
         query = "SELECT VALUE MAX(c.version) from c "
