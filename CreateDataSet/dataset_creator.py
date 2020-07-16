@@ -28,7 +28,7 @@ class DataSetCreator:
 
         # TODO: apw: Ensure that UseLocalTestXMLFile is set to false in local.settings.json before going live.
         use_local_test_XML_file = os.environ.get('UseLocalTestXMLFile')
-        if use_local_test_XML_file:
+        if not use_local_test_XML_file:
             if dataset_doc["version"] != 1:
                 if not self.has_enough_time_elaspsed_since_last_dataset_created():
                     raise DataSetTooEarlyError
