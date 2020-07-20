@@ -1,6 +1,6 @@
 """
 This module extracts course information from the HESA
-XML dataset and writes it in JSON format to Cosmos DB.
+XML dataset and writes it in JSON format to Cosmos DB.x
 To fit with the recent architecture update this may
 require refactoring.
 
@@ -32,7 +32,7 @@ sys.path.insert(0, PARENTDIR)
 
 
 import course_lookup_tables as lookup
-from course_stats import get_stats, SharedUtils
+from course_stats import get_stats, SharedUtils, get_earnings_unavail_text # apw
 from accreditations import Accreditations
 from kisaims import KisAims
 from locations import Locations
@@ -227,6 +227,7 @@ def get_course_doc(
     course["institution"] = get_institution(raw_inst_data)
     course["kis_course_id"] = raw_course_data["KISCOURSEID"]
 
+    # Handle the institution-level Earnings data.
     go_salary_node = raw_course_data["GOSALARY"]
     if go_salary_node:
         course["go_salary_inst"] = get_go_salary(go_salary_node)
@@ -238,7 +239,8 @@ def get_course_doc(
     leo5_node = raw_course_data["LEO5"]
     if leo5_node:
         course["leo5_inst"] = get_leo5(leo5_node)
-
+    # Handle the institution-level Earnings data.
+ 
     go_voice_work_node = raw_course_data["GOVOICEWORK"]
     if go_voice_work_node:
         course["go_voice_work"] = get_go_voice_work(go_voice_work_node)
@@ -292,6 +294,8 @@ def get_course_doc(
         raw_course_data, course["country"]["code"]
     )
 
+
+    # Handle the sector-level Earnings data.
     go_salary_sector_items = get_go_salary_sector_items(
         go_salary_sector
     )
@@ -309,6 +313,8 @@ def get_course_doc(
     )
     if leo5_sector_items:
         course["leo5_salary_sector"] = leo5_sector_items
+    # Handle the sector-level Earnings data.
+
 
     outer_wrapper["course"] = course
     return outer_wrapper
@@ -385,6 +391,14 @@ def get_go_salary(raw_go_salary_data):
         go_salary["go_inst_prov_pc_ed"] = raw_go_salary_data["GOPROV_PC_ED"]
         go_salary["go_inst_prov_pc_gl"] = raw_go_salary_data["GOPROV_PC_GL"]
         go_salary["go_inst_prov_pc_cf"] = raw_go_salary_data["GOPROV_PC_CF"]
+
+        go_salary["unavail_text_inst_level_eng"],\
+        go_salary["unavail_text_inst_level_wls"],\
+        go_salary["unavail_text_inst_level_2_eng"],\
+        go_salary["unavail_text_inst_level_2_wls"] = get_earnings_unavail_text("GO_INST",\
+                                                        go_salary["unavail_reason"],\
+                                                        go_salary["agg"],\
+                                                        go_salary["sbj"])
     return go_salary
 
 
@@ -393,12 +407,17 @@ def get_leo3(raw_leo3_data):
     if raw_leo3_data:
         leo3["unavail_reason"] = raw_leo3_data["LEO3UNAVAILREASON"]
         leo3["pop"] = raw_leo3_data["LEO3POP"]
-        leo3["resp_rate"] = raw_leo3_data["LEO3RESP_RATE"]
         leo3["agg"] = raw_leo3_data["LEO3AGG"]
         leo3["sbj"] = raw_leo3_data["LEO3SBJ"]
         leo3["lq"] = raw_leo3_data["LEO3INSTLQ"]
         leo3["med"] = raw_leo3_data["LEO3INSTMED"]
         leo3["uq"] = raw_leo3_data["LEO3INSTUQ"]
+
+        leo3["unavail_text_inst_level_eng"],\
+        leo3["unavail_text_inst_level_wls"] = get_earnings_unavail_text("LEO3_INST",\
+                                                        leo3["unavail_reason"],\
+                                                        leo3["agg"],\
+                                                        leo3["sbj"])
     return leo3
 
 
@@ -407,12 +426,17 @@ def get_leo5(raw_leo5_data):
     if raw_leo5_data:
         leo5["unavail_reason"] = raw_leo5_data["LEO5UNAVAILREASON"]
         leo5["pop"] = raw_leo5_data["LEO5POP"]
-        leo5["resp_rate"] = raw_leo5_data["LEO5RESP_RATE"]
         leo5["agg"] = raw_leo5_data["LEO5AGG"]
         leo5["sbj"] = raw_leo5_data["LEO5SBJ"]
         leo5["lq"] = raw_leo5_data["LEO5INSTLQ"]
         leo5["med"] = raw_leo5_data["LEO5INSTMED"]
         leo5["uq"] = raw_leo5_data["LEO5INSTUQ"]
+
+        leo5["unavail_text_inst_level_eng"],\
+        leo5["unavail_text_inst_level_wls"] = get_earnings_unavail_text("LEO5_INST",\
+                                                        leo5["unavail_reason"],\
+                                                        leo5["agg"],\
+                                                        leo5["sbj"])
     return leo5
 
 
@@ -633,6 +657,14 @@ def get_go_salary_sector_items(go_salary_sector):
         go_salary["pop_cf"] = go_salary_sector["GOSECPOP_CF"]
         go_salary["resp_cf"] = go_salary_sector["GOSECRESP_CF"]
 
+        go_salary["unavail_text_sector_level_eng"],\
+        go_salary["unavail_text_sector_level_wls"],\
+        go_salary["unavail_text_non_nation_selected_eng"],\
+        go_salary["unavail_text_non_nation_selected_wls"] = get_earnings_unavail_text("GO_SECTOR",\
+                                                                go_salary["unavail_reason"],\
+                                                                go_salary["agg"],\
+                                                                go_salary["sbj"])
+
     return go_salary
 
 
@@ -641,7 +673,6 @@ def get_leo3_sector_items(leo3_sector):
     if leo3_sector:
         leo3["unavail_reason"] = leo3_sector["UNAVAILREASON"]
         leo3["pop"] = leo3_sector["POP"]
-        leo3["resp_rate"] = leo3_sector["RESP_RATE"]
         leo3["agg"] = leo3_sector["SALAGG"]
         leo3["sbj"] = leo3_sector["SBJ"]
         leo3["mode"] = leo3_sector["MODE"]
@@ -651,104 +682,94 @@ def get_leo3_sector_items(leo3_sector):
         leo3["med_uk"] = leo3_sector["LEO3SECMED_UK"]
         leo3["uq_uk"] = leo3_sector["LEO3SECUQ_UK"]
         leo3["pop_uk"] = leo3_sector["LEO3SECPOP_UK"]
-        leo3["resp_uk"] = leo3_sector["LEO3SECRESP_UK"]
 
         leo3["lq_e"] = leo3_sector["LEO3SECLQ_E"]
         leo3["med_e"] = leo3_sector["LEO3SECMED_E"]
         leo3["uq_e"] = leo3_sector["LEO3SECUQ_E"]
         leo3["pop_e"] = leo3_sector["LEO3SECPOP_E"]
-        leo3["resp_e"] = leo3_sector["LEO3SECRESP_E"]
 
         leo3["lq_s"] = leo3_sector["LEO3SECLQ_S"]
         leo3["med_s"] = leo3_sector["LEO3SECMED_S"]
         leo3["uq_s"] = leo3_sector["LEO3SECUQ_S"]
         leo3["pop_s"] = leo3_sector["LEO3SECPOP_S"]
-        leo3["resp_s"] = leo3_sector["LEO3SECRESP_S"]
 
         leo3["lq_w"] = leo3_sector["LEO3SECLQ_W"]
         leo3["med_w"] = leo3_sector["LEO3SECMED_W"]
         leo3["uq_w"] = leo3_sector["LEO3SECUQ_W"]
         leo3["pop_w"] = leo3_sector["LEO3SECPOP_W"]
-        leo3["resp_w"] = leo3_sector["LEO3SECRESP_W"]
 
         leo3["lq_ni"] = leo3_sector["LEO3SECLQ_NI"]
         leo3["med_ni"] = leo3_sector["LEO3SECMED_NI"]
         leo3["uq_ni"] = leo3_sector["LEO3SECUQ_NI"]
         leo3["pop_ni"] = leo3_sector["LEO3SECPOP_NI"]
-        leo3["resp_ni"] = leo3_sector["LEO3SECRESP_NI"]
 
         leo3["lq_nw"] = leo3_sector["LEO3SECLQ_NW"]
         leo3["med_nw"] = leo3_sector["LEO3SECMED_NW"]
         leo3["uq_nw"] = leo3_sector["LEO3SECUQ_NW"]
         leo3["pop_nw"] = leo3_sector["LEO3SECPOP_NW"]
-        leo3["resp_nw"] = leo3_sector["LEO3SECRESP_NW"]
 
         leo3["lq_ne"] = leo3_sector["LEO3SECLQ_NE"]
         leo3["med_ne"] = leo3_sector["LEO3SECMED_NE"]
         leo3["uq_ne"] = leo3_sector["LEO3SECUQ_NE"]
         leo3["pop_ne"] = leo3_sector["LEO3SECPOP_NE"]
-        leo3["resp_ne"] = leo3_sector["LEO3SECRESP_NE"]
 
         leo3["lq_em"] = leo3_sector["LEO3SECLQ_EM"]
         leo3["med_em"] = leo3_sector["LEO3SECMED_EM"]
         leo3["uq_em"] = leo3_sector["LEO3SECUQ_EM"]
         leo3["pop_em"] = leo3_sector["LEO3SECPOP_EM"]
-        leo3["resp_em"] = leo3_sector["LEO3SECRESP_EM"]
 
         leo3["lq_wm"] = leo3_sector["LEO3SECLQ_WM"]
         leo3["med_wm"] = leo3_sector["LEO3SECMED_WM"]
         leo3["uq_wm"] = leo3_sector["LEO3SECUQ_WM"]
         leo3["pop_wm"] = leo3_sector["LEO3SECPOP_WM"]
-        leo3["resp_wm"] = leo3_sector["LEO3SECRESP_WM"]
-
+    
         leo3["lq_ee"] = leo3_sector["LEO3SECLQ_EE"]
         leo3["med_ee"] = leo3_sector["LEO3SECMED_EE"]
         leo3["uq_ee"] = leo3_sector["LEO3SECUQ_EE"]
         leo3["pop_ee"] = leo3_sector["LEO3SECPOP_EE"]
-        leo3["resp_ee"] = leo3_sector["LEO3SECRESP_EE"]
 
         leo3["lq_se"] = leo3_sector["LEO3SECLQ_SE"]
         leo3["med_se"] = leo3_sector["LEO3SECMED_SE"]
         leo3["uq_se"] = leo3_sector["LEO3SECUQ_SE"]
         leo3["pop_se"] = leo3_sector["LEO3SECPOP_SE"]
-        leo3["resp_se"] = leo3_sector["LEO3SECRESP_SE"]
 
         leo3["lq_sw"] = leo3_sector["LEO3SECLQ_SW"]
         leo3["med_sw"] = leo3_sector["LEO3SECMED_SW"]
         leo3["uq_sw"] = leo3_sector["LEO3SECUQ_SW"]
         leo3["pop_sw"] = leo3_sector["LEO3SECPOP_SW"]
-        leo3["resp_sw"] = leo3_sector["LEO3SECRESP_SW"]
 
         leo3["lq_yh"] = leo3_sector["LEO3SECLQ_YH"]
         leo3["med_yh"] = leo3_sector["LEO3SECMED_YH"]
         leo3["uq_yh"] = leo3_sector["LEO3SECUQ_YH"]
         leo3["pop_yh"] = leo3_sector["LEO3SECPOP_YH"]
-        leo3["resp_yh"] = leo3_sector["LEO3SECRESP_YH"]
 
         leo3["lq_lo"] = leo3_sector["LEO3SECLQ_LO"]
         leo3["med_lo"] = leo3_sector["LEO3SECMED_LO"]
         leo3["uq_lo"] = leo3_sector["LEO3SECUQ_LO"]
         leo3["pop_lo"] = leo3_sector["LEO3SECPOP_LO"]
-        leo3["resp_lo"] = leo3_sector["LEO3SECRESP_LO"]
 
         leo3["lq_ed"] = leo3_sector["LEO3SECLQ_ED"]
         leo3["med_ed"] = leo3_sector["LEO3SECMED_ED"]
         leo3["uq_ed"] = leo3_sector["LEO3SECUQ_ED"]
         leo3["pop_ed"] = leo3_sector["LEO3SECPOP_ED"]
-        leo3["resp_ed"] = leo3_sector["LEO3SECRESP_ED"]
 
         leo3["lq_gl"] = leo3_sector["LEO3SECLQ_GL"]
         leo3["med_gl"] = leo3_sector["LEO3SECMED_GL"]
         leo3["uq_gl"] = leo3_sector["LEO3SECUQ_GL"]
         leo3["pop_gl"] = leo3_sector["LEO3SECPOP_GL"]
-        leo3["resp_gl"] = leo3_sector["LEO3SECRESP_GL"]
 
         leo3["lq_cf"] = leo3_sector["LEO3SECLQ_CF"]
         leo3["med_cf"] = leo3_sector["LEO3SECMED_CF"]
         leo3["uq_cf"] = leo3_sector["LEO3SECUQ_CF"]
         leo3["pop_cf"] = leo3_sector["LEO3SECPOP_CF"]
-        leo3["resp_cf"] = leo3_sector["LEO3SECRESP_CF"]
 
+        leo3["unavail_text_sector_level_eng"],\
+        leo3["unavail_text_sector_level_wls"],\
+        leo3["unavail_text_ni_selected_eng"],\
+        leo3["unavail_text_ni_selected_wls"] = get_earnings_unavail_text("LEO3_SECTOR",\
+                                                    leo3["unavail_reason"],\
+                                                    leo3["agg"],\
+                                                    leo3["sbj"])
     return leo3
 
 
@@ -757,7 +778,6 @@ def get_leo5_sector_items(leo5_sector):
     if leo5_sector:
         leo5["unavail_reason"] = leo5_sector["UNAVAILREASON"]
         leo5["pop"] = leo5_sector["POP"]
-        leo5["resp_rate"] = leo5_sector["RESP_RATE"]
         leo5["agg"] = leo5_sector["SALAGG"]
         leo5["sbj"] = leo5_sector["SBJ"]
         leo5["mode"] = leo5_sector["MODE"]
@@ -767,104 +787,94 @@ def get_leo5_sector_items(leo5_sector):
         leo5["med_uk"] = leo5_sector["LEO5SECMED_UK"]
         leo5["uq_uk"] = leo5_sector["LEO5SECUQ_UK"]
         leo5["pop_uk"] = leo5_sector["LEO5SECPOP_UK"]
-        leo5["resp_uk"] = leo5_sector["LEO5SECRESP_UK"]
 
         leo5["lq_e"] = leo5_sector["LEO5SECLQ_E"]
         leo5["med_e"] = leo5_sector["LEO5SECMED_E"]
         leo5["uq_e"] = leo5_sector["LEO5SECUQ_E"]
         leo5["pop_e"] = leo5_sector["LEO5SECPOP_E"]
-        leo5["resp_e"] = leo5_sector["LEO5SECRESP_E"]
 
         leo5["lq_s"] = leo5_sector["LEO5SECLQ_S"]
         leo5["med_s"] = leo5_sector["LEO5SECMED_S"]
         leo5["uq_s"] = leo5_sector["LEO5SECUQ_S"]
         leo5["pop_s"] = leo5_sector["LEO5SECPOP_S"]
-        leo5["resp_s"] = leo5_sector["LEO5SECRESP_S"]
 
         leo5["lq_w"] = leo5_sector["LEO5SECLQ_W"]
         leo5["med_w"] = leo5_sector["LEO5SECMED_W"]
         leo5["uq_w"] = leo5_sector["LEO5SECUQ_W"]
         leo5["pop_w"] = leo5_sector["LEO5SECPOP_W"]
-        leo5["resp_w"] = leo5_sector["LEO5SECRESP_W"]
 
         leo5["lq_ni"] = leo5_sector["LEO5SECLQ_NI"]
         leo5["med_ni"] = leo5_sector["LEO5SECMED_NI"]
         leo5["uq_ni"] = leo5_sector["LEO5SECUQ_NI"]
         leo5["pop_ni"] = leo5_sector["LEO5SECPOP_NI"]
-        leo5["resp_ni"] = leo5_sector["LEO5SECRESP_NI"]
 
         leo5["lq_nw"] = leo5_sector["LEO5SECLQ_NW"]
         leo5["med_nw"] = leo5_sector["LEO5SECMED_NW"]
         leo5["uq_nw"] = leo5_sector["LEO5SECUQ_NW"]
         leo5["pop_nw"] = leo5_sector["LEO5SECPOP_NW"]
-        leo5["resp_nw"] = leo5_sector["LEO5SECRESP_NW"]
 
         leo5["lq_ne"] = leo5_sector["LEO5SECLQ_NE"]
         leo5["med_ne"] = leo5_sector["LEO5SECMED_NE"]
         leo5["uq_ne"] = leo5_sector["LEO5SECUQ_NE"]
         leo5["pop_ne"] = leo5_sector["LEO5SECPOP_NE"]
-        leo5["resp_ne"] = leo5_sector["LEO5SECRESP_NE"]
 
         leo5["lq_em"] = leo5_sector["LEO5SECLQ_EM"]
         leo5["med_em"] = leo5_sector["LEO5SECMED_EM"]
         leo5["uq_em"] = leo5_sector["LEO5SECUQ_EM"]
         leo5["pop_em"] = leo5_sector["LEO5SECPOP_EM"]
-        leo5["resp_em"] = leo5_sector["LEO5SECRESP_EM"]
 
         leo5["lq_wm"] = leo5_sector["LEO5SECLQ_WM"]
         leo5["med_wm"] = leo5_sector["LEO5SECMED_WM"]
         leo5["uq_wm"] = leo5_sector["LEO5SECUQ_WM"]
         leo5["pop_wm"] = leo5_sector["LEO5SECPOP_WM"]
-        leo5["resp_wm"] = leo5_sector["LEO5SECRESP_WM"]
 
         leo5["lq_ee"] = leo5_sector["LEO5SECLQ_EE"]
         leo5["med_ee"] = leo5_sector["LEO5SECMED_EE"]
         leo5["uq_ee"] = leo5_sector["LEO5SECUQ_EE"]
         leo5["pop_ee"] = leo5_sector["LEO5SECPOP_EE"]
-        leo5["resp_ee"] = leo5_sector["LEO5SECRESP_EE"]
 
         leo5["lq_se"] = leo5_sector["LEO5SECLQ_SE"]
         leo5["med_se"] = leo5_sector["LEO5SECMED_SE"]
         leo5["uq_se"] = leo5_sector["LEO5SECUQ_SE"]
         leo5["pop_se"] = leo5_sector["LEO5SECPOP_SE"]
-        leo5["resp_se"] = leo5_sector["LEO5SECRESP_SE"]
 
         leo5["lq_sw"] = leo5_sector["LEO5SECLQ_SW"]
         leo5["med_sw"] = leo5_sector["LEO5SECMED_SW"]
         leo5["uq_sw"] = leo5_sector["LEO5SECUQ_SW"]
         leo5["pop_sw"] = leo5_sector["LEO5SECPOP_SW"]
-        leo5["resp_sw"] = leo5_sector["LEO5SECRESP_SW"]
 
         leo5["lq_yh"] = leo5_sector["LEO5SECLQ_YH"]
         leo5["med_yh"] = leo5_sector["LEO5SECMED_YH"]
         leo5["uq_yh"] = leo5_sector["LEO5SECUQ_YH"]
         leo5["pop_yh"] = leo5_sector["LEO5SECPOP_YH"]
-        leo5["resp_yh"] = leo5_sector["LEO5SECRESP_YH"]
 
         leo5["lq_lo"] = leo5_sector["LEO5SECLQ_LO"]
         leo5["med_lo"] = leo5_sector["LEO5SECMED_LO"]
         leo5["uq_lo"] = leo5_sector["LEO5SECUQ_LO"]
         leo5["pop_lo"] = leo5_sector["LEO5SECPOP_LO"]
-        leo5["resp_lo"] = leo5_sector["LEO5SECRESP_LO"]
 
         leo5["lq_ed"] = leo5_sector["LEO5SECLQ_ED"]
         leo5["med_ed"] = leo5_sector["LEO5SECMED_ED"]
         leo5["uq_ed"] = leo5_sector["LEO5SECUQ_ED"]
         leo5["pop_ed"] = leo5_sector["LEO5SECPOP_ED"]
-        leo5["resp_ed"] = leo5_sector["LEO5SECRESP_ED"]
 
         leo5["lq_gl"] = leo5_sector["LEO5SECLQ_GL"]
         leo5["med_gl"] = leo5_sector["LEO5SECMED_GL"]
         leo5["uq_gl"] = leo5_sector["LEO5SECUQ_GL"]
         leo5["pop_gl"] = leo5_sector["LEO5SECPOP_GL"]
-        leo5["resp_gl"] = leo5_sector["LEO5SECRESP_GL"]
 
         leo5["lq_cf"] = leo5_sector["LEO5SECLQ_CF"]
         leo5["med_cf"] = leo5_sector["LEO5SECMED_CF"]
         leo5["uq_cf"] = leo5_sector["LEO5SECUQ_CF"]
         leo5["pop_cf"] = leo5_sector["LEO5SECPOP_CF"]
-        leo5["resp_cf"] = leo5_sector["LEO5SECRESP_CF"]
 
+        leo5["unavail_text_sector_level_eng"],\
+        leo5["unavail_text_sector_level_wls"],\
+        leo5["unavail_text_ni_selected_eng"],\
+        leo5["unavail_text_ni_selected_wls"] = get_earnings_unavail_text("LEO5_SECTOR",\
+                                                    leo5["unavail_reason"],\
+                                                    leo5["agg"],\
+                                                    leo5["sbj"])
     return leo5
 
 

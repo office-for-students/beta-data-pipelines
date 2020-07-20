@@ -732,6 +732,8 @@ class SharedUtils:
             "leo_unavail_reason_welsh": "leo_unavailreason_welsh.json",
             "leo_data_fields": "leo_data_fields.json",
             "common_data_fields": "common_data_fields.json",
+            "earnings_unavail_reason_english": "earnings_unavailreason_english.json",
+            "earnings_unavail_reason_welsh": "earnings_unavailreason_welsh.json",
         }[lookup_name]
         with open(os.path.join(cwd, f"lookup_files/{filename}")) as infile:
             return json.load(infile)
@@ -880,3 +882,90 @@ def need_nhs_nss(course):
     if SharedUtils.has_data(nhs_nss_elem):
         return True
     return False
+
+
+# apw for unavail messages
+def get_earnings_unavail_text(data_source, unavail_reason_code, agg, sbj): 
+    """Returns the relevant unavail reason text in English and Welsh"""
+    reason_str_eng = ""
+    reason_str_wls = ""
+
+    shared_utils = SharedUtils(
+        data_source, #xml_element_key
+        "SBJ",
+        "AGG",
+        'UNAVAILREASON', #xml_unavail_reason_key
+    )
+
+    unavail_reason_english = shared_utils.get_lookup(
+        "earnings_unavail_reason_english"
+    )
+    unavail_reason_welsh = shared_utils.get_lookup(
+        "earnings_unavail_reason_welsh"
+    )
+
+    # TODO: apw: Update the structure and content of the two new JSON lookup files.
+
+    if data_source == "GO_INST":
+        unavail_text_inst_level_eng = "GO_INST text inst level English"
+        unavail_text_inst_level_wls = "GO_INST text inst level Welsh"
+        unavail_text_inst_level_2_eng = "GO_INST text inst level other logic English" # Not sure what this logic entails.
+        unavail_text_inst_level_2_wls = "GO_INST text inst level other logic Welsh" # Not sure what this logic entails.
+        # TODO: apw: Add logic to extract the relevant text from unavail_reason_english and unavail_reason_welsh.
+
+        return unicodedata.normalize("NFKD", unavail_text_inst_level_eng),\
+                unicodedata.normalize("NFKD", unavail_text_inst_level_wls),\
+                unicodedata.normalize("NFKD", unavail_text_inst_level_2_eng),\
+                unicodedata.normalize("NFKD", unavail_text_inst_level_2_wls)
+
+    elif data_source == "LEO3_INST":
+        unavail_text_inst_level_eng = "LEO3_INST text inst level English"
+        unavail_text_inst_level_wls = "LEO3_INST text inst level Welsh"
+        # TODO: apw: Add logic to extract the relevant text from unavail_reason_english and unavail_reason_welsh.
+
+        return unicodedata.normalize("NFKD", unavail_text_inst_level_eng),\
+                unicodedata.normalize("NFKD", unavail_text_inst_level_wls)
+
+    elif data_source == "LEO5_INST":
+        unavail_text_inst_level_eng = "LEO5_INST text inst level English"
+        unavail_text_inst_level_wls = "LEO5_INST text inst level Welsh"
+        # TODO: apw: Add logic to extract the relevant text from unavail_reason_english and unavail_reason_welsh.
+
+        return unicodedata.normalize("NFKD", unavail_text_inst_level_eng),\
+                unicodedata.normalize("NFKD", unavail_text_inst_level_wls)
+
+    elif data_source == "GO_SECTOR":
+        unavail_text_sector_level_eng = "GO_SECTOR text sector level English"
+        unavail_text_sector_level_wls = "GO_SECTOR text sector level Welsh"
+        unavail_text_non_nation_selected_eng = "GO_SECTOR text sector level non-nation English"
+        unavail_text_non_nation_selected_wls = "GO_SECTOR text sector level non-nation Welsh"
+        # TODO: apw: Add logic to extract the relevant text from unavail_reason_english and unavail_reason_welsh.
+
+        return unicodedata.normalize("NFKD", unavail_text_sector_level_eng),\
+                unicodedata.normalize("NFKD", unavail_text_sector_level_wls),\
+                unicodedata.normalize("NFKD", unavail_text_non_nation_selected_eng),\
+                unicodedata.normalize("NFKD", unavail_text_non_nation_selected_wls)
+
+    elif data_source == "LEO3_SECTOR":
+        unavail_text_sector_level_eng = "LEO3_SECTOR text sector level English"
+        unavail_text_sector_level_wls = "LEO3_SECTOR text sector level Welsh"
+        unavail_text_ni_selected_eng = "LEO3_SECTOR text sector level NI selected English"
+        unavail_text_ni_selected_wls = "LEO3_SECTOR text sector level NI selected Welsh"
+        # TODO: apw: Add logic to extract the relevant text from unavail_reason_english and unavail_reason_welsh.
+
+        return unicodedata.normalize("NFKD", unavail_text_sector_level_eng),\
+                unicodedata.normalize("NFKD", unavail_text_sector_level_wls),\
+                unicodedata.normalize("NFKD", unavail_text_ni_selected_eng),\
+                unicodedata.normalize("NFKD", unavail_text_ni_selected_wls)
+
+    elif data_source == "LEO5_SECTOR":
+        unavail_text_sector_level_eng = "LEO5_SECTOR text sector level English"
+        unavail_text_sector_level_wls = "LEO5_SECTOR text sector level Welsh"
+        unavail_text_ni_selected_eng = "LEO5_SECTOR text sector level NI selected English"
+        unavail_text_ni_selected_wls = "LEO5_SECTOR text sector level NI selected Welsh"
+        # TODO: apw: Add logic to extract the relevant text from unavail_reason_english and unavail_reason_welsh.
+
+        return unicodedata.normalize("NFKD", unavail_text_sector_level_eng),\
+                unicodedata.normalize("NFKD", unavail_text_sector_level_wls),\
+                unicodedata.normalize("NFKD", unavail_text_ni_selected_eng),\
+                unicodedata.normalize("NFKD", unavail_text_ni_selected_wls)
