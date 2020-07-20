@@ -373,6 +373,18 @@ def get_go_salary(raw_go_salary_data):
         go_salary["go_inst_prov_pc_s"] = raw_go_salary_data["GOPROV_PC_S"]
         go_salary["go_inst_prov_pc_w"] = raw_go_salary_data["GOPROV_PC_W"]
         go_salary["go_inst_prov_pc_ni"] = raw_go_salary_data["GOPROV_PC_NI"]
+        go_salary["go_inst_prov_pc_nw"] = raw_go_salary_data["GOPROV_PC_NW"]
+        go_salary["go_inst_prov_pc_ne"] = raw_go_salary_data["GOPROV_PC_NE"]
+        go_salary["go_inst_prov_pc_em"] = raw_go_salary_data["GOPROV_PC_EM"]
+        go_salary["go_inst_prov_pc_wm"] = raw_go_salary_data["GOPROV_PC_WM"]
+        go_salary["go_inst_prov_pc_ee"] = raw_go_salary_data["GOPROV_PC_EE"]
+        go_salary["go_inst_prov_pc_se"] = raw_go_salary_data["GOPROV_PC_SE"]
+        go_salary["go_inst_prov_pc_sw"] = raw_go_salary_data["GOPROV_PC_SW"]
+        go_salary["go_inst_prov_pc_yh"] = raw_go_salary_data["GOPROV_PC_YH"]
+        go_salary["go_inst_prov_pc_lo"] = raw_go_salary_data["GOPROV_PC_LO"]
+        go_salary["go_inst_prov_pc_ed"] = raw_go_salary_data["GOPROV_PC_ED"]
+        go_salary["go_inst_prov_pc_gl"] = raw_go_salary_data["GOPROV_PC_GL"]
+        go_salary["go_inst_prov_pc_cf"] = raw_go_salary_data["GOPROV_PC_CF"]
     return go_salary
 
 
@@ -549,6 +561,78 @@ def get_go_salary_sector_items(go_salary_sector):
         go_salary["pop_ni"] = go_salary_sector["GOSECPOP_NI"]
         go_salary["resp_ni"] = go_salary_sector["GOSECRESP_NI"]
 
+        go_salary["lq_nw"] = go_salary_sector["GOSECLQ_NW"]
+        go_salary["med_nw"] = go_salary_sector["GOSECMED_NW"]
+        go_salary["uq_nw"] = go_salary_sector["GOSECUQ_NW"]
+        go_salary["pop_nw"] = go_salary_sector["GOSECPOP_NW"]
+        go_salary["resp_nw"] = go_salary_sector["GOSECRESP_NW"]
+
+        go_salary["lq_ne"] = go_salary_sector["GOSECLQ_NE"]
+        go_salary["med_ne"] = go_salary_sector["GOSECMED_NE"]
+        go_salary["uq_ne"] = go_salary_sector["GOSECUQ_NE"]
+        go_salary["pop_ne"] = go_salary_sector["GOSECPOP_NE"]
+        go_salary["resp_ne"] = go_salary_sector["GOSECRESP_NE"]
+
+        go_salary["lq_em"] = go_salary_sector["GOSECLQ_EM"]
+        go_salary["med_em"] = go_salary_sector["GOSECMED_EM"]
+        go_salary["uq_em"] = go_salary_sector["GOSECUQ_EM"]
+        go_salary["pop_em"] = go_salary_sector["GOSECPOP_EM"]
+        go_salary["resp_em"] = go_salary_sector["GOSECRESP_EM"]
+
+        go_salary["lq_wm"] = go_salary_sector["GOSECLQ_WM"]
+        go_salary["med_wm"] = go_salary_sector["GOSECMED_WM"]
+        go_salary["uq_wm"] = go_salary_sector["GOSECUQ_WM"]
+        go_salary["pop_wm"] = go_salary_sector["GOSECPOP_WM"]
+        go_salary["resp_wm"] = go_salary_sector["GOSECRESP_WM"]
+
+        go_salary["lq_ee"] = go_salary_sector["GOSECLQ_EE"]
+        go_salary["med_ee"] = go_salary_sector["GOSECMED_EE"]
+        go_salary["uq_ee"] = go_salary_sector["GOSECUQ_EE"]
+        go_salary["pop_ee"] = go_salary_sector["GOSECPOP_EE"]
+        go_salary["resp_ee"] = go_salary_sector["GOSECRESP_EE"]
+
+        go_salary["lq_se"] = go_salary_sector["GOSECLQ_SE"]
+        go_salary["med_se"] = go_salary_sector["GOSECMED_SE"]
+        go_salary["uq_se"] = go_salary_sector["GOSECUQ_SE"]
+        go_salary["pop_se"] = go_salary_sector["GOSECPOP_SE"]
+        go_salary["resp_se"] = go_salary_sector["GOSECRESP_SE"]
+
+        go_salary["lq_sw"] = go_salary_sector["GOSECLQ_SW"]
+        go_salary["med_sw"] = go_salary_sector["GOSECMED_SW"]
+        go_salary["uq_sw"] = go_salary_sector["GOSECUQ_SW"]
+        go_salary["pop_sw"] = go_salary_sector["GOSECPOP_SW"]
+        go_salary["resp_sw"] = go_salary_sector["GOSECRESP_SW"]
+
+        go_salary["lq_yh"] = go_salary_sector["GOSECLQ_YH"]
+        go_salary["med_yh"] = go_salary_sector["GOSECMED_YH"]
+        go_salary["uq_yh"] = go_salary_sector["GOSECUQ_YH"]
+        go_salary["pop_yh"] = go_salary_sector["GOSECPOP_YH"]
+        go_salary["resp_yh"] = go_salary_sector["GOSECRESP_YH"]
+
+        go_salary["lq_lo"] = go_salary_sector["GOSECLQ_LO"]
+        go_salary["med_lo"] = go_salary_sector["GOSECMED_LO"]
+        go_salary["uq_lo"] = go_salary_sector["GOSECUQ_LO"]
+        go_salary["pop_lo"] = go_salary_sector["GOSECPOP_LO"]
+        go_salary["resp_lo"] = go_salary_sector["GOSECRESP_LO"]
+
+        go_salary["lq_ed"] = go_salary_sector["GOSECLQ_ED"]
+        go_salary["med_ed"] = go_salary_sector["GOSECMED_ED"]
+        go_salary["uq_ed"] = go_salary_sector["GOSECUQ_ED"]
+        go_salary["pop_ed"] = go_salary_sector["GOSECPOP_ED"]
+        go_salary["resp_ed"] = go_salary_sector["GOSECRESP_ED"]
+
+        go_salary["lq_gl"] = go_salary_sector["GOSECLQ_GL"]
+        go_salary["med_gl"] = go_salary_sector["GOSECMED_GL"]
+        go_salary["uq_gl"] = go_salary_sector["GOSECUQ_GL"]
+        go_salary["pop_gl"] = go_salary_sector["GOSECPOP_GL"]
+        go_salary["resp_gl"] = go_salary_sector["GOSECRESP_GL"]
+
+        go_salary["lq_cf"] = go_salary_sector["GOSECLQ_CF"]
+        go_salary["med_cf"] = go_salary_sector["GOSECMED_CF"]
+        go_salary["uq_cf"] = go_salary_sector["GOSECUQ_CF"]
+        go_salary["pop_cf"] = go_salary_sector["GOSECPOP_CF"]
+        go_salary["resp_cf"] = go_salary_sector["GOSECRESP_CF"]
+
     return go_salary
 
 
@@ -593,6 +677,78 @@ def get_leo3_sector_items(leo3_sector):
         leo3["pop_ni"] = leo3_sector["LEO3SECPOP_NI"]
         leo3["resp_ni"] = leo3_sector["LEO3SECRESP_NI"]
 
+        leo3["lq_nw"] = leo3_sector["LEO3SECLQ_NW"]
+        leo3["med_nw"] = leo3_sector["LEO3SECMED_NW"]
+        leo3["uq_nw"] = leo3_sector["LEO3SECUQ_NW"]
+        leo3["pop_nw"] = leo3_sector["LEO3SECPOP_NW"]
+        leo3["resp_nw"] = leo3_sector["LEO3SECRESP_NW"]
+
+        leo3["lq_ne"] = leo3_sector["LEO3SECLQ_NE"]
+        leo3["med_ne"] = leo3_sector["LEO3SECMED_NE"]
+        leo3["uq_ne"] = leo3_sector["LEO3SECUQ_NE"]
+        leo3["pop_ne"] = leo3_sector["LEO3SECPOP_NE"]
+        leo3["resp_ne"] = leo3_sector["LEO3SECRESP_NE"]
+
+        leo3["lq_em"] = leo3_sector["LEO3SECLQ_EM"]
+        leo3["med_em"] = leo3_sector["LEO3SECMED_EM"]
+        leo3["uq_em"] = leo3_sector["LEO3SECUQ_EM"]
+        leo3["pop_em"] = leo3_sector["LEO3SECPOP_EM"]
+        leo3["resp_em"] = leo3_sector["LEO3SECRESP_EM"]
+
+        leo3["lq_wm"] = leo3_sector["LEO3SECLQ_WM"]
+        leo3["med_wm"] = leo3_sector["LEO3SECMED_WM"]
+        leo3["uq_wm"] = leo3_sector["LEO3SECUQ_WM"]
+        leo3["pop_wm"] = leo3_sector["LEO3SECPOP_WM"]
+        leo3["resp_wm"] = leo3_sector["LEO3SECRESP_WM"]
+
+        leo3["lq_ee"] = leo3_sector["LEO3SECLQ_EE"]
+        leo3["med_ee"] = leo3_sector["LEO3SECMED_EE"]
+        leo3["uq_ee"] = leo3_sector["LEO3SECUQ_EE"]
+        leo3["pop_ee"] = leo3_sector["LEO3SECPOP_EE"]
+        leo3["resp_ee"] = leo3_sector["LEO3SECRESP_EE"]
+
+        leo3["lq_se"] = leo3_sector["LEO3SECLQ_SE"]
+        leo3["med_se"] = leo3_sector["LEO3SECMED_SE"]
+        leo3["uq_se"] = leo3_sector["LEO3SECUQ_SE"]
+        leo3["pop_se"] = leo3_sector["LEO3SECPOP_SE"]
+        leo3["resp_se"] = leo3_sector["LEO3SECRESP_SE"]
+
+        leo3["lq_sw"] = leo3_sector["LEO3SECLQ_SW"]
+        leo3["med_sw"] = leo3_sector["LEO3SECMED_SW"]
+        leo3["uq_sw"] = leo3_sector["LEO3SECUQ_SW"]
+        leo3["pop_sw"] = leo3_sector["LEO3SECPOP_SW"]
+        leo3["resp_sw"] = leo3_sector["LEO3SECRESP_SW"]
+
+        leo3["lq_yh"] = leo3_sector["LEO3SECLQ_YH"]
+        leo3["med_yh"] = leo3_sector["LEO3SECMED_YH"]
+        leo3["uq_yh"] = leo3_sector["LEO3SECUQ_YH"]
+        leo3["pop_yh"] = leo3_sector["LEO3SECPOP_YH"]
+        leo3["resp_yh"] = leo3_sector["LEO3SECRESP_YH"]
+
+        leo3["lq_lo"] = leo3_sector["LEO3SECLQ_LO"]
+        leo3["med_lo"] = leo3_sector["LEO3SECMED_LO"]
+        leo3["uq_lo"] = leo3_sector["LEO3SECUQ_LO"]
+        leo3["pop_lo"] = leo3_sector["LEO3SECPOP_LO"]
+        leo3["resp_lo"] = leo3_sector["LEO3SECRESP_LO"]
+
+        leo3["lq_ed"] = leo3_sector["LEO3SECLQ_ED"]
+        leo3["med_ed"] = leo3_sector["LEO3SECMED_ED"]
+        leo3["uq_ed"] = leo3_sector["LEO3SECUQ_ED"]
+        leo3["pop_ed"] = leo3_sector["LEO3SECPOP_ED"]
+        leo3["resp_ed"] = leo3_sector["LEO3SECRESP_ED"]
+
+        leo3["lq_gl"] = leo3_sector["LEO3SECLQ_GL"]
+        leo3["med_gl"] = leo3_sector["LEO3SECMED_GL"]
+        leo3["uq_gl"] = leo3_sector["LEO3SECUQ_GL"]
+        leo3["pop_gl"] = leo3_sector["LEO3SECPOP_GL"]
+        leo3["resp_gl"] = leo3_sector["LEO3SECRESP_GL"]
+
+        leo3["lq_cf"] = leo3_sector["LEO3SECLQ_CF"]
+        leo3["med_cf"] = leo3_sector["LEO3SECMED_CF"]
+        leo3["uq_cf"] = leo3_sector["LEO3SECUQ_CF"]
+        leo3["pop_cf"] = leo3_sector["LEO3SECPOP_CF"]
+        leo3["resp_cf"] = leo3_sector["LEO3SECRESP_CF"]
+
     return leo3
 
 
@@ -636,6 +792,78 @@ def get_leo5_sector_items(leo5_sector):
         leo5["uq_ni"] = leo5_sector["LEO5SECUQ_NI"]
         leo5["pop_ni"] = leo5_sector["LEO5SECPOP_NI"]
         leo5["resp_ni"] = leo5_sector["LEO5SECRESP_NI"]
+
+        leo5["lq_nw"] = leo5_sector["LEO5SECLQ_NW"]
+        leo5["med_nw"] = leo5_sector["LEO5SECMED_NW"]
+        leo5["uq_nw"] = leo5_sector["LEO5SECUQ_NW"]
+        leo5["pop_nw"] = leo5_sector["LEO5SECPOP_NW"]
+        leo5["resp_nw"] = leo5_sector["LEO5SECRESP_NW"]
+
+        leo5["lq_ne"] = leo5_sector["LEO5SECLQ_NE"]
+        leo5["med_ne"] = leo5_sector["LEO5SECMED_NE"]
+        leo5["uq_ne"] = leo5_sector["LEO5SECUQ_NE"]
+        leo5["pop_ne"] = leo5_sector["LEO5SECPOP_NE"]
+        leo5["resp_ne"] = leo5_sector["LEO5SECRESP_NE"]
+
+        leo5["lq_em"] = leo5_sector["LEO5SECLQ_EM"]
+        leo5["med_em"] = leo5_sector["LEO5SECMED_EM"]
+        leo5["uq_em"] = leo5_sector["LEO5SECUQ_EM"]
+        leo5["pop_em"] = leo5_sector["LEO5SECPOP_EM"]
+        leo5["resp_em"] = leo5_sector["LEO5SECRESP_EM"]
+
+        leo5["lq_wm"] = leo5_sector["LEO5SECLQ_WM"]
+        leo5["med_wm"] = leo5_sector["LEO5SECMED_WM"]
+        leo5["uq_wm"] = leo5_sector["LEO5SECUQ_WM"]
+        leo5["pop_wm"] = leo5_sector["LEO5SECPOP_WM"]
+        leo5["resp_wm"] = leo5_sector["LEO5SECRESP_WM"]
+
+        leo5["lq_ee"] = leo5_sector["LEO5SECLQ_EE"]
+        leo5["med_ee"] = leo5_sector["LEO5SECMED_EE"]
+        leo5["uq_ee"] = leo5_sector["LEO5SECUQ_EE"]
+        leo5["pop_ee"] = leo5_sector["LEO5SECPOP_EE"]
+        leo5["resp_ee"] = leo5_sector["LEO5SECRESP_EE"]
+
+        leo5["lq_se"] = leo5_sector["LEO5SECLQ_SE"]
+        leo5["med_se"] = leo5_sector["LEO5SECMED_SE"]
+        leo5["uq_se"] = leo5_sector["LEO5SECUQ_SE"]
+        leo5["pop_se"] = leo5_sector["LEO5SECPOP_SE"]
+        leo5["resp_se"] = leo5_sector["LEO5SECRESP_SE"]
+
+        leo5["lq_sw"] = leo5_sector["LEO5SECLQ_SW"]
+        leo5["med_sw"] = leo5_sector["LEO5SECMED_SW"]
+        leo5["uq_sw"] = leo5_sector["LEO5SECUQ_SW"]
+        leo5["pop_sw"] = leo5_sector["LEO5SECPOP_SW"]
+        leo5["resp_sw"] = leo5_sector["LEO5SECRESP_SW"]
+
+        leo5["lq_yh"] = leo5_sector["LEO5SECLQ_YH"]
+        leo5["med_yh"] = leo5_sector["LEO5SECMED_YH"]
+        leo5["uq_yh"] = leo5_sector["LEO5SECUQ_YH"]
+        leo5["pop_yh"] = leo5_sector["LEO5SECPOP_YH"]
+        leo5["resp_yh"] = leo5_sector["LEO5SECRESP_YH"]
+
+        leo5["lq_lo"] = leo5_sector["LEO5SECLQ_LO"]
+        leo5["med_lo"] = leo5_sector["LEO5SECMED_LO"]
+        leo5["uq_lo"] = leo5_sector["LEO5SECUQ_LO"]
+        leo5["pop_lo"] = leo5_sector["LEO5SECPOP_LO"]
+        leo5["resp_lo"] = leo5_sector["LEO5SECRESP_LO"]
+
+        leo5["lq_ed"] = leo5_sector["LEO5SECLQ_ED"]
+        leo5["med_ed"] = leo5_sector["LEO5SECMED_ED"]
+        leo5["uq_ed"] = leo5_sector["LEO5SECUQ_ED"]
+        leo5["pop_ed"] = leo5_sector["LEO5SECPOP_ED"]
+        leo5["resp_ed"] = leo5_sector["LEO5SECRESP_ED"]
+
+        leo5["lq_gl"] = leo5_sector["LEO5SECLQ_GL"]
+        leo5["med_gl"] = leo5_sector["LEO5SECMED_GL"]
+        leo5["uq_gl"] = leo5_sector["LEO5SECUQ_GL"]
+        leo5["pop_gl"] = leo5_sector["LEO5SECPOP_GL"]
+        leo5["resp_gl"] = leo5_sector["LEO5SECRESP_GL"]
+
+        leo5["lq_cf"] = leo5_sector["LEO5SECLQ_CF"]
+        leo5["med_cf"] = leo5_sector["LEO5SECMED_CF"]
+        leo5["uq_cf"] = leo5_sector["LEO5SECUQ_CF"]
+        leo5["pop_cf"] = leo5_sector["LEO5SECPOP_CF"]
+        leo5["resp_cf"] = leo5_sector["LEO5SECRESP_CF"]
 
     return leo5
 
