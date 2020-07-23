@@ -801,18 +801,26 @@ class SharedUtils:
         agg = elem[self.xml_agg_key] if self.has_data(elem) else None
         unavail_reason_code = elem[self.xml_unavail_reason_key]
         validate_unavailable_reason_code(unavail_reason_code)
-
         unavailable["code"] = int(unavail_reason_code)
+
+        # Determine if elem (an ordered dictionary) contains a key that ends in 'RESP_RATE', e.g. 'EMPRESP_RATE'.
+        resp_rate_state = "any"
+        if unavailable["code"] == 0:
+            if any([x for x in elem if 'RESP_RATE' in x]):
+                resp_rate_state = "yes_resp_rate"
+            else:
+                resp_rate_state = "no_resp_rate"
+
         unavailable["reason_english"] = self.get_unavailable_reason_str(
-            unavail_reason_code, subj_key, agg, elem
+            unavail_reason_code, subj_key, agg, elem, resp_rate_state
         )
         unavailable["reason_welsh"] = self.get_unavailable_reason_str(
-            unavail_reason_code, subj_key, agg, elem, welsh=True
+            unavail_reason_code, subj_key, agg, elem, resp_rate_state, welsh=True
         )
         return unavailable
 
     def get_unavailable_reason_str(
-        self, unavail_reason_code, subj_key, agg, xml_elem, welsh=False
+        self, unavail_reason_code, subj_key, agg, xml_elem, resp_rate_state, welsh=False
     ):
         validate_unavailable_reason_code(unavail_reason_code)
         if welsh:
@@ -825,9 +833,18 @@ class SharedUtils:
             return unicodedata.normalize("NFKD", reason_str)
 
         validate_agg(unavail_reason_code, agg, unavail_reason_lookup)
-        partial_reason_str = unavail_reason_lookup["data"][
-            unavail_reason_code
-        ][agg]
+
+        # if unavail_reason_code == 0 and agg and agg != "14" and agg != "" and agg is not None:
+        #     partial_reason_str = unavail_reason_lookup["data"][unavail_reason_code][agg][resp_rate_state]
+        # elif unavail_reason_code != 0:
+        #     partial_reason_str = unavail_reason_lookup["data"][unavail_reason_code][agg]
+        # The lookup tables do not contain entries for code=0, agg=14 or code=0, agg=None.
+        #    No unavail message needs to be displayed in either of these scenarios.
+        if unavail_reason_code == '0':
+            partial_reason_str = unavail_reason_lookup["data"][unavail_reason_code][agg][resp_rate_state]
+        else:
+            partial_reason_str = unavail_reason_lookup["data"][unavail_reason_code][agg]
+
         partial_reason_str = unicodedata.normalize("NFKD", partial_reason_str)
         if welsh:
             subj = self.get_unavailable_reason_subj_welsh(subj_key)
