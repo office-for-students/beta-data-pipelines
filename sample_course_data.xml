@@ -14,7 +14,7 @@
         <ACCURL>http://www.sciencecouncil.org/content/chartered-scientist-csci</ACCURL>
         <ACCTEXT>Accredited by the Institute of Marine Engineering, Science and Technology (IMarEST) on behalf of the Science Council and IMarEST for the purposes of fully meeting the academic requirement for registration as a Chartered Scientist and Chartered Marine Scientist.</ACCTEXT>
         <ACCTEXTW>Achrededig gan Sefydliad Peirianneg, Gwyddoniaeth a Thechnoleg Forol (IMarEST) ar ran y Cyngor Peirianneg at bwrpasau cwrdd yn llawn â'r gofyniad academaidd ar gyfer cofrestru fel Peiriannydd Corfforedig.</ACCTEXTW>
-        <ACCTYPE>08404</ACCTYPE>
+        <ACCTYPE>03501</ACCTYPE>
     </ACCREDITATIONTABLE>
     <KISAIM>
         <KISAIMCODE>000</KISAIMCODE>
@@ -1282,6 +1282,10 @@
             <YEARABROAD>0</YEARABROAD>
             <KISAIMCODE>000</KISAIMCODE>
             <SBJ>CAH01-01-01</SBJ>
+            <ACCREDITATION>
+                <ACCTYPE>03501</ACCTYPE>
+                <ACCDEPEND>0</ACCDEPEND>
+            </ACCREDITATION>
             <COMMON>
                 <COMUNAVAILREASON>1</COMUNAVAILREASON>
                 <COMPOP>25</COMPOP>
@@ -1344,7 +1348,7 @@
                 <UCASCOURSEID>5318</UCASCOURSEID>
             </COURSELOCATION>
             <EMPLOYMENT>
-                <EMPUNAVAILREASON>1</EMPUNAVAILREASON>
+                <EMPUNAVAILREASON>0</EMPUNAVAILREASON>
                 <EMPPOP>35</EMPPOP>
                 <EMPRESP_RATE>95</EMPRESP_RATE>
                 <EMPAGG>13</EMPAGG>
@@ -1370,7 +1374,7 @@
                 <OTHERHE>25</OTHERHE>
             </ENTRY>
             <JOBTYPE>
-                <JOBUNAVAILREASON>1</JOBUNAVAILREASON>
+                <JOBUNAVAILREASON>0</JOBUNAVAILREASON>
                 <JOBPOP>25</JOBPOP>
                 <JOBRESP_RATE>95</JOBRESP_RATE>
                 <JOBAGG>13</JOBAGG>
