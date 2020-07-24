@@ -280,6 +280,11 @@ class JobList:
             job_list_item = {}
             job_list_item["job"] = job_list["JOB"]
             job_list_item["percentage_of_students"] = job_list["PERC"]
+
+            if job_list_item["percentage_of_students"].isnumeric():
+                if int(job_list_item["percentage_of_students"]) < 5:
+                    job_list_item["percentage_of_students"] = "<5"
+
             job_list_item["order"] = job_list["ORDER"]
             list_field.append(job_list_item)
         return list_field
