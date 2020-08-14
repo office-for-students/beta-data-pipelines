@@ -10,9 +10,9 @@ from SharedCode.utils import get_subject_lookups
 
 from validators import (
     validate_agg,
-    validate_unavailable_reason_code,
-    validate_leo_unavailable_reason_code,
-    validate_leo_element_with_data,
+    validate_unavailable_reason_code#,
+    #validate_leo_unavailable_reason_code,
+    #validate_leo_element_with_data,
 )
 
 
@@ -23,10 +23,10 @@ def get_stats(raw_course_data, country_code):
     entry = Entry()
     job_type = JobType()
     job_list = JobList()
-    leo = Leo(country_code)
+    #leo = Leo(country_code)
     nhs_nss = NhsNss()
     nss = Nss()
-    salary = Salary()
+    #salary = Salary()
     tariff = Tariff()
 
     stats = {}
@@ -35,11 +35,11 @@ def get_stats(raw_course_data, country_code):
     stats["entry"] = entry.get_stats(raw_course_data)
     stats["job_type"] = job_type.get_stats(raw_course_data)
     stats["job_list"] = job_list.get_stats(raw_course_data)
-    stats["leo"] = leo.get_stats(raw_course_data)
+    #stats["leo"] = leo.get_stats(raw_course_data)
     if need_nhs_nss(raw_course_data):
         stats["nhs_nss"] = nhs_nss.get_stats(raw_course_data)
     stats["nss"] = nss.get_stats(raw_course_data)
-    stats["salary"] = salary.get_stats(raw_course_data)
+    #stats["salary"] = salary.get_stats(raw_course_data)
     stats["tariff"] = tariff.get_stats(raw_course_data)
     return stats
 
@@ -99,16 +99,20 @@ class Employment:
         return {
             "EMPUNAVAILREASON": "unavailable",
             "EMPPOP": "number_of_students",
+            "EMPRESPONSE": "response_not_used",
+            "EMPSAMPLE": "sample_not_used",
             "EMPRESP_RATE": "response_rate",
             "EMPAGG": "aggregation_level",
             "EMPSBJ": "subject",
-            "WORKSTUDY": "in_work_or_study",
-            "STUDY": "in_study",
-            "ASSUNEMP": "assumed_to_be_unemployed",
+            "WORKSTUDY": "in_work_or_study,
+            "PREVWORKSTUD": "unemp_prev_emp_since_grad",
+            "STUDY": "doing_further_study",
+            "UNEMP": "unemp_not_work_since_grad",
             "BOTH": "in_work_and_study",
-            "NOAVAIL": "not_available_for_work_or_study",
+            "NOAVAIL": "other",
             "WORK": "in_work",
         }[xml_key]
+
 
     def get_stats(self, raw_course_data):
         return self.shared_utils.get_json_list(raw_course_data, self.get_key)
@@ -135,6 +139,8 @@ class Entry:
         return {
             "ENTUNAVAILREASON": "unavailable",
             "ENTPOP": "number_of_students",
+            "ENTRESPONSE": "response_not_used",
+            "ENTSAMPLE": "sample_not_used",
             "ENTAGG": "aggregation_level",
             "ENTSBJ": "subject",
             "ACCESS": "access",
@@ -172,6 +178,8 @@ class JobType:
         return {
             "JOBUNAVAILREASON": "unavailable",
             "JOBPOP": "number_of_students",
+            "JOBRESPONSE": "response_not_used",
+            "JOBSAMPLE": "sample_not_used",
             "JOBAGG": "aggregation_level",
             "JOBSBJ": "subject",
             "JOBRESP_RATE": "response_rate",
@@ -290,126 +298,126 @@ class JobList:
         return list_field
 
 
-class Leo:
-    """Extracts and transforms the LEO course element"""
+# class Leo:
+#     """Extracts and transforms the LEO course element"""
 
-    # Current understanding of how to transform this data is as follows:
-    #    If there is data:
-    #       no unavailable section needed
+#     # Current understanding of how to transform this data is as follows:
+#     #    If there is data:
+#     #       no unavailable section needed
 
-    #    What follows is when there is data
-    #
-    #    If not in England:
-    #        return the appropriate message
-    #    elif reason code 1:
-    #        return the appropriate message
-    #    elif reason code 2:
-    #        return the appropriate message
-    #    else error as we do not expect another reason code
-    #
-    def __init__(self, course_code):
-        self.xml_element_key = "LEO"
-        self.xml_unavail_reason_key = "LEOUNAVAILREASON"
+#     #    What follows is when there is data
+#     #
+#     #    If not in England:
+#     #        return the appropriate message
+#     #    elif reason code 1:
+#     #        return the appropriate message
+#     #    elif reason code 2:
+#     #        return the appropriate message
+#     #    else error as we do not expect another reason code
+#     #
+#     def __init__(self, course_code):
+#         self.xml_element_key = "LEO"
+#         self.xml_unavail_reason_key = "LEOUNAVAILREASON"
 
-        self.shared_utils = SharedUtils(
-            self.xml_element_key,
-            "LEOSBJ",
-            "LEOAGG",
-            self.xml_unavail_reason_key,
-        )
+#         self.shared_utils = SharedUtils(
+#             self.xml_element_key,
+#             "LEOSBJ",
+#             "LEOAGG",
+#             self.xml_unavail_reason_key,
+#         )
 
-        self.country_code = course_code
-        self.unavail_reason_english = self.shared_utils.get_lookup(
-            "leo_unavail_reason_english"
-        )
-        self.unavail_reason_welsh = self.shared_utils.get_lookup(
-            "leo_unavail_reason_welsh"
-        )
-        self.data_fields_lookup = self.shared_utils.get_lookup(
-            "leo_data_fields"
-        )
+#         self.country_code = course_code
+#         self.unavail_reason_english = self.shared_utils.get_lookup(
+#             "leo_unavail_reason_english"
+#         )
+#         self.unavail_reason_welsh = self.shared_utils.get_lookup(
+#             "leo_unavail_reason_welsh"
+#         )
+#         self.data_fields_lookup = self.shared_utils.get_lookup(
+#             "leo_data_fields"
+#         )
 
-    def get_stats(self, raw_course_data):
-        """Returns a list of JSON objects (as dicts) for this stats element"""
+#     def get_stats(self, raw_course_data):
+#         """Returns a list of JSON objects (as dicts) for this stats element"""
 
-        json_elem_list = []
-        raw_xml_list = SharedUtils.get_raw_list(
-            raw_course_data, self.xml_element_key
-        )
-        for xml_elem in raw_xml_list:
-            json_elem = {}
-            if self.shared_utils.has_data(xml_elem):
-                json_elem.update(self.get_json_data(xml_elem))
-            if self.need_unavailable(xml_elem):
-                json_elem["unavailable"] = self.get_unavailable(xml_elem)
-            sorted_json_elem = OrderedDict(sorted(json_elem.items()))
-            json_elem_list.append(sorted_json_elem)
-        return json_elem_list
+#         json_elem_list = []
+#         raw_xml_list = SharedUtils.get_raw_list(
+#             raw_course_data, self.xml_element_key
+#         )
+#         for xml_elem in raw_xml_list:
+#             json_elem = {}
+#             if self.shared_utils.has_data(xml_elem):
+#                 json_elem.update(self.get_json_data(xml_elem))
+#             if self.need_unavailable(xml_elem):
+#                 json_elem["unavailable"] = self.get_unavailable(xml_elem)
+#             sorted_json_elem = OrderedDict(sorted(json_elem.items()))
+#             json_elem_list.append(sorted_json_elem)
+#         return json_elem_list
 
-    def get_json_data(self, xml_elem):
-        """Extracts and formats the data from the XML element"""
+#     def get_json_data(self, xml_elem):
+#         """Extracts and formats the data from the XML element"""
 
-        lookup = self.data_fields_lookup
-        json_data = {}
-        for xml_key in lookup:
-            if lookup[xml_key][1] == "M":
-                json_data[
-                    lookup[xml_key][0]
-                ] = self.shared_utils.get_json_value(xml_elem[xml_key])
-            else:
-                if xml_key in xml_elem:
-                    json_key = lookup[xml_key][0]
-                    if json_key == "subject":
-                        json_data[json_key] = self.shared_utils.get_subject(
-                            xml_elem
-                        )
-                    else:
-                        json_data[json_key] = self.shared_utils.get_json_value(
-                            xml_elem[xml_key]
-                        )
-        return json_data
+#         lookup = self.data_fields_lookup
+#         json_data = {}
+#         for xml_key in lookup:
+#             if lookup[xml_key][1] == "M":
+#                 json_data[
+#                     lookup[xml_key][0]
+#                 ] = self.shared_utils.get_json_value(xml_elem[xml_key])
+#             else:
+#                 if xml_key in xml_elem:
+#                     json_key = lookup[xml_key][0]
+#                     if json_key == "subject":
+#                         json_data[json_key] = self.shared_utils.get_subject(
+#                             xml_elem
+#                         )
+#                     else:
+#                         json_data[json_key] = self.shared_utils.get_json_value(
+#                             xml_elem[xml_key]
+#                         )
+#         return json_data
 
-    def get_unavailable(self, xml_elem):
-        unavailable = {}
-        unavail_reason_code = xml_elem[self.xml_unavail_reason_key]
-        validate_leo_unavailable_reason_code(unavail_reason_code)
+#     def get_unavailable(self, xml_elem):
+#         unavailable = {}
+#         unavail_reason_code = xml_elem[self.xml_unavail_reason_key]
+#         validate_leo_unavailable_reason_code(unavail_reason_code)
 
-        unavailable["code"] = int(unavail_reason_code)
-        unavailable["reason_english"] = self.get_unavailable_reason_str_english(unavail_reason_code)
-        unavailable["reason_welsh"] = self.get_unavailable_reason_str_welsh(unavail_reason_code)
+#         unavailable["code"] = int(unavail_reason_code)
+#         unavailable["reason_english"] = self.get_unavailable_reason_str_english(unavail_reason_code)
+#         unavailable["reason_welsh"] = self.get_unavailable_reason_str_welsh(unavail_reason_code)
 
-        if self.course_outside_england():
-            unavailable["find_out_more_english"] = self.unavail_reason_english["find_out_more"]
-            unavailable["find_out_more_welsh"] = self.unavail_reason_welsh["find_out_more"]
-            unavailable["url_english"] = self.unavail_reason_english["url"]
-            unavailable["url_welsh"] = self.unavail_reason_welsh["url"]
+#         if self.course_outside_england():
+#             unavailable["find_out_more_english"] = self.unavail_reason_english["find_out_more"]
+#             unavailable["find_out_more_welsh"] = self.unavail_reason_welsh["find_out_more"]
+#             unavailable["url_english"] = self.unavail_reason_english["url"]
+#             unavailable["url_welsh"] = self.unavail_reason_welsh["url"]
 
-        return unavailable
+#         return unavailable
 
-    def need_unavailable(self, xml_elem):
-        """Returns True if unavailable is needed otherwise False"""
+#     def need_unavailable(self, xml_elem):
+#         """Returns True if unavailable is needed otherwise False"""
 
-        if self.shared_utils.has_data(xml_elem):
-            validate_leo_element_with_data(xml_elem, self.country_code)
-            return False
-        return True
+#         if self.shared_utils.has_data(xml_elem):
+#             validate_leo_element_with_data(xml_elem, self.country_code)
+#             return False
+#         return True
 
-    def course_outside_england(self):
-        return self.country_code != "XF"
+#     def course_outside_england(self):
+#         return self.country_code != "XF"
 
-    def get_unavailable_reason_str_english(self, unavail_reason_code):
-        if self.course_outside_england():
-            reason_str = self.unavail_reason_english["outside_england"]
-        else:
-            reason_str = self.unavail_reason_english[unavail_reason_code]
-        return unicodedata.normalize("NFKD", reason_str)
+#     def get_unavailable_reason_str_english(self, unavail_reason_code):
+#         if self.course_outside_england():
+#             reason_str = self.unavail_reason_english["outside_england"]
+#         else:
+#             reason_str = self.unavail_reason_english[unavail_reason_code]
+#         return unicodedata.normalize("NFKD", reason_str)
 
-    def get_unavailable_reason_str_welsh(self, unavail_reason_code):
-        if self.course_outside_england():
-            reason_str = self.unavail_reason_welsh["outside_england"]
-        else:
-            reason_str = self.unavail_reason_welsh[unavail_reason_code]
-        return unicodedata.normalize("NFKD", reason_str)
+#     def get_unavailable_reason_str_welsh(self, unavail_reason_code):
+#         if self.course_outside_england():
+#             reason_str = self.unavail_reason_welsh["outside_england"]
+#         else:
+#             reason_str = self.unavail_reason_welsh[unavail_reason_code]
+#         return unicodedata.normalize("NFKD", reason_str)
 
 
 class Nss:
@@ -562,67 +570,67 @@ class NhsNss:
         return json_elem_list
 
 
-class Salary:
-    """Extracts and transforms the Salary course element"""
+# class Salary:
+#     """Extracts and transforms the Salary course element"""
 
-    def __init__(self):
-        self.xml_element_key = "SALARY"
-        self.xml_subj_key = "SALSBJ"
-        self.xml_agg_key = "SALAGG"
-        self.xml_unavail_reason_key = "SALUNAVAILREASON"
+#     def __init__(self):
+#         self.xml_element_key = "SALARY"
+#         self.xml_subj_key = "SALSBJ"
+#         self.xml_agg_key = "SALAGG"
+#         self.xml_unavail_reason_key = "SALUNAVAILREASON"
 
-        self.shared_utils = SharedUtils(
-            self.xml_element_key,
-            self.xml_subj_key,
-            self.xml_agg_key,
-            self.xml_unavail_reason_key,
-        )
+#         self.shared_utils = SharedUtils(
+#             self.xml_element_key,
+#             self.xml_subj_key,
+#             self.xml_agg_key,
+#             self.xml_unavail_reason_key,
+#         )
 
-        self.salary_data_fields_lookup = self.shared_utils.get_lookup(
-            "salary_data_fields"
-        )
+#         self.salary_data_fields_lookup = self.shared_utils.get_lookup(
+#             "salary_data_fields"
+#         )
 
-    def get_json_data(self, xml_elem):
+#     def get_json_data(self, xml_elem):
 
-        # TODO: Use this technique where appropriate elsewhere.
-        lookup = self.salary_data_fields_lookup
-        json_data = {}
-        for xml_key in lookup:
-            if lookup[xml_key][1] == "M":
-                json_data[
-                    lookup[xml_key][0]
-                ] = self.shared_utils.get_json_value(xml_elem[xml_key])
-            else:
-                if xml_key in xml_elem:
-                    json_key = lookup[xml_key][0]
-                    if json_key == "subject":
-                        json_data[json_key] = self.shared_utils.get_subject(
-                            xml_elem
-                        )
-                    else:
-                        json_data[json_key] = self.shared_utils.get_json_value(
-                            xml_elem[xml_key]
-                        )
-        return json_data
+#         # TODO: Use this technique where appropriate elsewhere.
+#         lookup = self.salary_data_fields_lookup
+#         json_data = {}
+#         for xml_key in lookup:
+#             if lookup[xml_key][1] == "M":
+#                 json_data[
+#                     lookup[xml_key][0]
+#                 ] = self.shared_utils.get_json_value(xml_elem[xml_key])
+#             else:
+#                 if xml_key in xml_elem:
+#                     json_key = lookup[xml_key][0]
+#                     if json_key == "subject":
+#                         json_data[json_key] = self.shared_utils.get_subject(
+#                             xml_elem
+#                         )
+#                     else:
+#                         json_data[json_key] = self.shared_utils.get_json_value(
+#                             xml_elem[xml_key]
+#                         )
+#         return json_data
 
-    def get_stats(self, raw_course_data):
-        """Returns a list of JSON objects (as dicts) for this stats element"""
+#     def get_stats(self, raw_course_data):
+#         """Returns a list of JSON objects (as dicts) for this stats element"""
 
-        json_elem_list = []
-        raw_xml_list = SharedUtils.get_raw_list(
-            raw_course_data, self.xml_element_key
-        )
-        for xml_elem in raw_xml_list:
-            json_elem = {}
-            if self.shared_utils.has_data(xml_elem):
-                json_elem.update(self.get_json_data(xml_elem))
-            if self.shared_utils.need_unavailable(xml_elem):
-                json_elem["unavailable"] = self.shared_utils.get_unavailable(
-                    xml_elem
-                )
-            sorted_json_elem = OrderedDict(sorted(json_elem.items()))
-            json_elem_list.append(sorted_json_elem)
-        return json_elem_list
+#         json_elem_list = []
+#         raw_xml_list = SharedUtils.get_raw_list(
+#             raw_course_data, self.xml_element_key
+#         )
+#         for xml_elem in raw_xml_list:
+#             json_elem = {}
+#             if self.shared_utils.has_data(xml_elem):
+#                 json_elem.update(self.get_json_data(xml_elem))
+#             if self.shared_utils.need_unavailable(xml_elem):
+#                 json_elem["unavailable"] = self.shared_utils.get_unavailable(
+#                     xml_elem
+#                 )
+#             sorted_json_elem = OrderedDict(sorted(json_elem.items()))
+#             json_elem_list.append(sorted_json_elem)
+#         return json_elem_list
 
 
 class Tariff:
@@ -728,14 +736,14 @@ class SharedUtils:
             "unavail_reason_english": "unavailreason_english.json",
             "unavail_reason_welsh": "unavailreason_welsh.json",
             "tariff_description": "tariff_description.json",
-            "salary_data_fields": "salary_data_fields.json",
+            #"salary_data_fields": "salary_data_fields.json",
             "nss_question_description": "nss_question_description.json",
             "nss_data_fields": "nss_data_fields.json",
             "nhs_question_description": "nhs_question_description.json",
             "nhs_data_fields": "nhs_data_fields.json",
-            "leo_unavail_reason_english": "leo_unavailreason_english.json",
-            "leo_unavail_reason_welsh": "leo_unavailreason_welsh.json",
-            "leo_data_fields": "leo_data_fields.json",
+            #"leo_unavail_reason_english": "leo_unavailreason_english.json",
+            #"leo_unavail_reason_welsh": "leo_unavailreason_welsh.json",
+            #"leo_data_fields": "leo_data_fields.json",
             "common_data_fields": "common_data_fields.json",
             "earnings_unavail_reason_english": "earnings_unavailreason_english.json",
             "earnings_unavail_reason_welsh": "earnings_unavailreason_welsh.json",
@@ -907,10 +915,8 @@ def need_nhs_nss(course):
 
 
 # apw for unavail messages
-def get_earnings_unavail_text(data_source, unavail_reason_code, agg, sbj): 
+def get_earnings_unavail_text(inst_or_sect, data_source, key_level_3): 
     """Returns the relevant unavail reason text in English and Welsh"""
-    reason_str_eng = ""
-    reason_str_wls = ""
 
     shared_utils = SharedUtils(
         data_source, #xml_element_key
@@ -919,75 +925,15 @@ def get_earnings_unavail_text(data_source, unavail_reason_code, agg, sbj):
         'UNAVAILREASON', #xml_unavail_reason_key
     )
 
-    unavail_reason_english = shared_utils.get_lookup(
+    earnings_unavail_reason_lookup_english = shared_utils.get_lookup(
         "earnings_unavail_reason_english"
     )
-    unavail_reason_welsh = shared_utils.get_lookup(
+    earnings_unavail_reason_lookup_welsh = shared_utils.get_lookup(
         "earnings_unavail_reason_welsh"
     )
 
-    # TODO: apw: Update the structure and content of the two new JSON lookup files.
+    unavail_text_english = earnings_unavail_reason_lookup_english[inst_or_sect][data_source][key_level_3]
+    unavail_text_welsh = earnings_unavail_reason_lookup_welsh[inst_or_sect][data_source][key_level_3]
 
-    if data_source == "GO_INST":
-        unavail_text_inst_level_eng = "GO_INST text inst level English"
-        unavail_text_inst_level_wls = "GO_INST text inst level Welsh"
-        unavail_text_inst_level_2_eng = "GO_INST text inst level other logic English" # Not sure what this logic entails.
-        unavail_text_inst_level_2_wls = "GO_INST text inst level other logic Welsh" # Not sure what this logic entails.
-        # TODO: apw: Add logic to extract the relevant text from unavail_reason_english and unavail_reason_welsh.
-
-        return unicodedata.normalize("NFKD", unavail_text_inst_level_eng),\
-                unicodedata.normalize("NFKD", unavail_text_inst_level_wls),\
-                unicodedata.normalize("NFKD", unavail_text_inst_level_2_eng),\
-                unicodedata.normalize("NFKD", unavail_text_inst_level_2_wls)
-
-    elif data_source == "LEO3_INST":
-        unavail_text_inst_level_eng = "LEO3_INST text inst level English"
-        unavail_text_inst_level_wls = "LEO3_INST text inst level Welsh"
-        # TODO: apw: Add logic to extract the relevant text from unavail_reason_english and unavail_reason_welsh.
-
-        return unicodedata.normalize("NFKD", unavail_text_inst_level_eng),\
-                unicodedata.normalize("NFKD", unavail_text_inst_level_wls)
-
-    elif data_source == "LEO5_INST":
-        unavail_text_inst_level_eng = "LEO5_INST text inst level English"
-        unavail_text_inst_level_wls = "LEO5_INST text inst level Welsh"
-        # TODO: apw: Add logic to extract the relevant text from unavail_reason_english and unavail_reason_welsh.
-
-        return unicodedata.normalize("NFKD", unavail_text_inst_level_eng),\
-                unicodedata.normalize("NFKD", unavail_text_inst_level_wls)
-
-    elif data_source == "GO_SECTOR":
-        unavail_text_sector_level_eng = "GO_SECTOR text sector level English"
-        unavail_text_sector_level_wls = "GO_SECTOR text sector level Welsh"
-        unavail_text_non_nation_selected_eng = "GO_SECTOR text sector level non-nation English"
-        unavail_text_non_nation_selected_wls = "GO_SECTOR text sector level non-nation Welsh"
-        # TODO: apw: Add logic to extract the relevant text from unavail_reason_english and unavail_reason_welsh.
-
-        return unicodedata.normalize("NFKD", unavail_text_sector_level_eng),\
-                unicodedata.normalize("NFKD", unavail_text_sector_level_wls),\
-                unicodedata.normalize("NFKD", unavail_text_non_nation_selected_eng),\
-                unicodedata.normalize("NFKD", unavail_text_non_nation_selected_wls)
-
-    elif data_source == "LEO3_SECTOR":
-        unavail_text_sector_level_eng = "LEO3_SECTOR text sector level English"
-        unavail_text_sector_level_wls = "LEO3_SECTOR text sector level Welsh"
-        unavail_text_ni_selected_eng = "LEO3_SECTOR text sector level NI selected English"
-        unavail_text_ni_selected_wls = "LEO3_SECTOR text sector level NI selected Welsh"
-        # TODO: apw: Add logic to extract the relevant text from unavail_reason_english and unavail_reason_welsh.
-
-        return unicodedata.normalize("NFKD", unavail_text_sector_level_eng),\
-                unicodedata.normalize("NFKD", unavail_text_sector_level_wls),\
-                unicodedata.normalize("NFKD", unavail_text_ni_selected_eng),\
-                unicodedata.normalize("NFKD", unavail_text_ni_selected_wls)
-
-    elif data_source == "LEO5_SECTOR":
-        unavail_text_sector_level_eng = "LEO5_SECTOR text sector level English"
-        unavail_text_sector_level_wls = "LEO5_SECTOR text sector level Welsh"
-        unavail_text_ni_selected_eng = "LEO5_SECTOR text sector level NI selected English"
-        unavail_text_ni_selected_wls = "LEO5_SECTOR text sector level NI selected Welsh"
-        # TODO: apw: Add logic to extract the relevant text from unavail_reason_english and unavail_reason_welsh.
-
-        return unicodedata.normalize("NFKD", unavail_text_sector_level_eng),\
-                unicodedata.normalize("NFKD", unavail_text_sector_level_wls),\
-                unicodedata.normalize("NFKD", unavail_text_ni_selected_eng),\
-                unicodedata.normalize("NFKD", unavail_text_ni_selected_wls)
+    return unicodedata.normalize("NFKD", unavail_text_english),\
+            unicodedata.normalize("NFKD", unavail_text_welsh)
