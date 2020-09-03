@@ -11,17 +11,24 @@ class SalarySector:
         course_mode = raw_course_data["KISMODE"]
         course_level = raw_course_data["KISLEVEL"]
 
+        if salary_node_name == "GOSECSAL":
+            sector_sbj_name = "GOSECSBJ"
+        elif salary_node_name == "LEO3SEC":
+            sector_sbj_name = "LEO3SECSBJ"
+        else:
+            sector_sbj_name = "LEO5SECSBJ"
+
         for sector in sector_sal_root.iter(salary_node_name):
             raw_sector_data = xmltodict.parse(
                 ET.tostring(sector)
             )[salary_node_name]
 
-            sector_sbj = raw_sector_data["SBJ"]
+            sector_sbj = raw_sector_data[sector_sbj_name]
             sector_mode = raw_sector_data["KISMODE"]
             sector_level = raw_sector_data["KISLEVEL"]
 
             for salary_inst in salary_inst_array:
-                course_sbj = salary_inst["sbj"]
+                course_sbj = salary_inst["subject"]["code"]
 
                 if sector_sbj == course_sbj and sector_mode == course_mode and sector_level == course_level:
                     self.matching_sector_array.append(raw_sector_data)

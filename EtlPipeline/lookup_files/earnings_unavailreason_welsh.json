@@ -19,7 +19,7 @@
         },
         "leo": {
             "region_not_exists": "Nid oes data ar gael",
-            "region_is_ni": "Nid oes data ar gael"
+            "region_is_ni": "Nid oes data ar gael\n\nYn anffodus, nid yw’r data hwn ar gael ar gyfer Gogledd Iwerddon."
         }
     }
 }

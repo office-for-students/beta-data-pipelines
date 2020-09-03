@@ -104,7 +104,7 @@ class Employment:
             "EMPRESP_RATE": "response_rate",
             "EMPAGG": "aggregation_level",
             "EMPSBJ": "subject",
-            "WORKSTUDY": "in_work_or_study,
+            "WORKSTUDY": "in_work_or_study",
             "PREVWORKSTUD": "unemp_prev_emp_since_grad",
             "STUDY": "doing_further_study",
             "UNEMP": "unemp_not_work_since_grad",

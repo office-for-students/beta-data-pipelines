@@ -19,7 +19,7 @@
         },
         "leo": {
             "region_not_exists": "No data available",
-            "region_is_ni": "No data available"
+            "region_is_ni": "No data available\n\nSorry, this data is not available for Northern Ireland."
         }
     }
 }
