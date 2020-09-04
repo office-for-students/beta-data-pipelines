@@ -366,21 +366,21 @@ def get_go_inst_json(raw_go_inst_data):
             unavail_text_welsh = ""
             #if type(elem) == str:
             go_salary = {}
-            go_salary["unavail_reason"] = raw_go_inst_data["GOSALUNAVAILREASON"]
-            go_salary["pop"] = raw_go_inst_data["GOSALPOP"]
-            go_salary["resp_rate"] = raw_go_inst_data["GOSALRESP_RATE"]
-            go_salary["agg"] = raw_go_inst_data["GOSALAGG"]
-            go_salary["subject"] = get_subject(raw_go_inst_data["GOSALSBJ"])
-            go_salary["lq"] = raw_go_inst_data["GOINSTLQ"]
-            go_salary["med"] = raw_go_inst_data["GOINSTMED"]
-            go_salary["uq"] = raw_go_inst_data["GOINSTUQ"]
-            go_salary["inst_prov_pc_uk"] = raw_go_inst_data["GOPROV_PC_UK"]
-            go_salary["inst_prov_pc_e"] = raw_go_inst_data["GOPROV_PC_E"]
-            go_salary["inst_prov_pc_ni"] = raw_go_inst_data["GOPROV_PC_NI"]
-            go_salary["inst_prov_pc_s"] = raw_go_inst_data["GOPROV_PC_S"]
-            go_salary["inst_prov_pc_w"] = raw_go_inst_data["GOPROV_PC_W"]
+            if 'GOSALUNAVAILREASON' in raw_go_inst_data: go_salary["unavail_reason"] = raw_go_inst_data["GOSALUNAVAILREASON"]
+            if 'GOSALPOP' in raw_go_inst_data: go_salary["pop"] = raw_go_inst_data["GOSALPOP"]
+            if 'GOSALRESP_RATE' in raw_go_inst_data: go_salary["resp_rate"] = raw_go_inst_data["GOSALRESP_RATE"]
+            if 'GOSALAGG' in raw_go_inst_data: go_salary["agg"] = raw_go_inst_data["GOSALAGG"]
+            if 'GOSALSBJ' in raw_go_inst_data: go_salary["subject"] = get_subject(raw_go_inst_data["GOSALSBJ"])
+            if 'GOINSTLQ' in raw_go_inst_data: go_salary["lq"] = raw_go_inst_data["GOINSTLQ"]
+            if 'GOINSTMED' in raw_go_inst_data: go_salary["med"] = raw_go_inst_data["GOINSTMED"]
+            if 'GOINSTUQ' in raw_go_inst_data: go_salary["uq"] = raw_go_inst_data["GOINSTUQ"]
+            if 'GOPROV_PC_UK' in raw_go_inst_data: go_salary["inst_prov_pc_uk"] = raw_go_inst_data["GOPROV_PC_UK"]
+            if 'GOPROV_PC_E' in raw_go_inst_data: go_salary["inst_prov_pc_e"] = raw_go_inst_data["GOPROV_PC_E"]
+            if 'GOPROV_PC_NI' in raw_go_inst_data: go_salary["inst_prov_pc_ni"] = raw_go_inst_data["GOPROV_PC_NI"]
+            if 'GOPROV_PC_S' in raw_go_inst_data: go_salary["inst_prov_pc_s"] = raw_go_inst_data["GOPROV_PC_S"]
+            if 'GOPROV_PC_W' in raw_go_inst_data: go_salary["inst_prov_pc_w"] = raw_go_inst_data["GOPROV_PC_W"]
 
-            if go_salary["agg"] is None or go_salary["agg"] == "":
+            if 'agg' in go_salary and (go_salary["agg"] is None or go_salary["agg"] == ""):
                 unavail_text_english, unavail_text_welsh = get_earnings_unavail_text("institution", "go", go_salary["unavail_reason"])
                 
             go_salary["unavail_text_english"] = unavail_text_english
@@ -392,21 +392,21 @@ def get_go_inst_json(raw_go_inst_data):
                 unavail_text_welsh = ""
                 #if type(elem) == str:
                 go_salary = {}
-                go_salary["unavail_reason"] = elem["GOSALUNAVAILREASON"]
-                go_salary["pop"] = elem["GOSALPOP"]
-                go_salary["resp_rate"] = elem["GOSALRESP_RATE"]
-                go_salary["agg"] = elem["GOSALAGG"]
-                go_salary["subject"] = get_subject(elem["GOSALSBJ"])
-                go_salary["lq"] = elem["GOINSTLQ"]
-                go_salary["med"] = elem["GOINSTMED"]
-                go_salary["uq"] = elem["GOINSTUQ"]
-                go_salary["inst_prov_pc_uk"] = elem["GOPROV_PC_UK"]
-                go_salary["inst_prov_pc_e"] = elem["GOPROV_PC_E"]
-                go_salary["inst_prov_pc_ni"] = elem["GOPROV_PC_NI"]
-                go_salary["inst_prov_pc_s"] = elem["GOPROV_PC_S"]
-                go_salary["inst_prov_pc_w"] = elem["GOPROV_PC_W"]
+                if 'GOSALUNAVAILREASON' in elem: go_salary["unavail_reason"] = elem["GOSALUNAVAILREASON"]
+                if 'GOSALPOP' in elem: go_salary["pop"] = elem["GOSALPOP"]
+                if 'GOSALRESP_RATE' in elem: go_salary["resp_rate"] = elem["GOSALRESP_RATE"]
+                if 'GOSALAGG' in elem: go_salary["agg"] = elem["GOSALAGG"]
+                if 'GOSALSBJ' in elem: go_salary["subject"] = get_subject(elem["GOSALSBJ"])
+                if 'GOINSTLQ' in elem: go_salary["lq"] = elem["GOINSTLQ"]
+                if 'GOINSTMED' in elem: go_salary["med"] = elem["GOINSTMED"]
+                if 'GOINSTUQ' in elem: go_salary["uq"] = elem["GOINSTUQ"]
+                if 'GOPROV_PC_UK' in elem: go_salary["inst_prov_pc_uk"] = elem["GOPROV_PC_UK"]
+                if 'GOPROV_PC_E' in elem: go_salary["inst_prov_pc_e"] = elem["GOPROV_PC_E"]
+                if 'GOPROV_PC_NI' in elem: go_salary["inst_prov_pc_ni"] = elem["GOPROV_PC_NI"]
+                if 'GOPROV_PC_S' in elem: go_salary["inst_prov_pc_s"] = elem["GOPROV_PC_S"]
+                if 'GOPROV_PC_W' in elem: go_salary["inst_prov_pc_w"] = elem["GOPROV_PC_W"]
 
-                if go_salary["agg"] is None or go_salary["agg"] == "":
+                if 'agg' in go_salary and (go_salary["agg"] is None or go_salary["agg"] == ""):
                     unavail_text_english, unavail_text_welsh = get_earnings_unavail_text("institution", "go", go_salary["unavail_reason"])
                     
                 go_salary["unavail_text_english"] = unavail_text_english
@@ -433,32 +433,32 @@ def get_leo3_inst_json(raw_leo3_inst_data):
             unavail_text_english = ""
             unavail_text_welsh = ""
             leo3 = {}
-            leo3["unavail_reason"] = raw_leo3_inst_data["LEO3UNAVAILREASON"]
-            leo3["pop"] = raw_leo3_inst_data["LEO3POP"]
-            leo3["agg"] = raw_leo3_inst_data["LEO3AGG"]
-            leo3["subject"] = get_subject(raw_leo3_inst_data["LEO3SBJ"])
-            leo3["lq"] = raw_leo3_inst_data["LEO3INSTLQ"]
-            leo3["med"] = raw_leo3_inst_data["LEO3INSTMED"]
-            leo3["uq"] = raw_leo3_inst_data["LEO3INSTUQ"]
-            leo3["inst_prov_pc_uk"] = raw_leo3_inst_data["LEO3PROV_PC_UK"]
-            leo3["inst_prov_pc_e"] = raw_leo3_inst_data["LEO3PROV_PC_E"]
-            leo3["inst_prov_pc_ni"] = raw_leo3_inst_data["LEO3PROV_PC_NI"]
-            leo3["inst_prov_pc_s"] = raw_leo3_inst_data["LEO3PROV_PC_S"]
-            leo3["inst_prov_pc_w"] = raw_leo3_inst_data["LEO3PROV_PC_W"]
-            leo3["inst_prov_pc_nw"] = raw_leo3_inst_data["LEO3PROV_PC_NW"]
-            leo3["inst_prov_pc_ne"] = raw_leo3_inst_data["LEO3PROV_PC_NE"]
-            leo3["inst_prov_pc_em"] = raw_leo3_inst_data["LEO3PROV_PC_EM"]
-            leo3["inst_prov_pc_wm"] = raw_leo3_inst_data["LEO3PROV_PC_WM"]
-            leo3["inst_prov_pc_ee"] = raw_leo3_inst_data["LEO3PROV_PC_EE"]
-            leo3["inst_prov_pc_se"] = raw_leo3_inst_data["LEO3PROV_PC_SE"]
-            leo3["inst_prov_pc_sw"] = raw_leo3_inst_data["LEO3PROV_PC_SW"]
-            leo3["inst_prov_pc_yh"] = raw_leo3_inst_data["LEO3PROV_PC_YH"]
-            leo3["inst_prov_pc_lo"] = raw_leo3_inst_data["LEO3PROV_PC_LN"]
-            leo3["inst_prov_pc_ed"] = raw_leo3_inst_data["LEO3PROV_PC_ED"]
-            leo3["inst_prov_pc_gl"] = raw_leo3_inst_data["LEO3PROV_PC_GL"]
-            leo3["inst_prov_pc_cf"] = raw_leo3_inst_data["LEO3PROV_PC_CF"]
+            if 'LEO3UNAVAILREASON' in raw_leo3_inst_data: leo3["unavail_reason"] = raw_leo3_inst_data["LEO3UNAVAILREASON"]
+            if 'LEO3POP' in raw_leo3_inst_data: leo3["pop"] = raw_leo3_inst_data["LEO3POP"]
+            if 'LEO3AGG' in raw_leo3_inst_data: leo3["agg"] = raw_leo3_inst_data["LEO3AGG"]
+            if 'LEO3SBJ' in raw_leo3_inst_data: leo3["subject"] = get_subject(raw_leo3_inst_data["LEO3SBJ"])
+            if 'LEO3INSTLQ' in raw_leo3_inst_data: leo3["lq"] = raw_leo3_inst_data["LEO3INSTLQ"]
+            if 'LEO3INSTMED' in raw_leo3_inst_data: leo3["med"] = raw_leo3_inst_data["LEO3INSTMED"]
+            if 'LEO3INSTUQ' in raw_leo3_inst_data: leo3["uq"] = raw_leo3_inst_data["LEO3INSTUQ"]
+            if 'LEO3PROV_PC_UK' in raw_leo3_inst_data: leo3["inst_prov_pc_uk"] = raw_leo3_inst_data["LEO3PROV_PC_UK"]
+            if 'LEO3PROV_PC_E' in raw_leo3_inst_data: leo3["inst_prov_pc_e"] = raw_leo3_inst_data["LEO3PROV_PC_E"]
+            if 'LEO3PROV_PC_NI' in raw_leo3_inst_data: leo3["inst_prov_pc_ni"] = raw_leo3_inst_data["LEO3PROV_PC_NI"]
+            if 'LEO3PROV_PC_S' in raw_leo3_inst_data: leo3["inst_prov_pc_s"] = raw_leo3_inst_data["LEO3PROV_PC_S"]
+            if 'LEO3PROV_PC_W' in raw_leo3_inst_data: leo3["inst_prov_pc_w"] = raw_leo3_inst_data["LEO3PROV_PC_W"]
+            if 'LEO3PROV_PC_NW' in raw_leo3_inst_data: leo3["inst_prov_pc_nw"] = raw_leo3_inst_data["LEO3PROV_PC_NW"]
+            if 'LEO3PROV_PC_NE' in raw_leo3_inst_data: leo3["inst_prov_pc_ne"] = raw_leo3_inst_data["LEO3PROV_PC_NE"]
+            if 'LEO3PROV_PC_EM' in raw_leo3_inst_data: leo3["inst_prov_pc_em"] = raw_leo3_inst_data["LEO3PROV_PC_EM"]
+            if 'LEO3PROV_PC_WM' in raw_leo3_inst_data: leo3["inst_prov_pc_wm"] = raw_leo3_inst_data["LEO3PROV_PC_WM"]
+            if 'LEO3PROV_PC_EE' in raw_leo3_inst_data: leo3["inst_prov_pc_ee"] = raw_leo3_inst_data["LEO3PROV_PC_EE"]
+            if 'LEO3PROV_PC_SE' in raw_leo3_inst_data: leo3["inst_prov_pc_se"] = raw_leo3_inst_data["LEO3PROV_PC_SE"]
+            if 'LEO3PROV_PC_SW' in raw_leo3_inst_data: leo3["inst_prov_pc_sw"] = raw_leo3_inst_data["LEO3PROV_PC_SW"]
+            if 'LEO3PROV_PC_YH' in raw_leo3_inst_data: leo3["inst_prov_pc_yh"] = raw_leo3_inst_data["LEO3PROV_PC_YH"]
+            if 'LEO3PROV_PC_LN' in raw_leo3_inst_data: leo3["inst_prov_pc_lo"] = raw_leo3_inst_data["LEO3PROV_PC_LN"]
+            if 'LEO3PROV_PC_ED' in raw_leo3_inst_data: leo3["inst_prov_pc_ed"] = raw_leo3_inst_data["LEO3PROV_PC_ED"]
+            if 'LEO3PROV_PC_GL' in raw_leo3_inst_data: leo3["inst_prov_pc_gl"] = raw_leo3_inst_data["LEO3PROV_PC_GL"]
+            if 'LEO3PROV_PC_CF' in raw_leo3_inst_data: leo3["inst_prov_pc_cf"] = raw_leo3_inst_data["LEO3PROV_PC_CF"]
 
-            if leo3["agg"] is None or leo3["agg"] == "":
+            if 'agg' in leo3 and (leo3["agg"] is None or leo3["agg"] == ""):
                 unavail_text_english, unavail_text_welsh = get_earnings_unavail_text("institution", "leo", leo3["unavail_reason"])
                 
             leo3["unavail_text_english"] = unavail_text_english
@@ -469,32 +469,32 @@ def get_leo3_inst_json(raw_leo3_inst_data):
                 unavail_text_english = ""
                 unavail_text_welsh = ""
                 leo3 = {}
-                leo3["unavail_reason"] = elem["LEO3UNAVAILREASON"]
-                leo3["pop"] = elem["LEO3POP"]
-                leo3["agg"] = elem["LEO3AGG"]
-                leo3["subject"] = get_subject(elem["LEO3SBJ"])
-                leo3["lq"] = elem["LEO3INSTLQ"]
-                leo3["med"] = elem["LEO3INSTMED"]
-                leo3["uq"] = elem["LEO3INSTUQ"]
-                leo3["inst_prov_pc_uk"] = elem["LEO3PROV_PC_UK"]
-                leo3["inst_prov_pc_e"] = elem["LEO3PROV_PC_E"]
-                leo3["inst_prov_pc_ni"] = elem["LEO3PROV_PC_NI"]
-                leo3["inst_prov_pc_s"] = elem["LEO3PROV_PC_S"]
-                leo3["inst_prov_pc_w"] = elem["LEO3PROV_PC_W"]
-                leo3["inst_prov_pc_nw"] = elem["LEO3PROV_PC_NW"]
-                leo3["inst_prov_pc_ne"] = elem["LEO3PROV_PC_NE"]
-                leo3["inst_prov_pc_em"] = elem["LEO3PROV_PC_EM"]
-                leo3["inst_prov_pc_wm"] = elem["LEO3PROV_PC_WM"]
-                leo3["inst_prov_pc_ee"] = elem["LEO3PROV_PC_EE"]
-                leo3["inst_prov_pc_se"] = elem["LEO3PROV_PC_SE"]
-                leo3["inst_prov_pc_sw"] = elem["LEO3PROV_PC_SW"]
-                leo3["inst_prov_pc_yh"] = elem["LEO3PROV_PC_YH"]
-                leo3["inst_prov_pc_lo"] = elem["LEO3PROV_PC_LN"]
-                leo3["inst_prov_pc_ed"] = elem["LEO3PROV_PC_ED"]
-                leo3["inst_prov_pc_gl"] = elem["LEO3PROV_PC_GL"]
-                leo3["inst_prov_pc_cf"] = elem["LEO3PROV_PC_CF"]
+                if 'LEO3UNAVAILREASON' in elem: leo3["unavail_reason"] = elem["LEO3UNAVAILREASON"]
+                if 'LEO3POP' in elem: leo3["pop"] = elem["LEO3POP"]
+                if 'LEO3AGG' in elem: leo3["agg"] = elem["LEO3AGG"]
+                if 'LEO3SBJ' in elem: leo3["subject"] = get_subject(elem["LEO3SBJ"])
+                if 'LEO3INSTLQ' in elem: leo3["lq"] = elem["LEO3INSTLQ"]
+                if 'LEO3INSTMED' in elem: leo3["med"] = elem["LEO3INSTMED"]
+                if 'LEO3INSTUQ' in elem: leo3["uq"] = elem["LEO3INSTUQ"]
+                if 'LEO3PROV_PC_UK' in elem: leo3["inst_prov_pc_uk"] = elem["LEO3PROV_PC_UK"]
+                if 'LEO3PROV_PC_E' in elem: leo3["inst_prov_pc_e"] = elem["LEO3PROV_PC_E"]
+                if 'LEO3PROV_PC_NI' in elem: leo3["inst_prov_pc_ni"] = elem["LEO3PROV_PC_NI"]
+                if 'LEO3PROV_PC_S' in elem: leo3["inst_prov_pc_s"] = elem["LEO3PROV_PC_S"]
+                if 'LEO3PROV_PC_W' in elem: leo3["inst_prov_pc_w"] = elem["LEO3PROV_PC_W"]
+                if 'LEO3PROV_PC_NW' in elem: leo3["inst_prov_pc_nw"] = elem["LEO3PROV_PC_NW"]
+                if 'LEO3PROV_PC_NE' in elem: leo3["inst_prov_pc_ne"] = elem["LEO3PROV_PC_NE"]
+                if 'LEO3PROV_PC_EM' in elem: leo3["inst_prov_pc_em"] = elem["LEO3PROV_PC_EM"]
+                if 'LEO3PROV_PC_WM' in elem: leo3["inst_prov_pc_wm"] = elem["LEO3PROV_PC_WM"]
+                if 'LEO3PROV_PC_EE' in elem: leo3["inst_prov_pc_ee"] = elem["LEO3PROV_PC_EE"]
+                if 'LEO3PROV_PC_SE' in elem: leo3["inst_prov_pc_se"] = elem["LEO3PROV_PC_SE"]
+                if 'LEO3PROV_PC_SW' in elem: leo3["inst_prov_pc_sw"] = elem["LEO3PROV_PC_SW"]
+                if 'LEO3PROV_PC_YH' in elem: leo3["inst_prov_pc_yh"] = elem["LEO3PROV_PC_YH"]
+                if 'LEO3PROV_PC_LN' in elem: leo3["inst_prov_pc_lo"] = elem["LEO3PROV_PC_LN"]
+                if 'LEO3PROV_PC_ED' in elem: leo3["inst_prov_pc_ed"] = elem["LEO3PROV_PC_ED"]
+                if 'LEO3PROV_PC_GL' in elem: leo3["inst_prov_pc_gl"] = elem["LEO3PROV_PC_GL"]
+                if 'LEO3PROV_PC_CF' in elem: leo3["inst_prov_pc_cf"] = elem["LEO3PROV_PC_CF"]
 
-                if leo3["agg"] is None or leo3["agg"] == "":
+                if 'agg' in leo3 and (leo3["agg"] is None or leo3["agg"] == ""):
                     unavail_text_english, unavail_text_welsh = get_earnings_unavail_text("institution", "leo", leo3["unavail_reason"])
                     
                 leo3["unavail_text_english"] = unavail_text_english
@@ -521,32 +521,32 @@ def get_leo5_inst_json(raw_leo5_inst_data):
             unavail_text_english = ""
             unavail_text_welsh = ""
             leo5 = {}
-            leo5["unavail_reason"] = raw_leo5_inst_data["LEO5UNAVAILREASON"]
-            leo5["pop"] = raw_leo5_inst_data["LEO5POP"]
-            leo5["agg"] = raw_leo5_inst_data["LEO5AGG"]
-            leo5["subject"] = get_subject(raw_leo5_inst_data["LEO5SBJ"])
-            leo5["lq"] = raw_leo5_inst_data["LEO5INSTLQ"]
-            leo5["med"] = raw_leo5_inst_data["LEO5INSTMED"]
-            leo5["uq"] = raw_leo5_inst_data["LEO5INSTUQ"]
-            leo5["inst_prov_pc_uk"] = raw_leo5_inst_data["LEO5PROV_PC_UK"]
-            leo5["inst_prov_pc_e"] = raw_leo5_inst_data["LEO5PROV_PC_E"]
-            leo5["inst_prov_pc_ni"] = raw_leo5_inst_data["LEO5PROV_PC_NI"]
-            leo5["inst_prov_pc_s"] = raw_leo5_inst_data["LEO5PROV_PC_S"]
-            leo5["inst_prov_pc_w"] = raw_leo5_inst_data["LEO5PROV_PC_W"]
-            leo5["inst_prov_pc_nw"] = raw_leo5_inst_data["LEO5PROV_PC_NW"]
-            leo5["inst_prov_pc_ne"] = raw_leo5_inst_data["LEO5PROV_PC_NE"]
-            leo5["inst_prov_pc_em"] = raw_leo5_inst_data["LEO5PROV_PC_EM"]
-            leo5["inst_prov_pc_wm"] = raw_leo5_inst_data["LEO5PROV_PC_WM"]
-            leo5["inst_prov_pc_ee"] = raw_leo5_inst_data["LEO5PROV_PC_EE"]
-            leo5["inst_prov_pc_se"] = raw_leo5_inst_data["LEO5PROV_PC_SE"]
-            leo5["inst_prov_pc_sw"] = raw_leo5_inst_data["LEO5PROV_PC_SW"]
-            leo5["inst_prov_pc_yh"] = raw_leo5_inst_data["LEO5PROV_PC_YH"]
-            leo5["inst_prov_pc_lo"] = raw_leo5_inst_data["LEO5PROV_PC_LN"]
-            leo5["inst_prov_pc_ed"] = raw_leo5_inst_data["LEO5PROV_PC_ED"]
-            leo5["inst_prov_pc_gl"] = raw_leo5_inst_data["LEO5PROV_PC_GL"]
-            leo5["inst_prov_pc_cf"] = raw_leo5_inst_data["LEO5PROV_PC_CF"]
+            if 'LEO5UNAVAILREASON' in raw_leo5_inst_data: leo5["unavail_reason"] = raw_leo5_inst_data["LEO5UNAVAILREASON"]
+            if 'LEO5POP' in raw_leo5_inst_data: leo5["pop"] = raw_leo5_inst_data["LEO5POP"]
+            if 'LEO5AGG' in raw_leo5_inst_data: leo5["agg"] = raw_leo5_inst_data["LEO5AGG"]
+            if 'LEO5SBJ' in raw_leo5_inst_data: leo5["subject"] = get_subject(raw_leo5_inst_data["LEO5SBJ"])
+            if 'LEO5INSTLQ' in raw_leo5_inst_data: leo5["lq"] = raw_leo5_inst_data["LEO5INSTLQ"]
+            if 'LEO5INSTMED' in raw_leo5_inst_data: leo5["med"] = raw_leo5_inst_data["LEO5INSTMED"]
+            if 'LEO5INSTUQ' in raw_leo5_inst_data: leo5["uq"] = raw_leo5_inst_data["LEO5INSTUQ"]
+            if 'LEO5PROV_PC_UK' in raw_leo5_inst_data: leo5["inst_prov_pc_uk"] = raw_leo5_inst_data["LEO5PROV_PC_UK"]
+            if 'LEO5PROV_PC_E' in raw_leo5_inst_data: leo5["inst_prov_pc_e"] = raw_leo5_inst_data["LEO5PROV_PC_E"]
+            if 'LEO5PROV_PC_NI' in raw_leo5_inst_data: leo5["inst_prov_pc_ni"] = raw_leo5_inst_data["LEO5PROV_PC_NI"]
+            if 'LEO5PROV_PC_S' in raw_leo5_inst_data: leo5["inst_prov_pc_s"] = raw_leo5_inst_data["LEO5PROV_PC_S"]
+            if 'LEO5PROV_PC_W' in raw_leo5_inst_data: leo5["inst_prov_pc_w"] = raw_leo5_inst_data["LEO5PROV_PC_W"]
+            if 'LEO5PROV_PC_NW' in raw_leo5_inst_data: leo5["inst_prov_pc_nw"] = raw_leo5_inst_data["LEO5PROV_PC_NW"]
+            if 'LEO5PROV_PC_NE' in raw_leo5_inst_data: leo5["inst_prov_pc_ne"] = raw_leo5_inst_data["LEO5PROV_PC_NE"]
+            if 'LEO5PROV_PC_EM' in raw_leo5_inst_data: leo5["inst_prov_pc_em"] = raw_leo5_inst_data["LEO5PROV_PC_EM"]
+            if 'LEO5PROV_PC_WM' in raw_leo5_inst_data: leo5["inst_prov_pc_wm"] = raw_leo5_inst_data["LEO5PROV_PC_WM"]
+            if 'LEO5PROV_PC_EE' in raw_leo5_inst_data: leo5["inst_prov_pc_ee"] = raw_leo5_inst_data["LEO5PROV_PC_EE"]
+            if 'LEO5PROV_PC_SE' in raw_leo5_inst_data: leo5["inst_prov_pc_se"] = raw_leo5_inst_data["LEO5PROV_PC_SE"]
+            if 'LEO5PROV_PC_SW' in raw_leo5_inst_data: leo5["inst_prov_pc_sw"] = raw_leo5_inst_data["LEO5PROV_PC_SW"]
+            if 'LEO5PROV_PC_YH' in raw_leo5_inst_data: leo5["inst_prov_pc_yh"] = raw_leo5_inst_data["LEO5PROV_PC_YH"]
+            if 'LEO5PROV_PC_LN' in raw_leo5_inst_data: leo5["inst_prov_pc_lo"] = raw_leo5_inst_data["LEO5PROV_PC_LN"]
+            if 'LEO5PROV_PC_ED' in raw_leo5_inst_data: leo5["inst_prov_pc_ed"] = raw_leo5_inst_data["LEO5PROV_PC_ED"]
+            if 'LEO5PROV_PC_GL' in raw_leo5_inst_data: leo5["inst_prov_pc_gl"] = raw_leo5_inst_data["LEO5PROV_PC_GL"]
+            if 'LEO5PROV_PC_CF' in raw_leo5_inst_data: leo5["inst_prov_pc_cf"] = raw_leo5_inst_data["LEO5PROV_PC_CF"]
 
-            if leo5["agg"] is None or leo5["agg"] == "":
+            if 'agg' in leo5 and (leo5["agg"] is None or leo5["agg"] == ""):
                 unavail_text_english, unavail_text_welsh = get_earnings_unavail_text("institution", "leo", leo5["unavail_reason"])
                 
             leo5["unavail_text_english"] = unavail_text_english
@@ -557,32 +557,32 @@ def get_leo5_inst_json(raw_leo5_inst_data):
                 unavail_text_english = ""
                 unavail_text_welsh = ""
                 leo5 = {}
-                leo5["unavail_reason"] = elem["LEO5UNAVAILREASON"]
-                leo5["pop"] = elem["LEO5POP"]
-                leo5["agg"] = elem["LEO5AGG"]
-                leo5["subject"] = get_subject(elem["LEO5SBJ"])
-                leo5["lq"] = elem["LEO5INSTLQ"]
-                leo5["med"] = elem["LEO5INSTMED"]
-                leo5["uq"] = elem["LEO5INSTUQ"]
-                leo5["inst_prov_pc_uk"] = elem["LEO5PROV_PC_UK"]
-                leo5["inst_prov_pc_e"] = elem["LEO5PROV_PC_E"]
-                leo5["inst_prov_pc_ni"] = elem["LEO5PROV_PC_NI"]
-                leo5["inst_prov_pc_s"] = elem["LEO5PROV_PC_S"]
-                leo5["inst_prov_pc_w"] = elem["LEO5PROV_PC_W"]
-                leo5["inst_prov_pc_nw"] = elem["LEO5PROV_PC_NW"]
-                leo5["inst_prov_pc_ne"] = elem["LEO5PROV_PC_NE"]
-                leo5["inst_prov_pc_em"] = elem["LEO5PROV_PC_EM"]
-                leo5["inst_prov_pc_wm"] = elem["LEO5PROV_PC_WM"]
-                leo5["inst_prov_pc_ee"] = elem["LEO5PROV_PC_EE"]
-                leo5["inst_prov_pc_se"] = elem["LEO5PROV_PC_SE"]
-                leo5["inst_prov_pc_sw"] = elem["LEO5PROV_PC_SW"]
-                leo5["inst_prov_pc_yh"] = elem["LEO5PROV_PC_YH"]
-                leo5["inst_prov_pc_lo"] = elem["LEO5PROV_PC_LN"]
-                leo5["inst_prov_pc_ed"] = elem["LEO5PROV_PC_ED"]
-                leo5["inst_prov_pc_gl"] = elem["LEO5PROV_PC_GL"]
-                leo5["inst_prov_pc_cf"] = elem["LEO5PROV_PC_CF"]
+                if 'LEO5UNAVAILREASON' in elem: leo5["unavail_reason"] = elem["LEO5UNAVAILREASON"]
+                if 'LEO5POP' in elem: leo5["pop"] = elem["LEO5POP"]
+                if 'LEO5AGG' in elem: leo5["agg"] = elem["LEO5AGG"]
+                if 'LEO5SBJ' in elem: leo5["subject"] = get_subject(elem["LEO5SBJ"])
+                if 'LEO5INSTLQ' in elem: leo5["lq"] = elem["LEO5INSTLQ"]
+                if 'LEO5INSTMED' in elem: leo5["med"] = elem["LEO5INSTMED"]
+                if 'LEO5INSTUQ' in elem: leo5["uq"] = elem["LEO5INSTUQ"]
+                if 'LEO5PROV_PC_UK' in elem: leo5["inst_prov_pc_uk"] = elem["LEO5PROV_PC_UK"]
+                if 'LEO5PROV_PC_E' in elem: leo5["inst_prov_pc_e"] = elem["LEO5PROV_PC_E"]
+                if 'LEO5PROV_PC_NI' in elem: leo5["inst_prov_pc_ni"] = elem["LEO5PROV_PC_NI"]
+                if 'LEO5PROV_PC_S' in elem: leo5["inst_prov_pc_s"] = elem["LEO5PROV_PC_S"]
+                if 'LEO5PROV_PC_W' in elem: leo5["inst_prov_pc_w"] = elem["LEO5PROV_PC_W"]
+                if 'LEO5PROV_PC_NW' in elem: leo5["inst_prov_pc_nw"] = elem["LEO5PROV_PC_NW"]
+                if 'LEO5PROV_PC_NE' in elem: leo5["inst_prov_pc_ne"] = elem["LEO5PROV_PC_NE"]
+                if 'LEO5PROV_PC_EM' in elem: leo5["inst_prov_pc_em"] = elem["LEO5PROV_PC_EM"]
+                if 'LEO5PROV_PC_WM' in elem: leo5["inst_prov_pc_wm"] = elem["LEO5PROV_PC_WM"]
+                if 'LEO5PROV_PC_EE' in elem: leo5["inst_prov_pc_ee"] = elem["LEO5PROV_PC_EE"]
+                if 'LEO5PROV_PC_SE' in elem: leo5["inst_prov_pc_se"] = elem["LEO5PROV_PC_SE"]
+                if 'LEO5PROV_PC_SW' in elem: leo5["inst_prov_pc_sw"] = elem["LEO5PROV_PC_SW"]
+                if 'LEO5PROV_PC_YH' in elem: leo5["inst_prov_pc_yh"] = elem["LEO5PROV_PC_YH"]
+                if 'LEO5PROV_PC_LN' in elem: leo5["inst_prov_pc_lo"] = elem["LEO5PROV_PC_LN"]
+                if 'LEO5PROV_PC_ED' in elem: leo5["inst_prov_pc_ed"] = elem["LEO5PROV_PC_ED"]
+                if 'LEO5PROV_PC_GL' in elem: leo5["inst_prov_pc_gl"] = elem["LEO5PROV_PC_GL"]
+                if 'LEO5PROV_PC_CF' in elem: leo5["inst_prov_pc_cf"] = elem["LEO5PROV_PC_CF"]
 
-                if leo5["agg"] is None or leo5["agg"] == "":
+                if 'agg' in leo5 and (leo5["agg"] is None or leo5["agg"] == ""):
                     unavail_text_english, unavail_text_welsh = get_earnings_unavail_text("institution", "leo", leo5["unavail_reason"])
                     
                 leo5["unavail_text_english"] = unavail_text_english
@@ -609,13 +609,13 @@ def get_go_voice_work_json(raw_go_voice_work_data):
             unavail_text_english = ""
             unavail_text_welsh = ""
             go_voice_work = {}
-            go_voice_work["go_work_unavail_reason"] = raw_go_voice_work_data["GOWORKUNAVAILREASON"]
-            go_voice_work["go_work_pop"] = raw_go_voice_work_data["GOWORKPOP"]
-            go_voice_work["go_work_resp_rate"] = raw_go_voice_work_data["GOWORKRESP_RATE"]
-            go_voice_work["go_work_agg"] = raw_go_voice_work_data["GOWORKAGG"]
-            go_voice_work["go_work_mean"] = raw_go_voice_work_data["GOWORKMEAN"]
-            go_voice_work["go_work_skills"] = raw_go_voice_work_data["GOWORKSKILLS"]
-            go_voice_work["go_work_on_track"] = raw_go_voice_work_data["GOWORKONTRACK"]
+            if 'GOWORKUNAVAILREASON' in raw_go_voice_work_data: go_voice_work["go_work_unavail_reason"] = raw_go_voice_work_data["GOWORKUNAVAILREASON"]
+            if 'GOWORKPOP' in raw_go_voice_work_data: go_voice_work["go_work_pop"] = raw_go_voice_work_data["GOWORKPOP"]
+            if 'GOWORKRESP_RATE' in raw_go_voice_work_data: go_voice_work["go_work_resp_rate"] = raw_go_voice_work_data["GOWORKRESP_RATE"]
+            if 'GOWORKAGG' in raw_go_voice_work_data: go_voice_work["go_work_agg"] = raw_go_voice_work_data["GOWORKAGG"]
+            if 'GOWORKMEAN' in raw_go_voice_work_data: go_voice_work["go_work_mean"] = raw_go_voice_work_data["GOWORKMEAN"]
+            if 'GOWORKSKILLS' in raw_go_voice_work_data: go_voice_work["go_work_skills"] = raw_go_voice_work_data["GOWORKSKILLS"]
+            if 'GOWORKONTRACK' in raw_go_voice_work_data: go_voice_work["go_work_on_track"] = raw_go_voice_work_data["GOWORKONTRACK"]
             #go_voice_work["go_work_sbj"] = raw_go_voice_work_data["GOWORKSBJ"] # missing from latest HESA schema.
 
             # For non-salary nodes, I believe unavail messages are handled in Wagtail-CMS in models.py.
@@ -630,13 +630,13 @@ def get_go_voice_work_json(raw_go_voice_work_data):
                 unavail_text_english = ""
                 unavail_text_welsh = ""
                 go_voice_work = {}
-                go_voice_work["go_work_unavail_reason"] = elem["GOWORKUNAVAILREASON"]
-                go_voice_work["go_work_agg"] = elem["GOWORKAGG"]
-                go_voice_work["go_work_skills"] = elem["GOWORKSKILLS"]
-                go_voice_work["go_work_mean"] = elem["GOWORKMEAN"]
-                go_voice_work["go_work_on_track"] = elem["GOWORKONTRACK"]
-                go_voice_work["go_work_pop"] = elem["GOWORKPOP"]
-                go_voice_work["go_work_resp_rate"] = elem["GOWORKRESP_RATE"]
+                if 'GOWORKUNAVAILREASON' in elem: go_voice_work["go_work_unavail_reason"] = elem["GOWORKUNAVAILREASON"]
+                if 'GOWORKAGG' in elem: go_voice_work["go_work_agg"] = elem["GOWORKAGG"]
+                if 'GOWORKSKILLS' in elem: go_voice_work["go_work_skills"] = elem["GOWORKSKILLS"]
+                if 'GOWORKMEAN' in elem: go_voice_work["go_work_mean"] = elem["GOWORKMEAN"]
+                if 'GOWORKONTRACK' in elem: go_voice_work["go_work_on_track"] = elem["GOWORKONTRACK"]
+                if 'GOWORKPOP' in elem: go_voice_work["go_work_pop"] = elem["GOWORKPOP"]
+                if 'GOWORKRESP_RATE' in elem: go_voice_work["go_work_resp_rate"] = elem["GOWORKRESP_RATE"]
                 #go_voice_work["go_work_sbj"] = raw_go_voice_work_data["GOWORKSBJ"] # missing from latest HESA schema.
 
                 # For non-salary nodes, I believe unavail messages are handled in Wagtail-CMS in models.py.
@@ -756,39 +756,39 @@ def get_go_sector_json(go_salary_sector_xml_array):
     if go_salary_sector_xml_array:
         for elem in go_salary_sector_xml_array:
             go_salary = {}
-            go_salary["subject"] = get_subject(elem["GOSECSBJ"])
-            go_salary["mode"] = elem["KISMODE"]
-            go_salary["level"] = elem["KISLEVEL"]
+            if 'GOSECSBJ' in elem: go_salary["subject"] = get_subject(elem["GOSECSBJ"])
+            if 'KISMODE' in elem: go_salary["mode"] = elem["KISMODE"]
+            if 'KISLEVEL' in elem: go_salary["level"] = elem["KISLEVEL"]
 
-            go_salary["lq_uk"] = elem["GOSECLQ_UK"]
-            go_salary["med_uk"] = elem["GOSECMED_UK"]
-            go_salary["uq_uk"] = elem["GOSECUQ_UK"]
-            go_salary["pop_uk"] = elem["GOSECPOP_UK"]
-            go_salary["resp_uk"] = elem["GOSECRESP_UK"]
+            if 'GOSECLQ_UK' in elem: go_salary["lq_uk"] = elem["GOSECLQ_UK"]
+            if 'GOSECMED_UK' in elem: go_salary["med_uk"] = elem["GOSECMED_UK"]
+            if 'GOSECUQ_UK' in elem: go_salary["uq_uk"] = elem["GOSECUQ_UK"]
+            if 'GOSECPOP_UK' in elem: go_salary["pop_uk"] = elem["GOSECPOP_UK"]
+            if 'GOSECRESP_UK' in elem: go_salary["resp_uk"] = elem["GOSECRESP_UK"]
 
-            go_salary["lq_e"] = elem["GOSECLQ_E"]
-            go_salary["med_e"] = elem["GOSECMED_E"]
-            go_salary["uq_e"] = elem["GOSECUQ_E"]
-            go_salary["pop_e"] = elem["GOSECPOP_E"]
-            go_salary["resp_e"] = elem["GOSECRESP_E"]
+            if 'GOSECLQ_E' in elem: go_salary["lq_e"] = elem["GOSECLQ_E"]
+            if 'GOSECMED_E' in elem: go_salary["med_e"] = elem["GOSECMED_E"]
+            if 'GOSECUQ_E' in elem: go_salary["uq_e"] = elem["GOSECUQ_E"]
+            if 'GOSECPOP_E' in elem: go_salary["pop_e"] = elem["GOSECPOP_E"]
+            if 'GOSECRESP_E' in elem: go_salary["resp_e"] = elem["GOSECRESP_E"]
 
-            go_salary["lq_s"] = elem["GOSECLQ_S"]
-            go_salary["med_s"] = elem["GOSECMED_S"]
-            go_salary["uq_s"] = elem["GOSECUQ_S"]
-            go_salary["pop_s"] = elem["GOSECPOP_S"]
-            go_salary["resp_s"] = elem["GOSECRESP_S"]
+            if 'GOSECLQ_S' in elem: go_salary["lq_s"] = elem["GOSECLQ_S"]
+            if 'GOSECMED_S' in elem: go_salary["med_s"] = elem["GOSECMED_S"]
+            if 'GOSECUQ_S' in elem: go_salary["uq_s"] = elem["GOSECUQ_S"]
+            if 'GOSECPOP_S' in elem: go_salary["pop_s"] = elem["GOSECPOP_S"]
+            if 'GOSECRESP_S' in elem: go_salary["resp_s"] = elem["GOSECRESP_S"]
 
-            go_salary["lq_w"] = elem["GOSECLQ_W"]
-            go_salary["med_w"] = elem["GOSECMED_W"]
-            go_salary["uq_w"] = elem["GOSECUQ_W"]
-            go_salary["pop_w"] = elem["GOSECPOP_W"]
-            go_salary["resp_w"] = elem["GOSECRESP_W"]
+            if 'GOSECLQ_W' in elem: go_salary["lq_w"] = elem["GOSECLQ_W"]
+            if 'GOSECMED_W' in elem: go_salary["med_w"] = elem["GOSECMED_W"]
+            if 'GOSECUQ_W' in elem: go_salary["uq_w"] = elem["GOSECUQ_W"]
+            if 'GOSECPOP_W' in elem: go_salary["pop_w"] = elem["GOSECPOP_W"]
+            if 'GOSECRESP_W' in elem: go_salary["resp_w"] = elem["GOSECRESP_W"]
 
-            go_salary["lq_ni"] = elem["GOSECLQ_NI"]
-            go_salary["med_ni"] = elem["GOSECMED_NI"]
-            go_salary["uq_ni"] = elem["GOSECUQ_NI"]
-            go_salary["pop_ni"] = elem["GOSECPOP_NI"]
-            go_salary["resp_ni"] = elem["GOSECRESP_NI"]
+            if 'GOSECLQ_NI' in elem: go_salary["lq_ni"] = elem["GOSECLQ_NI"]
+            if 'GOSECMED_NI' in elem: go_salary["med_ni"] = elem["GOSECMED_NI"]
+            if 'GOSECUQ_NI' in elem: go_salary["uq_ni"] = elem["GOSECUQ_NI"]
+            if 'GOSECPOP_NI' in elem: go_salary["pop_ni"] = elem["GOSECPOP_NI"]
+            if 'GOSECRESP_NI' in elem: go_salary["resp_ni"] = elem["GOSECRESP_NI"]
 
             go_salary["unavail_text_region_not_exists_english"], go_salary["unavail_text_region_not_exists_welsh"] =\
                         get_earnings_unavail_text("sector", "go", "region_not_exists")
@@ -804,89 +804,89 @@ def get_leo3_sector_json(leo3_sector_xml_array):
     if leo3_sector_xml_array:
         for elem in leo3_sector_xml_array:
             leo3 = {}
-            leo3["subject"] = get_subject(elem["LEO3SECSBJ"])
-            leo3["mode"] = elem["KISMODE"]
-            leo3["level"] = elem["KISLEVEL"]
+            if 'LEO3SECSBJ' in elem: leo3["subject"] = get_subject(elem["LEO3SECSBJ"])
+            if 'KISMODE' in elem: leo3["mode"] = elem["KISMODE"]
+            if 'KISLEVEL' in elem: leo3["level"] = elem["KISLEVEL"]
 
-            leo3["lq_uk"] = elem["LEO3LQ_UK"]
-            leo3["med_uk"] = elem["LEO3MED_UK"]
-            leo3["uq_uk"] = elem["LEO3UQ_UK"]
-            leo3["pop_uk"] = elem["LEO3SECPOP_UK"]
+            if 'LEO3LQ_UK' in elem: leo3["lq_uk"] = elem["LEO3LQ_UK"]
+            if 'LEO3MED_UK' in elem: leo3["med_uk"] = elem["LEO3MED_UK"]
+            if 'LEO3UQ_UK' in elem: leo3["uq_uk"] = elem["LEO3UQ_UK"]
+            if 'LEO3SECPOP_UK' in elem: leo3["pop_uk"] = elem["LEO3SECPOP_UK"]
 
-            leo3["lq_e"] = elem["LEO3LQ_E"]
-            leo3["med_e"] = elem["LEO3MED_E"]
-            leo3["uq_e"] = elem["LEO3UQ_E"]
-            leo3["pop_e"] = elem["LEO3SECPOP_E"]
+            if 'LEO3LQ_E' in elem: leo3["lq_e"] = elem["LEO3LQ_E"]
+            if 'LEO3MED_E' in elem: leo3["med_e"] = elem["LEO3MED_E"]
+            if 'LEO3UQ_E' in elem: leo3["uq_e"] = elem["LEO3UQ_E"]
+            if 'LEO3SECPOP_E' in elem: leo3["pop_e"] = elem["LEO3SECPOP_E"]
 
-            leo3["lq_s"] = elem["LEO3LQ_S"]
-            leo3["med_s"] = elem["LEO3MED_S"]
-            leo3["uq_s"] = elem["LEO3UQ_S"]
-            leo3["pop_s"] = elem["LEO3SECPOP_S"]
+            if 'LEO3LQ_S' in elem: leo3["lq_s"] = elem["LEO3LQ_S"]
+            if 'LEO3MED_S' in elem: leo3["med_s"] = elem["LEO3MED_S"]
+            if 'LEO3UQ_S' in elem: leo3["uq_s"] = elem["LEO3UQ_S"]
+            if 'LEO3SECPOP_S' in elem: leo3["pop_s"] = elem["LEO3SECPOP_S"]
 
-            leo3["lq_w"] = elem["LEO3LQ_W"]
-            leo3["med_w"] = elem["LEO3MED_W"]
-            leo3["uq_w"] = elem["LEO3UQ_W"]
-            leo3["pop_w"] = elem["LEO3SECPOP_W"]
+            if 'LEO3LQ_W' in elem: leo3["lq_w"] = elem["LEO3LQ_W"]
+            if 'LEO3MED_W' in elem: leo3["med_w"] = elem["LEO3MED_W"]
+            if 'LEO3UQ_W' in elem: leo3["uq_w"] = elem["LEO3UQ_W"]
+            if 'LEO3SECPOP_W' in elem: leo3["pop_w"] = elem["LEO3SECPOP_W"]
 
-            leo3["lq_nw"] = elem["LEO3LQ_NW"]
-            leo3["med_nw"] = elem["LEO3MED_NW"]
-            leo3["uq_nw"] = elem["LEO3UQ_NW"]
-            leo3["pop_nw"] = elem["LEO3SECPOP_NW"]
+            if 'LEO3LQ_NW' in elem: leo3["lq_nw"] = elem["LEO3LQ_NW"]
+            if 'LEO3MED_NW' in elem: leo3["med_nw"] = elem["LEO3MED_NW"]
+            if 'LEO3UQ_NW' in elem: leo3["uq_nw"] = elem["LEO3UQ_NW"]
+            if 'LEO3SECPOP_NW' in elem: leo3["pop_nw"] = elem["LEO3SECPOP_NW"]
 
-            leo3["lq_ne"] = elem["LEO3LQ_NE"]
-            leo3["med_ne"] = elem["LEO3MED_NE"]
-            leo3["uq_ne"] = elem["LEO3UQ_NE"]
-            leo3["pop_ne"] = elem["LEO3SECPOP_NE"]
+            if 'LEO3LQ_NE' in elem: leo3["lq_ne"] = elem["LEO3LQ_NE"]
+            if 'LEO3MED_NE' in elem: leo3["med_ne"] = elem["LEO3MED_NE"]
+            if 'LEO3UQ_NE' in elem: leo3["uq_ne"] = elem["LEO3UQ_NE"]
+            if 'LEO3SECPOP_NE' in elem: leo3["pop_ne"] = elem["LEO3SECPOP_NE"]
 
-            leo3["lq_em"] = elem["LEO3LQ_EM"]
-            leo3["med_em"] = elem["LEO3MED_EM"]
-            leo3["uq_em"] = elem["LEO3UQ_EM"]
-            leo3["pop_em"] = elem["LEO3SECPOP_EM"]
+            if 'LEO3LQ_EM' in elem: leo3["lq_em"] = elem["LEO3LQ_EM"]
+            if 'LEO3MED_EM' in elem: leo3["med_em"] = elem["LEO3MED_EM"]
+            if 'LEO3UQ_EM' in elem: leo3["uq_em"] = elem["LEO3UQ_EM"]
+            if 'LEO3SECPOP_EM' in elem: leo3["pop_em"] = elem["LEO3SECPOP_EM"]
 
-            leo3["lq_wm"] = elem["LEO3LQ_WM"]
-            leo3["med_wm"] = elem["LEO3MED_WM"]
-            leo3["uq_wm"] = elem["LEO3UQ_WM"]
-            leo3["pop_wm"] = elem["LEO3SECPOP_WM"]
+            if 'LEO3LQ_WM' in elem: leo3["lq_wm"] = elem["LEO3LQ_WM"]
+            if 'LEO3MED_WM' in elem: leo3["med_wm"] = elem["LEO3MED_WM"]
+            if 'LEO3UQ_WM' in elem: leo3["uq_wm"] = elem["LEO3UQ_WM"]
+            if 'LEO3SECPOP_WM' in elem: leo3["pop_wm"] = elem["LEO3SECPOP_WM"]
         
-            leo3["lq_ee"] = elem["LEO3LQ_EE"]
-            leo3["med_ee"] = elem["LEO3MED_EE"]
-            leo3["uq_ee"] = elem["LEO3UQ_EE"]
-            leo3["pop_ee"] = elem["LEO3SECPOP_EE"]
+            if 'LEO3LQ_EE' in elem: leo3["lq_ee"] = elem["LEO3LQ_EE"]
+            if 'LEO3MED_EE' in elem: leo3["med_ee"] = elem["LEO3MED_EE"]
+            if 'LEO3UQ_EE' in elem: leo3["uq_ee"] = elem["LEO3UQ_EE"]
+            if 'LEO3SECPOP_EE' in elem: leo3["pop_ee"] = elem["LEO3SECPOP_EE"]
 
-            leo3["lq_se"] = elem["LEO3LQ_SE"]
-            leo3["med_se"] = elem["LEO3MED_SE"]
-            leo3["uq_se"] = elem["LEO3UQ_SE"]
-            leo3["pop_se"] = elem["LEO3SECPOP_SE"]
+            if 'LEO3LQ_SE' in elem: leo3["lq_se"] = elem["LEO3LQ_SE"]
+            if 'LEO3MED_SE' in elem: leo3["med_se"] = elem["LEO3MED_SE"]
+            if 'LEO3UQ_SE' in elem: leo3["uq_se"] = elem["LEO3UQ_SE"]
+            if 'LEO3SECPOP_SE' in elem: leo3["pop_se"] = elem["LEO3SECPOP_SE"]
 
-            leo3["lq_sw"] = elem["LEO3LQ_SW"]
-            leo3["med_sw"] = elem["LEO3MED_SW"]
-            leo3["uq_sw"] = elem["LEO3UQ_SW"]
-            leo3["pop_sw"] = elem["LEO3SECPOP_SW"]
+            if 'LEO3LQ_SW' in elem: leo3["lq_sw"] = elem["LEO3LQ_SW"]
+            if 'LEO3MED_SW' in elem: leo3["med_sw"] = elem["LEO3MED_SW"]
+            if 'LEO3UQ_SW' in elem: leo3["uq_sw"] = elem["LEO3UQ_SW"]
+            if 'LEO3SECPOP_SW' in elem: leo3["pop_sw"] = elem["LEO3SECPOP_SW"]
 
-            leo3["lq_yh"] = elem["LEO3LQ_YH"]
-            leo3["med_yh"] = elem["LEO3MED_YH"]
-            leo3["uq_yh"] = elem["LEO3UQ_YH"]
-            leo3["pop_yh"] = elem["LEO3SECPOP_YH"]
+            if 'LEO3LQ_YH' in elem: leo3["lq_yh"] = elem["LEO3LQ_YH"]
+            if 'LEO3MED_YH' in elem: leo3["med_yh"] = elem["LEO3MED_YH"]
+            if 'LEO3UQ_YH' in elem: leo3["uq_yh"] = elem["LEO3UQ_YH"]
+            if 'LEO3SECPOP_YH' in elem: leo3["pop_yh"] = elem["LEO3SECPOP_YH"]
 
-            leo3["lq_lo"] = elem["LEO3LQ_LN"]
-            leo3["med_lo"] = elem["LEO3MED_LN"]
-            leo3["uq_lo"] = elem["LEO3UQ_LN"]
-            leo3["pop_lo"] = elem["LEO3SECPOP_LN"]
+            if 'LEO3LQ_LN' in elem: leo3["lq_lo"] = elem["LEO3LQ_LN"]
+            if 'LEO3MED_LN' in elem: leo3["med_lo"] = elem["LEO3MED_LN"]
+            if 'LEO3UQ_LN' in elem: leo3["uq_lo"] = elem["LEO3UQ_LN"]
+            if 'LEO3SECPOP_LN' in elem: leo3["pop_lo"] = elem["LEO3SECPOP_LN"]
 
-            leo3["lq_ed"] = elem["LEO3LQ_ED"]
-            leo3["med_ed"] = elem["LEO3MED_ED"]
-            leo3["uq_ed"] = elem["LEO3UQ_ED"]
-            leo3["pop_ed"] = elem["LEO3SECPOP_ED"]
+            if 'LEO3LQ_ED' in elem: leo3["lq_ed"] = elem["LEO3LQ_ED"]
+            if 'LEO3MED_ED' in elem: leo3["med_ed"] = elem["LEO3MED_ED"]
+            if 'LEO3UQ_ED' in elem: leo3["uq_ed"] = elem["LEO3UQ_ED"]
+            if 'LEO3SECPOP_ED' in elem: leo3["pop_ed"] = elem["LEO3SECPOP_ED"]
 
-            leo3["lq_gl"] = elem["LEO3LQ_GL"]
-            leo3["med_gl"] = elem["LEO3MED_GL"]
-            leo3["uq_gl"] = elem["LEO3UQ_GL"]
-            leo3["pop_gl"] = elem["LEO3SECPOP_GL"]
+            if 'LEO3LQ_GL' in elem: leo3["lq_gl"] = elem["LEO3LQ_GL"]
+            if 'LEO3MED_GL' in elem: leo3["med_gl"] = elem["LEO3MED_GL"]
+            if 'LEO3UQ_GL' in elem: leo3["uq_gl"] = elem["LEO3UQ_GL"]
+            if 'LEO3SECPOP_GL' in elem: leo3["pop_gl"] = elem["LEO3SECPOP_GL"]
 
-            leo3["lq_cf"] = elem["LEO3LQ_CF"]
-            leo3["med_cf"] = elem["LEO3MED_CF"]
-            leo3["uq_cf"] = elem["LEO3UQ_CF"]
-            leo3["pop_cf"] = elem["LEO3SECPOP_CF"]
+            if 'LEO3LQ_CF' in elem: leo3["lq_cf"] = elem["LEO3LQ_CF"]
+            if 'LEO3MED_CF' in elem: leo3["med_cf"] = elem["LEO3MED_CF"]
+            if 'LEO3UQ_CF' in elem: leo3["uq_cf"] = elem["LEO3UQ_CF"]
+            if 'LEO3SECPOP_CF' in elem: leo3["pop_cf"] = elem["LEO3SECPOP_CF"]
 
             leo3["unavail_text_region_not_exists_english"], leo3["unavail_text_region_not_exists_welsh"] =\
                         get_earnings_unavail_text("sector", "leo", "region_not_exists")
@@ -902,89 +902,89 @@ def get_leo5_sector_json(leo5_sector_xml_array):
     if leo5_sector_xml_array:
         for elem in leo5_sector_xml_array:
             leo5 = {}
-            leo5["subject"] = get_subject(elem["LEO5SECSBJ"])
-            leo5["mode"] = elem["KISMODE"]
-            leo5["level"] = elem["KISLEVEL"]
+            if 'LEO5SECSBJ' in elem: leo5["subject"] = get_subject(elem["LEO5SECSBJ"])
+            if 'KISMODE' in elem: leo5["mode"] = elem["KISMODE"]
+            if 'KISLEVEL' in elem: leo5["level"] = elem["KISLEVEL"]
 
-            leo5["lq_uk"] = elem["LEO5LQ_UK"]
-            leo5["med_uk"] = elem["LEO5MED_UK"]
-            leo5["uq_uk"] = elem["LEO5UQ_UK"]
-            leo5["pop_uk"] = elem["LEO5SECPOP_UK"]
+            if 'LEO5LQ_UK' in elem: leo5["lq_uk"] = elem["LEO5LQ_UK"]
+            if 'LEO5MED_UK' in elem: leo5["med_uk"] = elem["LEO5MED_UK"]
+            if 'LEO5UQ_UK' in elem: leo5["uq_uk"] = elem["LEO5UQ_UK"]
+            if 'LEO5SECPOP_UK' in elem: leo5["pop_uk"] = elem["LEO5SECPOP_UK"]
 
-            leo5["lq_e"] = elem["LEO5LQ_E"]
-            leo5["med_e"] = elem["LEO5MED_E"]
-            leo5["uq_e"] = elem["LEO5UQ_E"]
-            leo5["pop_e"] = elem["LEO5SECPOP_E"]
+            if 'LEO5LQ_E' in elem: leo5["lq_e"] = elem["LEO5LQ_E"]
+            if 'LEO5MED_E' in elem: leo5["med_e"] = elem["LEO5MED_E"]
+            if 'LEO5UQ_E' in elem: leo5["uq_e"] = elem["LEO5UQ_E"]
+            if 'LEO5SECPOP_E' in elem: leo5["pop_e"] = elem["LEO5SECPOP_E"]
 
-            leo5["lq_s"] = elem["LEO5LQ_S"]
-            leo5["med_s"] = elem["LEO5MED_S"]
-            leo5["uq_s"] = elem["LEO5UQ_S"]
-            leo5["pop_s"] = elem["LEO5SECPOP_S"]
+            if 'LEO5LQ_S' in elem: leo5["lq_s"] = elem["LEO5LQ_S"]
+            if 'LEO5MED_S' in elem: leo5["med_s"] = elem["LEO5MED_S"]
+            if 'LEO5UQ_S' in elem: leo5["uq_s"] = elem["LEO5UQ_S"]
+            if 'LEO5SECPOP_S' in elem: leo5["pop_s"] = elem["LEO5SECPOP_S"]
 
-            leo5["lq_w"] = elem["LEO5LQ_W"]
-            leo5["med_w"] = elem["LEO5MED_W"]
-            leo5["uq_w"] = elem["LEO5UQ_W"]
-            leo5["pop_w"] = elem["LEO5SECPOP_W"]
+            if 'LEO5LQ_W' in elem: leo5["lq_w"] = elem["LEO5LQ_W"]
+            if 'LEO5MED_W' in elem: leo5["med_w"] = elem["LEO5MED_W"]
+            if 'LEO5UQ_W' in elem: leo5["uq_w"] = elem["LEO5UQ_W"]
+            if 'LEO5SECPOP_W' in elem: leo5["pop_w"] = elem["LEO5SECPOP_W"]
 
-            leo5["lq_nw"] = elem["LEO5LQ_NW"]
-            leo5["med_nw"] = elem["LEO5MED_NW"]
-            leo5["uq_nw"] = elem["LEO5UQ_NW"]
-            leo5["pop_nw"] = elem["LEO5SECPOP_NW"]
+            if 'LEO5LQ_NW' in elem: leo5["lq_nw"] = elem["LEO5LQ_NW"]
+            if 'LEO5MED_NW' in elem: leo5["med_nw"] = elem["LEO5MED_NW"]
+            if 'LEO5UQ_NW' in elem: leo5["uq_nw"] = elem["LEO5UQ_NW"]
+            if 'LEO5SECPOP_NW' in elem: leo5["pop_nw"] = elem["LEO5SECPOP_NW"]
 
-            leo5["lq_ne"] = elem["LEO5LQ_NE"]
-            leo5["med_ne"] = elem["LEO5MED_NE"]
-            leo5["uq_ne"] = elem["LEO5UQ_NE"]
-            leo5["pop_ne"] = elem["LEO5SECPOP_NE"]
+            if 'LEO5LQ_NE' in elem: leo5["lq_ne"] = elem["LEO5LQ_NE"]
+            if 'LEO5MED_NE' in elem: leo5["med_ne"] = elem["LEO5MED_NE"]
+            if 'LEO5UQ_NE' in elem: leo5["uq_ne"] = elem["LEO5UQ_NE"]
+            if 'LEO5SECPOP_NE' in elem: leo5["pop_ne"] = elem["LEO5SECPOP_NE"]
 
-            leo5["lq_em"] = elem["LEO5LQ_EM"]
-            leo5["med_em"] = elem["LEO5MED_EM"]
-            leo5["uq_em"] = elem["LEO5UQ_EM"]
-            leo5["pop_em"] = elem["LEO5SECPOP_EM"]
+            if 'LEO5LQ_EM' in elem: leo5["lq_em"] = elem["LEO5LQ_EM"]
+            if 'LEO5MED_EM' in elem: leo5["med_em"] = elem["LEO5MED_EM"]
+            if 'LEO5UQ_EM' in elem: leo5["uq_em"] = elem["LEO5UQ_EM"]
+            if 'LEO5SECPOP_EM' in elem: leo5["pop_em"] = elem["LEO5SECPOP_EM"]
 
-            leo5["lq_wm"] = elem["LEO5LQ_WM"]
-            leo5["med_wm"] = elem["LEO5MED_WM"]
-            leo5["uq_wm"] = elem["LEO5UQ_WM"]
-            leo5["pop_wm"] = elem["LEO5SECPOP_WM"]
+            if 'LEO5LQ_WM' in elem: leo5["lq_wm"] = elem["LEO5LQ_WM"]
+            if 'LEO5MED_WM' in elem: leo5["med_wm"] = elem["LEO5MED_WM"]
+            if 'LEO5UQ_WM' in elem: leo5["uq_wm"] = elem["LEO5UQ_WM"]
+            if 'LEO5SECPOP_WM' in elem: leo5["pop_wm"] = elem["LEO5SECPOP_WM"]
         
-            leo5["lq_ee"] = elem["LEO5LQ_EE"]
-            leo5["med_ee"] = elem["LEO5MED_EE"]
-            leo5["uq_ee"] = elem["LEO5UQ_EE"]
-            leo5["pop_ee"] = elem["LEO5SECPOP_EE"]
+            if 'LEO5LQ_EE' in elem: leo5["lq_ee"] = elem["LEO5LQ_EE"]
+            if 'LEO5MED_EE' in elem: leo5["med_ee"] = elem["LEO5MED_EE"]
+            if 'LEO5UQ_EE' in elem: leo5["uq_ee"] = elem["LEO5UQ_EE"]
+            if 'LEO5SECPOP_EE' in elem: leo5["pop_ee"] = elem["LEO5SECPOP_EE"]
 
-            leo5["lq_se"] = elem["LEO5LQ_SE"]
-            leo5["med_se"] = elem["LEO5MED_SE"]
-            leo5["uq_se"] = elem["LEO5UQ_SE"]
-            leo5["pop_se"] = elem["LEO5SECPOP_SE"]
+            if 'LEO5LQ_SE' in elem: leo5["lq_se"] = elem["LEO5LQ_SE"]
+            if 'LEO5MED_SE' in elem: leo5["med_se"] = elem["LEO5MED_SE"]
+            if 'LEO5UQ_SE' in elem: leo5["uq_se"] = elem["LEO5UQ_SE"]
+            if 'LEO5SECPOP_SE' in elem: leo5["pop_se"] = elem["LEO5SECPOP_SE"]
 
-            leo5["lq_sw"] = elem["LEO5LQ_SW"]
-            leo5["med_sw"] = elem["LEO5MED_SW"]
-            leo5["uq_sw"] = elem["LEO5UQ_SW"]
-            leo5["pop_sw"] = elem["LEO5SECPOP_SW"]
+            if 'LEO5LQ_SW' in elem: leo5["lq_sw"] = elem["LEO5LQ_SW"]
+            if 'LEO5MED_SW' in elem: leo5["med_sw"] = elem["LEO5MED_SW"]
+            if 'LEO5UQ_SW' in elem: leo5["uq_sw"] = elem["LEO5UQ_SW"]
+            if 'LEO5SECPOP_SW' in elem: leo5["pop_sw"] = elem["LEO5SECPOP_SW"]
 
-            leo5["lq_yh"] = elem["LEO5LQ_YH"]
-            leo5["med_yh"] = elem["LEO5MED_YH"]
-            leo5["uq_yh"] = elem["LEO5UQ_YH"]
-            leo5["pop_yh"] = elem["LEO5SECPOP_YH"]
+            if 'LEO5LQ_YH' in elem: leo5["lq_yh"] = elem["LEO5LQ_YH"]
+            if 'LEO5MED_YH' in elem: leo5["med_yh"] = elem["LEO5MED_YH"]
+            if 'LEO5UQ_YH' in elem: leo5["uq_yh"] = elem["LEO5UQ_YH"]
+            if 'LEO5SECPOP_YH' in elem: leo5["pop_yh"] = elem["LEO5SECPOP_YH"]
 
-            leo5["lq_lo"] = elem["LEO5LQ_LN"]
-            leo5["med_lo"] = elem["LEO5MED_LN"]
-            leo5["uq_lo"] = elem["LEO5UQ_LN"]
-            leo5["pop_lo"] = elem["LEO5SECPOP_LN"]
+            if 'LEO5LQ_LN' in elem: leo5["lq_lo"] = elem["LEO5LQ_LN"]
+            if 'LEO5MED_LN' in elem: leo5["med_lo"] = elem["LEO5MED_LN"]
+            if 'LEO5UQ_LN' in elem: leo5["uq_lo"] = elem["LEO5UQ_LN"]
+            if 'LEO5SECPOP_LN' in elem: leo5["pop_lo"] = elem["LEO5SECPOP_LN"]
 
-            leo5["lq_ed"] = elem["LEO5LQ_ED"]
-            leo5["med_ed"] = elem["LEO5MED_ED"]
-            leo5["uq_ed"] = elem["LEO5UQ_ED"]
-            leo5["pop_ed"] = elem["LEO5SECPOP_ED"]
+            if 'LEO5LQ_ED' in elem: leo5["lq_ed"] = elem["LEO5LQ_ED"]
+            if 'LEO5MED_ED' in elem: leo5["med_ed"] = elem["LEO5MED_ED"]
+            if 'LEO5UQ_ED' in elem: leo5["uq_ed"] = elem["LEO5UQ_ED"]
+            if 'LEO5SECPOP_ED' in elem: leo5["pop_ed"] = elem["LEO5SECPOP_ED"]
 
-            leo5["lq_gl"] = elem["LEO5LQ_GL"]
-            leo5["med_gl"] = elem["LEO5MED_GL"]
-            leo5["uq_gl"] = elem["LEO5UQ_GL"]
-            leo5["pop_gl"] = elem["LEO5SECPOP_GL"]
+            if 'LEO5LQ_GL' in elem: leo5["lq_gl"] = elem["LEO5LQ_GL"]
+            if 'LEO5MED_GL' in elem: leo5["med_gl"] = elem["LEO5MED_GL"]
+            if 'LEO5UQ_GL' in elem: leo5["uq_gl"] = elem["LEO5UQ_GL"]
+            if 'LEO5SECPOP_GL' in elem: leo5["pop_gl"] = elem["LEO5SECPOP_GL"]
 
-            leo5["lq_cf"] = elem["LEO5LQ_CF"]
-            leo5["med_cf"] = elem["LEO5MED_CF"]
-            leo5["uq_cf"] = elem["LEO5UQ_CF"]
-            leo5["pop_cf"] = elem["LEO5SECPOP_CF"]
+            if 'LEO5LQ_CF' in elem: leo5["lq_cf"] = elem["LEO5LQ_CF"]
+            if 'LEO5MED_CF' in elem: leo5["med_cf"] = elem["LEO5MED_CF"]
+            if 'LEO5UQ_CF' in elem: leo5["uq_cf"] = elem["LEO5UQ_CF"]
+            if 'LEO5SECPOP_CF' in elem: leo5["pop_cf"] = elem["LEO5SECPOP_CF"]
 
             leo5["unavail_text_region_not_exists_english"], leo5["unavail_text_region_not_exists_welsh"] =\
                         get_earnings_unavail_text("sector", "leo", "region_not_exists")

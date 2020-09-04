@@ -7,6 +7,7 @@ class SalarySector:
 
     def __init__(self, root, raw_course_data, salary_inst_array, salary_node_name):
         self.matching_sector_array =[]
+
         sector_sal_root = root.find('SECTORSAL')
         course_mode = raw_course_data["KISMODE"]
         course_level = raw_course_data["KISLEVEL"]
@@ -28,7 +29,10 @@ class SalarySector:
             sector_level = raw_sector_data["KISLEVEL"]
 
             for salary_inst in salary_inst_array:
-                course_sbj = salary_inst["subject"]["code"]
+                if 'subject' in salary_inst and 'code' in salary_inst['subject']:
+                    course_sbj = salary_inst["subject"]["code"]
+                else:
+                    course_sbj = None
 
                 if sector_sbj == course_sbj and sector_mode == course_mode and sector_level == course_level:
                     self.matching_sector_array.append(raw_sector_data)
