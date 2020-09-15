@@ -39,7 +39,7 @@ from subject_enricher import SubjectCourseEnricher
 from qualification_enricher import QualificationCourseEnricher
 from course_subjects import get_subjects
 
-from salary_sector import SalarySector
+from sector_salaries import GOSectorSalaries, LEO3SectorSalaries, LEO5SectorSalaries
 
 from SharedCode import utils
 from SharedCode.utils import get_english_welsh_item
@@ -47,6 +47,7 @@ from SharedCode.utils import get_english_welsh_item
 
 def load_course_docs(xml_string, version):
     global g_subject_enricher
+
     """Parse HESA XML passed in and create JSON course docs in Cosmos DB."""
 
     cosmosdb_client = utils.get_cosmos_client()
@@ -85,6 +86,10 @@ def load_course_docs(xml_string, version):
     kisaims = KisAims(root)
     locations = Locations(root)
 
+    go_sector_salaries = GOSectorSalaries(root)
+    leo3_sector_salaries = LEO3SectorSalaries(root)
+    leo5_sector_salaries = LEO5SectorSalaries(root)
+
     course_count = 0
     for institution in root.iter("INSTITUTION"):
 
@@ -105,7 +110,10 @@ def load_course_docs(xml_string, version):
                     raw_course_data,
                     kisaims,
                     version,
-                    root
+                    root,
+                    go_sector_salaries,
+                    leo3_sector_salaries,
+                    leo5_sector_salaries
                 )
                 enricher.enrich_course(course_doc)
                 subject_enricher.enrich_course(course_doc)
@@ -124,8 +132,12 @@ def load_course_docs(xml_string, version):
                     sproc_count = 0
                     time.sleep(3)
             except Exception as e:
+                institution_id = raw_inst_data["UKPRN"]
                 course_id = raw_course_data["KISCOURSEID"]
-                logging.info(f"There was an error when creating the course document for course with id: {course_id}")
+                course_mode = raw_course_data["KISMODE"]
+
+                logging.info(f"There was an error: {e} when creating the course document for course "
+                             f"with institution_id: {institution_id} course_id: {course_id} course_mode: {course_mode}")
 
     if sproc_count > 0:
         logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
@@ -178,7 +190,10 @@ def get_course_doc(
     raw_course_data,
     kisaims,
     version,
-    root
+    root,
+    go_sector_salaries,
+    leo3_sector_salaries,
+    leo5_sector_salaries
 ):
     outer_wrapper = {}
     outer_wrapper["_id"] = utils.get_uuid()
@@ -230,7 +245,6 @@ def get_course_doc(
     leo5_inst_xml_nodes = raw_course_data["LEO5"]
     if leo5_inst_xml_nodes:
         course["leo5_inst"] = get_leo5_inst_json(leo5_inst_xml_nodes)
-
 
     go_voice_work_xml_nodes = raw_course_data["GOVOICEWORK"]
     if go_voice_work_xml_nodes:
@@ -286,24 +300,20 @@ def get_course_doc(
     )
 
     # Extract the appropriate sector-level earnings data for the current course.
-    go_sector_xml_array = SalarySector(root, raw_course_data, course["go_salary_inst"], "GOSECSAL").get_matching_sector_array()
-    leo3_sector_xml_array = SalarySector(root, raw_course_data, course["leo3_inst"], "LEO3SEC").get_matching_sector_array()
-    leo5_sector_xml_array = SalarySector(root, raw_course_data, course["leo5_inst"], "LEO5SEC").get_matching_sector_array()
-    
     go_sector_json_array = get_go_sector_json(
-        go_sector_xml_array
+        course["go_salary_inst"], go_sector_salaries
     )
     if go_sector_json_array:
         course["go_salary_sector"] = go_sector_json_array
 
     leo3_sector_json_array = get_leo3_sector_json(
-        leo3_sector_xml_array
+        course["leo3_inst"], leo3_sector_salaries
     )
     if leo3_sector_json_array:
         course["leo3_salary_sector"] = leo3_sector_json_array
 
     leo5_sector_json_array = get_leo5_sector_json(
-        leo5_sector_xml_array
+        course["leo5_inst"], leo5_sector_salaries
     )
     if leo5_sector_json_array:
         course["leo5_salary_sector"] = leo5_sector_json_array
@@ -750,8 +760,18 @@ def get_location_items(locations, locids, raw_course_data, pub_ukprn):
     return location_items
 
 
-def get_go_sector_json(go_salary_sector_xml_array):
+def get_go_sector_json(go_salary_inst, go_sector_salary_lookup):
     go_salary_json_array = []
+
+    go_salary_sector_xml_array = []
+    for salary_inst in go_salary_inst:
+        if 'subject' in salary_inst:
+            go_sector_salary = go_sector_salary_lookup.get_sector_salaries_data_for_key(
+                salary_inst['subject']['code']
+            )
+            go_salary_sector_xml_array.append(go_sector_salary)
+        else:
+            go_salary_sector_xml_array.append({})
 
     if go_salary_sector_xml_array:
         for elem in go_salary_sector_xml_array:
@@ -798,8 +818,18 @@ def get_go_sector_json(go_salary_sector_xml_array):
     return go_salary_json_array
 
 
-def get_leo3_sector_json(leo3_sector_xml_array):
+def get_leo3_sector_json(leo3_salary_inst, leo3_sector_salary_lookup):
     leo3_json_array = []
+
+    leo3_sector_xml_array = []
+    for salary_inst in leo3_salary_inst:
+        if 'subject' in salary_inst:
+            go_sector_salary = leo3_sector_salary_lookup.get_sector_salaries_data_for_key(
+                salary_inst['subject']['code']
+            )
+            leo3_sector_xml_array.append(go_sector_salary)
+        else:
+            leo3_sector_xml_array.append({})
 
     if leo3_sector_xml_array:
         for elem in leo3_sector_xml_array:
@@ -896,8 +926,18 @@ def get_leo3_sector_json(leo3_sector_xml_array):
     return leo3_json_array
 
 
-def get_leo5_sector_json(leo5_sector_xml_array):
+def get_leo5_sector_json(leo5_salary_inst, leo5_sector_salary_lookup):
     leo5_json_array = []
+
+    leo5_sector_xml_array = []
+    for salary_inst in leo5_salary_inst:
+        if 'subject' in salary_inst:
+            go_sector_salary = leo5_sector_salary_lookup.get_sector_salaries_data_for_key(
+                salary_inst['subject']['code']
+            )
+            leo5_sector_xml_array.append(go_sector_salary)
+        else:
+            leo5_sector_xml_array.append({})
 
     if leo5_sector_xml_array:
         for elem in leo5_sector_xml_array:
@@ -1020,3 +1060,19 @@ def get_subject(subject_code):
     subject["english_label"] = g_subject_enricher.subject_lookups[subject_code]["english_name"]
     subject["welsh_label"] = g_subject_enricher.subject_lookups[subject_code]["welsh_name"]
     return subject
+
+
+def create_geo_sector_salary_list(dataset):
+    return create_sector_salary_list(dataset, 'GOSECSAL')
+
+
+def create_leo3_sector_salary_list(dataset):
+    return create_sector_salary_list(dataset, 'LEO3SEC')
+
+
+def create_leo5_sector_salary_list(dataset):
+    return create_sector_salary_list(dataset, 'LEO5SEC')
+
+
+def create_sector_salary_list(dataset, sector_type):
+    return [salary for salary in dataset.findall(sector_type)]
