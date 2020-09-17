@@ -110,7 +110,6 @@ def load_course_docs(xml_string, version):
                     raw_course_data,
                     kisaims,
                     version,
-                    root,
                     go_sector_salaries,
                     leo3_sector_salaries,
                     leo5_sector_salaries
@@ -190,7 +189,6 @@ def get_course_doc(
     raw_course_data,
     kisaims,
     version,
-    root,
     go_sector_salaries,
     leo3_sector_salaries,
     leo5_sector_salaries
@@ -376,7 +374,10 @@ def get_go_inst_json(raw_go_inst_data):
             unavail_text_welsh = ""
             #if type(elem) == str:
             go_salary = {}
-            if 'GOSALUNAVAILREASON' in raw_go_inst_data: go_salary["unavail_reason"] = raw_go_inst_data["GOSALUNAVAILREASON"]
+            if 'GOSALUNAVAILREASON' in raw_go_inst_data:
+                go_salary["unavail_reason"] = raw_go_inst_data["GOSALUNAVAILREASON"]
+                unavail_text_english, unavail_text_welsh = get_earnings_unavail_text("institution", "go",
+                                                                                     go_salary["unavail_reason"])
             if 'GOSALPOP' in raw_go_inst_data: go_salary["pop"] = raw_go_inst_data["GOSALPOP"]
             if 'GOSALRESP_RATE' in raw_go_inst_data: go_salary["resp_rate"] = raw_go_inst_data["GOSALRESP_RATE"]
             if 'GOSALAGG' in raw_go_inst_data: go_salary["agg"] = raw_go_inst_data["GOSALAGG"]
@@ -390,8 +391,8 @@ def get_go_inst_json(raw_go_inst_data):
             if 'GOPROV_PC_S' in raw_go_inst_data: go_salary["inst_prov_pc_s"] = raw_go_inst_data["GOPROV_PC_S"]
             if 'GOPROV_PC_W' in raw_go_inst_data: go_salary["inst_prov_pc_w"] = raw_go_inst_data["GOPROV_PC_W"]
 
-            if 'agg' in go_salary and (go_salary["agg"] is None or go_salary["agg"] == ""):
-                unavail_text_english, unavail_text_welsh = get_earnings_unavail_text("institution", "go", go_salary["unavail_reason"])
+            # if 'agg' in go_salary and (go_salary["agg"] is None or go_salary["agg"] == ""):
+            #     unavail_text_english, unavail_text_welsh = get_earnings_unavail_text("institution", "go", go_salary["unavail_reason"])
                 
             go_salary["unavail_text_english"] = unavail_text_english
             go_salary["unavail_text_welsh"] = unavail_text_welsh         
@@ -402,7 +403,10 @@ def get_go_inst_json(raw_go_inst_data):
                 unavail_text_welsh = ""
                 #if type(elem) == str:
                 go_salary = {}
-                if 'GOSALUNAVAILREASON' in elem: go_salary["unavail_reason"] = elem["GOSALUNAVAILREASON"]
+                if 'GOSALUNAVAILREASON' in elem:
+                    go_salary["unavail_reason"] = elem["GOSALUNAVAILREASON"]
+                    unavail_text_english, unavail_text_welsh = get_earnings_unavail_text("institution", "go",
+                                                                                         go_salary["unavail_reason"])
                 if 'GOSALPOP' in elem: go_salary["pop"] = elem["GOSALPOP"]
                 if 'GOSALRESP_RATE' in elem: go_salary["resp_rate"] = elem["GOSALRESP_RATE"]
                 if 'GOSALAGG' in elem: go_salary["agg"] = elem["GOSALAGG"]
@@ -416,8 +420,8 @@ def get_go_inst_json(raw_go_inst_data):
                 if 'GOPROV_PC_S' in elem: go_salary["inst_prov_pc_s"] = elem["GOPROV_PC_S"]
                 if 'GOPROV_PC_W' in elem: go_salary["inst_prov_pc_w"] = elem["GOPROV_PC_W"]
 
-                if 'agg' in go_salary and (go_salary["agg"] is None or go_salary["agg"] == ""):
-                    unavail_text_english, unavail_text_welsh = get_earnings_unavail_text("institution", "go", go_salary["unavail_reason"])
+                # if 'agg' in go_salary and (go_salary["agg"] is None or go_salary["agg"] == ""):
+                #     unavail_text_english, unavail_text_welsh = get_earnings_unavail_text("institution", "go", go_salary["unavail_reason"])
                     
                 go_salary["unavail_text_english"] = unavail_text_english
                 go_salary["unavail_text_welsh"] = unavail_text_welsh         
@@ -443,7 +447,10 @@ def get_leo3_inst_json(raw_leo3_inst_data):
             unavail_text_english = ""
             unavail_text_welsh = ""
             leo3 = {}
-            if 'LEO3UNAVAILREASON' in raw_leo3_inst_data: leo3["unavail_reason"] = raw_leo3_inst_data["LEO3UNAVAILREASON"]
+            if 'LEO3UNAVAILREASON' in raw_leo3_inst_data:
+                leo3["unavail_reason"] = raw_leo3_inst_data["LEO3UNAVAILREASON"]
+                unavail_text_english, unavail_text_welsh = get_earnings_unavail_text("institution", "leo",
+                                                                                     leo3["unavail_reason"])
             if 'LEO3POP' in raw_leo3_inst_data: leo3["pop"] = raw_leo3_inst_data["LEO3POP"]
             if 'LEO3AGG' in raw_leo3_inst_data: leo3["agg"] = raw_leo3_inst_data["LEO3AGG"]
             if 'LEO3SBJ' in raw_leo3_inst_data: leo3["subject"] = get_subject(raw_leo3_inst_data["LEO3SBJ"])
@@ -468,8 +475,8 @@ def get_leo3_inst_json(raw_leo3_inst_data):
             if 'LEO3PROV_PC_GL' in raw_leo3_inst_data: leo3["inst_prov_pc_gl"] = raw_leo3_inst_data["LEO3PROV_PC_GL"]
             if 'LEO3PROV_PC_CF' in raw_leo3_inst_data: leo3["inst_prov_pc_cf"] = raw_leo3_inst_data["LEO3PROV_PC_CF"]
 
-            if 'agg' in leo3 and (leo3["agg"] is None or leo3["agg"] == ""):
-                unavail_text_english, unavail_text_welsh = get_earnings_unavail_text("institution", "leo", leo3["unavail_reason"])
+            # if 'agg' in leo3 and (leo3["agg"] is None or leo3["agg"] == ""):
+            #     unavail_text_english, unavail_text_welsh = get_earnings_unavail_text("institution", "leo", leo3["unavail_reason"])
                 
             leo3["unavail_text_english"] = unavail_text_english
             leo3["unavail_text_welsh"] = unavail_text_welsh         
@@ -479,7 +486,10 @@ def get_leo3_inst_json(raw_leo3_inst_data):
                 unavail_text_english = ""
                 unavail_text_welsh = ""
                 leo3 = {}
-                if 'LEO3UNAVAILREASON' in elem: leo3["unavail_reason"] = elem["LEO3UNAVAILREASON"]
+                if 'LEO3UNAVAILREASON' in elem:
+                    leo3["unavail_reason"] = elem["LEO3UNAVAILREASON"]
+                    unavail_text_english, unavail_text_welsh = get_earnings_unavail_text("institution", "leo",
+                                                                                         leo3["unavail_reason"])
                 if 'LEO3POP' in elem: leo3["pop"] = elem["LEO3POP"]
                 if 'LEO3AGG' in elem: leo3["agg"] = elem["LEO3AGG"]
                 if 'LEO3SBJ' in elem: leo3["subject"] = get_subject(elem["LEO3SBJ"])
@@ -504,8 +514,8 @@ def get_leo3_inst_json(raw_leo3_inst_data):
                 if 'LEO3PROV_PC_GL' in elem: leo3["inst_prov_pc_gl"] = elem["LEO3PROV_PC_GL"]
                 if 'LEO3PROV_PC_CF' in elem: leo3["inst_prov_pc_cf"] = elem["LEO3PROV_PC_CF"]
 
-                if 'agg' in leo3 and (leo3["agg"] is None or leo3["agg"] == ""):
-                    unavail_text_english, unavail_text_welsh = get_earnings_unavail_text("institution", "leo", leo3["unavail_reason"])
+                # if 'agg' in leo3 and (leo3["agg"] is None or leo3["agg"] == ""):
+                #     unavail_text_english, unavail_text_welsh = get_earnings_unavail_text("institution", "leo", leo3["unavail_reason"])
                     
                 leo3["unavail_text_english"] = unavail_text_english
                 leo3["unavail_text_welsh"] = unavail_text_welsh         
@@ -531,7 +541,10 @@ def get_leo5_inst_json(raw_leo5_inst_data):
             unavail_text_english = ""
             unavail_text_welsh = ""
             leo5 = {}
-            if 'LEO5UNAVAILREASON' in raw_leo5_inst_data: leo5["unavail_reason"] = raw_leo5_inst_data["LEO5UNAVAILREASON"]
+            if 'LEO5UNAVAILREASON' in raw_leo5_inst_data:
+                leo5["unavail_reason"] = raw_leo5_inst_data["LEO5UNAVAILREASON"]
+                unavail_text_english, unavail_text_welsh = get_earnings_unavail_text("institution", "leo",
+                                                                                     leo5["unavail_reason"])
             if 'LEO5POP' in raw_leo5_inst_data: leo5["pop"] = raw_leo5_inst_data["LEO5POP"]
             if 'LEO5AGG' in raw_leo5_inst_data: leo5["agg"] = raw_leo5_inst_data["LEO5AGG"]
             if 'LEO5SBJ' in raw_leo5_inst_data: leo5["subject"] = get_subject(raw_leo5_inst_data["LEO5SBJ"])
@@ -556,8 +569,8 @@ def get_leo5_inst_json(raw_leo5_inst_data):
             if 'LEO5PROV_PC_GL' in raw_leo5_inst_data: leo5["inst_prov_pc_gl"] = raw_leo5_inst_data["LEO5PROV_PC_GL"]
             if 'LEO5PROV_PC_CF' in raw_leo5_inst_data: leo5["inst_prov_pc_cf"] = raw_leo5_inst_data["LEO5PROV_PC_CF"]
 
-            if 'agg' in leo5 and (leo5["agg"] is None or leo5["agg"] == ""):
-                unavail_text_english, unavail_text_welsh = get_earnings_unavail_text("institution", "leo", leo5["unavail_reason"])
+            # if 'agg' in leo5 and (leo5["agg"] is None or leo5["agg"] == ""):
+            #     unavail_text_english, unavail_text_welsh = get_earnings_unavail_text("institution", "leo", leo5["unavail_reason"])
                 
             leo5["unavail_text_english"] = unavail_text_english
             leo5["unavail_text_welsh"] = unavail_text_welsh         
@@ -567,7 +580,10 @@ def get_leo5_inst_json(raw_leo5_inst_data):
                 unavail_text_english = ""
                 unavail_text_welsh = ""
                 leo5 = {}
-                if 'LEO5UNAVAILREASON' in elem: leo5["unavail_reason"] = elem["LEO5UNAVAILREASON"]
+                if 'LEO5UNAVAILREASON' in elem:
+                    leo5["unavail_reason"] = elem["LEO5UNAVAILREASON"]
+                    unavail_text_english, unavail_text_welsh = get_earnings_unavail_text("institution", "leo",
+                                                                                         leo5["unavail_reason"])
                 if 'LEO5POP' in elem: leo5["pop"] = elem["LEO5POP"]
                 if 'LEO5AGG' in elem: leo5["agg"] = elem["LEO5AGG"]
                 if 'LEO5SBJ' in elem: leo5["subject"] = get_subject(elem["LEO5SBJ"])
@@ -592,8 +608,8 @@ def get_leo5_inst_json(raw_leo5_inst_data):
                 if 'LEO5PROV_PC_GL' in elem: leo5["inst_prov_pc_gl"] = elem["LEO5PROV_PC_GL"]
                 if 'LEO5PROV_PC_CF' in elem: leo5["inst_prov_pc_cf"] = elem["LEO5PROV_PC_CF"]
 
-                if 'agg' in leo5 and (leo5["agg"] is None or leo5["agg"] == ""):
-                    unavail_text_english, unavail_text_welsh = get_earnings_unavail_text("institution", "leo", leo5["unavail_reason"])
+                # if 'agg' in leo5 and (leo5["agg"] is None or leo5["agg"] == ""):
+                #     unavail_text_english, unavail_text_welsh = get_earnings_unavail_text("institution", "leo", leo5["unavail_reason"])
                     
                 leo5["unavail_text_english"] = unavail_text_english
                 leo5["unavail_text_welsh"] = unavail_text_welsh         
@@ -619,7 +635,10 @@ def get_go_voice_work_json(raw_go_voice_work_data):
             unavail_text_english = ""
             unavail_text_welsh = ""
             go_voice_work = {}
-            if 'GOWORKUNAVAILREASON' in raw_go_voice_work_data: go_voice_work["go_work_unavail_reason"] = raw_go_voice_work_data["GOWORKUNAVAILREASON"]
+            if 'GOWORKUNAVAILREASON' in raw_go_voice_work_data:
+                go_voice_work["unavailable"] = get_unavail_messages("GO", 'GOWORKAGG', "GOWORKUNAVAILREASON", raw_go_voice_work_data)
+                # go_voice_work["go_work_unavail_reason"] = raw_go_voice_work_data["GOWORKUNAVAILREASON"]
+
             if 'GOWORKPOP' in raw_go_voice_work_data: go_voice_work["go_work_pop"] = raw_go_voice_work_data["GOWORKPOP"]
             if 'GOWORKRESP_RATE' in raw_go_voice_work_data: go_voice_work["go_work_resp_rate"] = raw_go_voice_work_data["GOWORKRESP_RATE"]
             if 'GOWORKAGG' in raw_go_voice_work_data: go_voice_work["go_work_agg"] = raw_go_voice_work_data["GOWORKAGG"]
@@ -640,7 +659,9 @@ def get_go_voice_work_json(raw_go_voice_work_data):
                 unavail_text_english = ""
                 unavail_text_welsh = ""
                 go_voice_work = {}
-                if 'GOWORKUNAVAILREASON' in elem: go_voice_work["go_work_unavail_reason"] = elem["GOWORKUNAVAILREASON"]
+                if 'GOWORKUNAVAILREASON' in elem:
+                    go_voice_work["unavailable"] = get_unavail_messages("GO", 'GOWORKAGG', "GOWORKUNAVAILREASON", elem)
+                    # go_voice_work["go_work_unavail_reason"] = elem["GOWORKUNAVAILREASON"]
                 if 'GOWORKAGG' in elem: go_voice_work["go_work_agg"] = elem["GOWORKAGG"]
                 if 'GOWORKSKILLS' in elem: go_voice_work["go_work_skills"] = elem["GOWORKSKILLS"]
                 if 'GOWORKMEAN' in elem: go_voice_work["go_work_mean"] = elem["GOWORKMEAN"]
@@ -1076,3 +1097,13 @@ def create_leo5_sector_salary_list(dataset):
 
 def create_sector_salary_list(dataset, sector_type):
     return [salary for salary in dataset.findall(sector_type)]
+
+
+def get_unavail_messages(xml_element_key, xml_agg_key, xml_unavail_reason_key, raw_data_element):
+    shared_utils = SharedUtils(
+        xml_element_key,
+        "SBJ",
+        xml_agg_key,
+        xml_unavail_reason_key,
+    )
+    return shared_utils.get_unavailable(raw_data_element)

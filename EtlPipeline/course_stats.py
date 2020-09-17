@@ -726,7 +726,6 @@ class SharedUtils:
         self.unavail_reason_english = self.get_lookup("unavail_reason_english")
         self.unavail_reason_welsh = self.get_lookup("unavail_reason_welsh")
 
-
     @staticmethod
     def get_lookup(lookup_name):
         cwd = os.path.dirname(os.path.abspath(__file__))
@@ -937,3 +936,6 @@ def get_earnings_unavail_text(inst_or_sect, data_source, key_level_3):
 
     return unicodedata.normalize("NFKD", unavail_text_english),\
             unicodedata.normalize("NFKD", unavail_text_welsh)
+
+
+

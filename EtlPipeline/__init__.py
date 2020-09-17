@@ -64,7 +64,7 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
         storage_blob_name = os.environ["AzureStorageHesaBlobName"]
 
         if use_local_test_XML_file:
-            mock_xml_source_file = open("sample_course_data.xml","r")
+            mock_xml_source_file = open(os.environ["LocalTestXMLFile"],"r")
             xml_string = mock_xml_source_file.read()
         else:
             xml_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
