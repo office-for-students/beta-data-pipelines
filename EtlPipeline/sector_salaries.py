@@ -24,7 +24,9 @@ class SectorSalaries:
                 ET.tostring(sector_salary)
             )[sector_salary_type]
 
-            sector_salary_key = f"{raw_sector_salary_data[sector_salary_key_type]}"
+            sector_salary_key = (
+                f"{raw_sector_salary_data[sector_salary_key_type]}-{raw_sector_salary_data['KISMODE']}-{raw_sector_salary_data['KISLEVEL']}"
+            )
             self.lookup_dict[sector_salary_key] = raw_sector_salary_data
 
     def get_sector_salaries_data_for_key(self, key):

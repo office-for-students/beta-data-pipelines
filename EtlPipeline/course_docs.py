@@ -200,6 +200,7 @@ def get_course_doc(
     outer_wrapper["institution_id"] = raw_inst_data["PUBUKPRN"]
     outer_wrapper["course_id"] = raw_course_data["KISCOURSEID"]
     outer_wrapper["course_mode"] = int(raw_course_data["KISMODE"])
+    outer_wrapper["course_level"] = int(raw_course_data["KISLEVEL"])
     outer_wrapper["partition_key"] = str(version)
 
     course = {}
@@ -299,19 +300,19 @@ def get_course_doc(
 
     # Extract the appropriate sector-level earnings data for the current course.
     go_sector_json_array = get_go_sector_json(
-        course["go_salary_inst"], go_sector_salaries
+        course["go_salary_inst"], go_sector_salaries, outer_wrapper["course_mode"], outer_wrapper["course_level"]
     )
     if go_sector_json_array:
         course["go_salary_sector"] = go_sector_json_array
 
     leo3_sector_json_array = get_leo3_sector_json(
-        course["leo3_inst"], leo3_sector_salaries
+        course["leo3_inst"], leo3_sector_salaries, outer_wrapper["course_mode"], outer_wrapper["course_level"]
     )
     if leo3_sector_json_array:
         course["leo3_salary_sector"] = leo3_sector_json_array
 
     leo5_sector_json_array = get_leo5_sector_json(
-        course["leo5_inst"], leo5_sector_salaries
+        course["leo5_inst"], leo5_sector_salaries, outer_wrapper["course_mode"], outer_wrapper["course_level"]
     )
     if leo5_sector_json_array:
         course["leo5_salary_sector"] = leo5_sector_json_array
@@ -781,14 +782,17 @@ def get_location_items(locations, locids, raw_course_data, pub_ukprn):
     return location_items
 
 
-def get_go_sector_json(go_salary_inst, go_sector_salary_lookup):
+def get_go_sector_json(go_salary_inst, go_sector_salary_lookup, course_mode, course_level):
     go_salary_json_array = []
 
     go_salary_sector_xml_array = []
     for salary_inst in go_salary_inst:
         if 'subject' in salary_inst:
+            lookup_key = (
+                f"{salary_inst['subject']['code']}-{course_mode}-{course_level}"
+            )
             go_sector_salary = go_sector_salary_lookup.get_sector_salaries_data_for_key(
-                salary_inst['subject']['code']
+                lookup_key
             )
             go_salary_sector_xml_array.append(go_sector_salary)
         else:
@@ -839,14 +843,17 @@ def get_go_sector_json(go_salary_inst, go_sector_salary_lookup):
     return go_salary_json_array
 
 
-def get_leo3_sector_json(leo3_salary_inst, leo3_sector_salary_lookup):
+def get_leo3_sector_json(leo3_salary_inst, leo3_sector_salary_lookup, course_mode, course_level):
     leo3_json_array = []
 
     leo3_sector_xml_array = []
     for salary_inst in leo3_salary_inst:
         if 'subject' in salary_inst:
+            lookup_key = (
+                f"{salary_inst['subject']['code']}-{course_mode}-{course_level}"
+            )
             go_sector_salary = leo3_sector_salary_lookup.get_sector_salaries_data_for_key(
-                salary_inst['subject']['code']
+                lookup_key
             )
             leo3_sector_xml_array.append(go_sector_salary)
         else:
@@ -947,14 +954,17 @@ def get_leo3_sector_json(leo3_salary_inst, leo3_sector_salary_lookup):
     return leo3_json_array
 
 
-def get_leo5_sector_json(leo5_salary_inst, leo5_sector_salary_lookup):
+def get_leo5_sector_json(leo5_salary_inst, leo5_sector_salary_lookup, course_mode, course_level):
     leo5_json_array = []
 
     leo5_sector_xml_array = []
     for salary_inst in leo5_salary_inst:
         if 'subject' in salary_inst:
+            lookup_key = (
+                f"{salary_inst['subject']['code']}-{course_mode}-{course_level}"
+            )
             go_sector_salary = leo5_sector_salary_lookup.get_sector_salaries_data_for_key(
-                salary_inst['subject']['code']
+                lookup_key
             )
             leo5_sector_xml_array.append(go_sector_salary)
         else:
