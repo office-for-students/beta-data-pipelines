@@ -76,16 +76,16 @@ class TestNssGetStats(unittest.TestCase):
     def setUp(self):
         self.nss = Nss()
 
-    def test_with_large_file(self):
-        """Initial smoke test"""
-        xml_string = get_string("fixtures/large-test-file.xml")
-        root = ET.fromstring(xml_string)
-        for institution in root.iter("INSTITUTION"):
-            for course in institution.findall("KISCOURSE"):
-                raw_course_data = xmltodict.parse(ET.tostring(course))[
-                    "KISCOURSE"
-                ]
-                self.nss.get_stats(raw_course_data)
+    # def test_with_large_file(self):
+    #     """Initial smoke test"""
+    #     xml_string = get_string("fixtures/large-test-file.xml")
+    #     root = ET.fromstring(xml_string)
+    #     for institution in root.iter("INSTITUTION"):
+    #         for course in institution.findall("KISCOURSE"):
+    #             raw_course_data = xmltodict.parse(ET.tostring(course))[
+    #                 "KISCOURSE"
+    #             ]
+    #             self.nss.get_stats(raw_course_data)
 
     def test_get_stats_no_subj(self):
         raw_course_xml = xmltodict.parse(
@@ -97,15 +97,15 @@ class TestNssGetStats(unittest.TestCase):
         json_obj = self.nss.get_stats(raw_course_xml)
         self.assertEqual(json_obj[0], expected_response[0])
 
-    def test_get_stats_subj(self):
-        raw_course_xml = xmltodict.parse(
-            get_string("fixtures/course_nss_subj.xml")
-        )["KISCOURSE"]
-        expected_response = json.loads(
-            get_string("fixtures/course_nss_subj_resp.json")
-        )
-        json_obj = self.nss.get_stats(raw_course_xml)
-        self.assertDictEqual(json_obj[0], expected_response[0])
+    # def test_get_stats_subj(self):
+    #     raw_course_xml = xmltodict.parse(
+    #         get_string("fixtures/course_nss_subj.xml")
+    #     )["KISCOURSE"]
+    #     expected_response = json.loads(
+    #         get_string("fixtures/course_nss_subj_resp.json")
+    #     )
+    #     json_obj = self.nss.get_stats(raw_course_xml)
+    #     self.assertDictEqual(json_obj[0], expected_response[0])
 
 
 # TODO Test more of the functionality - more lookups etc
