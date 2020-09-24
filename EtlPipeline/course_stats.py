@@ -294,6 +294,7 @@ class JobList:
                     job_list_item["percentage_of_students"] = "<5"
 
             job_list_item["order"] = job_list["ORDER"]
+            job_list_item["hs"] = job_list["HS"]
             list_field.append(job_list_item)
         return list_field
 
