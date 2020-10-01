@@ -1,0 +1,25 @@
+{
+    "institution": {
+        "go": {
+            "0": "No data available\n\nThis is either because the course size is small or there were not enough responses to produce data. This does not reflect on the quality of the course.",
+            "1": "No data available\n\nThis is because the course has not yet run or has not been running long enough for this data to be available.",
+            "2": "No data available\n\nThis does not reflect on the quality of the course."
+        },
+        "leo": {
+            "0": "No data available\n\nThis may be because the course size is too small. This does not reflect on the quality of the course.",
+            "1": "No data available\n\nThis is because the course has not yet run or has not been running long enough for this data to be available.",
+            "2": "No data available\n\nThis does not reflect on the quality of the course.",
+            "ni": "No data available\n\nSorry, this data is not available for courses in Northern Ireland."
+        }
+    },
+    "sector": {
+        "go": {
+            "region_not_exists": "No data available",
+            "region_not_nation": "No data available\n\nSorry, this data is not available at this level."
+        },
+        "leo": {
+            "region_not_exists": "No data available",
+            "region_is_ni": "No data available\n\nSorry, this data is not available for Northern Ireland."
+        }
+    }
+}

@@ -1,0 +1,12 @@
+[
+    {
+        "unavail_reason": "0",
+        "unavail_text_english": "No data available\n\nThis is either because the course size is small or there were not enough responses to produce data. This does not reflect on the quality of the course.",
+        "unavail_text_welsh": "Nid oes data ar gael\n\nMae hyn naill ai oherwydd bod maint y cwrs yn fach neu am nad oedd digon o ymatebion ar gael i gynhyrchu data. Nid yw hyn yn adlewyrchu ansawdd y cwrs."
+    },
+    {
+        "unavail_reason": "1",
+        "unavail_text_english": "No data available\n\nThis is because the course has not yet run or has not been running long enough for this data to be available.",
+        "unavail_text_welsh": "Nid oes data ar gael\n\nMae hyn oherwydd nad yw'r cwrs wedi'i gynnal eto neu nid yw wedi cael ei gynnal yn ddigon hir i’r data hwn fod ar gael."
+    }
+]

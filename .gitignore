@@ -127,12 +127,13 @@ bin
 obj
 appsettings.json
 local.settings.json
+local.settings.json.preprod
 local.settings.json.*
 .python_packages
 beta-data-pipelines.zip
+sample_course_data_test.xml
 
 # Visual Studio Code
-.vscode/
 
 # Local setup files
 setup_env_vars.sh
@@ -142,3 +143,5 @@ test-output.xml
 
 # config file - used to config black
 pyproject.toml
+
+*.dev.*

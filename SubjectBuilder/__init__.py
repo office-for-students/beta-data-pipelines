@@ -7,9 +7,9 @@ from datetime import datetime
 
 import azure.functions as func
 
-from SharedCode.dataset_helper import DataSetHelper
-from SharedCode.blob_helper import BlobHelper
-from SharedCode.mail_helper import MailHelper
+from ..SharedCode.dataset_helper import DataSetHelper
+from ..SharedCode.blob_helper import BlobHelper
+from ..SharedCode.mail_helper import MailHelper
 
 from . import validate, database, exceptions
 
@@ -55,8 +55,8 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
             raise exceptions.StopEtlPipelineErrorException
 
         reader = csv.reader(rows)
-
         version = dsh.get_latest_version_number()
+        
         logging.info(f"using version number: {version}")
         dsh.update_status("subjects", "in progress")
 
