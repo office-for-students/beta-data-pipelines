@@ -204,6 +204,7 @@ def get_course_doc(
     outer_wrapper["partition_key"] = str(version)
 
     course = {}
+    course["course_level"] = int(raw_course_data["KISLEVEL"])
 
     if "ACCREDITATION" in raw_course_data:
         course["accreditations"] = get_accreditations(
