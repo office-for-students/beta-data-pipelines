@@ -621,7 +621,7 @@ def get_go_voice_work_json(raw_go_voice_work_data):
             if 'GOWORKSKILLS' in raw_go_voice_work_data: go_voice_work["go_work_skills"] = raw_go_voice_work_data["GOWORKSKILLS"]
             if 'GOWORKONTRACK' in raw_go_voice_work_data: go_voice_work["go_work_on_track"] = raw_go_voice_work_data["GOWORKONTRACK"]
             if 'GOWORKUNAVAILREASON' in raw_go_voice_work_data:
-                go_voice_work["unavailable"] = get_unavail_messages("GO", 'GOWORKAGG', "GOWORKUNAVAILREASON", raw_go_voice_work_data)
+                go_voice_work["unavailable"] = get_go_work_unavail_messages("GO", 'GOWORKAGG', "GOWORKUNAVAILREASON", raw_go_voice_work_data)
             go_voice_work_array.append(go_voice_work)
         else:
             for elem in raw_go_voice_work_data:
@@ -634,7 +634,7 @@ def get_go_voice_work_json(raw_go_voice_work_data):
                 if 'GOWORKPOP' in elem: go_voice_work["go_work_pop"] = elem["GOWORKPOP"]
                 if 'GOWORKRESP_RATE' in elem: go_voice_work["go_work_resp_rate"] = elem["GOWORKRESP_RATE"]
                 if 'GOWORKUNAVAILREASON' in elem:
-                    go_voice_work["unavailable"] = get_unavail_messages("GO", 'GOWORKAGG', "GOWORKUNAVAILREASON", elem)
+                    go_voice_work["unavailable"] = get_go_work_unavail_messages("GO", 'GOWORKAGG', "GOWORKUNAVAILREASON", elem)
                 go_voice_work_array.append(go_voice_work)
 
     return go_voice_work_array
@@ -1060,10 +1060,10 @@ def create_sector_salary_list(dataset, sector_type):
     return [salary for salary in dataset.findall(sector_type)]
 
 
-def get_unavail_messages(xml_element_key, xml_agg_key, xml_unavail_reason_key, raw_data_element):
+def get_go_work_unavail_messages(xml_element_key, xml_agg_key, xml_unavail_reason_key, raw_data_element):
     shared_utils = SharedUtils(
         xml_element_key,
-        "SBJ",
+        "GOWORKSBJ",
         xml_agg_key,
         xml_unavail_reason_key,
     )
