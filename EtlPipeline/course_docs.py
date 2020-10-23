@@ -301,19 +301,19 @@ def get_course_doc(
 
     # Extract the appropriate sector-level earnings data for the current course.
     go_sector_json_array = get_go_sector_json(
-        course["go_salary_inst"], go_sector_salaries, outer_wrapper["course_mode"], outer_wrapper["course_level"]
+        course["go_salary_inst"], course["leo3_inst"], course["leo5_inst"], go_sector_salaries, outer_wrapper["course_mode"], outer_wrapper["course_level"]
     )
     if go_sector_json_array:
         course["go_salary_sector"] = go_sector_json_array
 
     leo3_sector_json_array = get_leo3_sector_json(
-        course["leo3_inst"], leo3_sector_salaries, outer_wrapper["course_mode"], outer_wrapper["course_level"]
+        course["leo3_inst"], course["go_salary_inst"], course["leo5_inst"], leo3_sector_salaries, outer_wrapper["course_mode"], outer_wrapper["course_level"]
     )
     if leo3_sector_json_array:
         course["leo3_salary_sector"] = leo3_sector_json_array
 
     leo5_sector_json_array = get_leo5_sector_json(
-        course["leo5_inst"], leo5_sector_salaries, outer_wrapper["course_mode"], outer_wrapper["course_level"]
+        course["leo5_inst"], course["go_salary_inst"], course["leo3_inst"], leo5_sector_salaries, outer_wrapper["course_mode"], outer_wrapper["course_level"]
     )
     if leo5_sector_json_array:
         course["leo5_salary_sector"] = leo5_sector_json_array
@@ -733,14 +733,23 @@ def get_location_items(locations, locids, raw_course_data, pub_ukprn):
     return location_items
 
 
-def get_go_sector_json(go_salary_inst, go_sector_salary_lookup, course_mode, course_level):
+def get_go_sector_json(go_salary_inst_list, leo3_salary_inst_list, leo5_salary_inst_list, go_sector_salary_lookup, course_mode, course_level):
     go_salary_json_array = []
 
     go_salary_sector_xml_array = []
-    for salary_inst in go_salary_inst:
-        if 'subject' in salary_inst:
+    for index, go_salary_inst in enumerate(go_salary_inst_list):
+        # If the subject is unavailable for the specific source (GO/LEO3/LEO5), use a sibling source instead.
+        key_subject_code = None
+        if 'subject' in go_salary_inst and 'code' in go_salary_inst['subject']:
+            key_subject_code = go_salary_inst['subject']['code']
+        elif len(leo3_salary_inst_list) >= (index + 1) and 'subject' in leo3_salary_inst_list[index] and 'code' in leo3_salary_inst_list[index]['subject']:
+            key_subject_code = leo3_salary_inst_list[index]['subject']['code']
+        elif len(leo5_salary_inst_list) >= (index + 1) and 'subject' in leo5_salary_inst_list[index] and 'code' in leo5_salary_inst_list[index]['subject']:
+            key_subject_code = leo5_salary_inst_list[index]['subject']['code']
+
+        if key_subject_code is not None:
             lookup_key = (
-                f"{salary_inst['subject']['code']}-{course_mode}-{course_level}"
+                f"{key_subject_code}-{course_mode}-{course_level}"
             )
             go_sector_salary = go_sector_salary_lookup.get_sector_salaries_data_for_key(
                 lookup_key
@@ -794,14 +803,23 @@ def get_go_sector_json(go_salary_inst, go_sector_salary_lookup, course_mode, cou
     return go_salary_json_array
 
 
-def get_leo3_sector_json(leo3_salary_inst, leo3_sector_salary_lookup, course_mode, course_level):
+def get_leo3_sector_json(leo3_salary_inst_list, go_salary_inst_list, leo5_salary_inst_list, leo3_sector_salary_lookup, course_mode, course_level):
     leo3_json_array = []
 
     leo3_sector_xml_array = []
-    for salary_inst in leo3_salary_inst:
-        if 'subject' in salary_inst:
+    for index, leo3_salary_inst in enumerate(leo3_salary_inst_list):
+        # If the subject is unavailable for the specific source (GO/LEO3/LEO5), use a sibling source instead.
+        key_subject_code = None
+        if 'subject' in leo3_salary_inst and 'code' in leo3_salary_inst['subject']:
+            key_subject_code = leo3_salary_inst['subject']['code']
+        elif len(go_salary_inst_list) >= (index + 1) and 'subject' in go_salary_inst_list[index] and 'code' in go_salary_inst_list[index]['subject']:
+            key_subject_code = go_salary_inst_list[index]['subject']['code']
+        elif len(leo5_salary_inst_list) >= (index + 1) and 'subject' in leo5_salary_inst_list[index] and 'code' in leo5_salary_inst_list[index]['subject']:
+            key_subject_code = leo5_salary_inst_list[index]['subject']['code']
+
+        if key_subject_code is not None:
             lookup_key = (
-                f"{salary_inst['subject']['code']}-{course_mode}-{course_level}"
+                f"{key_subject_code}-{course_mode}-{course_level}"
             )
             go_sector_salary = leo3_sector_salary_lookup.get_sector_salaries_data_for_key(
                 lookup_key
@@ -905,14 +923,23 @@ def get_leo3_sector_json(leo3_salary_inst, leo3_sector_salary_lookup, course_mod
     return leo3_json_array
 
 
-def get_leo5_sector_json(leo5_salary_inst, leo5_sector_salary_lookup, course_mode, course_level):
+def get_leo5_sector_json(leo5_salary_inst_list, go_salary_inst_list, leo3_salary_inst_list, leo5_sector_salary_lookup, course_mode, course_level):
     leo5_json_array = []
 
     leo5_sector_xml_array = []
-    for salary_inst in leo5_salary_inst:
-        if 'subject' in salary_inst:
+    for index, leo5_salary_inst in enumerate(leo5_salary_inst_list):
+        # If the subject is unavailable for the specific source (GO/LEO3/LEO5), use a sibling source instead.
+        key_subject_code = None
+        if 'subject' in leo5_salary_inst and 'code' in leo5_salary_inst['subject']:
+            key_subject_code = leo5_salary_inst['subject']['code']
+        elif len(go_salary_inst_list) >= (index + 1) and 'subject' in go_salary_inst_list[index] and 'code' in go_salary_inst_list[index]['subject']:
+            key_subject_code = go_salary_inst_list[index]['subject']['code']
+        elif len(leo3_salary_inst_list) >= (index + 1) and 'subject' in leo3_salary_inst_list[index] and 'code' in leo3_salary_inst_list[index]['subject']:
+            key_subject_code = leo3_salary_inst_list[index]['subject']['code']
+
+        if key_subject_code is not None:
             lookup_key = (
-                f"{salary_inst['subject']['code']}-{course_mode}-{course_level}"
+                f"{key_subject_code}-{course_mode}-{course_level}"
             )
             go_sector_salary = leo5_sector_salary_lookup.get_sector_salaries_data_for_key(
                 lookup_key
