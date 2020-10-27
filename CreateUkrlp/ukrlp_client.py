@@ -54,7 +54,7 @@ class UkrlpClient:
 
         try:
             provider_records = enrichment_data_dict["S:Envelope"]["S:Body"][
-                "ns4:ProviderQueryResponse"
+                "ns0:ProviderQueryResponse"
             ]["MatchingProviderRecords"]
         except KeyError:
             return None
