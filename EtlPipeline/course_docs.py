@@ -103,8 +103,6 @@ def load_course_docs(xml_string, version):
                 raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
                 locids = get_locids(raw_course_data, ukprn)
 
-                raise ValueError
-
                 course_doc = get_course_doc(
                     accreditations,
                     locations,
