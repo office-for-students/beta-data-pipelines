@@ -15,6 +15,7 @@ import os
 import sys
 import time
 import defusedxml.ElementTree as ET
+import traceback
 
 import xmltodict
 
@@ -102,6 +103,8 @@ def load_course_docs(xml_string, version):
                 raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
                 locids = get_locids(raw_course_data, ukprn)
 
+                raise ValueError
+
                 course_doc = get_course_doc(
                     accreditations,
                     locations,
@@ -131,12 +134,19 @@ def load_course_docs(xml_string, version):
                     sproc_count = 0
                     time.sleep(3)
             except Exception as e:
+
                 institution_id = raw_inst_data["UKPRN"]
                 course_id = raw_course_data["KISCOURSEID"]
                 course_mode = raw_course_data["KISMODE"]
 
-                logging.info(f"There was an error: {e} when creating the course document for course "
-                             f"with institution_id: {institution_id} course_id: {course_id} course_mode: {course_mode}")
+                exception_text = f"There was an error: {e} when creating the course document for course with institution_id: {institution_id} course_id: {course_id} course_mode: {course_mode}"
+                logging.info(exception_text)
+                tb = traceback.format_exc()
+                print(tb)
+                with open("course_docs_exceptions_{}.txt".format(version), "a") as myfile:
+                    myfile.write(exception_text + "\n")
+                    myfile.write(tb + "\n")
+                    myfile.write("================================================================================================\n")
 
     if sproc_count > 0:
         logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
@@ -754,11 +764,13 @@ def get_go_sector_json(go_salary_inst_list, leo3_salary_inst_list, leo5_salary_i
             go_sector_salary = go_sector_salary_lookup.get_sector_salaries_data_for_key(
                 lookup_key
             )
-            go_salary_sector_xml_array.append(go_sector_salary)
-        else:
-            go_salary_sector_xml_array.append({})
 
-    if go_salary_sector_xml_array:
+            if go_sector_salary is not None:
+                go_salary_sector_xml_array.append(go_sector_salary)
+        #else:
+            #go_salary_sector_xml_array.append({})
+
+    if go_salary_sector_xml_array and len(go_salary_sector_xml_array) > 0:
         for elem in go_salary_sector_xml_array:
             go_salary = {}
             if 'GOSECSBJ' in elem: go_salary["subject"] = get_subject(elem["GOSECSBJ"])
@@ -821,14 +833,16 @@ def get_leo3_sector_json(leo3_salary_inst_list, go_salary_inst_list, leo5_salary
             lookup_key = (
                 f"{key_subject_code}-{course_mode}-{course_level}"
             )
-            go_sector_salary = leo3_sector_salary_lookup.get_sector_salaries_data_for_key(
+            leo3_sector_salary = leo3_sector_salary_lookup.get_sector_salaries_data_for_key(
                 lookup_key
             )
-            leo3_sector_xml_array.append(go_sector_salary)
-        else:
-            leo3_sector_xml_array.append({})
 
-    if leo3_sector_xml_array:
+            if leo3_sector_salary is not None:
+                leo3_sector_xml_array.append(leo3_sector_salary)
+        #else:
+            #leo3_sector_xml_array.append({})
+
+    if leo3_sector_xml_array and len(leo3_sector_xml_array) > 0:
         for elem in leo3_sector_xml_array:
             leo3 = {}
             if 'LEO3SECSBJ' in elem: leo3["subject"] = get_subject(elem["LEO3SECSBJ"])
@@ -941,14 +955,16 @@ def get_leo5_sector_json(leo5_salary_inst_list, go_salary_inst_list, leo3_salary
             lookup_key = (
                 f"{key_subject_code}-{course_mode}-{course_level}"
             )
-            go_sector_salary = leo5_sector_salary_lookup.get_sector_salaries_data_for_key(
+            leo5_sector_salary = leo5_sector_salary_lookup.get_sector_salaries_data_for_key(
                 lookup_key
             )
-            leo5_sector_xml_array.append(go_sector_salary)
-        else:
-            leo5_sector_xml_array.append({})
 
-    if leo5_sector_xml_array:
+            if leo5_sector_salary is not None:
+                leo5_sector_xml_array.append(leo5_sector_salary)
+        #else:
+            #leo5_sector_xml_array.append({})
+
+    if leo5_sector_xml_array and len(leo5_sector_xml_array) > 0:
         for elem in leo5_sector_xml_array:
             leo5 = {}
             if 'LEO5SECSBJ' in elem: leo5["subject"] = get_subject(elem["LEO5SECSBJ"])
