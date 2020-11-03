@@ -15,6 +15,7 @@ import os
 import sys
 import time
 import defusedxml.ElementTree as ET
+import traceback
 
 import xmltodict
 
@@ -131,12 +132,19 @@ def load_course_docs(xml_string, version):
                     sproc_count = 0
                     time.sleep(3)
             except Exception as e:
+
                 institution_id = raw_inst_data["UKPRN"]
                 course_id = raw_course_data["KISCOURSEID"]
                 course_mode = raw_course_data["KISMODE"]
 
-                logging.info(f"There was an error: {e} when creating the course document for course "
-                             f"with institution_id: {institution_id} course_id: {course_id} course_mode: {course_mode}")
+                exception_text = f"There was an error: {e} when creating the course document for course with institution_id: {institution_id} course_id: {course_id} course_mode: {course_mode}"
+                logging.info(exception_text)
+                tb = traceback.format_exc()
+                print(tb)
+                with open("course_docs_exceptions_{}.txt".format(version), "a") as myfile:
+                    myfile.write(exception_text + "\n")
+                    myfile.write(tb + "\n")
+                    myfile.write("================================================================================================\n")
 
     if sproc_count > 0:
         logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
@@ -204,6 +212,7 @@ def get_course_doc(
     outer_wrapper["partition_key"] = str(version)
 
     course = {}
+    course["course_level"] = int(raw_course_data["KISLEVEL"])
 
     if "ACCREDITATION" in raw_course_data:
         course["accreditations"] = get_accreditations(
@@ -300,19 +309,19 @@ def get_course_doc(
 
     # Extract the appropriate sector-level earnings data for the current course.
     go_sector_json_array = get_go_sector_json(
-        course["go_salary_inst"], go_sector_salaries, outer_wrapper["course_mode"], outer_wrapper["course_level"]
+        course["go_salary_inst"], course["leo3_inst"], course["leo5_inst"], go_sector_salaries, outer_wrapper["course_mode"], outer_wrapper["course_level"]
     )
     if go_sector_json_array:
         course["go_salary_sector"] = go_sector_json_array
 
     leo3_sector_json_array = get_leo3_sector_json(
-        course["leo3_inst"], leo3_sector_salaries, outer_wrapper["course_mode"], outer_wrapper["course_level"]
+        course["leo3_inst"], course["go_salary_inst"], course["leo5_inst"], leo3_sector_salaries, outer_wrapper["course_mode"], outer_wrapper["course_level"]
     )
     if leo3_sector_json_array:
         course["leo3_salary_sector"] = leo3_sector_json_array
 
     leo5_sector_json_array = get_leo5_sector_json(
-        course["leo5_inst"], leo5_sector_salaries, outer_wrapper["course_mode"], outer_wrapper["course_level"]
+        course["leo5_inst"], course["go_salary_inst"], course["leo3_inst"], leo5_sector_salaries, outer_wrapper["course_mode"], outer_wrapper["course_level"]
     )
     if leo5_sector_json_array:
         course["leo5_salary_sector"] = leo5_sector_json_array
@@ -620,7 +629,7 @@ def get_go_voice_work_json(raw_go_voice_work_data):
             if 'GOWORKSKILLS' in raw_go_voice_work_data: go_voice_work["go_work_skills"] = raw_go_voice_work_data["GOWORKSKILLS"]
             if 'GOWORKONTRACK' in raw_go_voice_work_data: go_voice_work["go_work_on_track"] = raw_go_voice_work_data["GOWORKONTRACK"]
             if 'GOWORKUNAVAILREASON' in raw_go_voice_work_data:
-                go_voice_work["unavailable"] = get_unavail_messages("GO", 'GOWORKAGG', "GOWORKUNAVAILREASON", raw_go_voice_work_data)
+                go_voice_work["unavailable"] = get_go_work_unavail_messages("GO", 'GOWORKAGG', "GOWORKUNAVAILREASON", raw_go_voice_work_data)
             go_voice_work_array.append(go_voice_work)
         else:
             for elem in raw_go_voice_work_data:
@@ -633,7 +642,7 @@ def get_go_voice_work_json(raw_go_voice_work_data):
                 if 'GOWORKPOP' in elem: go_voice_work["go_work_pop"] = elem["GOWORKPOP"]
                 if 'GOWORKRESP_RATE' in elem: go_voice_work["go_work_resp_rate"] = elem["GOWORKRESP_RATE"]
                 if 'GOWORKUNAVAILREASON' in elem:
-                    go_voice_work["unavailable"] = get_unavail_messages("GO", 'GOWORKAGG', "GOWORKUNAVAILREASON", elem)
+                    go_voice_work["unavailable"] = get_go_work_unavail_messages("GO", 'GOWORKAGG', "GOWORKUNAVAILREASON", elem)
                 go_voice_work_array.append(go_voice_work)
 
     return go_voice_work_array
@@ -732,23 +741,34 @@ def get_location_items(locations, locids, raw_course_data, pub_ukprn):
     return location_items
 
 
-def get_go_sector_json(go_salary_inst, go_sector_salary_lookup, course_mode, course_level):
+def get_go_sector_json(go_salary_inst_list, leo3_salary_inst_list, leo5_salary_inst_list, go_sector_salary_lookup, course_mode, course_level):
     go_salary_json_array = []
 
     go_salary_sector_xml_array = []
-    for salary_inst in go_salary_inst:
-        if 'subject' in salary_inst:
+    for index, go_salary_inst in enumerate(go_salary_inst_list):
+        # If the subject is unavailable for the specific source (GO/LEO3/LEO5), use a sibling source instead.
+        key_subject_code = None
+        if 'subject' in go_salary_inst and 'code' in go_salary_inst['subject']:
+            key_subject_code = go_salary_inst['subject']['code']
+        elif len(leo3_salary_inst_list) >= (index + 1) and 'subject' in leo3_salary_inst_list[index] and 'code' in leo3_salary_inst_list[index]['subject']:
+            key_subject_code = leo3_salary_inst_list[index]['subject']['code']
+        elif len(leo5_salary_inst_list) >= (index + 1) and 'subject' in leo5_salary_inst_list[index] and 'code' in leo5_salary_inst_list[index]['subject']:
+            key_subject_code = leo5_salary_inst_list[index]['subject']['code']
+
+        if key_subject_code is not None:
             lookup_key = (
-                f"{salary_inst['subject']['code']}-{course_mode}-{course_level}"
+                f"{key_subject_code}-{course_mode}-{course_level}"
             )
             go_sector_salary = go_sector_salary_lookup.get_sector_salaries_data_for_key(
                 lookup_key
             )
-            go_salary_sector_xml_array.append(go_sector_salary)
-        else:
-            go_salary_sector_xml_array.append({})
 
-    if go_salary_sector_xml_array:
+            if go_sector_salary is not None:
+                go_salary_sector_xml_array.append(go_sector_salary)
+        #else:
+            #go_salary_sector_xml_array.append({})
+
+    if go_salary_sector_xml_array and len(go_salary_sector_xml_array) > 0:
         for elem in go_salary_sector_xml_array:
             go_salary = {}
             if 'GOSECSBJ' in elem: go_salary["subject"] = get_subject(elem["GOSECSBJ"])
@@ -793,23 +813,34 @@ def get_go_sector_json(go_salary_inst, go_sector_salary_lookup, course_mode, cou
     return go_salary_json_array
 
 
-def get_leo3_sector_json(leo3_salary_inst, leo3_sector_salary_lookup, course_mode, course_level):
+def get_leo3_sector_json(leo3_salary_inst_list, go_salary_inst_list, leo5_salary_inst_list, leo3_sector_salary_lookup, course_mode, course_level):
     leo3_json_array = []
 
     leo3_sector_xml_array = []
-    for salary_inst in leo3_salary_inst:
-        if 'subject' in salary_inst:
+    for index, leo3_salary_inst in enumerate(leo3_salary_inst_list):
+        # If the subject is unavailable for the specific source (GO/LEO3/LEO5), use a sibling source instead.
+        key_subject_code = None
+        if 'subject' in leo3_salary_inst and 'code' in leo3_salary_inst['subject']:
+            key_subject_code = leo3_salary_inst['subject']['code']
+        elif len(go_salary_inst_list) >= (index + 1) and 'subject' in go_salary_inst_list[index] and 'code' in go_salary_inst_list[index]['subject']:
+            key_subject_code = go_salary_inst_list[index]['subject']['code']
+        elif len(leo5_salary_inst_list) >= (index + 1) and 'subject' in leo5_salary_inst_list[index] and 'code' in leo5_salary_inst_list[index]['subject']:
+            key_subject_code = leo5_salary_inst_list[index]['subject']['code']
+
+        if key_subject_code is not None:
             lookup_key = (
-                f"{salary_inst['subject']['code']}-{course_mode}-{course_level}"
+                f"{key_subject_code}-{course_mode}-{course_level}"
             )
-            go_sector_salary = leo3_sector_salary_lookup.get_sector_salaries_data_for_key(
+            leo3_sector_salary = leo3_sector_salary_lookup.get_sector_salaries_data_for_key(
                 lookup_key
             )
-            leo3_sector_xml_array.append(go_sector_salary)
-        else:
-            leo3_sector_xml_array.append({})
 
-    if leo3_sector_xml_array:
+            if leo3_sector_salary is not None:
+                leo3_sector_xml_array.append(leo3_sector_salary)
+        #else:
+            #leo3_sector_xml_array.append({})
+
+    if leo3_sector_xml_array and len(leo3_sector_xml_array) > 0:
         for elem in leo3_sector_xml_array:
             leo3 = {}
             if 'LEO3SECSBJ' in elem: leo3["subject"] = get_subject(elem["LEO3SECSBJ"])
@@ -904,23 +935,34 @@ def get_leo3_sector_json(leo3_salary_inst, leo3_sector_salary_lookup, course_mod
     return leo3_json_array
 
 
-def get_leo5_sector_json(leo5_salary_inst, leo5_sector_salary_lookup, course_mode, course_level):
+def get_leo5_sector_json(leo5_salary_inst_list, go_salary_inst_list, leo3_salary_inst_list, leo5_sector_salary_lookup, course_mode, course_level):
     leo5_json_array = []
 
     leo5_sector_xml_array = []
-    for salary_inst in leo5_salary_inst:
-        if 'subject' in salary_inst:
+    for index, leo5_salary_inst in enumerate(leo5_salary_inst_list):
+        # If the subject is unavailable for the specific source (GO/LEO3/LEO5), use a sibling source instead.
+        key_subject_code = None
+        if 'subject' in leo5_salary_inst and 'code' in leo5_salary_inst['subject']:
+            key_subject_code = leo5_salary_inst['subject']['code']
+        elif len(go_salary_inst_list) >= (index + 1) and 'subject' in go_salary_inst_list[index] and 'code' in go_salary_inst_list[index]['subject']:
+            key_subject_code = go_salary_inst_list[index]['subject']['code']
+        elif len(leo3_salary_inst_list) >= (index + 1) and 'subject' in leo3_salary_inst_list[index] and 'code' in leo3_salary_inst_list[index]['subject']:
+            key_subject_code = leo3_salary_inst_list[index]['subject']['code']
+
+        if key_subject_code is not None:
             lookup_key = (
-                f"{salary_inst['subject']['code']}-{course_mode}-{course_level}"
+                f"{key_subject_code}-{course_mode}-{course_level}"
             )
-            go_sector_salary = leo5_sector_salary_lookup.get_sector_salaries_data_for_key(
+            leo5_sector_salary = leo5_sector_salary_lookup.get_sector_salaries_data_for_key(
                 lookup_key
             )
-            leo5_sector_xml_array.append(go_sector_salary)
-        else:
-            leo5_sector_xml_array.append({})
 
-    if leo5_sector_xml_array:
+            if leo5_sector_salary is not None:
+                leo5_sector_xml_array.append(leo5_sector_salary)
+        #else:
+            #leo5_sector_xml_array.append({})
+
+    if leo5_sector_xml_array and len(leo5_sector_xml_array) > 0:
         for elem in leo5_sector_xml_array:
             leo5 = {}
             if 'LEO5SECSBJ' in elem: leo5["subject"] = get_subject(elem["LEO5SECSBJ"])
@@ -1059,10 +1101,10 @@ def create_sector_salary_list(dataset, sector_type):
     return [salary for salary in dataset.findall(sector_type)]
 
 
-def get_unavail_messages(xml_element_key, xml_agg_key, xml_unavail_reason_key, raw_data_element):
+def get_go_work_unavail_messages(xml_element_key, xml_agg_key, xml_unavail_reason_key, raw_data_element):
     shared_utils = SharedUtils(
         xml_element_key,
-        "SBJ",
+        "GOWORKSBJ",
         xml_agg_key,
         xml_unavail_reason_key,
     )
