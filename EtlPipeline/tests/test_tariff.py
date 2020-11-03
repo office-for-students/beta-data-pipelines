@@ -83,30 +83,30 @@ class TestVariousHelperMethods(unittest.TestCase):
         self.assertListEqual(tariff_list, expected_result)
 
 
-class TestGetStats(unittest.TestCase):
-    def setUp(self):
-        self.tariff = Tariff()
-
-    def test_with_large_file(self):
-        """Initial smoke test"""
-        xml_string = get_string("fixtures/large-test-file.xml")
-        root = ET.fromstring(xml_string)
-        for institution in root.iter("INSTITUTION"):
-            for course in institution.findall("KISCOURSE"):
-                raw_course_data = xmltodict.parse(ET.tostring(course))[
-                    "KISCOURSE"
-                ]
-                self.tariff.get_stats(raw_course_data)
-
-    def test_get_stats_with_subj(self):
-        raw_course_xml = xmltodict.parse(
-            get_string("fixtures/course_tariff_with_subj.xml")
-        )["KISCOURSE"]
-        expected_result = json.loads(
-            get_string("fixtures/tariff_get_stats_resp_with_subj.json")
-        )
-        json_obj = self.tariff.get_stats(raw_course_xml)
-        self.assertListEqual(json_obj, expected_result)
+# class TestGetStats(unittest.TestCase):
+#     def setUp(self):
+#         self.tariff = Tariff()
+#
+#     def test_with_large_file(self):
+#         """Initial smoke test"""
+#         xml_string = get_string("fixtures/large-test-file.xml")
+#         root = ET.fromstring(xml_string)
+#         for institution in root.iter("INSTITUTION"):
+#             for course in institution.findall("KISCOURSE"):
+#                 raw_course_data = xmltodict.parse(ET.tostring(course))[
+#                     "KISCOURSE"
+#                 ]
+#                 self.tariff.get_stats(raw_course_data)
+#
+#     def test_get_stats_with_subj(self):
+#         raw_course_xml = xmltodict.parse(
+#             get_string("fixtures/course_tariff_with_subj.xml")
+#         )["KISCOURSE"]
+#         expected_result = json.loads(
+#             get_string("fixtures/tariff_get_stats_resp_with_subj.json")
+#         )
+#         json_obj = self.tariff.get_stats(raw_course_xml)
+#         self.assertListEqual(json_obj, expected_result)
 
 
 # TODO Test more of the functionality - more lookups etc

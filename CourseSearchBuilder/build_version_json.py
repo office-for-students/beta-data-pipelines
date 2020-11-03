@@ -10,6 +10,7 @@ from SharedCode.blob_helper import BlobHelper
 
 def build_version_json_file():
     version = DataSetHelper().get_latest_version_number()
+
     blob_helper = BlobHelper()
 
     version_file = io.StringIO()

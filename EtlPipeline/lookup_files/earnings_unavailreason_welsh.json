@@ -1,0 +1,25 @@
+{
+    "institution": {
+        "go": {
+            "0": "Nid oes data ar gael\n\nMae hyn naill ai oherwydd bod maint y cwrs yn fach neu am nad oedd digon o ymatebion ar gael i gynhyrchu data. Nid yw hyn yn adlewyrchu ansawdd y cwrs.",
+            "1": "Nid oes data ar gael\n\nMae hyn oherwydd nad yw'r cwrs wedi'i gynnal eto neu nid yw wedi cael ei gynnal yn ddigon hir i’r data hwn fod ar gael.",
+            "2": "Nid oes data ar gael\n\nNid yw hyn yn adlewyrchu ansawdd y cwrs."
+        },
+        "leo": {
+            "0": "Nid oes data ar gael\n\nGall hyn fod oherwydd bod maint y cwrs yn rhy fach. Nid yw hyn yn adlewyrchu ansawdd y cwrs.",
+            "1": "Nid oes data ar gael\n\nMae hyn oherwydd nad yw'r cwrs wedi'i gynnal eto neu nid yw wedi cael ei gynnal yn ddigon hir i’r data hwn fod ar gael.",
+            "2": "Nid oes data ar gael\n\nNid yw hyn yn adlewyrchu ansawdd y cwrs.",
+            "ni": "Nid oes data ar gael\n\nYn anffodus, nid yw'r data hwn ar gael ar gyfer cyrsiau yng Ngogledd Iwerddon."
+        }
+    },
+    "sector": {
+        "go": {
+            "region_not_exists": "Nid oes data ar gael",
+            "region_not_nation": "Nid oes data ar gael\n\nNid yw'r data hwn ar gael ar gyfer y lefel hon."
+        },
+        "leo": {
+            "region_not_exists": "Nid oes data ar gael",
+            "region_is_ni": "Nid oes data ar gael\n\nYn anffodus, nid yw’r data hwn ar gael ar gyfer Gogledd Iwerddon."
+        }
+    }
+}

@@ -52,10 +52,21 @@ class UkrlpClient:
         decoded_content = response.content.decode("utf-8")
         enrichment_data_dict = xmltodict.parse(decoded_content)
 
+        # from collections import OrderedDict
+        # import json
+        # with open('enrichment_data_dict.json', 'w') as f:
+        #     f.write(json.dumps(enrichment_data_dict))
+
+
         try:
-            provider_records = enrichment_data_dict["S:Envelope"]["S:Body"][
-                "ns4:ProviderQueryResponse"
-            ]["MatchingProviderRecords"]
+            # provider_records = enrichment_data_dict["S:Envelope"]["S:Body"][
+            #     "ns0:ProviderQueryResponse"
+            # ]["MatchingProviderRecords"]
+
+            # APW: inspection of downstream code shows that it is expecting exactly one matching dictionary (or zero).
+            body_dict = enrichment_data_dict["S:Envelope"]["S:Body"]
+            provider_records = [value for key, value in body_dict.items() if 'ProviderQueryResponse' in key][0]['MatchingProviderRecords']
+                
         except KeyError:
             return None
 

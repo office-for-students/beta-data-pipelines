@@ -11,7 +11,7 @@ from SharedCode.blob_helper import BlobHelper
 
 
 def build_subjects_json_file():
-    version = DataSetHelper().get_latest_version_number()
+    version = DataSetHelper().get_latest_version_number()       
     blob_helper = BlobHelper()
 
     cosmos_db_client = get_cosmos_client()

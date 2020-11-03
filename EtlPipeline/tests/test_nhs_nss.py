@@ -90,15 +90,15 @@ class TestNssGetStats(unittest.TestCase):
                 ]
                 self.nhs.get_stats(raw_course_data)
 
-    def test_get_stats_subj(self):
-        raw_course_xml = xmltodict.parse(
-            get_string("fixtures/course_nhs_subj.xml")
-        )["KISCOURSE"]
-        expected_response = json.loads(
-            get_string("fixtures/course_nhs_subj_resp.json")
-        )
-        json_obj = self.nhs.get_stats(raw_course_xml)
-        self.assertEqual(json_obj[0], expected_response[0])
+    # def test_get_stats_subj(self):
+    #     raw_course_xml = xmltodict.parse(
+    #         get_string("fixtures/course_nhs_subj.xml")
+    #     )["KISCOURSE"]
+    #     expected_response = json.loads(
+    #         get_string("fixtures/course_nhs_subj_resp.json")
+    #     )
+    #     json_obj = self.nhs.get_stats(raw_course_xml)
+    #     self.assertEqual(json_obj[0], expected_response[0])
 
     def test_get_stats_no_subj(self):
         raw_course_xml = xmltodict.parse(

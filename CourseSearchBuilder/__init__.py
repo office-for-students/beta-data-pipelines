@@ -17,7 +17,6 @@ from .build_version_json import build_version_json_file
 
 def main(msgin: func.QueueMessage):
     msgerror = ""
-
     mail_helper = MailHelper()
     environment = os.environ["Environment"]
 
