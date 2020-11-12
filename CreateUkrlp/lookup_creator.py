@@ -253,16 +253,16 @@ class LookupCreator:
 
         contact_details["address"] = LookupCreator.get_address(address)
 
-        if 'ContactTelephone1' not in provider_contact:
-            f = open("ukrlp_debug.txt", "a")
-            f.write(f"ukprn: {ukprn}\n")
-            f.write(f"contact_details: {contact_details}\n")
-            f.write(f"provider_contact: {provider_contact}\n")
-            f.write(f"ProviderName: {matching_provider_records['ProviderName']}\n")
-            f.write(f"ProviderVerificationDate: {matching_provider_records['ProviderVerificationDate']}\n")
-            f.write("======================================================================================\n")
-            f.write("======================================================================================\n")
-            f.close()
+        # if 'ContactTelephone1' not in provider_contact:
+        #     f = open("ukrlp_debug.txt", "a")
+        #     f.write(f"ukprn: {ukprn}\n")
+        #     f.write(f"contact_details: {contact_details}\n")
+        #     f.write(f"provider_contact: {provider_contact}\n")
+        #     f.write(f"ProviderName: {matching_provider_records['ProviderName']}\n")
+        #     f.write(f"ProviderVerificationDate: {matching_provider_records['ProviderVerificationDate']}\n")
+        #     f.write("======================================================================================\n")
+        #     f.write("======================================================================================\n")
+        #     f.close()
 
         # f = open("ukrlp_debug.txt", "a")
         # if 'ContactTelephone1' not in provider_contact:

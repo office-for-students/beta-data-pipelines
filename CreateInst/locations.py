@@ -37,16 +37,16 @@ class Locations:
                 else:
                     exception_text = e
 
-                f = open("locations_debug.txt", "a")
-                if location: f.write(f"location: {location}\n")
-                if ukprn: f.write(f"ukprn: {ukprn}\n")
-                if lockey: f.write(f"lockey: {lockey}\n")
-                if raw_location_data: f.write(f"raw_location_data: {raw_location_data}\n")
-                if self.lookup_dict: f.write(f"lookup_dict: {self.lookup_dict}\n")
-                f.write(f"exception_text: {exception_text}\n")
-                f.write("======================================================================================\n")
-                f.write("======================================================================================\n")
-                f.close()
+                # f = open("locations_debug.txt", "a")
+                # if location: f.write(f"location: {location}\n")
+                # if ukprn: f.write(f"ukprn: {ukprn}\n")
+                # if lockey: f.write(f"lockey: {lockey}\n")
+                # if raw_location_data: f.write(f"raw_location_data: {raw_location_data}\n")
+                # if self.lookup_dict: f.write(f"lookup_dict: {self.lookup_dict}\n")
+                # f.write(f"exception_text: {exception_text}\n")
+                # f.write("======================================================================================\n")
+                # f.write("======================================================================================\n")
+                # f.close()
 
     def get_location(self, key):
         return self.lookup_dict.get(key)
