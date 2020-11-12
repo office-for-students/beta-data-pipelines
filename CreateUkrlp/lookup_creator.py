@@ -288,8 +288,9 @@ class LookupCreator:
         # f.write("======================================================================================\n")
         # f.close()
 
-        else:
-            contact_details["telephone"] = provider_contact["ContactTelephone1"]
+        # else:
+        #     contact_details["telephone"] = provider_contact["ContactTelephone1"]
+        contact_details["telephone"] = provider_contact["ContactTelephone1"]
         
         contact_details["website"] = LookupCreator.get_website(
             matching_provider_records
