@@ -279,24 +279,24 @@ class JobList:
                         )
         return json_data
 
-    def get_list_field(self, xml_elem):
-        """Extracts and transforms the JOBLIST entries in a COMMON element"""
+    # def get_list_field(self, xml_elem):
+    #     """Extracts and transforms the JOBLIST entries in a COMMON element"""
 
-        list_field = []
-        job_lists = self.shared_utils.get_raw_list(xml_elem, "JOBLIST")
-        for job_list in job_lists:
-            job_list_item = {}
-            job_list_item["job"] = job_list["JOB"]
-            job_list_item["percentage_of_students"] = job_list["PERC"]
+    #     list_field = []
+    #     job_lists = self.shared_utils.get_raw_list(xml_elem, "JOBLIST")
+    #     for job_list in job_lists:
+    #         job_list_item = {}
+    #         job_list_item["job"] = job_list["JOB"]
+    #         job_list_item["percentage_of_students"] = job_list["PERC"]
 
-            if job_list_item["percentage_of_students"].isnumeric():
-                if int(job_list_item["percentage_of_students"]) < 5:
-                    job_list_item["percentage_of_students"] = "<5"
+    #         if job_list_item["percentage_of_students"].isnumeric():
+    #             if int(job_list_item["percentage_of_students"]) < 5:
+    #                 job_list_item["percentage_of_students"] = "<5"
 
-            job_list_item["order"] = job_list["ORDER"]
-            job_list_item["hs"] = job_list["HS"]
-            list_field.append(job_list_item)
-        return list_field
+    #         job_list_item["order"] = job_list["ORDER"]
+    #         job_list_item["hs"] = job_list["HS"]
+    #         list_field.append(job_list_item)
+    #     return list_field
 
 
 # class Leo:

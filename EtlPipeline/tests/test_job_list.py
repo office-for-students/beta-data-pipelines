@@ -77,15 +77,15 @@ class TestGetStats(unittest.TestCase):
     #             job_list = JobList()
     #             job_list.get_stats(raw_course_data)
 
-    def test_no_subj(self):
-        raw_course_xml = xmltodict.parse(
-            get_string("fixtures/course_no_subj_for_most.xml")
-        )["KISCOURSE"]
-        expected_result = json.loads(
-            get_string("fixtures/course_no_com_subj_resp.json")
-        )
-        json_obj = self.job_list.get_stats(raw_course_xml)
-        self.assertListEqual(json_obj, expected_result)
+    # def test_no_subj(self):
+    #     raw_course_xml = xmltodict.parse(
+    #         get_string("fixtures/course_no_subj_for_most.xml")
+    #     )["KISCOURSE"]
+    #     expected_result = json.loads(
+    #         get_string("fixtures/course_no_com_subj_resp.json")
+    #     )
+    #     json_obj = self.job_list.get_stats(raw_course_xml)
+    #     self.assertListEqual(json_obj, expected_result)
 
     # def test_with_subj(self):
     #     raw_course_xml = xmltodict.parse(
