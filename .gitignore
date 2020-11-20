@@ -145,3 +145,6 @@ test-output.xml
 pyproject.toml
 
 *.dev.*
+
+# OSX files
+.DS_Store
