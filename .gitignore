@@ -148,3 +148,4 @@ pyproject.toml
 
 # OSX files
 .DS_Store
+kis*.xml
