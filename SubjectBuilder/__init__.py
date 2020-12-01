@@ -56,7 +56,7 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
 
         reader = csv.reader(rows)
         version = dsh.get_latest_version_number()
-        
+
         logging.info(f"using version number: {version}")
         dsh.update_status("subjects", "in progress")
 

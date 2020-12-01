@@ -56,11 +56,6 @@ def build_course_search_doc(course):
                     "code": course["course"]["mode"]["code"],
                     "label": course["course"]["mode"]["label"],
                 },
-                "qualification": {
-                    "code": course["course"]["qualification"]["code"],
-                    "label": course["course"]["qualification"]["label"],
-                    "level": course["course"]["qualification"]["level"],
-                },
                 "sandwich_year": {
                     "code": course["course"]["sandwich_year"]["code"],
                     "label": course["course"]["sandwich_year"]["label"],
@@ -73,6 +68,16 @@ def build_course_search_doc(course):
                 },
             },
         }
+
+        if "qualification" in course["course"] and \
+           "code" in course["course"]["qualification"] and \
+           "label" in course["course"]["qualification"] and \
+           "level" in course["course"]["qualification"]:
+            json["course"]["qualification"] = {
+                "code": course["course"]["qualification"]["code"],
+                "label": course["course"]["qualification"]["label"],
+                "level": course["course"]["qualification"]["level"],
+            }
 
         return json
 

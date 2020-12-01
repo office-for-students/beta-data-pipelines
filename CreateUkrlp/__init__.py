@@ -11,9 +11,9 @@ import azure.functions as func
 
 from azure.storage.blob import BlockBlobService
 
-from SharedCode.dataset_helper import DataSetHelper
-from SharedCode.blob_helper import BlobHelper
-from SharedCode.mail_helper import MailHelper
+from ..SharedCode.dataset_helper import DataSetHelper
+from ..SharedCode.blob_helper import BlobHelper
+from ..SharedCode.mail_helper import MailHelper
 
 from .lookup_creator import LookupCreator
 
@@ -38,7 +38,7 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
     use_local_test_XML_file = os.environ.get('UseLocalTestXMLFile')
 
     msgerror = ""
-    
+
     mail_helper = MailHelper()
     environment = os.environ["Environment"]
 
@@ -65,7 +65,7 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
             xml_string = mock_xml_source_file.read()
         else:
             xml_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
-            
+
         version = dsh.get_latest_version_number()
 
         storage_container_name = os.environ["AzureStorageWelshUnisContainerName"]

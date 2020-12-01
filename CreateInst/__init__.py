@@ -53,7 +53,7 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
             xml_string = mock_xml_source_file.read()
         else:
             xml_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
-            
+
         version = dsh.get_latest_version_number()
 
         """ LOADING - extract data and load JSON Documents """
