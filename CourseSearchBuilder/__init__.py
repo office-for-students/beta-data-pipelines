@@ -6,9 +6,9 @@ from datetime import datetime
 
 import azure.functions as func
 
-from ..SharedCode.dataset_helper import DataSetHelper
-from ..SharedCode.mail_helper import MailHelper
-from ..SharedCode import utils
+from SharedCode.dataset_helper import DataSetHelper
+from SharedCode.mail_helper import MailHelper
+from SharedCode import utils
 from . import search
 from .build_institutions_json import build_institutions_json_files
 from .build_subjects_json import build_subjects_json_file

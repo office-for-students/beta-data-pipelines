@@ -5,12 +5,14 @@
             {
                 "job": "Health associate professionals",
                 "percentage_of_students": "80",
-                "order": "1"
+                "order": "1",
+                "hs": "1"
             },
             {
                 "job": "Sales occupations",
                 "percentage_of_students": "20",
-                "order": "2"
+                "order": "2",
+                "hs": "2"
             }
         ],
         "number_of_students": 10,

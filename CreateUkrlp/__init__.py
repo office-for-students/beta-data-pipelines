@@ -11,9 +11,9 @@ import azure.functions as func
 
 from azure.storage.blob import BlockBlobService
 
-from ..SharedCode.dataset_helper import DataSetHelper
-from ..SharedCode.blob_helper import BlobHelper
-from ..SharedCode.mail_helper import MailHelper
+from SharedCode.dataset_helper import DataSetHelper
+from SharedCode.blob_helper import BlobHelper
+from SharedCode.mail_helper import MailHelper
 
 from .lookup_creator import LookupCreator
 
