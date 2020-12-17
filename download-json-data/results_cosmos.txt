@@ -1,0 +1,436 @@
+Success: AA School of Architecture was found in the CosmosDB on dev
+Success: Abdo College of Education was found in the CosmosDB on dev
+Success: University of Aberdeen was found in the CosmosDB on dev
+Success: Abertay University was found in the CosmosDB on dev
+Success: Aberystwyth University was found in the CosmosDB on dev
+Success: Abingdon and Witney College was found in the CosmosDB on dev
+Success: Academy of Live and Recorded Arts was found in the CosmosDB on dev
+Success: ACM was found in the CosmosDB on dev
+Success: Activate Learning was found in the CosmosDB on dev
+Success: AECC University College was found in the CosmosDB on dev
+Success: All Nations Christian College was found in the CosmosDB on dev
+Success: Amity Global Education Ltd was found in the CosmosDB on dev
+Success: Anglia Ruskin University Higher Education Corporation was found in the CosmosDB on dev
+Success: Arden University was found in the CosmosDB on dev
+Success: Arts Educational Schools was found in the CosmosDB on dev
+Success: University of the Arts, London was found in the CosmosDB on dev
+Success: The Arts University Bournemouth was found in the CosmosDB on dev
+Success: Askham Bryan College was found in the CosmosDB on dev
+Success: Aston University was found in the CosmosDB on dev
+Success: Backstage Academy (training) Ltd was found in the CosmosDB on dev
+Success: Bangor University was found in the CosmosDB on dev
+Success: Barnet & Southgate College was found in the CosmosDB on dev
+Success: Barnsley College was found in the CosmosDB on dev
+Success: Basingstoke College of Technology was found in the CosmosDB on dev
+Success: University of Bath was found in the CosmosDB on dev
+Success: Bath College was found in the CosmosDB on dev
+Success: Bath Spa University was found in the CosmosDB on dev
+Success: BCA was found in the CosmosDB on dev
+Success: Bedford College was found in the CosmosDB on dev
+Success: University of Bedfordshire was found in the CosmosDB on dev
+Success: Bexhill College was found in the CosmosDB on dev
+Success: Bimm Limited was found in the CosmosDB on dev
+Success: Birkbeck, University of London was found in the CosmosDB on dev
+Success: University of Birmingham was found in the CosmosDB on dev
+Success: Birmingham City University was found in the CosmosDB on dev
+Success: Birmingham Community Nhs Trust was found in the CosmosDB on dev
+Success: Birmingham Metropolitan College was found in the CosmosDB on dev
+Success: Bishop Auckland College was found in the CosmosDB on dev
+Success: Bishop Burton College was found in the CosmosDB on dev
+Success: Bishop Grosseteste University was found in the CosmosDB on dev
+Success: Blackburn College was found in the CosmosDB on dev
+Success: Blackpool and the Fylde College was found in the CosmosDB on dev
+Success: Bodmin College was found in the CosmosDB on dev
+Success: The University of Bolton was found in the CosmosDB on dev
+Success: Boston College was found in the CosmosDB on dev
+Success: The Bournemouth and Poole College was found in the CosmosDB on dev
+Success: Bournemouth University was found in the CosmosDB on dev
+Success: BPP University was found in the CosmosDB on dev
+Success: The University of Bradford was found in the CosmosDB on dev
+Success: Bradford College was found in the CosmosDB on dev
+Success: Bridgend College was found in the CosmosDB on dev
+Success: Bridgwater and Taunton College was found in the CosmosDB on dev
+Success: University of Brighton was found in the CosmosDB on dev
+ERROR: Brighton and Sussex Medical School was NOT found in the CosmosDB on dev
+Success: University of Bristol was found in the CosmosDB on dev
+Success: Bristol Baptist College was found in the CosmosDB on dev
+Success: Brit College was found in the CosmosDB on dev
+Success: British College of Osteopathic Medicine was found in the CosmosDB on dev
+Success: Brockenhurst College was found in the CosmosDB on dev
+Success: Brooklands College was found in the CosmosDB on dev
+Success: Brunel University London was found in the CosmosDB on dev
+Success: University of Buckingham was found in the CosmosDB on dev
+Success: Buckinghamshire New University was found in the CosmosDB on dev
+Success: Burnley College was found in the CosmosDB on dev
+Success: Burton and South Derbyshire College was found in the CosmosDB on dev
+Success: Bury College was found in the CosmosDB on dev
+Success: Calderdale College was found in the CosmosDB on dev
+Success: University of Cambridge was found in the CosmosDB on dev
+Success: Cambridge School of Visual and Performing Arts was found in the CosmosDB on dev
+Success: The Cambridge Theological Federation was found in the CosmosDB on dev
+Success: Canterbury Christ Church University was found in the CosmosDB on dev
+Success: Capel Manor College was found in the CosmosDB on dev
+Success: Capital City College Group was found in the CosmosDB on dev
+Success: Cardiff and Vale College was found in the CosmosDB on dev
+Success: Cardiff Metropolitan University was found in the CosmosDB on dev
+Success: Cardiff University was found in the CosmosDB on dev
+Success: Cardinal Newman College was found in the CosmosDB on dev
+Success: Carmel College was found in the CosmosDB on dev
+Success: Cecos Computing International Limited was found in the CosmosDB on dev
+Success: Central Bedfordshire College was found in the CosmosDB on dev
+Success: Central Film School London was found in the CosmosDB on dev
+Success: University of Central Lancashire was found in the CosmosDB on dev
+Success: The Chartered Institute of Payroll Professionals was found in the CosmosDB on dev
+Success: Cheshire College South and West was found in the CosmosDB on dev
+Success: University of Chester was found in the CosmosDB on dev
+Success: Chesterfield College was found in the CosmosDB on dev
+Success: University of Chichester was found in the CosmosDB on dev
+Success: Chichester College Group was found in the CosmosDB on dev
+Success: Chicken Shed Theatre Company was found in the CosmosDB on dev
+Success: Christ the Redeemer College was found in the CosmosDB on dev
+Success: City and Guilds of London Art School was found in the CosmosDB on dev
+Success: City College Norwich was found in the CosmosDB on dev
+Success: City College Plymouth was found in the CosmosDB on dev
+Success: City of Bristol College was found in the CosmosDB on dev
+Success: The City of Liverpool College was found in the CosmosDB on dev
+ERROR: City Of Stoke-On-Trent Sixth Form College was NOT found in the CosmosDB on dev
+ERROR: City Of Sunderland College was NOT found in the CosmosDB on dev
+Success: City of Wolverhampton College was found in the CosmosDB on dev
+Success: City, University of London was found in the CosmosDB on dev
+Success: Cliff College was found in the CosmosDB on dev
+ERROR: CM was NOT found in the CosmosDB on dev
+Success: Colchester Institute was found in the CosmosDB on dev
+Success: Coleg Llandrillo was found in the CosmosDB on dev
+Success: Coleg Y Cymoedd was found in the CosmosDB on dev
+Success: College of Integrated Chinese Medicine was found in the CosmosDB on dev
+Success: The Conservatoire for Dance and Drama was found in the CosmosDB on dev
+Success: Cornwall College was found in the CosmosDB on dev
+Success: Court Theatre Training Company Ltd was found in the CosmosDB on dev
+Success: Courtauld Institute of Art was found in the CosmosDB on dev
+Success: Coventry College was found in the CosmosDB on dev
+Success: Coventry University was found in the CosmosDB on dev
+Success: Craven College was found in the CosmosDB on dev
+Success: Croydon College was found in the CosmosDB on dev
+Success: The University of Cumbria was found in the CosmosDB on dev
+Success: Darlington College was found in the CosmosDB on dev
+Success: David Game College Ltd was found in the CosmosDB on dev
+Success: De Montfort University was found in the CosmosDB on dev
+Success: University of Derby was found in the CosmosDB on dev
+Success: Derby College Group was found in the CosmosDB on dev
+Success: Doreen Bird College of Performing Arts Ltd. was found in the CosmosDB on dev
+Success: Dudley College of Technology was found in the CosmosDB on dev
+Success: University of Dundee was found in the CosmosDB on dev
+Success: Durham University was found in the CosmosDB on dev
+Success: Ealing, Hammersmith & West London College was found in the CosmosDB on dev
+Success: University of East Anglia was found in the CosmosDB on dev
+Success: East Coast College was found in the CosmosDB on dev
+Success: The University of East London was found in the CosmosDB on dev
+Success: East Sussex College Group was found in the CosmosDB on dev
+Success: Edge Hill University was found in the CosmosDB on dev
+Success: University of Edinburgh was found in the CosmosDB on dev
+Success: Edinburgh Napier University was found in the CosmosDB on dev
+Success: The Education Training Collective was found in the CosmosDB on dev
+Success: Ekc Group was found in the CosmosDB on dev
+Success: Empire College London Limited was found in the CosmosDB on dev
+Success: The University of Essex was found in the CosmosDB on dev
+Success: European School of Osteopathy was found in the CosmosDB on dev
+Success: Everton Free School was found in the CosmosDB on dev
+Success: University of Exeter was found in the CosmosDB on dev
+Success: Exeter College was found in the CosmosDB on dev
+Success: Falmouth University was found in the CosmosDB on dev
+Success: Fareham College was found in the CosmosDB on dev
+Success: Farnborough College of Technology was found in the CosmosDB on dev
+Success: Fashion Retail Academy was found in the CosmosDB on dev
+Success: Fourth Monkey Education Limited was found in the CosmosDB on dev
+Success: Furness College was found in the CosmosDB on dev
+Success: Futureworks was found in the CosmosDB on dev
+Success: Gateshead College was found in the CosmosDB on dev
+Success: University of Glasgow was found in the CosmosDB on dev
+Success: Glasgow Caledonian University was found in the CosmosDB on dev
+Success: Glasgow Clyde College was found in the CosmosDB on dev
+Success: Glasgow School of Art was found in the CosmosDB on dev
+Success: Global Banking School Limited was found in the CosmosDB on dev
+Success: University of Gloucestershire was found in the CosmosDB on dev
+Success: Gloucestershire College was found in the CosmosDB on dev
+Success: Glyndwr University was found in the CosmosDB on dev
+Success: Goldsmiths, University of London was found in the CosmosDB on dev
+Success: Gower College Swansea was found in the CosmosDB on dev
+Success: Grantham College was found in the CosmosDB on dev
+Success: Greater Brighton Metropolitan College was found in the CosmosDB on dev
+Success: Greenbank College was found in the CosmosDB on dev
+Success: University of Greenwich was found in the CosmosDB on dev
+Success: Grwp NPTC Group was found in the CosmosDB on dev
+Success: Guildhall School of Music & Drama was found in the CosmosDB on dev
+Success: Coleg Gwent was found in the CosmosDB on dev
+Success: Hadlow College was found in the CosmosDB on dev
+Success: Halesowen College was found in the CosmosDB on dev
+Success: Harlow College was found in the CosmosDB on dev
+Success: Harper Adams University was found in the CosmosDB on dev
+Success: Harper and Keele Veterinary School was found in the CosmosDB on dev
+Success: Hartlepool College of Further Education was found in the CosmosDB on dev
+Success: Hartpury University was found in the CosmosDB on dev
+Success: Havant and South Downs College was found in the CosmosDB on dev
+Success: Heart of Worcestershire College was found in the CosmosDB on dev
+Success: Hereford College of Arts was found in the CosmosDB on dev
+Success: Herefordshire, Ludlow, and North Shropshire College was found in the CosmosDB on dev
+Success: Heriot-watt University was found in the CosmosDB on dev
+Success: Hertford Regional College was found in the CosmosDB on dev
+Success: University of Hertfordshire was found in the CosmosDB on dev
+Success: University of the Highlands and Islands was found in the CosmosDB on dev
+Success: Hopwood Hall College was found in the CosmosDB on dev
+Success: University of Huddersfield was found in the CosmosDB on dev
+Success: Huddersfield New College was found in the CosmosDB on dev
+Success: Hugh Baird College was found in the CosmosDB on dev
+Success: University of Hull was found in the CosmosDB on dev
+Success: Hull College Group was found in the CosmosDB on dev
+ERROR: Hull York Medical School was NOT found in the CosmosDB on dev
+Success: Hult was found in the CosmosDB on dev
+Success: Hy Education Limited was found in the CosmosDB on dev
+Success: Icon College of Technology & Management was found in the CosmosDB on dev
+Success: Imperial College London was found in the CosmosDB on dev
+Success: Institute of Contemporary Music Performance was found in the CosmosDB on dev
+Success: The Islamic College was found in the CosmosDB on dev
+Success: Istituto Marangoni Limited was found in the CosmosDB on dev
+ERROR: Italia Conti Academy of Theatre Arts Limited(The) was NOT found in the CosmosDB on dev
+Success: Jca | London Fashion Academy was found in the CosmosDB on dev
+Success: Kaplan Open Learning (essex) Limited was found in the CosmosDB on dev
+Success: Keele University was found in the CosmosDB on dev
+Success: Kendal College was found in the CosmosDB on dev
+Success: The University of Kent was found in the CosmosDB on dev
+Success: King's College London was found in the CosmosDB on dev
+Success: Kingston Maurward College was found in the CosmosDB on dev
+Success: Kingston University was found in the CosmosDB on dev
+Success: KLC School of Design was found in the CosmosDB on dev
+Success: Lakes College West Cumbria was found in the CosmosDB on dev
+Success: Lancaster University was found in the CosmosDB on dev
+Success: The University of Law was found in the CosmosDB on dev
+Success: Le Cordon Bleu Limited was found in the CosmosDB on dev
+Success: University of Leeds was found in the CosmosDB on dev
+Success: Leeds Arts University was found in the CosmosDB on dev
+Success: Leeds Beckett University was found in the CosmosDB on dev
+Success: Leeds City College was found in the CosmosDB on dev
+Success: Leeds College of Building was found in the CosmosDB on dev
+Success: Leeds Conservatoire was found in the CosmosDB on dev
+Success: Leeds Trinity University was found in the CosmosDB on dev
+Success: University of Leicester was found in the CosmosDB on dev
+Success: Leicester College was found in the CosmosDB on dev
+Success: University of Lincoln was found in the CosmosDB on dev
+Success: Lincoln College was found in the CosmosDB on dev
+Success: LIPA was found in the CosmosDB on dev
+Success: The University of Liverpool was found in the CosmosDB on dev
+Success: Liverpool Hope University was found in the CosmosDB on dev
+Success: Liverpool John Moores University was found in the CosmosDB on dev
+Success: London Academy of Music and Dramatic Arts was found in the CosmosDB on dev
+Success: London Bridge Business Academy was found in the CosmosDB on dev
+Success: The London College was found in the CosmosDB on dev
+Success: The London Early Years Foundation was found in the CosmosDB on dev
+Success: London Film Academy was found in the CosmosDB on dev
+Success: University of London Institute in Paris was found in the CosmosDB on dev
+Success: The London Institute of Banking & Finance was found in the CosmosDB on dev
+Success: London Metropolitan University was found in the CosmosDB on dev
+Success: London School of Commerce & It Limited was found in the CosmosDB on dev
+Success: The London School of Economics and Political Science was found in the CosmosDB on dev
+Success: London School of Management Education was found in the CosmosDB on dev
+Success: London School of Osteopathy was found in the CosmosDB on dev
+Success: London School of Theology was found in the CosmosDB on dev
+Success: London South Bank University was found in the CosmosDB on dev
+Success: London South East Colleges was found in the CosmosDB on dev
+Success: London Studio Centre was found in the CosmosDB on dev
+Success: Loughborough College was found in the CosmosDB on dev
+Success: Loughborough University was found in the CosmosDB on dev
+Success: Luther King House Educational Trust was found in the CosmosDB on dev
+Success: Macclesfield College was found in the CosmosDB on dev
+Success: University of Manchester was found in the CosmosDB on dev
+Success: The Manchester College was found in the CosmosDB on dev
+Success: Manchester Metropolitan University was found in the CosmosDB on dev
+Success: Maria Montessori Institute was found in the CosmosDB on dev
+Success: The Markfield Institute of Higher Education was found in the CosmosDB on dev
+Success: Matrix College of Counselling and Psychotherapy Ltd was found in the CosmosDB on dev
+Success: Mattersey Hall was found in the CosmosDB on dev
+ERROR: Medway School of Pharmacy was NOT found in the CosmosDB on dev
+Success: Merthyr Tydfil College Limited was found in the CosmosDB on dev
+Success: Met Film School Limited was found in the CosmosDB on dev
+Success: The Metanoia Institute was found in the CosmosDB on dev
+Success: Middlesex University was found in the CosmosDB on dev
+Success: Milton Keynes College was found in the CosmosDB on dev
+Success: Mont Rose College of Management and Sciences Limited was found in the CosmosDB on dev
+Success: Montessori Centre International was found in the CosmosDB on dev
+Success: Moorlands College was found in the CosmosDB on dev
+Success: Morley College was found in the CosmosDB on dev
+Success: Moulton College was found in the CosmosDB on dev
+Success: Mountview Academy of Theatre Arts was found in the CosmosDB on dev
+Success: Myerscough College was found in the CosmosDB on dev
+Success: Nazarene Theological College was found in the CosmosDB on dev
+Success: Nelson and Colne College was found in the CosmosDB on dev
+Success: Nelson College London Limited was found in the CosmosDB on dev
+Success: New City College was found in the CosmosDB on dev
+Success: New College Durham was found in the CosmosDB on dev
+Success: New College of the Humanities was found in the CosmosDB on dev
+Success: New College Swindon was found in the CosmosDB on dev
+Success: Newbury College was found in the CosmosDB on dev
+Success: Newcastle and Stafford Colleges Group (NSCG) / Axia Solutions Limited was found in the CosmosDB on dev
+Success: Newcastle College was found in the CosmosDB on dev
+Success: Newcastle University was found in the CosmosDB on dev
+Success: Newman University was found in the CosmosDB on dev
+Success: Norland College was found in the CosmosDB on dev
+Success: North East Surrey College of Technology (nescot) was found in the CosmosDB on dev
+Success: North Hertfordshire College was found in the CosmosDB on dev
+Success: North Lindsey College was found in the CosmosDB on dev
+Success: North Warwickshire and South Leicestershire College was found in the CosmosDB on dev
+Success: The University of Northampton was found in the CosmosDB on dev
+Success: Northern College of Acupuncture was found in the CosmosDB on dev
+Success: The Northern School of Art was found in the CosmosDB on dev
+Success: Northern Skills Group was found in the CosmosDB on dev
+Success: University of Northumbria At Newcastle was found in the CosmosDB on dev
+Success: Norwich University of the Arts was found in the CosmosDB on dev
+Success: University of Nottingham, the was found in the CosmosDB on dev
+Success: Nottingham College was found in the CosmosDB on dev
+Success: Nottingham Trent University was found in the CosmosDB on dev
+Success: Nova Centric Limited was found in the CosmosDB on dev
+Success: Oak Hill College was found in the CosmosDB on dev
+Success: Oaklands College was found in the CosmosDB on dev
+Success: The Oldham College was found in the CosmosDB on dev
+Success: The Open University was found in the CosmosDB on dev
+Success: Orbital South Colleges was found in the CosmosDB on dev
+Success: Oxford Brookes University was found in the CosmosDB on dev
+Success: Oxford University was found in the CosmosDB on dev
+Success: Pearson College London was found in the CosmosDB on dev
+Success: Pembrokeshire College was found in the CosmosDB on dev
+Success: Peter Symonds College was found in the CosmosDB on dev
+Success: Petroc was found in the CosmosDB on dev
+Success: Platform One (iow) Limited was found in the CosmosDB on dev
+Success: Plumpton College was found in the CosmosDB on dev
+Success: University of Plymouth was found in the CosmosDB on dev
+Success: Plymouth College of Art was found in the CosmosDB on dev
+Success: Plymouth Marjon University was found in the CosmosDB on dev
+Success: Point Blank Music School was found in the CosmosDB on dev
+Success: University of Portsmouth was found in the CosmosDB on dev
+Success: Preston's College was found in the CosmosDB on dev
+Success: Queen Margaret University, Edinburgh was found in the CosmosDB on dev
+Success: Queen Mary University of London was found in the CosmosDB on dev
+Success: The Queen's Foundation for Ecumenical Theological Education was found in the CosmosDB on dev
+Success: Queen's University Belfast was found in the CosmosDB on dev
+Success: Ravensbourne University London was found in the CosmosDB on dev
+Success: University of Reading was found in the CosmosDB on dev
+Success: Reaseheath College was found in the CosmosDB on dev
+Success: Regents Theological College was found in the CosmosDB on dev
+Success: Results Consortium Limited was found in the CosmosDB on dev
+Success: REVETT was found in the CosmosDB on dev
+Success: Richmond, the American International University in London was found in the CosmosDB on dev
+Success: Richmond Upon Thames College was found in the CosmosDB on dev
+Success: Riverside College Halton was found in the CosmosDB on dev
+Success: Rnn Group was found in the CosmosDB on dev
+Success: Robert Gordon University was found in the CosmosDB on dev
+Success: Roehampton University was found in the CosmosDB on dev
+Success: Rose Bruford College of Theatre and Performance was found in the CosmosDB on dev
+Success: Royal Academy of Dance was found in the CosmosDB on dev
+Success: Royal Academy of Dramatic Art was found in the CosmosDB on dev
+Success: The Royal Academy of Music was found in the CosmosDB on dev
+Success: The Royal Agricultural University was found in the CosmosDB on dev
+Success: The Royal Central School of Speech and Drama was found in the CosmosDB on dev
+Success: Royal College of Music was found in the CosmosDB on dev
+Success: Royal Conservatoire of Scotland was found in the CosmosDB on dev
+Success: Royal Holloway, University of London was found in the CosmosDB on dev
+Success: Royal Northern College of Music was found in the CosmosDB on dev
+Success: Royal School of Needlework(the) was found in the CosmosDB on dev
+Success: The Royal Veterinary College was found in the CosmosDB on dev
+Success: Royal Welsh College of Music and Drama Limited was found in the CosmosDB on dev
+Success: Rtc Education Ltd was found in the CosmosDB on dev
+Success: Ruskin College Oxford was found in the CosmosDB on dev
+Success: SAE Institute Ltd was found in the CosmosDB on dev
+Success: The University of Salford was found in the CosmosDB on dev
+Success: Salford City College was found in the CosmosDB on dev
+Success: Sandwell College was found in the CosmosDB on dev
+Success: Scotland's Rural College was found in the CosmosDB on dev
+Success: Selby College was found in the CosmosDB on dev
+Success: University of Sheffield was found in the CosmosDB on dev
+Success: Sheffield College, the was found in the CosmosDB on dev
+Success: Sheffield Hallam University was found in the CosmosDB on dev
+Success: The Sherwood Institute was found in the CosmosDB on dev
+Success: Shockout Arts was found in the CosmosDB on dev
+Success: Shrewsbury Colleges Group was found in the CosmosDB on dev
+Success: Simply Alliance Limited was found in the CosmosDB on dev
+Success: The Smb Group was found in the CosmosDB on dev
+Success: Soas University of London was found in the CosmosDB on dev
+Success: Solent University, Southampton was found in the CosmosDB on dev
+Success: Solihull College and University Centre was found in the CosmosDB on dev
+Success: South & City College Birmingham was found in the CosmosDB on dev
+Success: South Essex College of Further and Higher Education was found in the CosmosDB on dev
+Success: South Gloucestershire and Stroud College was found in the CosmosDB on dev
+Success: South Thames Colleges Group was found in the CosmosDB on dev
+Success: University of South Wales/prifysgol De Cymru was found in the CosmosDB on dev
+Success: University of Southampton was found in the CosmosDB on dev
+Success: Southampton City College was found in the CosmosDB on dev
+Success: Southport College was found in the CosmosDB on dev
+Success: Sparsholt College was found in the CosmosDB on dev
+Success: Spirit Studios was found in the CosmosDB on dev
+Success: Spurgeon's College was found in the CosmosDB on dev
+Success: University of St Andrews was found in the CosmosDB on dev
+Success: St Helens College was found in the CosmosDB on dev
+Success: St Mary's College was found in the CosmosDB on dev
+Success: St Mary's University College was found in the CosmosDB on dev
+Success: St Mary's University, Twickenham was found in the CosmosDB on dev
+Success: St Mellitus College was found in the CosmosDB on dev
+Success: St. George's, University of London was found in the CosmosDB on dev
+Success: Staffordshire University was found in the CosmosDB on dev
+Success: University of Stirling was found in the CosmosDB on dev
+Success: Stoke On Trent College was found in the CosmosDB on dev
+Success: Stranmillis University College was found in the CosmosDB on dev
+Success: University of Strathclyde was found in the CosmosDB on dev
+Success: Strode College was found in the CosmosDB on dev
+Success: University of Suffolk was found in the CosmosDB on dev
+Success: Suffolk New College was found in the CosmosDB on dev
+Success: University of Sunderland was found in the CosmosDB on dev
+Success: The University of Surrey was found in the CosmosDB on dev
+Success: University of Sussex was found in the CosmosDB on dev
+Success: Swansea University was found in the CosmosDB on dev
+Success: Tameside College was found in the CosmosDB on dev
+Success: Tec Partnership was found in the CosmosDB on dev
+Success: Teesside University was found in the CosmosDB on dev
+Success: Telford College was found in the CosmosDB on dev
+Success: The Trafford College Group was found in the CosmosDB on dev
+Success: Trinity College Bristol was found in the CosmosDB on dev
+Success: Trinity Laban Conservatoire of Music and Dance was found in the CosmosDB on dev
+Success: Truro and Penwith College was found in the CosmosDB on dev
+Success: Tyne Coast College was found in the CosmosDB on dev
+Success: Ucfb College of Football Business Limited was found in the CosmosDB on dev
+Success: UCL was found in the CosmosDB on dev
+Success: Ulster University was found in the CosmosDB on dev
+Success: Unified Seevic Palmer's College was found in the CosmosDB on dev
+Success: United Colleges Group was found in the CosmosDB on dev
+Success: University Centre Peterborough was found in the CosmosDB on dev
+Success: University Centre South Devon was found in the CosmosDB on dev
+Success: University Centre Weston was found in the CosmosDB on dev
+Success: University College Birmingham was found in the CosmosDB on dev
+Success: University College of Estate Management was found in the CosmosDB on dev
+Success: University College of Osteopathy (the) was found in the CosmosDB on dev
+Success: University for the Creative Arts was found in the CosmosDB on dev
+Success: The Urdang Academy was found in the CosmosDB on dev
+Success: UWE Bristol was found in the CosmosDB on dev
+Success: Wakefield College was found in the CosmosDB on dev
+Success: University of Wales: Trinity Saint David was found in the CosmosDB on dev
+Success: University of Warwick was found in the CosmosDB on dev
+Success: Warwickshire College was found in the CosmosDB on dev
+Success: Waterbear - the College of Music was found in the CosmosDB on dev
+Success: Waverley Abbey College was found in the CosmosDB on dev
+Success: West Dean College was found in the CosmosDB on dev
+Success: West Herts College was found in the CosmosDB on dev
+Success: West Kent and Ashford College was found in the CosmosDB on dev
+Success: The University of West London was found in the CosmosDB on dev
+Success: University of the West of Scotland was found in the CosmosDB on dev
+Success: West Suffolk College was found in the CosmosDB on dev
+Success: The University of Westminster was found in the CosmosDB on dev
+Success: Weymouth College was found in the CosmosDB on dev
+Success: Wigan and Leigh College was found in the CosmosDB on dev
+Success: Wiltshire College and University Centre was found in the CosmosDB on dev
+Success: University of Winchester was found in the CosmosDB on dev
+Success: The Windsor Forest Colleges Group was found in the CosmosDB on dev
+Success: Wirral Metropolitan College was found in the CosmosDB on dev
+Success: University of Wolverhampton was found in the CosmosDB on dev
+Success: University of Worcester was found in the CosmosDB on dev
+Success: Writtle University College was found in the CosmosDB on dev
+Success: Xaverian College was found in the CosmosDB on dev
+Success: Yeovil College was found in the CosmosDB on dev
+Success: University of York was found in the CosmosDB on dev
+Success: York College was found in the CosmosDB on dev
+Success: York St John University was found in the CosmosDB on dev

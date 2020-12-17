@@ -1,0 +1,439 @@
+Success: Coventry College was found in the institutions_en.json
+Success: Queen's University Belfast was found in the institutions_en.json
+Success: Queen's University Belfast was found in the institutions_en.json
+Success: Abdo College of Education was found in the institutions_en.json
+Success: Abingdon and Witney College was found in the institutions_en.json
+Success: AECC University College was found in the institutions_en.json
+Success: All Nations Christian College was found in the institutions_en.json
+Success: Academy of Live and Recorded Arts was found in the institutions_en.json
+Success: Anglia Ruskin University Higher Education Corporation was found in the institutions_en.json
+Success: Arts Educational Schools was found in the institutions_en.json
+Success: The Arts University Bournemouth was found in the institutions_en.json
+Success: Askham Bryan College was found in the institutions_en.json
+Success: Barnet & Southgate College was found in the institutions_en.json
+Success: Barnsley College was found in the institutions_en.json
+Success: Basingstoke College of Technology was found in the institutions_en.json
+Success: Bath Spa University was found in the institutions_en.json
+Success: Bedford College was found in the institutions_en.json
+Success: BCA was found in the institutions_en.json
+Success: Bexhill College was found in the institutions_en.json
+Success: University College Birmingham was found in the institutions_en.json
+Success: Bishop Auckland College was found in the institutions_en.json
+Success: Bishop Burton College was found in the institutions_en.json
+Success: Blackburn College was found in the institutions_en.json
+Success: Blackpool and the Fylde College was found in the institutions_en.json
+Success: Boston College was found in the institutions_en.json
+Success: The Bournemouth and Poole College was found in the institutions_en.json
+Success: Bournemouth University was found in the institutions_en.json
+Success: Bradford College was found in the institutions_en.json
+Success: Bridgwater and Taunton College was found in the institutions_en.json
+Success: University of Brighton was found in the institutions_en.json
+Success: Bristol Baptist College was found in the institutions_en.json
+Success: British College of Osteopathic Medicine was found in the institutions_en.json
+Success: University College of Osteopathy (the) was found in the institutions_en.json
+Success: Brockenhurst College was found in the institutions_en.json
+Success: London South East Colleges was found in the institutions_en.json
+Success: Brooklands College was found in the institutions_en.json
+Success: The Smb Group was found in the institutions_en.json
+Success: Brunel University London was found in the institutions_en.json
+Success: Buckinghamshire New University was found in the institutions_en.json
+Success: Burnley College was found in the institutions_en.json
+Success: Burton and South Derbyshire College was found in the institutions_en.json
+Success: Bury College was found in the institutions_en.json
+Success: Calderdale College was found in the institutions_en.json
+Success: Canterbury Christ Church University was found in the institutions_en.json
+Success: Capel Manor College was found in the institutions_en.json
+Success: Cardinal Newman College was found in the institutions_en.json
+Success: Carmel College was found in the institutions_en.json
+Success: University of Northumbria At Newcastle was found in the institutions_en.json
+Success: Chesterfield College was found in the institutions_en.json
+Success: Chicken Shed Theatre Company was found in the institutions_en.json
+Success: Bath College was found in the institutions_en.json
+Success: City of Bristol College was found in the institutions_en.json
+ERROR: City of Sunderland College was NOT found in the institutions_en.json
+Success: United Colleges Group was found in the institutions_en.json
+Success: City, University of London was found in the institutions_en.json
+Success: The Northern School of Art was found in the institutions_en.json
+ERROR: Cm was NOT found in the institutions_en.json
+Success: Colchester Institute was found in the institutions_en.json
+Success: College of Integrated Chinese Medicine was found in the institutions_en.json
+Success: The Conservatoire for Dance and Drama was found in the institutions_en.json
+Success: Cornwall College was found in the institutions_en.json
+Success: Coventry University was found in the institutions_en.json
+Success: Craven College was found in the institutions_en.json
+Success: Croydon College was found in the institutions_en.json
+Success: Darlington College was found in the institutions_en.json
+Success: De Montfort University was found in the institutions_en.json
+Success: Derby College Group was found in the institutions_en.json
+Success: Doreen Bird College of Performing Arts Ltd. was found in the institutions_en.json
+Success: Central Bedfordshire College was found in the institutions_en.json
+Success: Ealing, Hammersmith & West London College was found in the institutions_en.json
+Success: The Windsor Forest Colleges Group was found in the institutions_en.json
+Success: Orbital South Colleges was found in the institutions_en.json
+Success: European School of Osteopathy was found in the institutions_en.json
+Success: Exeter College was found in the institutions_en.json
+Success: Farnborough College of Technology was found in the institutions_en.json
+Success: Furness College was found in the institutions_en.json
+Success: Gateshead College was found in the institutions_en.json
+Success: Glasgow School of Art was found in the institutions_en.json
+Success: Gloucestershire College was found in the institutions_en.json
+Success: Goldsmiths, University of London was found in the institutions_en.json
+Success: Grantham College was found in the institutions_en.json
+Success: Greenbank College was found in the institutions_en.json
+Success: Hadlow College was found in the institutions_en.json
+Success: Halesowen College was found in the institutions_en.json
+Success: Riverside College Halton was found in the institutions_en.json
+Success: Harlow College was found in the institutions_en.json
+Success: Hartlepool College of Further Education was found in the institutions_en.json
+Success: East Sussex College Group was found in the institutions_en.json
+Success: Coventry College was found in the institutions_en.json
+Success: Hereford College of Arts was found in the institutions_en.json
+Success: Herefordshire, Ludlow, and North Shropshire College was found in the institutions_en.json
+Success: Hertford Regional College was found in the institutions_en.json
+Success: Hopwood Hall College was found in the institutions_en.json
+Success: Huddersfield New College was found in the institutions_en.json
+Success: Hugh Baird College was found in the institutions_en.json
+Success: Hull College Group was found in the institutions_en.json
+Success: Hult was found in the institutions_en.json
+Success: Icon College of Technology & Management was found in the institutions_en.json
+Success: Imperial College London was found in the institutions_en.json
+Success: The Chartered Institute of Payroll Professionals was found in the institutions_en.json
+ERROR: Italia Conti Academy of Theatre Arts Limited(the) was NOT found in the institutions_en.json
+Success: Kendal College was found in the institutions_en.json
+Success: University of Winchester was found in the institutions_en.json
+Success: King's College London was found in the institutions_en.json
+Success: South Thames Colleges Group was found in the institutions_en.json
+Success: Kingston Maurward College was found in the institutions_en.json
+Success: Kingston University was found in the institutions_en.json
+Success: Lakes College West Cumbria was found in the institutions_en.json
+Success: London Academy of Music and Dramatic Arts was found in the institutions_en.json
+Success: Le Cordon Bleu Limited was found in the institutions_en.json
+Success: Leeds Arts University was found in the institutions_en.json
+Success: Leeds College of Building was found in the institutions_en.json
+Success: Leeds Beckett University was found in the institutions_en.json
+Success: Leeds Trinity University was found in the institutions_en.json
+Success: Leicester College was found in the institutions_en.json
+Success: Lincoln College was found in the institutions_en.json
+Success: LIPA was found in the institutions_en.json
+Success: The City of Liverpool College was found in the institutions_en.json
+Success: Liverpool Hope University was found in the institutions_en.json
+Success: Liverpool John Moores University was found in the institutions_en.json
+Success: London Film Academy was found in the institutions_en.json
+Success: London Metropolitan University was found in the institutions_en.json
+Success: The London School of Economics and Political Science was found in the institutions_en.json
+Success: London School of Theology was found in the institutions_en.json
+Success: London South Bank University was found in the institutions_en.json
+Success: London Studio Centre was found in the institutions_en.json
+Success: Loughborough College was found in the institutions_en.json
+Success: Loughborough University was found in the institutions_en.json
+Success: East Coast College was found in the institutions_en.json
+Success: Macclesfield College was found in the institutions_en.json
+Success: Manchester Metropolitan University was found in the institutions_en.json
+Success: Maria Montessori Institute was found in the institutions_en.json
+Success: The Metanoia Institute was found in the institutions_en.json
+Success: Northern Skills Group was found in the institutions_en.json
+Success: Middlesex University was found in the institutions_en.json
+Success: Milton Keynes College was found in the institutions_en.json
+Success: Morley College was found in the institutions_en.json
+Success: Moulton College was found in the institutions_en.json
+Success: Mountview Academy of Theatre Arts was found in the institutions_en.json
+Success: Myerscough College was found in the institutions_en.json
+Success: Nazarene Theological College was found in the institutions_en.json
+Success: Nelson and Colne College was found in the institutions_en.json
+Success: New College Durham was found in the institutions_en.json
+Success: Nottingham College was found in the institutions_en.json
+Success: New College Swindon was found in the institutions_en.json
+Success: Newbury College was found in the institutions_en.json
+Success: Newcastle College was found in the institutions_en.json
+Success: Newcastle and Stafford Colleges Group (NSCG) / Axia Solutions Limited was found in the institutions_en.json
+Success: Petroc was found in the institutions_en.json
+Success: North East Surrey College of Technology (nescot) was found in the institutions_en.json
+Success: North Hertfordshire College was found in the institutions_en.json
+Success: North Lindsey College was found in the institutions_en.json
+Success: North Warwickshire and South Leicestershire College was found in the institutions_en.json
+Success: Greater Brighton Metropolitan College was found in the institutions_en.json
+Success: Northern College of Acupuncture was found in the institutions_en.json
+Success: City College Norwich was found in the institutions_en.json
+Success: Norwich University of the Arts was found in the institutions_en.json
+Success: Nottingham Trent University was found in the institutions_en.json
+Success: Oaklands College was found in the institutions_en.json
+Success: Activate Learning was found in the institutions_en.json
+Success: Oxford Brookes University was found in the institutions_en.json
+Success: Salford City College was found in the institutions_en.json
+Success: Peter Symonds College was found in the institutions_en.json
+Success: Plumpton College was found in the institutions_en.json
+Success: Plymouth College of Art was found in the institutions_en.json
+Success: City College Plymouth was found in the institutions_en.json
+Success: Preston's College was found in the institutions_en.json
+Success: Queen Margaret University, Edinburgh was found in the institutions_en.json
+Success: Queen's University Belfast was found in the institutions_en.json
+Success: Ravensbourne University London was found in the institutions_en.json
+Success: Reaseheath College was found in the institutions_en.json
+Success: Arden University was found in the institutions_en.json
+Success: REVETT was found in the institutions_en.json
+Success: Richmond Upon Thames College was found in the institutions_en.json
+Success: Richmond, the American International University in London was found in the institutions_en.json
+Success: Robert Gordon University was found in the institutions_en.json
+Success: Rose Bruford College of Theatre and Performance was found in the institutions_en.json
+Success: Rnn Group was found in the institutions_en.json
+Success: Royal Academy of Dance was found in the institutions_en.json
+Success: The Royal Agricultural University was found in the institutions_en.json
+Success: Royal Holloway, University of London was found in the institutions_en.json
+Success: Royal Conservatoire of Scotland was found in the institutions_en.json
+Success: Ruskin College Oxford was found in the institutions_en.json
+Success: Sandwell College was found in the institutions_en.json
+Success: Scotland's Rural College was found in the institutions_en.json
+Success: Unified Seevic Palmer's College was found in the institutions_en.json
+Success: Selby College was found in the institutions_en.json
+Success: Sheffield College, the was found in the institutions_en.json
+Success: Sheffield Hallam University was found in the institutions_en.json
+Success: Shrewsbury Colleges Group was found in the institutions_en.json
+Success: Solihull College and University Centre was found in the institutions_en.json
+Success: South & City College Birmingham was found in the institutions_en.json
+Success: Cheshire College South and West was found in the institutions_en.json
+Success: University Centre South Devon was found in the institutions_en.json
+Success: Havant and South Downs College was found in the institutions_en.json
+Success: South Essex College of Further and Higher Education was found in the institutions_en.json
+Success: The Trafford College Group was found in the institutions_en.json
+Success: Tyne Coast College was found in the institutions_en.json
+Success: Southampton City College was found in the institutions_en.json
+Success: Solent University, Southampton was found in the institutions_en.json
+Success: Southport College was found in the institutions_en.json
+Success: Sparsholt College was found in the institutions_en.json
+Success: Spurgeon's College was found in the institutions_en.json
+Success: St Helens College was found in the institutions_en.json
+Success: St Mary's College was found in the institutions_en.json
+Success: Staffordshire University was found in the institutions_en.json
+Success: The Education Training Collective was found in the institutions_en.json
+Success: Stoke On Trent College was found in the institutions_en.json
+Success: Strode College was found in the institutions_en.json
+Success: Suffolk New College was found in the institutions_en.json
+Success: University for the Creative Arts was found in the institutions_en.json
+Success: Birmingham Metropolitan College was found in the institutions_en.json
+Success: Tameside College was found in the institutions_en.json
+Success: Telford College was found in the institutions_en.json
+Success: The University of West London was found in the institutions_en.json
+Success: Ekc Group was found in the institutions_en.json
+Success: The Oldham College was found in the institutions_en.json
+Success: University of Birmingham was found in the institutions_en.json
+Success: The University of Bolton was found in the institutions_en.json
+Success: The University of Liverpool was found in the institutions_en.json
+Success: New City College was found in the institutions_en.json
+Success: Truro and Penwith College was found in the institutions_en.json
+Success: University of the Highlands and Islands was found in the institutions_en.json
+Success: University of Chichester was found in the institutions_en.json
+Success: The University of Northampton was found in the institutions_en.json
+Success: University of Worcester was found in the institutions_en.json
+Success: Birmingham City University was found in the institutions_en.json
+Success: University of Central Lancashire was found in the institutions_en.json
+Success: Durham University was found in the institutions_en.json
+Success: The University of East London was found in the institutions_en.json
+Success: University of Gloucestershire was found in the institutions_en.json
+Success: University of Greenwich was found in the institutions_en.json
+Success: University of Hertfordshire was found in the institutions_en.json
+Success: University of Huddersfield was found in the institutions_en.json
+Success: University of Hull was found in the institutions_en.json
+Success: The University of Kent was found in the institutions_en.json
+Success: University of Lincoln was found in the institutions_en.json
+Success: University of Bedfordshire was found in the institutions_en.json
+Success: University of Nottingham, the was found in the institutions_en.json
+Success: University of Portsmouth was found in the institutions_en.json
+Success: The University of Salford was found in the institutions_en.json
+Success: University of Sheffield was found in the institutions_en.json
+Success: University of Southampton was found in the institutions_en.json
+Success: University of Sunderland was found in the institutions_en.json
+Success: The University of Surrey was found in the institutions_en.json
+Success: Teesside University was found in the institutions_en.json
+Success: University of the Arts, London was found in the institutions_en.json
+Success: University of Warwick was found in the institutions_en.json
+Success: UWE Bristol was found in the institutions_en.json
+Success: The University of Westminster was found in the institutions_en.json
+Success: University of Wolverhampton was found in the institutions_en.json
+Success: University of York was found in the institutions_en.json
+Success: Wakefield College was found in the institutions_en.json
+Success: Waverley Abbey College was found in the institutions_en.json
+Success: West Herts College was found in the institutions_en.json
+Success: West Kent and Ashford College was found in the institutions_en.json
+Success: West Suffolk College was found in the institutions_en.json
+Success: Capital City College Group was found in the institutions_en.json
+Success: University Centre Weston was found in the institutions_en.json
+Success: Weymouth College was found in the institutions_en.json
+Success: Wigan and Leigh College was found in the institutions_en.json
+Success: Wiltshire College and University Centre was found in the institutions_en.json
+Success: Wirral Metropolitan College was found in the institutions_en.json
+Success: City of Wolverhampton College was found in the institutions_en.json
+Success: Writtle University College was found in the institutions_en.json
+Success: Xaverian College was found in the institutions_en.json
+Success: Yeovil College was found in the institutions_en.json
+Success: York College was found in the institutions_en.json
+Success: York St John University was found in the institutions_en.json
+Success: Aston University was found in the institutions_en.json
+Success: Birkbeck, University of London was found in the institutions_en.json
+Success: Courtauld Institute of Art was found in the institutions_en.json
+Success: Glasgow Caledonian University was found in the institutions_en.json
+Success: Heriot-watt University was found in the institutions_en.json
+Success: Keele University was found in the institutions_en.json
+Success: Lancaster University was found in the institutions_en.json
+Success: Edinburgh Napier University was found in the institutions_en.json
+Success: The Open University was found in the institutions_en.json
+Success: Oxford University was found in the institutions_en.json
+Success: Queen Mary University of London was found in the institutions_en.json
+Success: Roehampton University was found in the institutions_en.json
+Success: Royal College of Music was found in the institutions_en.json
+Success: The Royal Veterinary College was found in the institutions_en.json
+Success: Soas University of London was found in the institutions_en.json
+Success: St. George's, University of London was found in the institutions_en.json
+Success: University of Aberdeen was found in the institutions_en.json
+Success: UCL was found in the institutions_en.json
+Success: The University of Bradford was found in the institutions_en.json
+Success: University of Bristol was found in the institutions_en.json
+Success: University of Buckingham was found in the institutions_en.json
+Success: University of Cambridge was found in the institutions_en.json
+Success: University of East Anglia was found in the institutions_en.json
+Success: University of Edinburgh was found in the institutions_en.json
+Success: The University of Essex was found in the institutions_en.json
+Success: University of Exeter was found in the institutions_en.json
+Success: University of South Wales/prifysgol De Cymru was found in the institutions_en.json
+Success: University of Glasgow was found in the institutions_en.json
+Success: University of Leeds was found in the institutions_en.json
+Success: University of Leicester was found in the institutions_en.json
+Success: University of Manchester was found in the institutions_en.json
+Success: Newcastle University was found in the institutions_en.json
+Success: University of the West of Scotland was found in the institutions_en.json
+Success: University of Plymouth was found in the institutions_en.json
+Success: University of Reading was found in the institutions_en.json
+Success: University of St Andrews was found in the institutions_en.json
+Success: University of Stirling was found in the institutions_en.json
+Success: University of Strathclyde was found in the institutions_en.json
+Success: University of Sussex was found in the institutions_en.json
+Success: Ulster University was found in the institutions_en.json
+Success: Bishop Grosseteste University was found in the institutions_en.json
+Success: University of London Institute in Paris was found in the institutions_en.json
+Success: Cardiff University was found in the institutions_en.json
+Success: The Royal Central School of Speech and Drama was found in the institutions_en.json
+Success: Chichester College Group was found in the institutions_en.json
+Success: Coleg Llandrillo was found in the institutions_en.json
+Success: Edge Hill University was found in the institutions_en.json
+Success: Guildhall School of Music & Drama was found in the institutions_en.json
+Success: Newman University was found in the institutions_en.json
+Success: Glyndwr University was found in the institutions_en.json
+Success: Pembrokeshire College was found in the institutions_en.json
+Success: The Royal Academy of Music was found in the institutions_en.json
+Success: Royal Northern College of Music was found in the institutions_en.json
+Success: Royal Welsh College of Music and Drama Limited was found in the institutions_en.json
+Success: SAE Institute Ltd was found in the institutions_en.json
+Success: The University of Cumbria was found in the institutions_en.json
+Success: St Mary's University, Twickenham was found in the institutions_en.json
+Success: University of Chester was found in the institutions_en.json
+Success: Abertay University was found in the institutions_en.json
+Success: University of Bath was found in the institutions_en.json
+Success: University of Derby was found in the institutions_en.json
+Success: University of Dundee was found in the institutions_en.json
+Success: Cardiff Metropolitan University was found in the institutions_en.json
+Success: Swansea University was found in the institutions_en.json
+Success: Aberystwyth University was found in the institutions_en.json
+Success: Bangor University was found in the institutions_en.json
+Success: University of Wales: Trinity Saint David was found in the institutions_en.json
+Success: Warwickshire College was found in the institutions_en.json
+Success: Cliff College was found in the institutions_en.json
+Success: Dudley College of Technology was found in the institutions_en.json
+Success: Fareham College was found in the institutions_en.json
+Success: Tec Partnership was found in the institutions_en.json
+Success: Heart of Worcestershire College was found in the institutions_en.json
+Success: Stranmillis University College was found in the institutions_en.json
+Success: Trinity Laban Conservatoire of Music and Dance was found in the institutions_en.json
+Success: St Mary's University College was found in the institutions_en.json
+Success: AA School of Architecture was found in the institutions_en.json
+Success: Bridgend College was found in the institutions_en.json
+Success: University College of Estate Management was found in the institutions_en.json
+Success: The London Institute of Banking & Finance was found in the institutions_en.json
+Success: KLC School of Design was found in the institutions_en.json
+Success: Norland College was found in the institutions_en.json
+Success: Platform One (iow) Limited was found in the institutions_en.json
+Success: Rtc Education Ltd was found in the institutions_en.json
+Success: Falmouth University was found in the institutions_en.json
+Success: Coleg Gwent was found in the institutions_en.json
+Success: Coleg Y Cymoedd was found in the institutions_en.json
+Success: The Urdang Academy was found in the institutions_en.json
+Success: Glasgow Clyde College was found in the institutions_en.json
+Success: Fashion Retail Academy was found in the institutions_en.json
+Success: Royal Academy of Dramatic Art was found in the institutions_en.json
+Success: Istituto Marangoni Limited was found in the institutions_en.json
+Success: Luther King House Educational Trust was found in the institutions_en.json
+Success: Grwp NPTC Group was found in the institutions_en.json
+Success: Merthyr Tydfil College Limited was found in the institutions_en.json
+Success: Oak Hill College was found in the institutions_en.json
+Success: Cambridge School of Visual and Performing Arts was found in the institutions_en.json
+Success: Spirit Studios was found in the institutions_en.json
+Success: London Bridge Business Academy was found in the institutions_en.json
+Success: University of Suffolk was found in the institutions_en.json
+Success: The London College was found in the institutions_en.json
+Success: David Game College Ltd was found in the institutions_en.json
+Success: Point Blank Music School was found in the institutions_en.json
+Success: Mattersey Hall was found in the institutions_en.json
+Success: Royal School of Needlework(the) was found in the institutions_en.json
+Success: Nova Centric Limited was found in the institutions_en.json
+Success: The London Early Years Foundation was found in the institutions_en.json
+Success: Regents Theological College was found in the institutions_en.json
+Success: Kaplan Open Learning (essex) Limited was found in the institutions_en.json
+Success: London School of Osteopathy was found in the institutions_en.json
+Success: Empire College London Limited was found in the institutions_en.json
+Success: Futureworks was found in the institutions_en.json
+Success: London School of Management Education was found in the institutions_en.json
+Success: The Manchester College was found in the institutions_en.json
+Success: London School of Commerce & It Limited was found in the institutions_en.json
+Success: The Markfield Institute of Higher Education was found in the institutions_en.json
+Success: Matrix College of Counselling and Psychotherapy Ltd was found in the institutions_en.json
+Success: Moorlands College was found in the institutions_en.json
+Success: The Sherwood Institute was found in the institutions_en.json
+Success: Trinity College Bristol was found in the institutions_en.json
+Success: Mont Rose College of Management and Sciences Limited was found in the institutions_en.json
+Success: Results Consortium Limited was found in the institutions_en.json
+Success: Central Film School London was found in the institutions_en.json
+Success: Leeds City College was found in the institutions_en.json
+Success: Christ the Redeemer College was found in the institutions_en.json
+Success: Brit College was found in the institutions_en.json
+Success: The Islamic College was found in the institutions_en.json
+Success: Nelson College London Limited was found in the institutions_en.json
+Success: Gower College Swansea was found in the institutions_en.json
+Success: St Mellitus College was found in the institutions_en.json
+Success: BPP University was found in the institutions_en.json
+Success: Amity Global Education Ltd was found in the institutions_en.json
+Success: The Cambridge Theological Federation was found in the institutions_en.json
+Success: The Queen's Foundation for Ecumenical Theological Education was found in the institutions_en.json
+Success: West Dean College was found in the institutions_en.json
+Success: Bodmin College was found in the institutions_en.json
+Success: Court Theatre Training Company Ltd was found in the institutions_en.json
+Success: Leeds Conservatoire was found in the institutions_en.json
+Success: Cardiff and Vale College was found in the institutions_en.json
+Success: Institute of Contemporary Music Performance was found in the institutions_en.json
+Success: South Gloucestershire and Stroud College was found in the institutions_en.json
+Success: Backstage Academy (training) Ltd was found in the institutions_en.json
+Success: Cecos Computing International Limited was found in the institutions_en.json
+Success: Plymouth Marjon University was found in the institutions_en.json
+Success: Bimm Limited was found in the institutions_en.json
+Success: Everton Free School was found in the institutions_en.json
+Success: City and Guilds of London Art School was found in the institutions_en.json
+Success: The University of Law was found in the institutions_en.json
+Success: Birmingham Community Nhs Trust was found in the institutions_en.json
+Success: Harper Adams University was found in the institutions_en.json
+Success: Shockout Arts was found in the institutions_en.json
+Success: Hy Education Limited was found in the institutions_en.json
+Success: Global Banking School Limited was found in the institutions_en.json
+Success: Simply Alliance Limited was found in the institutions_en.json
+Success: Pearson College London was found in the institutions_en.json
+Success: Ucfb College of Football Business Limited was found in the institutions_en.json
+Success: Montessori Centre International was found in the institutions_en.json
+Success: Met Film School Limited was found in the institutions_en.json
+Success: New College of the Humanities was found in the institutions_en.json
+ERROR: City of Stoke-on-trent Sixth Form College was NOT found in the institutions_en.json
+Success: Jca | London Fashion Academy was found in the institutions_en.json
+Success: ACM was found in the institutions_en.json
+Success: University Centre Peterborough was found in the institutions_en.json
+Success: Hartpury University was found in the institutions_en.json
+Success: Waterbear - the College of Music was found in the institutions_en.json
+Success: Fourth Monkey Education Limited was found in the institutions_en.json
+Success: Harper and Keele Veterinary School was found in the institutions_en.json
+ERROR: Sample Provider was NOT found in the institutions_en.json
+ERROR: Sample Provider was NOT found in the institutions_en.json
+ERROR: Sample Provider 1 was NOT found in the institutions_en.json
