@@ -291,14 +291,9 @@ def get_course_doc(
     course["subjects"] = get_subjects(raw_course_data)
 
     title = get_english_welsh_item("TITLE", raw_course_data)
-    kis_aim_code = raw_course_data["KISAIMCODE"] # KISAIMCODE is guaranteed to exist and have a non-null value.
-    kis_aim_label = get_kis_aim_label(kis_aim_code, kisaims)
-    if title and title['english'] and kis_aim_label and title['english'] == kis_aim_label:
-        course["title"] = title # TODO: change this statement as appropriate, not sure how yet - awaiting OfS requirement.
-    elif title:
+
+    if title:
         course["title"] = title
-    else:
-        course["title"] = {"english": kis_aim_label}
 
     if "UCASPROGID" in raw_course_data:
         course["ucas_programme_id"] = raw_course_data["UCASPROGID"]
@@ -382,7 +377,7 @@ def get_country(raw_inst_data):
 
 def get_go_inst_json(raw_go_inst_data):
     go_salary_array = []
- 
+
     # For joint courses, we may get passed an OrderedDict of GOSAL records.
     # For single-subject courses, not sure if we get passed an OrderedDict of 1 or something else.
     if raw_go_inst_data:
@@ -408,7 +403,7 @@ def get_go_inst_json(raw_go_inst_data):
             if 'GOPROV_PC_W' in raw_go_inst_data: go_salary["inst_prov_pc_w"] = raw_go_inst_data["GOPROV_PC_W"]
 
             go_salary["unavail_text_english"] = unavail_text_english
-            go_salary["unavail_text_welsh"] = unavail_text_welsh         
+            go_salary["unavail_text_welsh"] = unavail_text_welsh
 
             if 'agg' in go_salary and 'subject' in go_salary:
                 go_salary["earnings_agg_unavail_message"] = get_earnings_agg_unavail_messages(go_salary["agg"], go_salary["subject"])
@@ -437,13 +432,13 @@ def get_go_inst_json(raw_go_inst_data):
                 if 'GOPROV_PC_W' in elem: go_salary["inst_prov_pc_w"] = elem["GOPROV_PC_W"]
 
                 go_salary["unavail_text_english"] = unavail_text_english
-                go_salary["unavail_text_welsh"] = unavail_text_welsh         
+                go_salary["unavail_text_welsh"] = unavail_text_welsh
 
                 if 'agg' in go_salary and 'subject' in go_salary:
                     go_salary["earnings_agg_unavail_message"] = get_earnings_agg_unavail_messages(go_salary["agg"], go_salary["subject"])
 
                 go_salary_array.append(go_salary)
-    else: 
+    else:
         # If no GO_SALARY node exists, we still need to display UNAVAIL text.
         unavail_text_english, unavail_text_welsh = get_earnings_unavail_text("institution", "go", "1")
         go_salary = {}
@@ -456,7 +451,7 @@ def get_go_inst_json(raw_go_inst_data):
 
 def get_leo3_inst_json(raw_leo3_inst_data):
     leo3_array = []
- 
+
     # For joint courses, we may get passed an OrderedDict of LEO3 records.
     # For single-subject courses, not sure if we get passed an OrderedDict of 1 or something else.
     if raw_leo3_inst_data:
@@ -493,7 +488,7 @@ def get_leo3_inst_json(raw_leo3_inst_data):
             if 'LEO3PROV_PC_CF' in raw_leo3_inst_data: leo3["inst_prov_pc_cf"] = raw_leo3_inst_data["LEO3PROV_PC_CF"]
 
             leo3["unavail_text_english"] = unavail_text_english
-            leo3["unavail_text_welsh"] = unavail_text_welsh         
+            leo3["unavail_text_welsh"] = unavail_text_welsh
 
             if 'agg' in leo3 and 'subject' in leo3:
                 leo3["earnings_agg_unavail_message"] = get_earnings_agg_unavail_messages(leo3["agg"], leo3["subject"])
@@ -537,9 +532,9 @@ def get_leo3_inst_json(raw_leo3_inst_data):
 
                 if 'agg' in leo3 and 'subject' in leo3:
                     leo3["earnings_agg_unavail_message"] = get_earnings_agg_unavail_messages(leo3["agg"], leo3["subject"])
-                    
+
                 leo3_array.append(leo3)
-    else: 
+    else:
         # If no LEO3 node exists, we still need to display UNAVAIL text.
         unavail_text_english, unavail_text_welsh = get_earnings_unavail_text("institution", "leo", "1")
         leo3 = {}
@@ -552,7 +547,7 @@ def get_leo3_inst_json(raw_leo3_inst_data):
 
 def get_leo5_inst_json(raw_leo5_inst_data):
     leo5_array = []
- 
+
     # For joint courses, we may get passed an OrderedDict of LEO5 records.
     # For single-subject courses, not sure if we get passed an OrderedDict of 1 or something else.
     if raw_leo5_inst_data:
@@ -589,7 +584,7 @@ def get_leo5_inst_json(raw_leo5_inst_data):
             if 'LEO5PROV_PC_CF' in raw_leo5_inst_data: leo5["inst_prov_pc_cf"] = raw_leo5_inst_data["LEO5PROV_PC_CF"]
 
             leo5["unavail_text_english"] = unavail_text_english
-            leo5["unavail_text_welsh"] = unavail_text_welsh         
+            leo5["unavail_text_welsh"] = unavail_text_welsh
             leo5_array.append(leo5)
         else:
             for elem in raw_leo5_inst_data:
@@ -625,9 +620,9 @@ def get_leo5_inst_json(raw_leo5_inst_data):
                 if 'LEO5PROV_PC_CF' in elem: leo5["inst_prov_pc_cf"] = elem["LEO5PROV_PC_CF"]
 
                 leo5["unavail_text_english"] = unavail_text_english
-                leo5["unavail_text_welsh"] = unavail_text_welsh         
+                leo5["unavail_text_welsh"] = unavail_text_welsh
                 leo5_array.append(leo5)
-    else: 
+    else:
         # If no LEO5 node exists, we still need to display UNAVAIL text.
         unavail_text_english, unavail_text_welsh = get_earnings_unavail_text("institution", "leo", "1")
         leo5 = {}
@@ -909,7 +904,7 @@ def get_leo3_sector_json(leo3_salary_inst_list, go_salary_inst_list, leo5_salary
             if 'LEO3MED_WM' in elem: leo3["med_wm"] = elem["LEO3MED_WM"]
             if 'LEO3UQ_WM' in elem: leo3["uq_wm"] = elem["LEO3UQ_WM"]
             if 'LEO3SECPOP_WM' in elem: leo3["pop_wm"] = elem["LEO3SECPOP_WM"]
-        
+
             if 'LEO3LQ_EE' in elem: leo3["lq_ee"] = elem["LEO3LQ_EE"]
             if 'LEO3MED_EE' in elem: leo3["med_ee"] = elem["LEO3MED_EE"]
             if 'LEO3UQ_EE' in elem: leo3["uq_ee"] = elem["LEO3UQ_EE"]
@@ -1031,7 +1026,7 @@ def get_leo5_sector_json(leo5_salary_inst_list, go_salary_inst_list, leo3_salary
             if 'LEO5MED_WM' in elem: leo5["med_wm"] = elem["LEO5MED_WM"]
             if 'LEO5UQ_WM' in elem: leo5["uq_wm"] = elem["LEO5UQ_WM"]
             if 'LEO5SECPOP_WM' in elem: leo5["pop_wm"] = elem["LEO5SECPOP_WM"]
-        
+
             if 'LEO5LQ_EE' in elem: leo5["lq_ee"] = elem["LEO5LQ_EE"]
             if 'LEO5MED_EE' in elem: leo5["med_ee"] = elem["LEO5MED_EE"]
             if 'LEO5UQ_EE' in elem: leo5["uq_ee"] = elem["LEO5UQ_EE"]
@@ -1098,11 +1093,6 @@ def get_qualification(lookup_table_raw_xml, kisaims):
     return entry
 
 
-def get_kis_aim_label(code, kisaims):
-    label = kisaims.get_kisaim_label_for_key(code)
-    return label
-
-
 # TODO: This isn't ideal; we should be using the function of the same name in SharedUtils.
 #       However, the hectic schedule dictated by the customer does not provide sufficient time.
 def get_subject(subject_code):
@@ -1151,7 +1141,7 @@ def get_earnings_agg_unavail_messages(agg_value, subject):
             "[Subject] eraill.\n\nMae hwn yn cynnwys data o'r cwrs hwn a chyrsiau cysylltiedig yn yr un brifysgol "\
             "neu goleg. Nid oedd digon o ddata ar gael i gyhoeddi gwybodaeth fwy manwl. Nid yw hyn yn adlewyrchu "\
             "ansawdd y cwrs."
-        
+
         earnings_agg_unavail_messages['english'] = message_english.replace("[Subject]", subject['english_label'])
         earnings_agg_unavail_messages['welsh'] = message_welsh.replace("[Subject]", subject['welsh_label'])
 
