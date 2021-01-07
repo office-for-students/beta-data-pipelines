@@ -291,9 +291,14 @@ def get_course_doc(
     course["subjects"] = get_subjects(raw_course_data)
 
     title = get_english_welsh_item("TITLE", raw_course_data)
-
-    if title:
+    kis_aim_code = raw_course_data["KISAIMCODE"] # KISAIMCODE is guaranteed to exist and have a non-null value.
+    kis_aim_label = get_kis_aim_label(kis_aim_code, kisaims)
+    if title and title['english'] and kis_aim_label and title['english'] == kis_aim_label:
+        course["title"] = title # TODO: change this statement as appropriate, not sure how yet - awaiting OfS requirement.
+    elif title:
         course["title"] = title
+    else:
+        course["title"] = {"english": kis_aim_label}
 
     if "UCASPROGID" in raw_course_data:
         course["ucas_programme_id"] = raw_course_data["UCASPROGID"]
@@ -1091,6 +1096,11 @@ def get_qualification(lookup_table_raw_xml, kisaims):
         if label:
             entry["label"] = label
     return entry
+
+
+def get_kis_aim_label(code, kisaims):
+    label = kisaims.get_kisaim_label_for_key(code)
+    return label
 
 
 # TODO: This isn't ideal; we should be using the function of the same name in SharedUtils.
