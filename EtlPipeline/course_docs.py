@@ -204,6 +204,7 @@ def get_course_doc(
     outer_wrapper = {}
     outer_wrapper["_id"] = utils.get_uuid()
     outer_wrapper["created_at"] = datetime.datetime.utcnow().isoformat()
+    outer_wrapper["updated_at"] = datetime.datetime.utcnow().isoformat()
     outer_wrapper["version"] = version
     outer_wrapper["institution_id"] = raw_inst_data["PUBUKPRN"]
     outer_wrapper["course_id"] = raw_course_data["KISCOURSEID"]

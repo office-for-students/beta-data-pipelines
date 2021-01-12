@@ -1,3 +1,4 @@
+import datetime
 import inspect
 import logging
 import os
@@ -28,6 +29,7 @@ class DataSetHelper:
             dataset_doc["status"] = value
         else:
             dataset_doc["builds"][item]["status"] = value
+        dataset_doc["updated_at"] = datetime.datetime.utcnow().isoformat()
         self.cosmos_client.UpsertItem(self.collection_link, dataset_doc)
         logging.info(
             f"DataSetHelper: updated '{item}' to '{value}' for "
