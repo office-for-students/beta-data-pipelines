@@ -26,11 +26,13 @@
         <JOB>Health associate professionals</JOB>
         <PERC>80</PERC>
         <ORDER>1</ORDER>
+        <HS>1</HS>
     </JOBLIST>
     <JOBLIST>
         <JOB>Sales occupations</JOB>
         <PERC>20</PERC>
         <ORDER>2</ORDER>
+        <HS>1</HS>
     </JOBLIST>
     </COMMON>
     <CONTINUATION>

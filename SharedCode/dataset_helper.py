@@ -1,3 +1,4 @@
+import datetime
 import inspect
 import logging
 import os
@@ -22,12 +23,15 @@ class DataSetHelper:
             "AzureCosmosDbDatabaseId", "AzureCosmosDbDataSetCollectionId"
         )
 
-    def update_status(self, item, value):
+    def update_status(self, item, value, updated_at = None):
         dataset_doc = self.get_latest_doc()
         if item == "root":
             dataset_doc["status"] = value
         else:
             dataset_doc["builds"][item]["status"] = value
+        dataset_doc["updated_at"] = datetime.datetime.utcnow().isoformat()
+        if updated_at:
+            dataset_doc["updated_at"] = updated_at
         self.cosmos_client.UpsertItem(self.collection_link, dataset_doc)
         logging.info(
             f"DataSetHelper: updated '{item}' to '{value}' for "
