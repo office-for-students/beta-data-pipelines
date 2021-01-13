@@ -20,9 +20,9 @@ def main(msgin: func.QueueMessage):
     mail_helper = MailHelper()
     environment = os.environ["Environment"]
 
-    try:
+    dsh = DataSetHelper()
 
-        dsh = DataSetHelper()
+    try:
 
         logging.info(
             f"CourseSearchBuilder message queue triggered \n"

@@ -39,11 +39,12 @@ class TestDataSetHelper(unittest.TestCase):
         latest_dataset_doc = {}
         latest_dataset_doc["version"] = 3
         latest_dataset_doc["builds"] = {"courses": {"status": "pending"}}
+        latest_dataset_doc["updated_at"] = "dave"
         dsh.get_latest_doc = mock.MagicMock(return_value=latest_dataset_doc)
 
         dsh.cosmos_client.UpsertItem = mock.MagicMock()
 
-        dsh.update_status("courses", "in progress")
+        dsh.update_status("courses", "in progress", "dave")
 
         expected_connection_link = (
             "dbs/test-db-id/colls/test-dataset-collection-id"
@@ -51,6 +52,7 @@ class TestDataSetHelper(unittest.TestCase):
         expected_dataset_doc = {}
         expected_dataset_doc["version"] = 3
         expected_dataset_doc["builds"] = {"courses": {"status": "in progress"}}
+        expected_dataset_doc["updated_at"] = "dave"
         dsh.cosmos_client.UpsertItem.assert_called_once_with(
             expected_connection_link, expected_dataset_doc
         )
