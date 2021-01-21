@@ -4,7 +4,7 @@ import unittest
 
 from unittest import mock
 from lookup_creator import LookupCreator
-from ukrlp_test_utils import get_string
+from ukrlp_test_utils import get_string, get_json_file_as_dict
 
 
 class TestGetWebSite(unittest.TestCase):
@@ -28,10 +28,9 @@ class TestGetLookupEntryFalmouth(unittest.TestCase):
         ukprn = "10008640"
         xml_string = get_string("fixtures/one_inst_one_course.xml")
         lookup_creator = LookupCreator(xml_string, "", 1)
-        json_as_dict = None
-        json_file = os.getcwd() + "/tests/fixtures/" + ukprn + "_falmouth.json"
-        with open(json_file) as json_file_contents:
-            json_as_dict = json.load(json_file_contents)
+        json_as_dict = get_json_file_as_dict(
+            "fixtures/" + ukprn + "_falmouth.json"
+        )
         data = lookup_creator.get_lookup_entry(ukprn, json_as_dict)
         self.assertEqual("Falmouth University", data["ukprn_name"])
 
@@ -47,10 +46,9 @@ class TestGetLookupEntryWaterbear(unittest.TestCase):
         ukprn = "10085293"
         xml_string = get_string("fixtures/one_inst_one_course.xml")
         lookup_creator = LookupCreator(xml_string, "", 1)
-        json_as_dict = None
-        json_file = os.getcwd() + "/tests/fixtures/" + ukprn + "_waterbear.json"
-        with open(json_file) as json_file_contents:
-            json_as_dict = json.load(json_file_contents)
+        json_as_dict = get_json_file_as_dict(
+            "fixtures/" + ukprn + "_waterbear.json"
+        )
         data = lookup_creator.get_lookup_entry(ukprn, json_as_dict)
         self.assertEqual("WaterBear - The College of Music", data["ukprn_name"])
 
