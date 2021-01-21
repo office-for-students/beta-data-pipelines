@@ -1,3 +1,4 @@
+import os
 import json
 import unittest
 
@@ -14,6 +15,44 @@ class TestGetWebSite(unittest.TestCase):
         expected_website = "www.boltoncollege.ac.uk"
         website = LookupCreator.get_website(matching_provider_records)
         self.assertEqual(expected_website, website)
+
+
+class TestGetLookupEntryFalmouth(unittest.TestCase):
+    @mock.patch("lookup_creator.get_collection_link")
+    @mock.patch("lookup_creator.get_cosmos_client")
+    @mock.patch("SharedCode.dataset_helper.get_collection_link")
+    @mock.patch("SharedCode.dataset_helper.get_cosmos_client")
+    def test_title_case_needed_with_lipa(
+        self, mock_get_cosmos_client, mock_get_collection_link, mock_dsh__get_collection_link, mock_dsh_get_cosmos_client
+    ):
+        ukprn = "10008640"
+        xml_string = get_string("fixtures/one_inst_one_course.xml")
+        lookup_creator = LookupCreator(xml_string, "", 1)
+        json_as_dict = None
+        json_file = os.getcwd() + "/tests/fixtures/" + ukprn + "_falmouth.json"
+        with open(json_file) as json_file_contents:
+            json_as_dict = json.load(json_file_contents)
+        data = lookup_creator.get_lookup_entry(ukprn, json_as_dict)
+        self.assertEqual("Falmouth University", data["ukprn_name"])
+
+
+class TestGetLookupEntryWaterbear(unittest.TestCase):
+    @mock.patch("lookup_creator.get_collection_link")
+    @mock.patch("lookup_creator.get_cosmos_client")
+    @mock.patch("SharedCode.dataset_helper.get_collection_link")
+    @mock.patch("SharedCode.dataset_helper.get_cosmos_client")
+    def test_title_case_needed_with_lipa(
+        self, mock_get_cosmos_client, mock_get_collection_link, mock_dsh__get_collection_link, mock_dsh_get_cosmos_client
+    ):
+        ukprn = "10085293"
+        xml_string = get_string("fixtures/one_inst_one_course.xml")
+        lookup_creator = LookupCreator(xml_string, "", 1)
+        json_as_dict = None
+        json_file = os.getcwd() + "/tests/fixtures/" + ukprn + "_waterbear.json"
+        with open(json_file) as json_file_contents:
+            json_as_dict = json.load(json_file_contents)
+        data = lookup_creator.get_lookup_entry(ukprn, json_as_dict)
+        self.assertEqual("WaterBear - The College of Music", data["ukprn_name"])
 
 
 class TestNeedTitleCase(unittest.TestCase):

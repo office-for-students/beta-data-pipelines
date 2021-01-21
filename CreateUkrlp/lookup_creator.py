@@ -98,7 +98,7 @@ class LookupCreator:
     def create_ukrlp_lookups(self):
         """Parse HESA XML and create JSON lookup table for UKRLP data."""
         root = ET.fromstring(self.xml_string)
-        
+
         options = {"partitionKey": str(self.version)}
         sproc_link = self.collection_link + "/sprocs/bulkImport"
 
@@ -186,9 +186,9 @@ class LookupCreator:
         lookup_item["partition_key"] = str(self.version)
         lookup_item["version"] = self.version
 
-        provider_name = Helper.get_provider_name(matching_provider_records)
-        if self.title_case_needed(provider_name):
-            provider_name = LookupCreator.title_case(provider_name)
+        is_alias_name, provider_name = Helper.get_provider_name(matching_provider_records)
+        if self.title_case_needed(provider_name) and not is_alias_name:
+                provider_name = LookupCreator.title_case(provider_name)
         lookup_item["ukprn_name"] = provider_name
         lookup_item["ukprn_welsh_name"] = self.get_welsh_uni_name(ukprn)
         if not lookup_item["ukprn_welsh_name"]:
@@ -293,7 +293,7 @@ class LookupCreator:
         # f.write("======================================================================================\n")
         # f.close()
 
-        
+
         contact_details["website"] = LookupCreator.get_website(
             matching_provider_records
         )
