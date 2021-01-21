@@ -66,7 +66,7 @@ class UkrlpClient:
             # APW: inspection of downstream code shows that it is expecting exactly one matching dictionary (or zero).
             body_dict = enrichment_data_dict["S:Envelope"]["S:Body"]
             provider_records = [value for key, value in body_dict.items() if 'ProviderQueryResponse' in key][0]['MatchingProviderRecords']
-                
+
         except KeyError:
             return None
 

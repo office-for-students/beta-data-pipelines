@@ -22,6 +22,6 @@ class Helper:
             aliases = Helper.get_list(
                 matching_provider_records["ProviderAliases"]
             )
-            return aliases[0]["ProviderAlias"]
+            return True, aliases[0]["ProviderAlias"]
 
-        return matching_provider_records["ProviderName"]
+        return False, matching_provider_records["ProviderName"]
