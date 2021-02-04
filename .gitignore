@@ -145,3 +145,4 @@ test-output.xml
 pyproject.toml
 
 *.dev.*
+test_course.xml
