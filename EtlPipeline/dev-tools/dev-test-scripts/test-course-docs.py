@@ -22,15 +22,15 @@ sys.path.insert(0, PARENTDIR)
 sys.path.insert(0, GRANDPARENTDIR)
 sys.path.insert(0, GREATGRANDPARENTDIR)
 
-from course_docs import create_course_docs
+from course_docs import load_course_docs
 
 
-def test_create_course_docs():
+def test_missing_sbj():
 
-    with open("kis-test-file.xml", "r") as file:
+    with open("EtlPipeline/tests/fixtures/course_missing_sbj.xml", "r") as file:
         xml_string = file.read()
 
-    create_course_docs(xml_string)
+    load_course_docs(xml_string, 1)
 
 
-test_create_course_docs()
+test_missing_sbj()

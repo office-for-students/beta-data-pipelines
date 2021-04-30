@@ -45,6 +45,8 @@ from sector_salaries import GOSectorSalaries, LEO3SectorSalaries, LEO5SectorSala
 from SharedCode import utils
 from SharedCode.utils import get_english_welsh_item
 
+logger = logging.getLogger()
+logging.basicConfig(level=logging.DEBUG) 
 
 def load_course_docs(xml_string, version):
     global g_subject_enricher
@@ -146,13 +148,20 @@ def load_course_docs(xml_string, version):
                     myfile.write(tb + "\n")
                     myfile.write("================================================================================================\n")
 
+                logger.debug('0005')
+            logger.debug('0010')
+        logger.debug('0020')
+    logger.debug('0030')
+
     if sproc_count > 0:
+        logger.debug('0040')
         logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
         cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
         logging.info(f"Successfully loaded another {sproc_count} documents")
         # Reset values
         new_docs = []
         sproc_count = 0
+    logger.debug('0050')
 
     logging.info(f"Processed {course_count} courses")
 

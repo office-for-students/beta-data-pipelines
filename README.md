@@ -145,6 +145,21 @@ pip install pytest (if you haven't already installed dependencies using the requ
 pytest -v
 ```
 
+If you're new here, you can also run the tests by performing the following commands:
+```
+virtualenv venv -p 3.6
+source venv/bin/activate
+pip install pytest
+pip install -r requirements.txt
+pytest -v
+
+# target a specific test
+pytest EtlPipeline/tests/test_course_doc.py
+
+# target a test that relies on Azure (relies on exporting local.settings.json)
+python EtlPipeline/dev-tools/dev-test-scripts/test-course-docs.py
+```
+
 ### Contributing
 
 See [CONTRIBUTING](CONTRIBUTING.md) for details.
