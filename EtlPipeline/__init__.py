@@ -2,26 +2,20 @@
 
 """ EtlPipeline: Execute the ETL pipeline based on a message queue trigger """
 
-import gzip
-import io
 import logging
 import os
 from datetime import datetime
-from distutils.util import strtobool
 
 import azure.functions as func
-from azure.storage.blob import BlockBlobService
 
 from SharedCode.blob_helper import BlobHelper
 from SharedCode.dataset_helper import DataSetHelper
 from SharedCode.mail_helper import MailHelper
-from SharedCode import exceptions
-
-from . import course_docs, validators
+from . import course_docs
+from . import validators
 
 
 def main(msgin: func.QueueMessage, msgout: func.Out[str]):
-
     """ Master ETL Pipeline - note that currently, the end-to-end ETL pipeline is
     executed via this single Azure Function which calls other Python functions
     embedded within the same deployment codebase (see imports above).
