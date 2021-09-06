@@ -1,6 +1,7 @@
 EtlPipeline/host.json
 .idea/
 .DS_Store
+trash.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
