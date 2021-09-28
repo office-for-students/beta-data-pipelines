@@ -1,7 +1,7 @@
 """Functions shared by Azure Functions"""
 
-import os
 import html
+import os
 import uuid
 
 import azure.cosmos.cosmos_client as cosmos_client
@@ -16,6 +16,27 @@ def get_collection_link(db_id, collection_id):
 
     # Return a link to the relevant CosmosDB Container/Document Collection
     return "dbs/" + cosmosdb_database_id + "/colls/" + cosmosdb_collection_id
+
+
+def sanitise_address_string(address_string):
+    cleaned = address_string.replace(",,", ",")
+    as_array = cleaned.split(',')
+
+    final = []
+    for a in as_array:
+        final.append(a.rstrip())
+
+    sanitised = ','.join(final)
+
+    return sanitised
+
+
+def normalise_url(website_url: str) -> str:
+    params = website_url.split("://")
+    if len(params) == 1:
+        return f"https://{website_url.rstrip()}"
+    else:
+        return f"https://{params[1].rstrip()}"
 
 
 def get_cosmos_client():
