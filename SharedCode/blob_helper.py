@@ -1,8 +1,8 @@
 import gzip
-import os
 import io
-
+import os
 from datetime import datetime
+
 from azure.storage.blob import BlockBlobService
 
 
@@ -33,7 +33,12 @@ class BlobHelper:
     def get_str_file(self, storage_container_name, storage_blob_name):
         compressed_file = io.BytesIO()
 
-        self.blob_service.get_blob_to_stream(storage_container_name, storage_blob_name, compressed_file, max_connections=1)
+        self.blob_service.get_blob_to_stream(
+            storage_container_name,
+            storage_blob_name,
+            compressed_file,
+            max_connections=1
+        )
 
         compressed_file.seek(0)
 
@@ -49,4 +54,9 @@ class BlobHelper:
         return file_string
 
     def write_stream_file(self, storage_container_name, storage_blob_name, encoded_file):
-        self.blob_service.create_blob_from_bytes(storage_container_name, storage_blob_name, encoded_file, max_connections=1)
+        self.blob_service.create_blob_from_bytes(
+            storage_container_name,
+            storage_blob_name,
+            encoded_file,
+            max_connections=1
+        )
