@@ -915,7 +915,7 @@ def need_nhs_nss(course):
 
 
 # apw for unavail messages
-def get_earnings_unavail_text(inst_or_sect, data_source, key_level_3): 
+def get_earnings_unavail_text(inst_or_sect, data_source, key_level_3) -> Tuple[str, str]:
     """Returns the relevant unavail reason text in English and Welsh"""
 
     shared_utils = SharedUtils(
