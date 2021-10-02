@@ -60,7 +60,8 @@ def get_ukrlp_lookups(version):
     cosmos_db_client = get_cosmos_client()
 
     collection_link = get_collection_link(
-        "AzureCosmosDbDatabaseId", "AzureCosmosDbUkRlpCollectionId"
+        db_id="AzureCosmosDbDatabaseId",
+        collection_id="AzureCosmosDbInstitutionsCollectionId"
     )
 
     query = f"SELECT * from c WHERE c.version = {version}"
@@ -71,21 +72,9 @@ def get_ukrlp_lookups(version):
         cosmos_db_client.QueryItems(collection_link, query, options)
     )
 
-    collection_link = get_collection_link(
-        "AzureCosmosDbDatabaseId", "AzureCosmosDbUkRlpStaticCollectionId"
-    )
-
-    query = f"SELECT * from c"
-
-    options = {"enableCrossPartitionQuery": True}
-
-    static_lookup_list = list(
-        cosmos_db_client.QueryItems(collection_link, query, options)
-    )
-
-    lookup_list.extend(static_lookup_list)
-
-    return {lookup["ukprn"]: lookup for lookup in lookup_list}
+    return {lookup["institution"]["ukprn"]: {"ukprn_name": lookup["institution"]["ukprn_name"],
+                                             "ukprn_welsh_name": lookup["institution"]["ukprn_welsh_name"]} for lookup
+            in lookup_list}
 
 
 def get_subject_lookups(version):
