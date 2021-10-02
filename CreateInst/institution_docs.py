@@ -25,6 +25,7 @@ from SharedCode.utils import get_collection_link
 from SharedCode.utils import get_cosmos_client
 from SharedCode.utils import get_english_welsh_item
 from SharedCode.utils import get_uuid
+from SharedCode.utils import normalise_url
 from SharedCode.utils import sanitise_address_string
 
 CURRENTDIR = os.path.dirname(
@@ -33,14 +34,6 @@ CURRENTDIR = os.path.dirname(
 PARENTDIR = os.path.dirname(CURRENTDIR)
 sys.path.insert(0, CURRENTDIR)
 sys.path.insert(0, PARENTDIR)
-
-
-def normalise_url(website_url: str) -> str:
-    params = website_url.split("://")
-    if len(params) == 1:
-        return f"https://{website_url.rstrip()}"
-    else:
-        return f"https://{params[1].rstrip()}"
 
 
 def validate_column_headers(header_row):
@@ -64,10 +57,17 @@ def validate_column_headers(header_row):
 
 
 def get_welsh_uni_names():
-    storage_container_name = os.environ["AzureStorageWelshUnisContainerName"]
-    storage_blob_name = os.environ["AzureStorageWelshUnisBlobName"]
-    blob_helper = BlobHelper()
-    csv_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
+    use_local_test_XML_file = os.environ.get('UseLocalTestXMLFile')
+
+    if use_local_test_XML_file:
+        mock_xml_source_file = open(os.environ["LocalTestXMLFile"], "r")
+        csv_string = mock_xml_source_file.read()
+    else:
+        storage_container_name = os.environ["AzureStorageWelshUnisContainerName"]
+        storage_blob_name = os.environ["AzureStorageWelshUnisBlobName"]
+        blob_helper = BlobHelper()
+        csv_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
+
     _welsh_uni_names = []
     if csv_string:
         rows = csv_string.splitlines()
@@ -94,10 +94,6 @@ def get_white_list():
         return [institution.strip() for institution in institutions_whitelist]
 
 
-WELSH_UNI_NAMES_LIST = get_welsh_uni_names()
-WHITE_LIST = get_white_list()
-
-
 class InstitutionProviderNameHandler:
     def __init__(self, white_list, welsh_uni_names):
         self.white_list = white_list
@@ -106,19 +102,13 @@ class InstitutionProviderNameHandler:
     @staticmethod
     def title_case(s):
         exclusions = ["an", "and", "for", "in", "of", "the"]
-        s = s.lower()
+        s = s.title()
         word_list = s.split()
-        result = [word_list[0].capitalize()]
+        result = [word_list[0]]
         for word in word_list[1:]:
-            result.append(word if word in exclusions else word.capitalize())
-        new = " ".join(result)
-        # if a word is in brackets, the first letter should always be capitalised
-        # (even if it’s on the list of exceptions above).
-        bracketed = new.split("(")
-        if len(bracketed) >= 1:
-            bracketed[1] = bracketed[1].capitalize()
+            result.append(word.lower() if word.lower() in exclusions else word)
 
-        return "".join(bracketed)
+        return " ".join(result)
 
     def get_welsh_uni_name(self, ukprn) -> str:
         rows = csv.reader(self.welsh_uni_names)
@@ -171,12 +161,13 @@ class InstitutionDocs:
                 self.location_lookup, institution
             )
 
-        pn_handler = InstitutionProviderNameHandler(white_list=WHITE_LIST, welsh_uni_names=WELSH_UNI_NAMES_LIST)
+        pn_handler = InstitutionProviderNameHandler(
+            white_list=get_white_list(),
+            welsh_uni_names=get_welsh_uni_names()
+        )
+
         raw_provider_name = raw_inst_data.get("PROVNAME", "")
         ukprn = raw_inst_data.get("UKPRN")
-        pn_handler.get_welsh_uni_name(
-            ukprn=ukprn
-        )
 
         institution_element["pub_ukprn_name"] = pn_handler.presentable(raw_provider_name)
         institution_element["pub_ukprn_welsh_name"] = pn_handler.get_welsh_uni_name(
