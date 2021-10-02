@@ -1,48 +1,18 @@
 import unittest
 from unittest import mock
-import ukrlp_enricher
+
+from EtlPipeline import ukrlp_enricher
 
 TEST_LOOKUP = {
     "10002863": {
-        "id": "d1bf0a06-9cae-11e9-b1d0-8c859021ae2e",
-        "created_at": "2019-07-02T09:50:26.871179",
-        "ukprn": "10002863",
         "ukprn_name": "ACME TESTING COLLEGE",
         "ukprn_welsh_name": "ACME TESTING COLLEGE",
-        "contact_details": {
-            "address": {
-                "line_1": "Flat 1",
-                "line_2": "No. 10",
-                "line_3": "The High Street",
-                "line_4": "Northend",
-                "town": "Little Whingeing",
-                "county": "Shire",
-                "post_code": "CB1 1AA",
-            },
-            "telephone": "01632 960661",
-        },
     },
     "10002718": {
-        "id": "cf1dce22-9cae-11e9-af84-8c859021ae2e",
-        "created_at": "2019-07-02T09:50:22.459071",
-        "ukprn": "10002718",
         "ukprn_name": "GOLDSMITHS' COLLEGE, UNIVERSITY OF LONDON",
         "ukprn_welsh_name": "GOLDSMITHS' COLLEGE, UNIVERSITY OF LONDON",
-        "contact_details": {
-            "address": {
-                "line_1": "Flat 1",
-                "line_2": "No. 10",
-                "line_3": "The High Street",
-                "line_4": "Northend",
-                "town": "Little Whingeing",
-                "county": "Shire",
-                "post_code": "CB1 1AA",
-            },
-            "telephone": "01632 960661",
-        },
     },
 }
-
 
 EXPECTED_COURSE = {
     "id": "1d2fdd92-9cbb-11e9-b644-8c859021ae2e",
@@ -191,8 +161,6 @@ class TestEnricher(unittest.TestCase):
         ukrlp_course_enricher.enrich_course(test_course)
         self.assertDictEqual(test_course, EXPECTED_COURSE)
 
-
-# TODO add more tests - including test when no lookup available for course
 
 if __name__ == "__main__":
     unittest.main()
