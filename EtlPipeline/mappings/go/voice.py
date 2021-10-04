@@ -11,8 +11,8 @@ class GoVoiceMappings(BaseMappings):
     OPTIONS = ["GO"]
     unavailable_keys = ["unavailable"]
 
-    def __init__(self, mapping_id):
-        super().__init__(mapping_id)
+    def __init__(self, mapping_id, subject_enricher):
+        super().__init__(mapping_id=mapping_id, subject_enricher=subject_enricher)
 
     def get_mappings(self) -> List[Tuple[str, str]]:
         return [

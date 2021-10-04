@@ -24,11 +24,12 @@ class BaseMappings:
     unavailable_keys = []
     unavailable_method = None
 
-    def __init__(self, mapping_id):
+    def __init__(self, mapping_id, subject_enricher):
         if mapping_id not in self.OPTIONS:
             raise InvalidMappingId(f"Invalid mapping_id {mapping_id}for {self}")
 
         self.mapping_id = mapping_id
+        self.subject_enricher = subject_enricher
 
     def get_mappings(self) -> List[Tuple[str, str]]:
         raise NotImplemented
@@ -57,7 +58,7 @@ class BaseMappings:
                             self.custom_unavailable(json_data=json_data, elem=elem, key=json_key)
 
                         elif json_key == "subject":
-                            json_data[json_key] = get_subject(elem[xml_key])
+                            json_data[json_key] = get_subject(elem[xml_key], self.subject_enricher)
 
                         else:
                             json_data[json_key] = elem[xml_key]
