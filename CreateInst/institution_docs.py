@@ -110,13 +110,13 @@ class InstitutionProviderNameHandler:
 
         return " ".join(result)
 
-    def get_welsh_uni_name(self, ukprn) -> str:
+    def get_welsh_uni_name(self, ukprn, provider_name) -> str:
         rows = csv.reader(self.welsh_uni_names)
         for row in rows:
             if row[0] == ukprn:
                 logging.info(f"Found welsh name for {ukprn}")
                 return row[1]
-        return ""
+        return provider_name
 
     def should_edit_title(self, title):
         if title not in self.white_list:
@@ -171,7 +171,8 @@ class InstitutionDocs:
 
         institution_element["pub_ukprn_name"] = pn_handler.presentable(raw_provider_name)
         institution_element["pub_ukprn_welsh_name"] = pn_handler.get_welsh_uni_name(
-            ukprn=ukprn
+            ukprn=ukprn,
+            provider_name=institution_element["pub_ukprn_name"]
         )
         institution_element["pub_ukprn"] = pubukprn
         institution_element["pub_ukprn_country"] = get_country(
