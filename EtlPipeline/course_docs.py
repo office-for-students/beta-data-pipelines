@@ -36,7 +36,6 @@ sys.path.insert(0, PARENTDIR)
 
 g_subject_enricher = None
 
-
 import course_lookup_tables as lookup
 from course_stats import get_stats, SharedUtils, get_earnings_unavail_text
 from accreditations import Accreditations
@@ -151,7 +150,8 @@ def load_course_docs(xml_string, version):
                 with open("course_docs_exceptions_{}.txt".format(version), "a") as myfile:
                     myfile.write(exception_text + "\n")
                     myfile.write(tb + "\n")
-                    myfile.write("================================================================================================\n")
+                    myfile.write(
+                        "================================================================================================\n")
 
     if sproc_count > 0:
         logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
@@ -197,16 +197,16 @@ def get_locids(raw_course_data, ukprn):
 
 
 def get_course_doc(
-    accreditations,
-    locations,
-    locids,
-    raw_inst_data,
-    raw_course_data,
-    kisaims,
-    version,
-    go_sector_salaries,
-    leo3_sector_salaries,
-    leo5_sector_salaries
+        accreditations,
+        locations,
+        locids,
+        raw_inst_data,
+        raw_course_data,
+        kisaims,
+        version,
+        go_sector_salaries,
+        leo3_sector_salaries,
+        leo5_sector_salaries
 ):
     outer_wrapper = {}
     outer_wrapper["_id"] = utils.get_uuid()
@@ -252,7 +252,7 @@ def get_course_doc(
     # For single-subject courses, not sure if we get passed an OrderedDict of 1 or something else.
     go_inst_xml_nodes = raw_course_data["GOSALARY"]
     if go_inst_xml_nodes:
-        course["go_salary_inst"] = get_go_inst_json(go_inst_xml_nodes) # Returns an array.
+        course["go_salary_inst"] = get_go_inst_json(go_inst_xml_nodes)  # Returns an array.
 
     leo3_inst_xml_nodes = raw_course_data["LEO3"]
     if leo3_inst_xml_nodes:
@@ -299,10 +299,11 @@ def get_course_doc(
     course["subjects"] = get_subjects(raw_course_data)
 
     title = get_english_welsh_item("TITLE", raw_course_data)
-    kis_aim_code = raw_course_data["KISAIMCODE"] # KISAIMCODE is guaranteed to exist and have a non-null value.
+    kis_aim_code = raw_course_data["KISAIMCODE"]  # KISAIMCODE is guaranteed to exist and have a non-null value.
     kis_aim_label = get_kis_aim_label(kis_aim_code, kisaims)
     if title and title['english'] and kis_aim_label and title['english'] == kis_aim_label:
-        course["title"] = title # TODO: change this statement as appropriate, not sure how yet - awaiting OfS requirement.
+        course[
+            "title"] = title  # TODO: change this statement as appropriate, not sure how yet - awaiting OfS requirement.
     elif title:
         course["title"] = title
     else:
@@ -324,19 +325,22 @@ def get_course_doc(
 
     # Extract the appropriate sector-level earnings data for the current course.
     go_sector_json_array = get_go_sector_json(
-        course["go_salary_inst"], course["leo3_inst"], course["leo5_inst"], go_sector_salaries, outer_wrapper["course_mode"], outer_wrapper["course_level"]
+        course["go_salary_inst"], course["leo3_inst"], course["leo5_inst"], go_sector_salaries,
+        outer_wrapper["course_mode"], outer_wrapper["course_level"]
     )
     if go_sector_json_array:
         course["go_salary_sector"] = go_sector_json_array
 
     leo3_sector_json_array = get_leo3_sector_json(
-        course["leo3_inst"], course["go_salary_inst"], course["leo5_inst"], leo3_sector_salaries, outer_wrapper["course_mode"], outer_wrapper["course_level"]
+        course["leo3_inst"], course["go_salary_inst"], course["leo5_inst"], leo3_sector_salaries,
+        outer_wrapper["course_mode"], outer_wrapper["course_level"]
     )
     if leo3_sector_json_array:
         course["leo3_salary_sector"] = leo3_sector_json_array
 
     leo5_sector_json_array = get_leo5_sector_json(
-        course["leo5_inst"], course["go_salary_inst"], course["leo3_inst"], leo5_sector_salaries, outer_wrapper["course_mode"], outer_wrapper["course_level"]
+        course["leo5_inst"], course["go_salary_inst"], course["leo3_inst"], leo5_sector_salaries,
+        outer_wrapper["course_mode"], outer_wrapper["course_level"]
     )
     if leo5_sector_json_array:
         course["leo5_salary_sector"] = leo5_sector_json_array
@@ -1109,58 +1113,3 @@ def get_qualification(lookup_table_raw_xml, kisaims):
 def get_kis_aim_label(code, kisaims):
     label = kisaims.get_kisaim_label_for_key(code)
     return label
-
-
-# TODO: This isn't ideal; we should be using the function of the same name in SharedUtils.
-#       However, the hectic schedule dictated by the customer does not provide sufficient time.
-def get_subject(subject_code):
-    subject = {}
-    subject["code"] = subject_code
-    subject["english_label"] = g_subject_enricher.subject_lookups[subject_code]["english_name"]
-    subject["welsh_label"] = g_subject_enricher.subject_lookups[subject_code]["welsh_name"]
-    return subject
-
-
-def create_geo_sector_salary_list(dataset):
-    return create_sector_salary_list(dataset, 'GOSECSAL')
-
-
-def create_leo3_sector_salary_list(dataset):
-    return create_sector_salary_list(dataset, 'LEO3SEC')
-
-
-def create_leo5_sector_salary_list(dataset):
-    return create_sector_salary_list(dataset, 'LEO5SEC')
-
-
-def create_sector_salary_list(dataset, sector_type):
-    return [salary for salary in dataset.findall(sector_type)]
-
-
-def get_go_work_unavail_messages(xml_element_key, xml_agg_key, xml_unavail_reason_key, raw_data_element):
-    shared_utils = SharedUtils(
-        xml_element_key,
-        "GOWORKSBJ",
-        xml_agg_key,
-        xml_unavail_reason_key,
-    )
-    return shared_utils.get_unavailable(raw_data_element)
-
-
-def get_earnings_agg_unavail_messages(agg_value, subject):
-    earnings_agg_unavail_messages = {}
-
-    if agg_value in ['21', '22']:
-        message_english = "The data displayed is from students on this and other "\
-            "courses in [Subject].\n\nThis includes data from this and related courses at the same university or "\
-            "college. There was not enough data to publish more specific information. This does not reflect on "\
-            "the quality of the course."
-        message_welsh = "Daw'r data a ddangosir gan fyfyrwyr ar y cwrs hwn a chyrsiau "\
-            "[Subject] eraill.\n\nMae hwn yn cynnwys data o'r cwrs hwn a chyrsiau cysylltiedig yn yr un brifysgol "\
-            "neu goleg. Nid oedd digon o ddata ar gael i gyhoeddi gwybodaeth fwy manwl. Nid yw hyn yn adlewyrchu "\
-            "ansawdd y cwrs."
-
-        earnings_agg_unavail_messages['english'] = message_english.replace("[Subject]", subject['english_label'])
-        earnings_agg_unavail_messages['welsh'] = message_welsh.replace("[Subject]", subject['welsh_label'])
-
-    return earnings_agg_unavail_messages
