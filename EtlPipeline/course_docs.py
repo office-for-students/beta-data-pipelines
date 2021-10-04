@@ -14,12 +14,19 @@ import logging
 import os
 import sys
 import time
-import defusedxml.ElementTree as ET
 import traceback
+from typing import Callable
+from typing import List
 
+import defusedxml.ElementTree as ET
 import xmltodict
 
-# TODO investigate setting PATH in Azure so can remove this
+from EtlPipeline.mappings.go.institution import GoInstitutionMappings
+from EtlPipeline.mappings.go.salary import GoSalaryMappings
+from EtlPipeline.mappings.go.voice import GoVoiceMappings
+from EtlPipeline.mappings.leo.institution import LeoInstitutionMappings
+from EtlPipeline.mappings.leo.sector import LeoSectorMappings
+
 CURRENTDIR = os.path.dirname(
     os.path.abspath(inspect.getfile(inspect.currentframe()))
 )
