@@ -2,26 +2,19 @@
 
 """ EtlPipeline: Execute the ETL pipeline based on a message queue trigger """
 
-import gzip
-import io
 import logging
 import os
 from datetime import datetime
-from distutils.util import strtobool
 
 import azure.functions as func
-from azure.storage.blob import BlockBlobService
 
+from EtlPipeline import course_docs
 from SharedCode.blob_helper import BlobHelper
 from SharedCode.dataset_helper import DataSetHelper
 from SharedCode.mail_helper import MailHelper
-from SharedCode import exceptions
-
-from . import course_docs, validators
 
 
 def main(msgin: func.QueueMessage, msgout: func.Out[str]):
-
     """ Master ETL Pipeline - note that currently, the end-to-end ETL pipeline is
     executed via this single Azure Function which calls other Python functions
     embedded within the same deployment codebase (see imports above).
@@ -64,7 +57,7 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
         storage_blob_name = os.environ["AzureStorageHesaBlobName"]
 
         if use_local_test_XML_file:
-            mock_xml_source_file = open(os.environ["LocalTestXMLFile"],"r")
+            mock_xml_source_file = open(os.environ["LocalTestXMLFile"], "r")
             xml_string = mock_xml_source_file.read()
         else:
             xml_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
@@ -95,7 +88,8 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
         function_fail_date = datetime.today().strftime("%d.%m.%Y")
 
         mail_helper.send_message(
-            f"Automated data import failed on {function_fail_datetime} at EtlPipeline" + msgin.get_body().decode("utf-8") + msgerror,
+            f"Automated data import failed on {function_fail_datetime} at EtlPipeline" + msgin.get_body().decode(
+                "utf-8") + msgerror,
             f"Data Import {environment} - {function_fail_date} - Failed"
         )
 

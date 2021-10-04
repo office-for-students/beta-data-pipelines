@@ -4,7 +4,6 @@ import logging
 import os
 import sys
 
-
 CURRENTDIR = os.path.dirname(
     os.path.abspath(inspect.getfile(inspect.currentframe()))
 )
@@ -23,7 +22,7 @@ class DataSetHelper:
             "AzureCosmosDbDatabaseId", "AzureCosmosDbDataSetCollectionId"
         )
 
-    def update_status(self, item, value, updated_at = None):
+    def update_status(self, item, value, updated_at=None):
         dataset_doc = self.get_latest_doc()
         if item == "root":
             dataset_doc["status"] = value
@@ -45,9 +44,6 @@ class DataSetHelper:
         the_list = list(self.cosmos_client.QueryItems(self.collection_link, query, options))
         the_list_item = the_list[0]
         return the_list_item
-        # return list(
-        #     self.cosmos_client.QueryItems(self.collection_link, query, options)
-        # )[0]
 
     def get_latest_version_number(self):
         query = "SELECT VALUE MAX(c.version) from c "

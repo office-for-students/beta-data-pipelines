@@ -1,26 +1,19 @@
 #!/usr/bin/env python
 """ Creates a new DataSet for each new file we get from HESA """
 
-import gzip
-import io
 import logging
 import os
-
 from datetime import datetime
 
 import azure.functions as func
 
-from azure.storage.blob import BlockBlobService
-
-from SharedCode.exceptions import (
-    XmlValidationError,
-    StopEtlPipelineErrorException,
-    DataSetTooEarlyError,
-)
 from SharedCode.blob_helper import BlobHelper
+from SharedCode.exceptions import DataSetTooEarlyError
+from SharedCode.exceptions import StopEtlPipelineErrorException
+from SharedCode.exceptions import XmlValidationError
 from SharedCode.mail_helper import MailHelper
-from .dataset_creator import DataSetCreator
 from . import validators
+from .dataset_creator import DataSetCreator
 
 
 def main(req: func.HttpRequest, msgout: func.Out[str]) -> None:
@@ -102,7 +95,7 @@ def main(req: func.HttpRequest, msgout: func.Out[str]) -> None:
         function_fail_date = datetime.today().strftime("%d.%m.%Y")
 
         mail_helper.send_message(
-            f"Automated data import failed on {function_fail_datetime} at CreateDataSet" + msgerror,
+            f"Automated data import failed on {function_fail_datetime} at CreateDataSet" + f"{msgerror} {e}",
             f"Data Import {environment} - {function_fail_date} - Failed"
         )
 
