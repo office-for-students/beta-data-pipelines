@@ -250,7 +250,7 @@ def get_course_doc(
     # For single-subject courses, not sure if we get passed an OrderedDict of 1 or something else.
     go_inst_xml_nodes = raw_course_data["GOSALARY"]
     if go_inst_xml_nodes:
-        course["go_salary_inst"] = get_go_inst_json(go_inst_xml_nodes)  # Returns an array.
+        course["go_salary_inst"] = get_go_inst_json(go_inst_xml_nodes, subject_enricher=g_subject_enricher)  # Returns an array.
 
     leo3_inst_xml_nodes = raw_course_data["LEO3"]
     if leo3_inst_xml_nodes:
