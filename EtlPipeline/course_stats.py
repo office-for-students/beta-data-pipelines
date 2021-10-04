@@ -8,10 +8,10 @@ from typing import Tuple
 
 import unicodedata
 
+from EtlPipeline.validators import validate_agg
+from EtlPipeline.validators import validate_unavailable_reason_code
 from SharedCode.dataset_helper import DataSetHelper
 from SharedCode.utils import get_subject_lookups
-from validators import validate_agg
-from validators import validate_unavailable_reason_code
 
 
 def get_stats(raw_course_data, country_code):
