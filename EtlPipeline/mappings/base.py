@@ -87,11 +87,8 @@ class BaseMappings:
             method=Callable) -> None:
 
         keys = unavailable[0]
-        print(f"keys = {keys}")
-        print(f"unavailable[1] {unavailable[1]}")
-        print(f" method {method}")
 
-        json_data[keys[0]], json_data[keys[1]] = method()
+        json_data[keys[0]], json_data[keys[1]] = method(*unavailable[1])
 
     @staticmethod
     def in_and_not_na(key: str, data: Dict[str, Any]) -> bool:
