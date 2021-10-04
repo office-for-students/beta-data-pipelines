@@ -246,9 +246,7 @@ class InstitutionDocs:
 
 
 def get_country(code):
-    country = {}
-    country["code"] = code
-    country["name"] = lookup.country_code[code]
+    country = {"code": code, "name": lookup.country_code[code]}
     return country
 
 
