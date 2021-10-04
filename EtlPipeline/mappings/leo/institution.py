@@ -12,7 +12,6 @@ from EtlPipeline.utils import get_earnings_agg_unavail_messages
 class LeoInstitutionMappings(BaseMappings):
     OPTIONS = ["LEO3", "LEO5"]
     unavailable_keys = ["unavail_reason"]
-    unavailable_method = get_earnings_unavail_text
 
     def __init__(self, mapping_id, subject_enricher):
         super().__init__(mapping_id=mapping_id, subject_enricher=subject_enricher)

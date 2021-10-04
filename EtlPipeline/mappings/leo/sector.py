@@ -7,7 +7,6 @@ from EtlPipeline.mappings.base import BaseMappings
 
 class LeoSectorMappings(BaseMappings):
     OPTIONS = ["LEO3", "LEO5"]
-    unavailable_method = get_earnings_unavail_text
 
     def __init__(self, mapping_id, subject_enricher):
         super().__init__(mapping_id=mapping_id, subject_enricher=subject_enricher)
@@ -82,3 +81,9 @@ class LeoSectorMappings(BaseMappings):
             (f'{self.mapping_id}UQ_CF', 'uq_cf'),
             (f'{self.mapping_id}SECPOP_CF', 'pop_cf')
         ]
+
+    def per_course_unavailable(self, json_data):
+        json_data["unavail_text_region_not_exists_english"], json_data["unavail_text_region_not_exists_welsh"] = \
+            get_earnings_unavail_text("sector", "leo", "region_not_exists")
+        json_data["unavail_text_region_is_ni_english"], json_data["unavail_text_region_is_ni_welsh"] = \
+            get_earnings_unavail_text("sector", "leo", "region_is_ni")

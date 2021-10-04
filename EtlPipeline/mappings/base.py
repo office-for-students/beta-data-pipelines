@@ -1,4 +1,3 @@
-from collections import Callable
 from typing import Any
 from typing import Dict
 from typing import List
@@ -22,7 +21,6 @@ class BaseMappings:
     """
     OPTIONS = []
     unavailable_keys = []
-    unavailable_method = None
 
     def __init__(self, mapping_id, subject_enricher):
         if mapping_id not in self.OPTIONS:
@@ -38,7 +36,6 @@ class BaseMappings:
             self,
             xml_as_array: List[Any],
             mappings: Optional[List[Tuple[str, str]]] = None,
-            unavailable_messages: Optional[List[Tuple[Tuple[str, str], Tuple[str, str, str]]]] = None,
     ) -> List[Dict[str, Any]]:
         json_array = []
         # Can overwrite mappings if needed, otherwise the default is get_mappings()
@@ -63,15 +60,16 @@ class BaseMappings:
                         else:
                             json_data[json_key] = elem[xml_key]
 
-                if unavailable_messages:
-                    for unavailable in unavailable_messages:
-                        self.modify_sector_with_unavailable(json_data, unavailable, self.unavailable_method)
+                self.per_course_unavailable(json_data=json_data)
 
                 self.final_unavailable(json_data)
 
                 json_array.append(json_data)
 
         return json_array
+
+    def per_course_unavailable(self, json_data):
+        pass
 
     def custom_unavailable(self, json_data: Dict[str, Any], elem: List, key: str) -> None:
         # Required if you have set unavailable_keys and that key is found during mapping
@@ -80,16 +78,6 @@ class BaseMappings:
     def final_unavailable(self, json_data):
         # optional
         pass
-
-    @staticmethod
-    def modify_sector_with_unavailable(
-            json_data: Dict[str, str],
-            unavailable: Tuple[Tuple[str, str], Tuple[str, str, str]],
-            method=Callable) -> None:
-
-        keys = unavailable[0]
-
-        json_data[keys[0]], json_data[keys[1]] = method(*unavailable[1])
 
     @staticmethod
     def in_and_not_na(key: str, data: Dict[str, Any]) -> bool:
