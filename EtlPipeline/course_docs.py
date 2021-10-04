@@ -623,15 +623,6 @@ def get_go_sector_json(
     mapper = GoSalaryMappings("GO", subject_enricher)
     return mapper.map_xml_to_json_array(
         xml_as_array=go_salary_sector_xml_array,
-        unavailable_messages=[
-            (
-                ("unavail_text_region_not_exists_english", "unavail_text_region_not_exists_welsh"),
-                ("sector", "go", "region_not_exists")
-            ), (
-                ("unavail_text_region_not_nation_english", "unavail_text_region_not_nation_welsh"),
-                ("sector", "go", "region_not_nation")
-            )
-        ]
     )
 
 
@@ -656,16 +647,6 @@ def get_leo3_sector_json(
     mapper = LeoSectorMappings("LEO3", subject_enricher)
     return mapper.map_xml_to_json_array(
         xml_as_array=leo3_sector_xml_array,
-        unavailable_messages=[
-            (
-                ("unavail_text_region_not_exists_english", "unavail_text_region_not_exists_welsh"),
-                ("sector", "leo", "region_not_exists")
-            ),
-            (
-                ("unavail_text_region_is_ni_english", "unavail_text_region_is_ni_welsh"),
-                ("sector", "leo", "region_is_ni")
-            )
-        ]
     )
 
 
@@ -690,16 +671,6 @@ def get_leo5_sector_json(
     mapper = LeoSectorMappings("LEO5", subject_enricher)
     return mapper.map_xml_to_json_array(
         xml_as_array=leo5_sector_xml_array,
-        unavailable_messages=[
-            (
-                ("unavail_text_region_not_exists_english", "unavail_text_region_not_exists_welsh"),
-                ("sector", "leo", "region_not_exists")
-            ),
-            (
-                ("unavail_text_region_is_ni_english", "unavail_text_region_is_ni_welsh"),
-                ("sector", "leo", "region_is_ni")
-            )
-        ]
     )
 
 
