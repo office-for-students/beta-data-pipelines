@@ -2,8 +2,9 @@ import json
 import unittest
 
 import xmltodict
-from course_docs import get_leo3_inst_json
-from testing_utils import get_string
+
+from EtlPipeline.course_docs import get_leo3_inst_json
+from EtlPipeline.tests.test_helpers.testing_utils import get_string
 
 
 class TestGetLeo3Inst(unittest.TestCase):

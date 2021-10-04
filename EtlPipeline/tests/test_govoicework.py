@@ -2,8 +2,9 @@ import json
 import unittest
 
 import xmltodict
-from testing_utils import get_string
-from course_docs import get_go_voice_work_json
+
+from EtlPipeline.course_docs import get_go_voice_work_json
+from .test_helpers.testing_utils import get_string
 
 
 class TestGetGoVoiceWork(unittest.TestCase):
