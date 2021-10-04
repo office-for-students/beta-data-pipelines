@@ -13,6 +13,8 @@ class TestGetStudentUnions(unittest.TestCase):
             "https://help.com",
             "example.com"
         ]
+        empty = normalise_url("")
+        self.assertEqual(empty, "")
 
         for line in test_urls:
             result = normalise_url(line.rstrip())

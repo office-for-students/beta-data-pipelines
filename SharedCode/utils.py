@@ -32,6 +32,8 @@ def sanitise_address_string(address_string):
 
 
 def normalise_url(website_url: str) -> str:
+    if website_url == "":
+        return ""
     params = website_url.split("://")
     if len(params) == 1:
         return f"https://{website_url.rstrip()}"
