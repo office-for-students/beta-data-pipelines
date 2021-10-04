@@ -139,16 +139,15 @@ def load_course_docs(xml_string, version):
                 institution_id = raw_inst_data["UKPRN"]
                 course_id = raw_course_data["KISCOURSEID"]
                 course_mode = raw_course_data["KISMODE"]
-
-                exception_text = f"There was an error: {e} when creating the course document for course with institution_id: {institution_id} course_id: {course_id} course_mode: {course_mode}"
-                logging.info(exception_text)
                 tb = traceback.format_exc()
-                print(tb)
-                with open("course_docs_exceptions_{}.txt".format(version), "a") as myfile:
-                    myfile.write(exception_text + "\n")
-                    myfile.write(tb + "\n")
-                    myfile.write(
-                        "================================================================================================\n")
+                exception_text = f"There was an error: {e} when creating the course document for course with institution_id: {institution_id} course_id: {course_id} course_mode: {course_mode} TRACEBACK: {tb}"
+                logging.info(exception_text)
+
+                # with open("course_docs_exceptions_{}.txt".format(version), "a") as myfile:
+                #     myfile.write(exception_text + "\n")
+                #     myfile.write(tb + "\n")
+                #     myfile.write(
+                #         "================================================================================================\n")
 
     if sproc_count > 0:
         logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
