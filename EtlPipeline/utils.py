@@ -1,15 +1,15 @@
 from EtlPipeline.course_stats import SharedUtils
 
-# TODO: **House-keeping** review why this is setup this way
 
-g_subject_enricher = None
-
+# TODO: **House-keeping** g_subject_enricher review why this is setup this way
 
 def get_subject(subject_code):
-    subject = {}
-    subject["code"] = subject_code
-    subject["english_label"] = g_subject_enricher.subject_lookups[subject_code]["english_name"]
-    subject["welsh_label"] = g_subject_enricher.subject_lookups[subject_code]["welsh_name"]
+    subject = {
+        "code": subject_code,
+        "english_label": g_subject_enricher.subject_lookups[subject_code]["english_name"],
+        "welsh_label": g_subject_enricher.subject_lookups[subject_code]["welsh_name"]
+    }
+
     return subject
 
 
