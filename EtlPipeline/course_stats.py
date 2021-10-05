@@ -619,6 +619,9 @@ class SharedUtils:
         unavailable = {}
         subj_key = elem.get(self.xml_subj_key)
         agg = elem[self.xml_agg_key] if self.has_data(elem) else None
+        if agg == 14:
+            return ""
+
         unavail_reason_code = elem[self.xml_unavail_reason_key]
         validate_unavailable_reason_code(unavail_reason_code)
         unavailable["code"] = int(unavail_reason_code)
