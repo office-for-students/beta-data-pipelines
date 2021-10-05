@@ -15,10 +15,10 @@ def get_subject(subject_code, subject_enricher):
 
 def get_go_work_unavail_messages(xml_element_key, xml_agg_key, xml_unavail_reason_key, raw_data_element):
     shared_utils = SharedUtils(
-        xml_element_key,
-        "GOWORKSBJ",
-        xml_agg_key,
-        xml_unavail_reason_key,
+        xml_element_key=xml_element_key,
+        xml_subj_key="GOWORKSBJ",
+        xml_agg_key=xml_agg_key,
+        xml_unavail_reason_key=xml_unavail_reason_key,
     )
     return shared_utils.get_unavailable(raw_data_element)
 
