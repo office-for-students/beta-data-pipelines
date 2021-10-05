@@ -461,7 +461,7 @@ def get_leo5_inst_json(raw_leo5_inst_data,subject_enricher):
         return [leo5]
 
 
-def get_go_voice_work_json(raw_go_voice_work_data,subject_enricher):
+def get_go_voice_work_json(raw_go_voice_work_data, subject_enricher):
     if raw_go_voice_work_data:
         if isinstance(raw_go_voice_work_data, dict):
             raw_go_voice_work_data = [raw_go_voice_work_data]
