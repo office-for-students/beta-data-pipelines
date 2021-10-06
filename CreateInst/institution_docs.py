@@ -118,11 +118,11 @@ class InstitutionProviderNameHandler:
 
         return s
 
-    def get_welsh_uni_name(self, ukprn, provider_name) -> str:
+    def get_welsh_uni_name(self, pub_ukprn, provider_name) -> str:
         rows = csv.reader(self.welsh_uni_names)
         for row in rows:
-            if row[0] == ukprn:
-                logging.info(f"Found welsh name for {ukprn}")
+            if row[0] == pub_ukprn:
+                logging.info(f"Found welsh name for {pub_ukprn}")
                 return row[1]
         return provider_name
 
@@ -175,11 +175,10 @@ class InstitutionDocs:
         )
 
         raw_provider_name = raw_inst_data.get("PROVNAME", "")
-        ukprn = raw_inst_data.get("UKPRN")
 
         institution_element["pub_ukprn_name"] = pn_handler.presentable(raw_provider_name)
         institution_element["pub_ukprn_welsh_name"] = pn_handler.get_welsh_uni_name(
-            ukprn=ukprn,
+            pub_ukprn=pubukprn,
             provider_name=institution_element["pub_ukprn_name"]
         )
         institution_element["pub_ukprn"] = pubukprn
