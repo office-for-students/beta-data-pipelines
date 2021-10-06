@@ -145,6 +145,12 @@ pip install pytest (if you haven't already installed dependencies using the requ
 pytest -v
 ```
 
+Set the -s flag if you would like the print statements to be output as well during debugging
+
+```
+pytest -s
+```
+
 ### Contributing
 
 See [CONTRIBUTING](CONTRIBUTING.md) for details.
@@ -156,6 +162,16 @@ See [LICENSE](LICENSE.md) for details.
 ### Data mappings (XML to JSON)
 
 See [COURSE](docs/COURSE.md) for mappings of course data
-See [COURSE STATISTICS](doc/STATISTICS.md) for mappings for course statistics
-See [DATASET](doc/DATASET.md) for dataset structure
+
+See [COURSE STATISTICS](docs/STATISTICS.md) for mappings for course statistics
+
+See [DATASET](docs/DATASET.md) for dataset structure
+
 See [INSTITUTION](docs/INSTITUTION.md) for mappings of institution data
+
+##### Getting setting:
+
+`func azure functionapp fetch-app-settings <app-name>`
+`func settings decrypt`
+
+
