@@ -31,9 +31,14 @@ class TestGetStudentUnions(unittest.TestCase):
     def test_provider_name_formatted(self):
         test_name = "an university and polYTech THAT for instance IN (and around) oF THE world"
         expected_result = "An University and Polytech That for Instance in (And Around) of the World"
+        handle_apostrophe = "This of university's title (the)"
+        handle_apostrophe_result = "This of University's Title (The)"
         handler = InstitutionProviderNameHandler(white_list=[], welsh_uni_names=[])
         result = handler.presentable(test_name)
         self.assertEqual(result, expected_result, f"{result} should match {expected_result}")
+
+        result = handler.presentable(handle_apostrophe)
+        self.assertEqual(result, handle_apostrophe_result, f"{result} should match {handle_apostrophe_result}")
 
     def test_provider_name_on_whitelist(self):
         test_name = "an university and polYTech THAT for instance IN (and around) oF THE world"

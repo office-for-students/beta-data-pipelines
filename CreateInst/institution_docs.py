@@ -11,6 +11,7 @@ import datetime
 import inspect
 import logging
 import os
+import re
 import sys
 import time
 
@@ -101,14 +102,21 @@ class InstitutionProviderNameHandler:
 
     @staticmethod
     def title_case(s):
+        s = re.sub(
+            r"[A-Za-z]+('[A-Za-z]+)?",
+            lambda word: word.group(0).capitalize(),
+            s
+        )
+
         exclusions = ["an", "and", "for", "in", "of", "the"]
-        s = s.title()
         word_list = s.split()
         result = [word_list[0]]
         for word in word_list[1:]:
             result.append(word.lower() if word.lower() in exclusions else word)
 
-        return " ".join(result)
+        s = " ".join(result)
+
+        return s
 
     def get_welsh_uni_name(self, ukprn, provider_name) -> str:
         rows = csv.reader(self.welsh_uni_names)
@@ -191,6 +199,7 @@ class InstitutionDocs:
         institution_element["pub_ukprn_country"] = get_country(
             raw_inst_data["COUNTRY"]
         )
+
         return institution_element
 
     def get_institution_doc(self, institution):
