@@ -3,11 +3,11 @@ from EtlPipeline.course_stats import SharedUtils
 
 # TODO: **House-keeping** g_subject_enricher review why this is setup this way
 
-def get_subject(subject_code):
+def get_subject(subject_code, subject_enricher):
     subject = {
         "code": subject_code,
-        "english_label": g_subject_enricher.subject_lookups[subject_code]["english_name"],
-        "welsh_label": g_subject_enricher.subject_lookups[subject_code]["welsh_name"]
+        "english_label": subject_enricher.subject_lookups[subject_code]["english_name"],
+        "welsh_label": subject_enricher.subject_lookups[subject_code]["welsh_name"]
     }
 
     return subject
@@ -15,10 +15,10 @@ def get_subject(subject_code):
 
 def get_go_work_unavail_messages(xml_element_key, xml_agg_key, xml_unavail_reason_key, raw_data_element):
     shared_utils = SharedUtils(
-        xml_element_key,
-        "GOWORKSBJ",
-        xml_agg_key,
-        xml_unavail_reason_key,
+        xml_element_key=xml_element_key,
+        xml_subj_key="GOWORKSBJ",
+        xml_agg_key=xml_agg_key,
+        xml_unavail_reason_key=xml_unavail_reason_key,
     )
     return shared_utils.get_unavailable(raw_data_element)
 

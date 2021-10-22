@@ -11,7 +11,7 @@
       "name": "msgout",
       "type": "queue",
       "direction": "out",
-      "queueName": "data-pipeline-ukrlp-queue",
+      "queueName": "data-pipeline-subjects-queue",
       "connection": "AzureStorageAccountConnectionString"
     }
   ]

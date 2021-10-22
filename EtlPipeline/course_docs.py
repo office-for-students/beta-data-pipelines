@@ -34,8 +34,6 @@ PARENTDIR = os.path.dirname(CURRENTDIR)
 sys.path.insert(0, CURRENTDIR)
 sys.path.insert(0, PARENTDIR)
 
-g_subject_enricher = None
-
 import course_lookup_tables as lookup
 from course_stats import get_stats, SharedUtils, get_earnings_unavail_text
 from accreditations import Accreditations
@@ -53,8 +51,6 @@ from SharedCode.utils import get_english_welsh_item
 
 
 def load_course_docs(xml_string, version):
-    global g_subject_enricher
-
     """Parse HESA XML passed in and create JSON course docs in Cosmos DB."""
 
     cosmosdb_client = utils.get_cosmos_client()
@@ -119,7 +115,8 @@ def load_course_docs(xml_string, version):
                     version,
                     go_sector_salaries,
                     leo3_sector_salaries,
-                    leo5_sector_salaries
+                    leo5_sector_salaries,
+                    g_subject_enricher
                 )
                 enricher.enrich_course(course_doc)
                 subject_enricher.enrich_course(course_doc)
@@ -142,16 +139,15 @@ def load_course_docs(xml_string, version):
                 institution_id = raw_inst_data["UKPRN"]
                 course_id = raw_course_data["KISCOURSEID"]
                 course_mode = raw_course_data["KISMODE"]
-
-                exception_text = f"There was an error: {e} when creating the course document for course with institution_id: {institution_id} course_id: {course_id} course_mode: {course_mode}"
-                logging.info(exception_text)
                 tb = traceback.format_exc()
-                print(tb)
-                with open("course_docs_exceptions_{}.txt".format(version), "a") as myfile:
-                    myfile.write(exception_text + "\n")
-                    myfile.write(tb + "\n")
-                    myfile.write(
-                        "================================================================================================\n")
+                exception_text = f"There was an error: {e} when creating the course document for course with institution_id: {institution_id} course_id: {course_id} course_mode: {course_mode} TRACEBACK: {tb}"
+                logging.info(exception_text)
+
+                # with open("course_docs_exceptions_{}.txt".format(version), "a") as myfile:
+                #     myfile.write(exception_text + "\n")
+                #     myfile.write(tb + "\n")
+                #     myfile.write(
+                #         "================================================================================================\n")
 
     if sproc_count > 0:
         logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
@@ -206,7 +202,8 @@ def get_course_doc(
         version,
         go_sector_salaries,
         leo3_sector_salaries,
-        leo5_sector_salaries
+        leo5_sector_salaries,
+        g_subject_enricher
 ):
     outer_wrapper = {}
     outer_wrapper["_id"] = utils.get_uuid()
@@ -252,19 +249,19 @@ def get_course_doc(
     # For single-subject courses, not sure if we get passed an OrderedDict of 1 or something else.
     go_inst_xml_nodes = raw_course_data["GOSALARY"]
     if go_inst_xml_nodes:
-        course["go_salary_inst"] = get_go_inst_json(go_inst_xml_nodes)  # Returns an array.
+        course["go_salary_inst"] = get_go_inst_json(go_inst_xml_nodes, subject_enricher=g_subject_enricher)  # Returns an array.
 
     leo3_inst_xml_nodes = raw_course_data["LEO3"]
     if leo3_inst_xml_nodes:
-        course["leo3_inst"] = get_leo3_inst_json(leo3_inst_xml_nodes)
+        course["leo3_inst"] = get_leo3_inst_json(leo3_inst_xml_nodes, subject_enricher=g_subject_enricher)
 
     leo5_inst_xml_nodes = raw_course_data["LEO5"]
     if leo5_inst_xml_nodes:
-        course["leo5_inst"] = get_leo5_inst_json(leo5_inst_xml_nodes)
+        course["leo5_inst"] = get_leo5_inst_json(leo5_inst_xml_nodes, subject_enricher=g_subject_enricher)
 
     go_voice_work_xml_nodes = raw_course_data["GOVOICEWORK"]
     if go_voice_work_xml_nodes:
-        course["go_voice_work"] = get_go_voice_work_json(go_voice_work_xml_nodes)
+        course["go_voice_work"] = get_go_voice_work_json(go_voice_work_xml_nodes, subject_enricher=g_subject_enricher)
 
     length_of_course = get_code_label_entry(
         raw_course_data, lookup.length_of_course, "NUMSTAGE"
@@ -325,22 +322,37 @@ def get_course_doc(
 
     # Extract the appropriate sector-level earnings data for the current course.
     go_sector_json_array = get_go_sector_json(
-        course["go_salary_inst"], course["leo3_inst"], course["leo5_inst"], go_sector_salaries,
-        outer_wrapper["course_mode"], outer_wrapper["course_level"]
+        course["go_salary_inst"],
+        course["leo3_inst"],
+        course["leo5_inst"],
+        go_sector_salaries,
+        outer_wrapper["course_mode"],
+        outer_wrapper["course_level"],
+        subject_enricher=g_subject_enricher
     )
     if go_sector_json_array:
         course["go_salary_sector"] = go_sector_json_array
 
     leo3_sector_json_array = get_leo3_sector_json(
-        course["leo3_inst"], course["go_salary_inst"], course["leo5_inst"], leo3_sector_salaries,
-        outer_wrapper["course_mode"], outer_wrapper["course_level"]
+        course["leo3_inst"],
+        course["go_salary_inst"],
+        course["leo5_inst"],
+        leo3_sector_salaries,
+        outer_wrapper["course_mode"],
+        outer_wrapper["course_level"],
+        subject_enricher=g_subject_enricher
     )
     if leo3_sector_json_array:
         course["leo3_salary_sector"] = leo3_sector_json_array
 
     leo5_sector_json_array = get_leo5_sector_json(
-        course["leo5_inst"], course["go_salary_inst"], course["leo3_inst"], leo5_sector_salaries,
-        outer_wrapper["course_mode"], outer_wrapper["course_level"]
+        course["leo5_inst"],
+        course["go_salary_inst"],
+        course["leo3_inst"],
+        leo5_sector_salaries,
+        outer_wrapper["course_mode"],
+        outer_wrapper["course_level"],
+        subject_enricher=g_subject_enricher
     )
     if leo5_sector_json_array:
         course["leo5_salary_sector"] = leo5_sector_json_array
@@ -392,12 +404,15 @@ def get_country(raw_inst_data):
     return country
 
 
-def get_go_inst_json(raw_go_inst_data):
+def get_go_inst_json(raw_go_inst_data, subject_enricher):
     if raw_go_inst_data:
         if isinstance(raw_go_inst_data, dict):
             raw_go_inst_data = [raw_go_inst_data]
 
-        mapper = GoInstitutionMappings("GO")
+        mapper = GoInstitutionMappings(
+            mapping_id="GO",
+            subject_enricher=subject_enricher
+        )
         return mapper.map_xml_to_json_array(
             xml_as_array=raw_go_inst_data,
         )
@@ -411,12 +426,15 @@ def get_go_inst_json(raw_go_inst_data):
     return [go_salary]
 
 
-def get_leo3_inst_json(raw_leo3_inst_data) -> List:
+def get_leo3_inst_json(raw_leo3_inst_data, subject_enricher) -> List:
     if raw_leo3_inst_data:
         if isinstance(raw_leo3_inst_data, dict):
             raw_leo3_inst_data = [raw_leo3_inst_data]
 
-        mapper = LeoInstitutionMappings("LEO3")
+        mapper = LeoInstitutionMappings(
+            mapping_id="LEO3",
+            subject_enricher=subject_enricher
+        )
         return mapper.map_xml_to_json_array(
             xml_as_array=raw_leo3_inst_data,
         )
@@ -426,12 +444,12 @@ def get_leo3_inst_json(raw_leo3_inst_data) -> List:
         return [leo3]
 
 
-def get_leo5_inst_json(raw_leo5_inst_data):
+def get_leo5_inst_json(raw_leo5_inst_data,subject_enricher):
     if raw_leo5_inst_data:
         if isinstance(raw_leo5_inst_data, dict):
             raw_leo5_inst_data = [raw_leo5_inst_data]
 
-        mapper = LeoInstitutionMappings("LEO5")
+        mapper = LeoInstitutionMappings("LEO5", subject_enricher=subject_enricher)
         return mapper.map_xml_to_json_array(
             xml_as_array=raw_leo5_inst_data,
         )
@@ -443,11 +461,14 @@ def get_leo5_inst_json(raw_leo5_inst_data):
         return [leo5]
 
 
-def get_go_voice_work_json(raw_go_voice_work_data):
+def get_go_voice_work_json(raw_go_voice_work_data, subject_enricher):
     if raw_go_voice_work_data:
         if isinstance(raw_go_voice_work_data, dict):
             raw_go_voice_work_data = [raw_go_voice_work_data]
-        mapper = GoVoiceMappings("GO")
+        mapper = GoVoiceMappings(
+            mapping_id="GO",
+            subject_enricher=subject_enricher
+        )
         return mapper.map_xml_to_json_array(
             xml_as_array=raw_go_voice_work_data,
         )
@@ -546,77 +567,13 @@ def get_location_items(locations, locids, raw_course_data, pub_ukprn):
     return location_items
 
 
-def get_go_sector_json(
-        go_salary_inst_list,
-        leo3_salary_inst_list,
-        leo5_salary_inst_list,
-        go_sector_salary_lookup,
-        course_mode,
-        course_level
-):
-    go_salary_sector_xml_array = process_stats(
-        primary_dataset=go_salary_inst_list,
-        secondary_dataset=leo3_salary_inst_list,
-        tertiary_dataset=leo5_salary_inst_list,
-        course_mode=course_mode,
-        course_level=course_level,
-        salary_lookup=go_sector_salary_lookup
-    )
-
-    mapper = GoSalaryMappings("GO")
-    return mapper.map_xml_to_json_array(
-        xml_as_array=go_salary_sector_xml_array,
-        unavailable_messages=[
-            (
-                ("unavail_text_region_not_exists_english", "unavail_text_region_not_exists_welsh"),
-                ("sector", "go", "region_not_exists")
-            ), (
-                ("unavail_text_region_not_nation_english", "unavail_text_region_not_nation_welsh"),
-                ("sector", "go", "region_not_nation")
-            )
-        ]
-    )
-
-
-def get_leo3_sector_json(
-        leo3_salary_inst_list,
-        go_salary_inst_list,
-        leo5_salary_inst_list,
-        leo3_sector_salary_lookup,
-        course_mode, course_level
-):
-    leo3_sector_xml_array = process_stats(
-        primary_dataset=leo3_salary_inst_list,
-        secondary_dataset=go_salary_inst_list,
-        tertiary_dataset=leo5_salary_inst_list,
-        course_mode=course_mode,
-        course_level=course_level,
-        salary_lookup=leo3_sector_salary_lookup
-    )
-
-    mapper = LeoSectorMappings("LEO3")
-    return mapper.map_xml_to_json_array(
-        xml_as_array=leo3_sector_xml_array,
-        unavailable_messages=[
-            (
-                ("unavail_text_region_not_exists_english", "unavail_text_region_not_exists_welsh"),
-                ("sector", "leo", "region_not_exists")
-            ),
-            (
-                ("unavail_text_region_is_ni_english", "unavail_text_region_is_ni_welsh"),
-                ("sector", "leo", "region_is_ni")
-            )
-        ]
-    )
-
-
 def process_stats(
         primary_dataset,
         secondary_dataset,
         tertiary_dataset,
         course_mode,
         course_level,
-        salary_lookup: Callable
+        salary_lookup: Callable,
 ):
     xml_array = []
     for index, primary_inst in enumerate(primary_dataset):
@@ -645,12 +602,62 @@ def process_stats(
         return xml_array
 
 
+def get_go_sector_json(
+        go_salary_inst_list,
+        leo3_salary_inst_list,
+        leo5_salary_inst_list,
+        go_sector_salary_lookup,
+        course_mode,
+        course_level,
+        subject_enricher
+):
+    go_salary_sector_xml_array = process_stats(
+        primary_dataset=go_salary_inst_list,
+        secondary_dataset=leo3_salary_inst_list,
+        tertiary_dataset=leo5_salary_inst_list,
+        course_mode=course_mode,
+        course_level=course_level,
+        salary_lookup=go_sector_salary_lookup
+    )
+
+    mapper = GoSalaryMappings("GO", subject_enricher)
+    return mapper.map_xml_to_json_array(
+        xml_as_array=go_salary_sector_xml_array,
+    )
+
+
+def get_leo3_sector_json(
+        leo3_salary_inst_list,
+        go_salary_inst_list,
+        leo5_salary_inst_list,
+        leo3_sector_salary_lookup,
+        course_mode,
+        course_level,
+        subject_enricher
+):
+    leo3_sector_xml_array = process_stats(
+        primary_dataset=leo3_salary_inst_list,
+        secondary_dataset=go_salary_inst_list,
+        tertiary_dataset=leo5_salary_inst_list,
+        course_mode=course_mode,
+        course_level=course_level,
+        salary_lookup=leo3_sector_salary_lookup
+    )
+
+    mapper = LeoSectorMappings("LEO3", subject_enricher)
+    return mapper.map_xml_to_json_array(
+        xml_as_array=leo3_sector_xml_array,
+    )
+
+
 def get_leo5_sector_json(
         leo5_salary_inst_list,
         go_salary_inst_list,
         leo3_salary_inst_list,
         leo5_sector_salary_lookup,
-        course_mode, course_level
+        course_mode,
+        course_level,
+        subject_enricher
 ):
     leo5_sector_xml_array = process_stats(
         primary_dataset=leo5_salary_inst_list,
@@ -661,19 +668,9 @@ def get_leo5_sector_json(
         salary_lookup=leo5_sector_salary_lookup
     )
 
-    mapper = LeoSectorMappings("LEO5")
+    mapper = LeoSectorMappings("LEO5", subject_enricher)
     return mapper.map_xml_to_json_array(
         xml_as_array=leo5_sector_xml_array,
-        unavailable_messages=[
-            (
-                ("unavail_text_region_not_exists_english", "unavail_text_region_not_exists_welsh"),
-                ("sector", "leo", "region_not_exists")
-            ),
-            (
-                ("unavail_text_region_is_ni_english", "unavail_text_region_is_ni_welsh"),
-                ("sector", "leo", "region_is_ni")
-            )
-        ]
     )
 
 

@@ -8,10 +8,9 @@ from EtlPipeline.mappings.base import BaseMappings
 class GoSalaryMappings(BaseMappings):
     OPTIONS = ["GO"]
     unavailable_keys = []
-    unavailable_method = get_earnings_unavail_text
 
-    def __init__(self, mapping_id):
-        super().__init__(mapping_id=mapping_id)
+    def __init__(self, mapping_id, subject_enricher):
+        super().__init__(mapping_id=mapping_id, subject_enricher=subject_enricher)
 
     def get_mappings(self) -> List[Tuple[str, str]]:
         return [
@@ -44,3 +43,9 @@ class GoSalaryMappings(BaseMappings):
             (f'{self.mapping_id}SECPOP_NI', "pop_ni"),
             (f'{self.mapping_id}SECRESP_NI', "resp_ni"),
         ]
+
+    def per_course_unavailable(self, json_data):
+        json_data["unavail_text_region_not_exists_english"], json_data["unavail_text_region_not_exists_welsh"] = \
+            get_earnings_unavail_text("sector", "go", "region_not_exists")
+        json_data["unavail_text_region_not_nation_english"], json_data["unavail_text_region_not_nation_welsh"] = \
+            get_earnings_unavail_text("sector", "go", "region_not_nation")

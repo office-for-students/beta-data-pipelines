@@ -7,8 +7,8 @@ from EtlPipeline.mappings.base import BaseMappings
 class LeoSalaryMappings(BaseMappings):
     OPTIONS = ["LEO3", "LEO5"]
 
-    def __init__(self, mapping_id):
-        super().__init__(mapping_id=mapping_id)
+    def __init__(self, mapping_id, subject_enricher):
+        super().__init__(mapping_id=mapping_id, subject_enricher=subject_enricher)
 
     def get_mappings(self) -> List[Tuple[str, str]]:
         return [

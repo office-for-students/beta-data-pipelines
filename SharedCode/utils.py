@@ -32,6 +32,8 @@ def sanitise_address_string(address_string):
 
 
 def normalise_url(website_url: str) -> str:
+    if website_url == "":
+        return ""
     params = website_url.split("://")
     if len(params) == 1:
         return f"https://{website_url.rstrip()}"
@@ -72,9 +74,15 @@ def get_ukrlp_lookups(version):
         cosmos_db_client.QueryItems(collection_link, query, options)
     )
 
-    return {lookup["institution"]["ukprn"]: {"ukprn_name": lookup["institution"]["ukprn_name"],
-                                             "ukprn_welsh_name": lookup["institution"]["ukprn_welsh_name"]} for lookup
-            in lookup_list}
+    # Previous data from the UKRLP smashed the ukprn number with the pub_ukprn,
+    # to limit changes doing the same now.
+    for lookup in lookup_list:
+        lookup["institution"]["ukprn"] = lookup["institution"]["pub_ukprn"]
+
+    return {lookup["institution"]["ukprn"]: {
+        "ukprn_name": lookup["institution"]["pub_ukprn_name"],
+        "ukprn_welsh_name": lookup["institution"]["pub_ukprn_welsh_name"]
+    } for lookup in lookup_list}
 
 
 def get_subject_lookups(version):

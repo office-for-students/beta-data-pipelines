@@ -11,6 +11,7 @@ import datetime
 import inspect
 import logging
 import os
+import re
 import sys
 import time
 
@@ -101,22 +102,29 @@ class InstitutionProviderNameHandler:
 
     @staticmethod
     def title_case(s):
+        s = re.sub(
+            r"[A-Za-z]+('[A-Za-z]+)?",
+            lambda word: word.group(0).capitalize(),
+            s
+        )
+
         exclusions = ["an", "and", "for", "in", "of", "the"]
-        s = s.title()
         word_list = s.split()
         result = [word_list[0]]
         for word in word_list[1:]:
             result.append(word.lower() if word.lower() in exclusions else word)
 
-        return " ".join(result)
+        s = " ".join(result)
 
-    def get_welsh_uni_name(self, ukprn) -> str:
+        return s
+
+    def get_welsh_uni_name(self, pub_ukprn, provider_name) -> str:
         rows = csv.reader(self.welsh_uni_names)
         for row in rows:
-            if row[0] == ukprn:
-                logging.info(f"Found welsh name for {ukprn}")
+            if row[0] == pub_ukprn:
+                logging.info(f"Found welsh name for {pub_ukprn}")
                 return row[1]
-        return ""
+        return provider_name
 
     def should_edit_title(self, title):
         if title not in self.white_list:
@@ -167,11 +175,11 @@ class InstitutionDocs:
         )
 
         raw_provider_name = raw_inst_data.get("PROVNAME", "")
-        ukprn = raw_inst_data.get("UKPRN")
 
         institution_element["pub_ukprn_name"] = pn_handler.presentable(raw_provider_name)
         institution_element["pub_ukprn_welsh_name"] = pn_handler.get_welsh_uni_name(
-            ukprn=ukprn
+            pub_ukprn=pubukprn,
+            provider_name=institution_element["pub_ukprn_name"]
         )
         institution_element["pub_ukprn"] = pubukprn
         institution_element["pub_ukprn_country"] = get_country(
@@ -190,6 +198,7 @@ class InstitutionDocs:
         institution_element["pub_ukprn_country"] = get_country(
             raw_inst_data["COUNTRY"]
         )
+
         return institution_element
 
     def get_institution_doc(self, institution):
@@ -235,7 +244,7 @@ class InstitutionDocs:
                 # Reset values
                 new_docs = []
                 sproc_count = 0
-                time.sleep(2)
+                time.sleep(4)
 
         if sproc_count > 0:
             logging.info(f"Begining execution of stored procedure for {sproc_count} documents")

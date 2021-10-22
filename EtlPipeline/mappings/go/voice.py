@@ -11,8 +11,8 @@ class GoVoiceMappings(BaseMappings):
     OPTIONS = ["GO"]
     unavailable_keys = ["unavailable"]
 
-    def __init__(self, mapping_id):
-        super().__init__(mapping_id)
+    def __init__(self, mapping_id, subject_enricher):
+        super().__init__(mapping_id=mapping_id, subject_enricher=subject_enricher)
 
     def get_mappings(self) -> List[Tuple[str, str]]:
         return [
@@ -28,4 +28,9 @@ class GoVoiceMappings(BaseMappings):
 
     #
     def custom_unavailable(self, json_data: Dict[str, Any], elem, key: str) -> None:
-        json_data["unavailable"] = get_go_work_unavail_messages("GO", 'GOWORKAGG', "GOWORKUNAVAILREASON", elem)
+        json_data["unavailable"] = get_go_work_unavail_messages(
+            xml_element_key="GO",
+            xml_agg_key='GOWORKAGG',
+            xml_unavail_reason_key="GOWORKUNAVAILREASON",
+            raw_data_element=elem
+        )

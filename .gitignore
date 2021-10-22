@@ -3,7 +3,7 @@ EtlPipeline/host.json
 .DS_Store
 trash.txt
 kis.xml
-
+.comparison
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
