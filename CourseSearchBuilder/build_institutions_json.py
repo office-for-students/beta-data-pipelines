@@ -1,19 +1,18 @@
 """Module for creating the instituions.json file used by CMS"""
 
-import json
 import io
+import json
 import os
 import re
-import logging
 
-from SharedCode.utils import get_collection_link, get_cosmos_client
-from SharedCode.dataset_helper import DataSetHelper
 from SharedCode.blob_helper import BlobHelper
+from SharedCode.dataset_helper import DataSetHelper
+from SharedCode.utils import get_collection_link
+from SharedCode.utils import get_cosmos_client
 
 
 def build_institutions_json_files():
     version = DataSetHelper().get_latest_version_number()
-    blob_helper = BlobHelper()
 
     cosmos_db_client = get_cosmos_client()
     collection_link = get_collection_link(
@@ -26,47 +25,54 @@ def build_institutions_json_files():
 
     institution_list = list(cosmos_db_client.QueryItems(collection_link, query, options))
 
-    institutions_file = io.StringIO()
+    generate_file(
+        institution_list=institution_list,
+        primary_name="pub_ukprn_name",
+        secondary_name="pub_ukprn_welsh_name",
+        blob_file="AzureStorageInstitutionsENJSONFileBlobName"
+    )
 
+    generate_file(
+        institution_list=institution_list,
+        primary_name="pub_ukprn_welsh_name",
+        secondary_name="pub_ukprn_name",
+        blob_file="AzureStorageInstitutionsCYJSONFileBlobName"
+    )
+
+
+def not_already_in_list(name, existing):
+    if name not in existing:
+        existing.append(name)
+        return True
+    return False
+
+
+def generate_file(institution_list, primary_name, secondary_name, blob_file):
+    blob_helper = BlobHelper()
+    institutions_file = io.StringIO()
     institutions = []
     for val in institution_list:
         institution = val["institution"]
-        if isinstance(institution["pub_ukprn_name"], str):
-            inst_entry = get_inst_entry(institution["pub_ukprn_name"])
+        primary = institution[primary_name]
+        secondary = institution[secondary_name]
+
+        if isinstance(primary, str):
+            inst_entry = get_inst_entry(primary)
+            institutions.append(inst_entry)
+        elif isinstance(secondary, str):
+            inst_entry = get_inst_entry(secondary)
             institutions.append(inst_entry)
 
     institutions.sort(key=lambda x: x["order_by_name"])
 
-    json.dump(institutions, institutions_file, indent=4)
+    de_duped = []
+    final = [name if not_already_in_list(name=name["name"], existing=de_duped) else None for name in institutions]
+
+    json.dump(final, institutions_file, indent=4)
     encoded_file = institutions_file.getvalue().encode('utf-8')
 
     storage_container_name = os.environ["AzureStorageJSONFilesContainerName"]
-    storage_blob_name = os.environ["AzureStorageInstitutionsENJSONFileBlobName"]
-    blob_helper.write_stream_file(storage_container_name, storage_blob_name, encoded_file)
-    institutions_file.close()
-
-    institutions_file = io.StringIO()
-
-    institutions = []
-    for val in institution_list:
-        institution = val["institution"]
-        isnt_name = institution["pub_ukprn_name"]
-        inst_welsh_name = institution["pub_ukprn_welsh_name"]
-
-        if isinstance(inst_welsh_name, str):
-            inst_entry = get_inst_entry(inst_welsh_name)
-            institutions.append(inst_entry)
-        elif isinstance(isnt_name, str):
-            inst_entry = get_inst_entry(isnt_name)
-            institutions.append(inst_entry)
-
-    institutions.sort(key=lambda x: x["order_by_name"])
-
-    json.dump(institutions, institutions_file, indent=4)
-    encoded_file = institutions_file.getvalue().encode('utf-8')
-
-    storage_container_name = os.environ["AzureStorageJSONFilesContainerName"]
-    storage_blob_name = os.environ["AzureStorageInstitutionsCYJSONFileBlobName"]
+    storage_blob_name = os.environ[blob_file]
     blob_helper.write_stream_file(storage_container_name, storage_blob_name, encoded_file)
     institutions_file.close()
 
