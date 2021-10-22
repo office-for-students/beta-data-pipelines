@@ -40,7 +40,7 @@ def build_institutions_json_files():
     )
 
 
-def notAlreadyInList(name, existing):
+def not_already_in_list(name, existing):
     if name not in existing:
         existing.append(name)
         return True
@@ -66,7 +66,7 @@ def generate_file(institution_list, primary_name, secondary_name, blob_file):
     institutions.sort(key=lambda x: x["order_by_name"])
 
     de_duped = []
-    final = [name if notAlreadyInList(name=name["name"], existing=de_duped) else None for name in institutions]
+    final = [name if not_already_in_list(name=name["name"], existing=de_duped) else None for name in institutions]
 
     json.dump(final, institutions_file, indent=4)
     encoded_file = institutions_file.getvalue().encode('utf-8')
