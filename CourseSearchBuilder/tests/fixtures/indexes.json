@@ -1,0 +1,98 @@
+{
+  "@odata.context": "https://pre-prod-discoveruni.search.windows.net/$metadata#indexes(name)",
+  "value": [
+    {
+      "name": "courses-1"
+    },
+    {
+      "name": "courses-10"
+    },
+    {
+      "name": "courses-11"
+    },
+    {
+      "name": "courses-117"
+    },
+    {
+      "name": "courses-118"
+    },
+    {
+      "name": "courses-119"
+    },
+    {
+      "name": "courses-12"
+    },
+    {
+      "name": "courses-123"
+    },
+    {
+      "name": "courses-124"
+    },
+    {
+      "name": "courses-125"
+    },
+    {
+      "name": "courses-126"
+    },
+    {
+      "name": "courses-127"
+    },
+    {
+      "name": "courses-19"
+    },
+    {
+      "name": "courses-20"
+    },
+    {
+      "name": "courses-21"
+    },
+    {
+      "name": "courses-22"
+    },
+    {
+      "name": "courses-31"
+    },
+    {
+      "name": "courses-32"
+    },
+    {
+      "name": "courses-34"
+    },
+    {
+      "name": "courses-35"
+    },
+    {
+      "name": "courses-36"
+    },
+    {
+      "name": "courses-37"
+    },
+    {
+      "name": "courses-38"
+    },
+    {
+      "name": "courses-39"
+    },
+    {
+      "name": "courses-74"
+    },
+    {
+      "name": "courses-76"
+    },
+    {
+      "name": "courses-8"
+    },
+    {
+      "name": "courses-81"
+    },
+    {
+      "name": "courses-9"
+    },
+    {
+      "name": "postcode"
+    },
+    {
+      "name": "postcodes"
+    }
+  ]
+}
