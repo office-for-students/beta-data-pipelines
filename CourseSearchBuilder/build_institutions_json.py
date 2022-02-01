@@ -98,6 +98,8 @@ def remove_phrases_from_start(name):
         name = re.sub(r"^the university of ", "", name)
     if re.search(r"^university of ", name):
         name = re.sub(r"^university of ", "", name)
+    if re.search(r"^university for ", name):
+        name = re.sub(r"^university for ", "", name)
     if re.search(r"^the ", name):
         name = re.sub(r"^the ", "", name)
     if re.search(r"^prifysgol ", name):
