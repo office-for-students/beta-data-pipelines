@@ -11,7 +11,8 @@ class TestGetStudentUnions(unittest.TestCase):
             "www.example.com",
             "http://example.com",
             "https://help.com",
-            "example.com"
+            "example.com",
+            "https://www.harperkeelevetschool.ac.uk/"
         ]
         empty = normalise_url("")
         self.assertEqual(empty, "")
