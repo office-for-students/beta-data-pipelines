@@ -11,8 +11,8 @@ pool:
   vmImage: 'ubuntu-latest'
 strategy:
   matrix:
-    Python36:
-      python.version: '3.6'
+    Python38:
+      python.version: '3.8'
 
 # Build Process Tree
 steps:
@@ -25,15 +25,15 @@ steps:
 
 # Create a Python Virtual Environment and download required dependencies
 - script: |
-    python3.6 -m venv .python_packages
+    python3 -m venv .python_packages
     source .python_packages/bin/activate
-    python3.6 -m pip install --upgrade pip
-    python3.6 -m pip install -r requirements.txt
+    python3 -m pip install --upgrade pip
+    python3 -m pip install -r requirements.txt
   displayName: 'Install Python Dependencies'
 
 # Execute Python Tests
 - script: |
-    python3.6 -m pip install -r requirements.txt
+    python3 -m pip install -r requirements.txt
     pytest -v
   displayName: 'pytest'
 
