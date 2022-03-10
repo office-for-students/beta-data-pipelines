@@ -5,27 +5,13 @@ import io
 import os
 import re
 import logging
-
-from SharedCode.utils import get_collection_link, get_cosmos_client
-from SharedCode.dataset_helper import DataSetHelper
+from CourseSearchBuilder.get_collections import get_institutions
 from SharedCode.blob_helper import BlobHelper
 
 
 def build_institutions_json_files():
-    version = DataSetHelper().get_latest_version_number()
     blob_helper = BlobHelper()
-
-    cosmos_db_client = get_cosmos_client()
-    collection_link = get_collection_link(
-        "AzureCosmosDbDatabaseId", "AzureCosmosDbInstitutionsCollectionId"
-    )
-
-    query = f"SELECT * from c where c.version = {version}"
-
-    options = {"enableCrossPartitionQuery": True}
-
-    institution_list = list(cosmos_db_client.QueryItems(collection_link, query, options))
-
+    institution_list = get_institutions()
     institutions_file = io.StringIO()
 
     institutions = []
