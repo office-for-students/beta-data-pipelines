@@ -1,10 +1,33 @@
 import unittest
 from datetime import datetime
 
-from CourseSearchBuilder.build_sitemap_xml import build_course_details_url, build_institution_details_url, build_xml_string
+from CourseSearchBuilder.build_sitemap_xml import build_course_details_url, build_institution_details_url, \
+    build_xml_string, build_param_lists, get_institution_params, get_course_params
+from test_course_search_models import get_json
 
 
 class TestSiteMapXml(unittest.TestCase):
+
+    def test_build_param_lists(self):
+        institutions = get_json("fixtures/institution_list.json")
+        courses = get_json("fixtures/course_list.json")
+        institutions_params, courses_params = build_param_lists(institutions, courses)
+        institutions_result = [("10000047", "en"), ("10000047", "cy")]
+        courses_result = [("10000055", "AB20", "Full-time", "en"), ("10000055", "AB20", "Full-time", "cy")]
+        self.assertEqual(institutions_params, institutions_result)
+        self.assertEqual(courses_params, courses_result)
+
+    def test_get_institution_params(self):
+        institutions = get_json("fixtures/institution_list.json")
+        institutions_params = get_institution_params(institutions)
+        institutions_result = [("10000047", "en"), ("10000047", "cy")]
+        self.assertEqual(institutions_params, institutions_result)
+
+    def test_get_course_params(self):
+        courses = get_json("fixtures/course_list.json")
+        courses_params = get_course_params(courses)
+        courses_result = [("10000055", "AB20", "Full-time", "en"), ("10000055", "AB20", "Full-time", "cy")]
+        self.assertEqual(courses_params, courses_result)
 
     def test_course_details_url(self):
         input_english = ("10008071", "AAUNDERGRADUATE5YEAR", "Full-time", "en")
