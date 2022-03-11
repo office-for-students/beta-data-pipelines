@@ -6,9 +6,7 @@ import os
 import re
 
 from SharedCode.blob_helper import BlobHelper
-from SharedCode.dataset_helper import DataSetHelper
-from SharedCode.utils import get_collection_link
-from SharedCode.utils import get_cosmos_client
+from CourseSearchBuilder.get_collections import get_institutions, get_collections
 
 
 def build_institutions_json_files():
