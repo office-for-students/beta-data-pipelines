@@ -5,26 +5,13 @@ import io
 import os
 import re
 
-from SharedCode.utils import get_collection_link, get_cosmos_client
-from SharedCode.dataset_helper import DataSetHelper
+from CourseSearchBuilder.get_collections import get_collections
 from SharedCode.blob_helper import BlobHelper
 
 
 def build_subjects_json_file():
-    version = DataSetHelper().get_latest_version_number()       
     blob_helper = BlobHelper()
-
-    cosmos_db_client = get_cosmos_client()
-    collection_link = get_collection_link(
-        "AzureCosmosDbDatabaseId", "AzureCosmosDbSubjectsCollectionId"
-    )
-
-    query = f"SELECT * from c where c.version = {version}"
-
-    options = {"enableCrossPartitionQuery": True}
-
-    subjects_list = list(cosmos_db_client.QueryItems(collection_link, query, options))
-
+    subjects_list = get_collections("AzureCosmosDbSubjectsCollectionId")
     subjects_file = io.StringIO()
 
     subjects = []

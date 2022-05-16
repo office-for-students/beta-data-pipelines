@@ -1,0 +1,224 @@
+[
+  {
+    "_id": "994a55fa-89e0-11ec-8e59-0242ac100102",
+    "created_at": "2022-02-09T19:43:47.910832",
+    "updated_at": "2022-02-09T19:43:47.910837",
+    "version": 41,
+    "institution_id": "10000055",
+    "course_id": "AB20",
+    "course_mode": 1,
+    "course_level": 4,
+    "partition_key": "41",
+    "course": {
+      "course_level": 4,
+      "application_provider": "10004930",
+      "country": {
+        "code": "XF",
+        "name": "England"
+      },
+      "distance_learning": {
+        "code": 0,
+        "label": "Course is available other than by distance learning"
+      },
+      "foundation_year_availability": {
+        "code": 0,
+        "label": "Not available"
+      },
+      "honours_award_provision": 0,
+      "institution": {
+        "pub_ukprn_name": "Abingdon and Witney College",
+        "pub_ukprn_welsh_name": "Abingdon and Witney College",
+        "pub_ukprn": "10000055",
+        "ukprn_name": "Abingdon and Witney College",
+        "ukprn_welsh_name": "Abingdon and Witney College",
+        "ukprn": "10000055"
+      },
+      "kis_course_id": "AB20",
+      "go_salary_inst": [
+        {
+          "unavail_reason": "0",
+          "unavail_text_english": "No data available\n\nThis is either because the course size is small or there were not enough responses to produce data. This does not reflect on the quality of the course.",
+          "unavail_text_welsh": "Nid oes data ar gael\n\nMae hyn naill ai oherwydd bod maint y cwrs yn fach neu am nad oedd digon o ymatebion ar gael i gynhyrchu data. Nid yw hyn yn adlewyrchu ansawdd y cwrs."
+        }
+      ],
+      "leo3_inst": [
+        {
+          "unavail_reason": "0",
+          "unavail_text_english": "No data available\n\nThis may be because the course size is too small. This does not reflect on the quality of the course.",
+          "unavail_text_welsh": "Nid oes data ar gael\n\nGall hyn fod oherwydd bod maint y cwrs yn rhy fach. Nid yw hyn yn adlewyrchu ansawdd y cwrs.",
+          "pop": "30",
+          "agg": "23",
+          "subject": {
+            "code": "CAH06-01-01",
+            "english_label": "Animal science",
+            "welsh_label": "Gwyddorau anifeiliaid"
+          },
+          "lq": "11000",
+          "med": "17500",
+          "uq": "21500",
+          "inst_prov_pc_uk": "100",
+          "inst_prov_pc_e": "100",
+          "inst_prov_pc_ni": "0",
+          "inst_prov_pc_s": "0",
+          "inst_prov_pc_w": "0",
+          "inst_prov_pc_nw": "0",
+          "inst_prov_pc_ne": "0",
+          "inst_prov_pc_em": "0",
+          "inst_prov_pc_wm": "5",
+          "inst_prov_pc_ee": "15",
+          "inst_prov_pc_se": "65",
+          "inst_prov_pc_sw": "10",
+          "inst_prov_pc_yh": "5",
+          "inst_prov_pc_lo": "5",
+          "inst_prov_pc_ed": "0",
+          "inst_prov_pc_gl": "0",
+          "inst_prov_pc_cf": "0",
+          "earnings_agg_unavail_message": {}
+        }
+      ],
+      "leo5_inst": [
+        {
+          "unavail_reason": "0",
+          "unavail_text_english": "No data available\n\nThis may be because the course size is too small. This does not reflect on the quality of the course.",
+          "unavail_text_welsh": "Nid oes data ar gael\n\nGall hyn fod oherwydd bod maint y cwrs yn rhy fach. Nid yw hyn yn adlewyrchu ansawdd y cwrs.",
+          "pop": "30",
+          "agg": "23",
+          "subject": {
+            "code": "CAH06-01-01",
+            "english_label": "Animal science",
+            "welsh_label": "Gwyddorau anifeiliaid"
+          },
+          "lq": "16500",
+          "med": "22000",
+          "uq": "25000",
+          "inst_prov_pc_uk": "100",
+          "inst_prov_pc_e": "95",
+          "inst_prov_pc_ni": "0",
+          "inst_prov_pc_s": "0",
+          "inst_prov_pc_w": "5",
+          "inst_prov_pc_nw": "0",
+          "inst_prov_pc_ne": "0",
+          "inst_prov_pc_em": "5",
+          "inst_prov_pc_wm": "5",
+          "inst_prov_pc_ee": "5",
+          "inst_prov_pc_se": "55",
+          "inst_prov_pc_sw": "15",
+          "inst_prov_pc_yh": "0",
+          "inst_prov_pc_lo": "15",
+          "inst_prov_pc_ed": "0",
+          "inst_prov_pc_gl": "0",
+          "inst_prov_pc_cf": "0"
+        }
+      ],
+      "go_voice_work": [
+        {
+          "unavailable": {
+            "code": 0,
+            "reason_english": "Sorry, there is no data available for this course.\n\nThis may be because the course size is too small. This does not reflect on the quality of the course.",
+            "reason_welsh": "Yn anffodus, nid oes data ar gael ar gyfer y cwrs hwn.\n\nGall hyn fod oherwydd bod maint y cwrs yn rhy fach. Nid yw hyn yn adlewyrchu ansawdd y cwrs."
+          }
+        }
+      ],
+      "length_of_course": {
+        "code": 2,
+        "label": "2 stages"
+      },
+      "links": {
+        "assessment_method": {
+          "english": "https://www.abingdon-witney.ac.uk/courses/animal-behaviour-and-welfare-foundation-degree-737441"
+        },
+        "course_cost": {
+          "english": "https://www.brookes.ac.uk/courses/undergraduate/animal-behaviour-and-welfare"
+        },
+        "course_page": {
+          "english": "https://www.abingdon-witney.ac.uk/courses/animal-behaviour-and-welfare-foundation-degree-737441"
+        },
+        "employment_details": {
+          "english": "https://www.abingdon-witney.ac.uk/courses/animal-behaviour-and-welfare-foundation-degree-737441"
+        },
+        "financial_support_details": {
+          "english": "https://www.brookes.ac.uk/studying-at-brookes/finance/undergraduate-finance---uk-students/financial-support/financial-support-home-2021-22/"
+        },
+        "learning_and_teaching_methods": {
+          "english": "https://www.abingdon-witney.ac.uk/courses/animal-behaviour-and-welfare-foundation-degree-737441"
+        },
+        "student_union": {
+          "english": "https://www.abingdon-witney.ac.uk/student-life/student-voice"
+        }
+      },
+      "locations": [
+        {
+          "links": {
+            "accommodation": {
+              "english": "https://www.brookes.ac.uk/studying-at-brookes/accommodation/"
+            },
+            "student_union": {
+              "english": "https://www.abingdon-witney.ac.uk/student-life/student-voice"
+            }
+          },
+          "latitude": "51.82046",
+          "longitude": "-1.475405",
+          "name": {
+            "english": "Abingdon &amp;amp; Witney College (Common Leys Campus)"
+          }
+        }
+      ],
+      "mode": {
+        "code": 1,
+        "label": "Full-time"
+      },
+      "qualification": {
+        "code": "036",
+        "label": "FdSc",
+        "level": "other-undergraduate"
+      },
+      "sandwich_year": {
+        "code": 0,
+        "label": "Not available"
+      },
+      "subjects": [
+        {
+          "code": "CAH06-01-01",
+          "level": 3,
+          "english": "Animal science",
+          "welsh": "Gwyddorau anifeiliaid"
+        }
+      ],
+      "title": {
+        "english": "Animal Behaviour and Welfare"
+      },
+      "year_abroad": {
+        "code": 0,
+        "label": "Not available"
+      },
+      "statistics": {
+        "continuation": [
+          {
+            "aggregation_level": 14,
+            "continuing_with_provider": 100,
+            "dormant": 0,
+            "gained": 0,
+            "left": 0,
+            "lower": 0,
+            "number_of_students": 20
+          }
+        ],
+        "employment": [
+          {
+            "unavailable": {
+              "code": 0,
+              "reason_english": "Sorry, there is no data available for this course.\n\nThis may be because the course size is too small. This does not reflect on the quality of the course.",
+              "reason_welsh": "Yn anffodus, nid oes data ar gael ar gyfer y cwrs hwn.\n\nGall hyn fod oherwydd bod maint y cwrs yn rhy fach. Nid yw hyn yn adlewyrchu ansawdd y cwrs."
+            }
+          }
+        ]
+      },
+      "id": "b50182c8-7617-e932-d443-0c6582c3a402",
+      "_rid": "Kb9wAMyDkivYtA4AAAAAAA==",
+      "_self": "dbs/Kb9wAA==/colls/Kb9wAMyDkis=/docs/Kb9wAMyDkivYtA4AAAAAAA==/",
+      "_etag": "\"3d01532b-0000-1100-0000-620419760000\"",
+      "_attachments": "attachments/",
+      "_ts": 1644435830
+    }
+  }
+]
