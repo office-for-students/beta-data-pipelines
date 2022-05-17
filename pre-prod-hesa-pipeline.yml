@@ -20,8 +20,8 @@ steps:
 # Enforce Python Version (see above)
 - task: UsePythonVersion@0
   inputs:
-    versionSpec: '$(python.version)'
-  displayName: 'Use Python $(python.version)'
+    versionSpec: '3.6'
+  displayName: 'Use Python 3.6'
 
 
 - task: PythonScript@0
