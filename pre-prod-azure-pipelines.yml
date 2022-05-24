@@ -8,7 +8,7 @@ pr: none
 
 # Build Agent Resources
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'Ubuntu-18.04'
 strategy:
   matrix:
     Python38:
