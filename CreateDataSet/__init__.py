@@ -6,12 +6,16 @@ import os
 from datetime import datetime
 
 import azure.functions as func
+import importlib
+import sys
 
-from __app__.SharedCode.blob_helper import BlobHelper
-from __app__.SharedCode.exceptions import DataSetTooEarlyError
-from __app__.SharedCode.exceptions import StopEtlPipelineErrorException
-from __app__.SharedCode.exceptions import XmlValidationError
-from __app__.SharedCode.mail_helper import MailHelper
+importlib.reload(sys.modules['azure'])
+
+from SharedCode.blob_helper import BlobHelper
+from SharedCode.exceptions import DataSetTooEarlyError
+from SharedCode.exceptions import StopEtlPipelineErrorException
+from SharedCode.exceptions import XmlValidationError
+from SharedCode.mail_helper import MailHelper
 from . import validators
 from .dataset_creator import DataSetCreator
 
