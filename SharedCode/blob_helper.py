@@ -3,14 +3,14 @@ import io
 import os
 from datetime import datetime
 
-from azure.storage.blob import BlockBlobService
+from azure.storage.blob import BlobServiceClient
 
 
 class BlobHelper:
     def __init__(self, blob=None):
         account_name = os.environ["AzureStorageAccountName"]
         account_key = os.environ["AzureStorageAccountKey"]
-        self.blob_service = BlockBlobService(
+        self.blob_service = BlobServiceClient(
             account_name=account_name, account_key=account_key
         )
         self.blob = blob
