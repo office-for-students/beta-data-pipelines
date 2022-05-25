@@ -3,7 +3,10 @@ import io
 import os
 from datetime import datetime
 
-from azure.storage.blob import BlockBlobService
+try:
+    from azure.storage.blob import BlockBlobService
+except ImportError:
+    print("Please install the azure-storage-blob package")
 
 
 class BlobHelper:
