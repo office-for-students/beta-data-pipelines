@@ -174,4 +174,4 @@ See [INSTITUTION](docs/INSTITUTION.md) for mappings of institution data
 `func azure functionapp fetch-app-settings <app-name>`
 `func settings decrypt`
 
-
+Update
