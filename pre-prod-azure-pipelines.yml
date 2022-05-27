@@ -25,6 +25,7 @@ steps:
 
   # Create a Python Virtual Environment and download required dependencies
   - script: |
+      sudo pip3 install virtualenv
       virtualenv -ppython3 .python_packages
       source .python_packages/bin/activate
       .python_packages/bin/python -m pip install --upgrade pip
