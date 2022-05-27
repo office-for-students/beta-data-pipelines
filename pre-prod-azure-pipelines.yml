@@ -25,13 +25,16 @@ steps:
 
   # Create a Python Virtual Environment and download required dependencies
   - script: |
-      python3 -m pip install --upgrade pip
-      python3 -m pip install -r requirements.txt
+      virtualenv -ppython3 .python_packages 
+      source .python_packages/bin/activate
+      python -m pip install --upgrade pip
+      python -m pip install -r requirements.txt
     displayName: 'Install Python Dependencies'
 
   # Execute Python Tests
   - script: |
-      python3 -m pip install -r requirements.txt
+      source .python_packages/bin/activate
+      python -m pip install -r requirements.txt
       pytest -v
     displayName: 'pytest'
 
