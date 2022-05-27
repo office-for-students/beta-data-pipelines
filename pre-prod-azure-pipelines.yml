@@ -25,17 +25,15 @@ steps:
 
   # Create a Python Virtual Environment and download required dependencies
   - script: |
-      virtualenv -ppython3 .python_packages 
       source .python_packages/bin/activate
-      python -m pip install --upgrade pip
-      python -m pip install -r requirements.txt
+      .python_packages/bin/python -m pip install --upgrade pip
+      .python_packages/bin/python -m pip install -r requirements.txt
     displayName: 'Install Python Dependencies'
 
   # Execute Python Tests
   - script: |
-      source .python_packages/bin/activate
-      python -m pip install -r requirements.txt
-      pytest -v
+      .python_packages/bin/ -m pip install -r requirements.txt
+      .python_packages/bin/pytest -v
     displayName: 'pytest'
 
   # Archive the Azure Python Function into a ZIP package for deployment
