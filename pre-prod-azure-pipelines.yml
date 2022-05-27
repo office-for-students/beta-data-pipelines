@@ -21,7 +21,7 @@ steps:
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '$(python.version)'
-      displayName: 'Use Python $(python.version)'
+    displayName: 'Use Python $(python.version)'
 
   # Create a Python Virtual Environment and download required dependencies
   - script: |
@@ -29,13 +29,13 @@ steps:
       source .python_packages/bin/activate
       python3 -m pip install --upgrade pip
       python3 -m pip install -r requirements.txt
-      displayName: 'Install Python Dependencies'
+    displayName: 'Install Python Dependencies'
 
   # Execute Python Tests
   - script: |
       python3 -m pip install -r requirements.txt
       pytest -v
-      displayName: 'pytest'
+    displayName: 'pytest'
 
   # Archive the Azure Python Function into a ZIP package for deployment
   - task: ArchiveFiles@2
