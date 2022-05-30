@@ -1,5 +1,15 @@
 #!/usr/bin/env python
 """ Creates a new DataSet for each new file we get from HESA """
+import sys
+import os
+# print python version
+print(f"Python version: {sys.version}")
+# print os version
+print(f"OS version: {os.name}")
+
+#print the python path
+print(f"Python path: {sys.path}")
+
 
 import logging
 import os
