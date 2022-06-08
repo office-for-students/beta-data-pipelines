@@ -12,7 +12,7 @@ pool:
 strategy:
   matrix:
     Python37:
-      python.version: '3.7'
+      python.version: '3.8'
       
 # Build Process Tree
 steps:
@@ -133,6 +133,8 @@ steps:
 
       url = '$(DataPipelineURL)'
 
+      print(url)
+      
       print('Sending request to pipeline...')
 
       pipeline_request = urllib.request.Request(url, headers=hdr)
