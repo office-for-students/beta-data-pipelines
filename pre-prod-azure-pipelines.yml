@@ -25,7 +25,7 @@ steps:
 
   # Create a Python Virtual Environment and download required dependencies
   - script: |
-      pip install --target="$(workingDirectory)/.python_packages/lib/site-packages" -r requirements.txt
+      pip install --target="$(System.DefaultWorkingDirectory)/.python_packages/lib/site-packages" -r requirements.txt
     displayName: 'Install Python Dependencies'
 
   # Execute Python Tests
