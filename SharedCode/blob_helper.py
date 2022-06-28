@@ -2,11 +2,7 @@ import gzip
 import io
 import os
 from datetime import datetime
-
-try:
-    from azure.storage.blob import BlockBlobService
-except ImportError:
-    print("Please install the azure-storage-blob package")
+from azure.storage.blob import BlockBlobService
 
 
 class BlobHelper:
