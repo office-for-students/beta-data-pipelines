@@ -1,6 +1,7 @@
 import io
 import os
 from datetime import datetime
+from io import StringIO
 
 from CourseSearchBuilder.get_collections import get_institutions, get_collections
 from SharedCode.blob_helper import BlobHelper
@@ -16,10 +17,14 @@ def build_sitemap_xml() -> None:
     xml = """
             <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">"""
     xml_data = build_xml_string(institution_params + course_params, xml)
-    xml_file = io.StringIO(xml_data)
+    xml_file: StringIO = io.StringIO(xml_data)
     storage_container_name = os.environ["AzureStorageJSONFilesContainerName"]
     storage_blob_name = os.environ["AzureStorageInstitutionsSitemapsBlobName"]
-    blob_helper.write_stream_file(storage_container_name, storage_blob_name, xml_file)
+    blob_helper.write_stream_file(
+        storage_container_name=storage_container_name,
+        storage_blob_name=storage_blob_name,
+        encoded_file=xml_file.read().encode('utf-8')
+    )
 
 
 def build_param_lists(institution_list: list, course_list: list) -> tuple:
