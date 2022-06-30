@@ -2,7 +2,7 @@
 
 # The code branch that will trigger a build
 trigger:
-- master
+  - master
 
 pr: none
 
@@ -17,35 +17,35 @@ strategy:
 # Build Process Tree
 steps:
 
-# Enforce Python Version (see above)
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '$(python.version)'
-  displayName: 'Use Python $(python.version)'
+  # Enforce Python Version (see above)
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '$(python.version)'
+    displayName: 'Use Python $(python.version)'
 
- # Create a Python Virtual Environment and download required dependencies
+  # Create a Python Virtual Environment and download required dependencies
   - script: |
       pip install --target="$(System.DefaultWorkingDirectory)/.python_packages/lib/site-packages" -r requirements.txt
     displayName: 'Install Python Dependencies'
 
-# Execute Python Tests
-- script: |
-    python3 -m pip install -r requirements.txt
-    pytest -v
-  displayName: 'pytest'
+  # Execute Python Tests
+  - script: |
+      python3 -m pip install -r requirements.txt
+      pytest -v
+    displayName: 'pytest'
 
-# Archive the Azure Python Function into a ZIP package for deployment
-- task: ArchiveFiles@2
-  displayName: "Archive Files"
-  inputs:
-    rootFolderOrFile: "$(System.DefaultWorkingDirectory)"
-    includeRootFolder: false
-    archiveType: 'zip'
-    archiveFile: "$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip"
-    replaceExistingArchive: true
+  # Archive the Azure Python Function into a ZIP package for deployment
+  - task: ArchiveFiles@2
+    displayName: "Archive Files"
+    inputs:
+      rootFolderOrFile: "$(System.DefaultWorkingDirectory)"
+      includeRootFolder: false
+      archiveType: 'zip'
+      archiveFile: "$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip"
+      replaceExistingArchive: true
 
-# Publish the ZIP package
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip'
-    ArtifactName: 'drop'
+  # Publish the ZIP package
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip'
+      ArtifactName: 'drop'
