@@ -57,13 +57,13 @@ def build_xml_string(arg_list: tuple, xml: str) -> str:
     for args in arg_list:
         if len(args) == 4:
             centre_xml += f"""    <url>
-                <loc>{build_course_details_url(*args)}></loc>
+                <loc>{build_course_details_url(*args)}</loc>
                 <lastmod>{today}</lastmod>
             </url>
         """
         elif len(args) == 2:
             centre_xml += f"""    <url>
-                <loc>{build_institution_details_url(*args)}></loc>
+                <loc>{build_institution_details_url(*args)}</loc>
                 <lastmod>{today}</lastmod>
             </url>
         """
