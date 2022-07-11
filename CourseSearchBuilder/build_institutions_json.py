@@ -6,31 +6,11 @@ import os
 import re
 
 from SharedCode.blob_helper import BlobHelper
-from SharedCode.dataset_helper import DataSetHelper
-from SharedCode.utils import get_collection_link
-from SharedCode.utils import get_cosmos_client
+from CourseSearchBuilder.get_collections import get_institutions, get_collections
 
 
 def build_institutions_json_files():
-    version = DataSetHelper().get_latest_version_number()
-
-    cosmos_db_client = get_cosmos_client()
-    collection_link = get_collection_link(
-        "AzureCosmosDbDatabaseId", "AzureCosmosDbInstitutionsCollectionId"
-    )
-
-    query = f"SELECT * from c where c.version = {version}"
-
-    options = {"enableCrossPartitionQuery": True}
-
-    institution_list = list(cosmos_db_client.QueryItems(collection_link, query, options))
-
-    generate_file(
-        institution_list=institution_list,
-        primary_name="pub_ukprn_name",
-        secondary_name="pub_ukprn_welsh_name",
-        blob_file="AzureStorageInstitutionsENJSONFileBlobName"
-    )
+    institution_list = get_institutions()
 
     generate_file(
         institution_list=institution_list,
@@ -46,6 +26,10 @@ def not_already_in_list(name, existing):
         return True
     return False
 
+    storage_container_name = os.environ["AzureStorageJSONFilesContainerName"]
+    storage_blob_name = os.environ["AzureStorageInstitutionsENJSONFileBlobName"]
+    blob_helper.write_stream_file(storage_container_name, storage_blob_name, encoded_file)
+    institutions_file.close()
 
 def generate_file(institution_list, primary_name, secondary_name, blob_file):
     blob_helper = BlobHelper()
