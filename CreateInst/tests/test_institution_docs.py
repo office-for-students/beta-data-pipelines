@@ -1,6 +1,9 @@
+import os
 import unittest
+from unittest import mock
 
 import defusedxml.ElementTree as ET
+import json
 
 from CreateInst.institution_docs import InstitutionDocs
 from CreateInst.institution_docs import get_country
@@ -78,17 +81,29 @@ class TestGetInstitutionDoc(unittest.TestCase):
     #         self.institution_docs.get_institution_doc(institution)
 
     # def test_get_institution_doc(self):
-    #     xml_string = get_string("fixtures/one_inst_one_course.xml")
+    #     xml_string = get_string("fixtures/one_inst.xml")
     #     root = ET.fromstring(xml_string)
     #     institution = get_first(root.iter("INSTITUTION"))
+    #     descendants = list(institution.iter())
     #     expected_resp = json.loads(
-    #         get_string("fixtures/one_inst_one_course.json")
+    #         get_string("fixtures/one_inst.xml")
     #     )
-    #     expected_resp = remove_variable_elements(expected_resp)
-    #     resp = self.institution_docs.get_institution_doc(institution)
-    #     resp = remove_variable_elements(resp)
+    #     # expected_resp = remove_variable_elements(expected_resp)
+    #     resp = self.institution_docs.get_institution_doc(descendants)
+    #     # resp = remove_variable_elements(resp)
     #     self.assertEqual(expected_resp, resp)
 
+    @mock.patch.dict(os.environ, {"UseLocalTestXMLFile": "True", "LocalTestXMLFile": "fixtures/one_inst.xml"})
+    def test_get_inst_names(self):
+        xml_string = get_string("fixtures/one_inst.xml")
+        root = ET.fromstring(xml_string)
+        institution = get_first(root.iter("INSTITUTION"))
+        doc = InstitutionDocs(xml_string, 1)
+        resp = doc.get_institution_doc(institution)
+        print(resp["institution"], "RESP")
+        self.assertEqual(resp["institution"]["legal_name"], "Grwp Llandrillo Menai")
+        self.assertEqual(resp["institution"]["first_trading_name"], "Coleg Llandrillo")
+        self.assertEqual(resp["institution"]["other_names"], ["Coleg Menai", "Coleg Meirion-Dwyfor"])
 
 # class TestCreateInstitutionDocs(unittest.TestCase):
 #     @mock.patch.object(institution_docs.InstitutionDocs, "get_institution_doc")
