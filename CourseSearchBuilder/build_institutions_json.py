@@ -38,11 +38,6 @@ def not_already_in_list(name, existing):
         return True
     return False
 
-    storage_container_name = os.environ["AzureStorageJSONFilesContainerName"]
-    storage_blob_name = os.environ["AzureStorageInstitutionsENJSONFileBlobName"]
-    blob_helper.write_stream_file(storage_container_name, storage_blob_name, encoded_file)
-    institutions_file.close()
-
 
 def generate_file(institution_list, primary_name, secondary_name, first_trading_name, legal_name, other_names, blob_file):
     blob_helper = BlobHelper()
@@ -52,9 +47,9 @@ def generate_file(institution_list, primary_name, secondary_name, first_trading_
         institution = val["institution"]
         primary = institution[primary_name]
         secondary = institution[secondary_name]
-        first_trading_name = institution[first_trading_name]
-        legal_name = institution[legal_name]
-        other_names = institution[other_names]
+        first_trading_name = institution.get(first_trading_name, "")
+        legal_name = institution.get(legal_name, "")
+        other_names = institution.get(other_names, "")
 
         if isinstance(primary, str):
             inst_entry = get_inst_entry(primary, first_trading_name, legal_name, other_names)
