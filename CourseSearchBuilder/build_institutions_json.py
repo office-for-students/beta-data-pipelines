@@ -4,9 +4,12 @@ import io
 import json
 import os
 import re
+from typing import Any
+from typing import Dict
+from typing import List
 
+from CourseSearchBuilder.get_collections import get_institutions
 from SharedCode.blob_helper import BlobHelper
-from CourseSearchBuilder.get_collections import get_institutions, get_collections
 
 
 def build_institutions_json_files():
@@ -38,13 +41,16 @@ def not_already_in_list(name, existing):
         return True
     return False
 
-    storage_container_name = os.environ["AzureStorageJSONFilesContainerName"]
-    storage_blob_name = os.environ["AzureStorageInstitutionsENJSONFileBlobName"]
-    blob_helper.write_stream_file(storage_container_name, storage_blob_name, encoded_file)
-    institutions_file.close()
 
-
-def generate_file(institution_list, primary_name, secondary_name, first_trading_name, legal_name, other_names, blob_file):
+def generate_file(
+        institution_list: List[Dict[str, Any]],
+        primary_name: str,
+        secondary_name: str,
+        first_trading_name: str,
+        legal_name: str,
+        other_names: str,
+        blob_file: str
+):
     blob_helper = BlobHelper()
     institutions_file = io.StringIO()
     institutions = []
