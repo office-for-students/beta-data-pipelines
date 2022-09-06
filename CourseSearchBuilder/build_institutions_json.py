@@ -58,15 +58,15 @@ def generate_file(
         institution = val["institution"]
         primary = institution[primary_name]
         secondary = institution[secondary_name]
-        first_trading_name = institution.get(first_trading_name, "")
-        legal_name = institution.get(legal_name, "")
-        other_names = institution.get(other_names, "")
+        first_trading = institution.get(first_trading_name, "")
+        legal = institution.get(legal_name, "")
+        other = institution.get(other_names, "")
 
         if isinstance(primary, str):
-            inst_entry = get_inst_entry(primary, first_trading_name, legal_name, other_names)
+            inst_entry = get_inst_entry(primary, first_trading, legal, other)
             institutions.append(inst_entry)
         elif isinstance(secondary, str):
-            inst_entry = get_inst_entry(secondary, first_trading_name, legal_name, other_names)
+            inst_entry = get_inst_entry(secondary, first_trading, legal, other)
             institutions.append(inst_entry)
 
     institutions.sort(key=lambda x: x["order_by_name"])
