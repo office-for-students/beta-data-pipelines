@@ -16,7 +16,19 @@ def build_institutions_json_files():
         institution_list=institution_list,
         primary_name="pub_ukprn_welsh_name",
         secondary_name="pub_ukprn_name",
+        first_trading_name="first_trading_name",
+        legal_name="legal_name",
+        other_names="other_names",
         blob_file="AzureStorageInstitutionsCYJSONFileBlobName"
+    )
+    generate_file(
+        institution_list=institution_list,
+        primary_name="pub_ukprn_name",
+        secondary_name="pub_ukprn_welsh_name",
+        first_trading_name="first_trading_name",
+        legal_name="legal_name",
+        other_names="other_names",
+        blob_file="AzureStorageInstitutionsENJSONFileBlobName"
     )
 
 
@@ -31,7 +43,8 @@ def not_already_in_list(name, existing):
     blob_helper.write_stream_file(storage_container_name, storage_blob_name, encoded_file)
     institutions_file.close()
 
-def generate_file(institution_list, primary_name, secondary_name, blob_file):
+
+def generate_file(institution_list, primary_name, secondary_name, first_trading_name, legal_name, other_names, blob_file):
     blob_helper = BlobHelper()
     institutions_file = io.StringIO()
     institutions = []
@@ -39,12 +52,15 @@ def generate_file(institution_list, primary_name, secondary_name, blob_file):
         institution = val["institution"]
         primary = institution[primary_name]
         secondary = institution[secondary_name]
+        first_trading_name = institution[first_trading_name]
+        legal_name = institution[legal_name]
+        other_names = institution[other_names]
 
         if isinstance(primary, str):
-            inst_entry = get_inst_entry(primary)
+            inst_entry = get_inst_entry(primary, first_trading_name, legal_name, other_names)
             institutions.append(inst_entry)
         elif isinstance(secondary, str):
-            inst_entry = get_inst_entry(secondary)
+            inst_entry = get_inst_entry(secondary, first_trading_name, legal_name, other_names)
             institutions.append(inst_entry)
 
     institutions.sort(key=lambda x: x["order_by_name"])
@@ -61,12 +77,15 @@ def generate_file(institution_list, primary_name, secondary_name, blob_file):
     institutions_file.close()
 
 
-def get_inst_entry(name):
+def get_inst_entry(name, first_trading_name, legal_name, other_names):
     entry = {}
     order_by_name = get_order_by_name(name)
     alphabet = order_by_name[0]
     entry["alphabet"] = alphabet
     entry["name"] = name
+    entry["first_trading_name"] = first_trading_name
+    entry["legal_name"] = legal_name
+    entry["other_names"] = other_names
     entry["order_by_name"] = order_by_name
     return entry
 
