@@ -58,9 +58,9 @@ def generate_file(
         institution = val["institution"]
         primary = institution[primary_name]
         secondary = institution[secondary_name]
-        first_trading_name = institution[first_trading_name]
-        legal_name = institution[legal_name]
-        other_names = institution[other_names]
+        first_trading_name = institution.get(first_trading_name, "")
+        legal_name = institution.get(legal_name, "")
+        other_names = institution.get(other_names, "")
 
         if isinstance(primary, str):
             inst_entry = get_inst_entry(primary, first_trading_name, legal_name, other_names)
