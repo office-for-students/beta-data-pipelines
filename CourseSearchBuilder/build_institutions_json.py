@@ -5,8 +5,8 @@ import json
 import os
 import re
 
+from CourseSearchBuilder.get_collections import get_institutions
 from SharedCode.blob_helper import BlobHelper
-from CourseSearchBuilder.get_collections import get_institutions, get_collections
 
 
 def build_institutions_json_files():
@@ -26,10 +26,6 @@ def not_already_in_list(name, existing):
         return True
     return False
 
-    storage_container_name = os.environ["AzureStorageJSONFilesContainerName"]
-    storage_blob_name = os.environ["AzureStorageInstitutionsENJSONFileBlobName"]
-    blob_helper.write_stream_file(storage_container_name, storage_blob_name, encoded_file)
-    institutions_file.close()
 
 def generate_file(institution_list, primary_name, secondary_name, blob_file):
     blob_helper = BlobHelper()
