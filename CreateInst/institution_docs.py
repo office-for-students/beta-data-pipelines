@@ -37,9 +37,17 @@ sys.path.insert(0, CURRENTDIR)
 sys.path.insert(0, PARENTDIR)
 
 
+def validate_headers(header: str, xml: str):
+    if xml.find(header):
+        return True
+    logging.error(f"{header} not found")
+    return False
+
+
 def validate_column_headers(header_row):
     logging.info(f"Validating header row, headers: {header_row}")
     header_list = header_row.split(",")
+    print("HEADER LIST", header_list)
 
     try:
         valid = True
@@ -47,6 +55,7 @@ def validate_column_headers(header_row):
             logging.info(f"got in ukprn: {header_list[0]}")
             valid = False
 
+        #WELSH NAME COMES FROM OFS
         if header_list[1] != "welsh_name":
             logging.info(f"got in welsh_name: {header_list[1]}")
             valid = False
@@ -61,27 +70,31 @@ def get_welsh_uni_names():
     use_local_test_XML_file = os.environ.get('UseLocalTestXMLFile')
 
     if use_local_test_XML_file:
+        et_test = ET.parse(os.environ["LocalTestXMLFile"])
+        uprnEl = et_test.find('UKPRN')
         mock_xml_source_file = open(os.environ["LocalTestXMLFile"], "r")
         csv_string = mock_xml_source_file.read()
+        welsh_uni_names = ["welsh one", "welsh two"]
+        return welsh_uni_names
     else:
         storage_container_name = os.environ["AzureStorageWelshUnisContainerName"]
         storage_blob_name = os.environ["AzureStorageWelshUnisBlobName"]
         blob_helper = BlobHelper()
         csv_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
 
-    _welsh_uni_names = []
-    if csv_string:
-        rows = csv_string.splitlines()
+        _welsh_uni_names = []
+        if csv_string:
+            rows = csv_string.splitlines()
 
-        if not validate_column_headers(rows[0]):
-            logging.error(
-                "file headers are incorrect, expecting the following: code, welsh_label"
-            )
-            raise exceptions.StopEtlPipelineErrorException
+            if not validate_column_headers(rows[0]):
+                logging.error(
+                    "file headers are incorrect, expecting the following: code, welsh_label"
+                )
+                raise exceptions.StopEtlPipelineErrorException
 
-        _welsh_uni_names = rows
+            _welsh_uni_names = rows
 
-    return _welsh_uni_names
+        return _welsh_uni_names
 
 
 def get_white_list():
@@ -174,13 +187,27 @@ class InstitutionDocs:
             welsh_uni_names=get_welsh_uni_names()
         )
 
-        raw_provider_name = raw_inst_data.get("PROVNAME", "")
+        legal_name = raw_inst_data.get("LEGAL_NAME", "")
+        first_trading_name = raw_inst_data.get("FIRST_TRADING_NAME", "")
+        other_names = raw_inst_data.get("OTHER_NAMES", "")
 
-        institution_element["pub_ukprn_name"] = pn_handler.presentable(raw_provider_name)
-        institution_element["pub_ukprn_welsh_name"] = pn_handler.get_welsh_uni_name(
-            pub_ukprn=pubukprn,
-            provider_name=institution_element["pub_ukprn_name"]
-        )
+        institution_element["legal_name"] = pn_handler.presentable(legal_name)
+        if first_trading_name:
+            institution_element["first_trading_name"] = pn_handler.presentable(first_trading_name)
+            institution_element["pub_ukprn_name"] = pn_handler.presentable(first_trading_name)
+            institution_element["pub_ukprn_welsh_name"] = pn_handler.get_welsh_uni_name(
+                pub_ukprn=pubukprn,
+                provider_name=institution_element["first_trading_name"]
+            )
+        else:
+            institution_element["pub_ukprn_name"] = pn_handler.presentable(legal_name)
+            institution_element["pub_ukprn_welsh_name"] = pn_handler.get_welsh_uni_name(
+                pub_ukprn=pubukprn,
+                provider_name=institution_element["legal_name"]
+            )
+        if other_names:
+            institution_element["other_names"] = pn_handler.presentable(other_names).split("###")
+
         institution_element["pub_ukprn"] = pubukprn
         institution_element["pub_ukprn_country"] = get_country(
             raw_inst_data["PUBUKPRNCOUNTRY"]
