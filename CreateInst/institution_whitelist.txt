@@ -13,3 +13,6 @@ Grwp NPTC Group
 BPP University
 ACM
 REVETT
+ABDO College of Education
+CM
+ICON College of Technology & Management
