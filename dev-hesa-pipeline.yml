@@ -41,7 +41,7 @@ steps:
 
       url = '$(HesaURL)'
 
-      print('Fetching file...')
+      print(f'Fetching file... from {url}')
 
       hesa_request = urllib.request.Request(url, headers=hdr)
       hesa_response = urllib.request.urlopen(hesa_request)
