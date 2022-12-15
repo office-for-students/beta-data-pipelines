@@ -193,14 +193,14 @@ class InstitutionDocs:
 
         institution_element["legal_name"] = pn_handler.presentable(legal_name)
         if first_trading_name:
-            institution_element["first_trading_name"] = pn_handler.presentable(first_trading_name)
-            institution_element["pub_ukprn_name"] = pn_handler.presentable(first_trading_name)
+            institution_element["first_trading_name"] = first_trading_name
+            institution_element["pub_ukprn_name"] = first_trading_name
             institution_element["pub_ukprn_welsh_name"] = pn_handler.get_welsh_uni_name(
                 pub_ukprn=pubukprn,
                 provider_name=institution_element["first_trading_name"]
             )
         else:
-            institution_element["pub_ukprn_name"] = pn_handler.presentable(legal_name)
+            institution_element["pub_ukprn_name"] = raw_inst_data.get("LEGAL_NAME", "")
             institution_element["pub_ukprn_welsh_name"] = pn_handler.get_welsh_uni_name(
                 pub_ukprn=pubukprn,
                 provider_name=institution_element["legal_name"]
