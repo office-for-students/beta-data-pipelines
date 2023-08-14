@@ -11,7 +11,7 @@ from SharedCode.blob_helper import BlobHelper
 from SharedCode.exceptions import DataSetTooEarlyError
 from SharedCode.exceptions import StopEtlPipelineErrorException
 from SharedCode.exceptions import XmlValidationError
-from SharedCode.mail_helper import MailHelper
+# from SharedCode.mail_helper import MailHelper
 from . import validators
 from .dataset_creator import DataSetCreator
 
@@ -29,12 +29,12 @@ def main(req: func.HttpRequest, msgout: func.Out[str]) -> None:
     function_start_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
     function_start_date = datetime.today().strftime("%d.%m.%Y")
 
-    mail_helper = MailHelper()
+    # mail_helper = MailHelper()
     environment = os.environ["Environment"]
-    mail_helper.send_message(
-        f"Automated data import started on {function_start_datetime}",
-        f"Data Import {environment} - {function_start_date} - Started"
-    )
+    # mail_helper.send_message(
+    #     f"Automated data import started on {function_start_datetime}",
+    #     f"Data Import {environment} - {function_start_date} - Started"
+    # )
 
     logging.info(
         f"CreateDataSet function started on {function_start_datetime}"
@@ -75,10 +75,10 @@ def main(req: func.HttpRequest, msgout: func.Out[str]) -> None:
             function_fail_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
             function_fail_date = datetime.today().strftime("%d.%m.%Y")
 
-            mail_helper.send_message(
-                f"Automated data import failed on {function_fail_datetime} at CreateDataSet" + msgerror,
-                f"Data Import {environment} - {function_fail_date} - Failed"
-            )
+            # mail_helper.send_message(
+            #     f"Automated data import failed on {function_fail_datetime} at CreateDataSet" + msgerror,
+            #     f"Data Import {environment} - {function_fail_date} - Failed"
+            # )
 
             logging.info(f"CreateDataSet failed on {function_fail_datetime}")
             return
@@ -94,10 +94,10 @@ def main(req: func.HttpRequest, msgout: func.Out[str]) -> None:
         function_fail_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
         function_fail_date = datetime.today().strftime("%d.%m.%Y")
 
-        mail_helper.send_message(
-            f"Automated data import failed on {function_fail_datetime} at CreateDataSet" + f"{msgerror} {e}",
-            f"Data Import {environment} - {function_fail_date} - Failed"
-        )
+        # mail_helper.send_message(
+        #     f"Automated data import failed on {function_fail_datetime} at CreateDataSet" + f"{msgerror} {e}",
+        #     f"Data Import {environment} - {function_fail_date} - Failed"
+        # )
 
         logging.error(
             f"CreateDataSet failed on {function_fail_datetime}",
@@ -113,10 +113,10 @@ def main(req: func.HttpRequest, msgout: func.Out[str]) -> None:
         function_fail_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
         function_fail_date = datetime.today().strftime("%d.%m.%Y")
 
-        mail_helper.send_message(
-            f"Automated data import failed on {function_fail_datetime} at CreateDataSet" + msgerror,
-            f"Data Import {environment} - {function_fail_date} - Failed"
-        )
+        # mail_helper.send_message(
+        #     f"Automated data import failed on {function_fail_datetime} at CreateDataSet" + msgerror,
+        #     f"Data Import {environment} - {function_fail_date} - Failed"
+        # )
 
         logging.error(
             f"CreateDataSet failed on {function_fail_datetime}",
