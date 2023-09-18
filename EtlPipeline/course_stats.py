@@ -304,7 +304,7 @@ class JobList:
 class Nss:
     """Extracts and transforms the NSS course element"""
 
-    NUM_QUESTIONS = 27
+    NUM_QUESTIONS = 28
 
     def __init__(self):
         self.xml_element_key = "NSS"
@@ -330,6 +330,10 @@ class Nss:
         question["description"] = self.question_lookup[xml_key]
         question["agree_or_strongly_agree"] = int(xml_elem[xml_key])
         return question
+
+    def get_question_28(self, xml_elem, xml_key):
+
+        pass
 
     def get_mandatory_field(self, xml_elem, xml_key):
         if self.is_question(xml_key):
