@@ -59,6 +59,8 @@ class Continuation:
             "CONTUNAVAILREASON": "unavailable",
             "CONTPOP": "number_of_students",
             "CONTAGG": "aggregation_level",
+            "CONTAGGYEAR": "aggregation_year",
+            "CONTYEAR1": "aggregation_year_1",
             "CONTSBJ": "subject",
             "UCONT": "continuing_with_provider",
             "UDORMANT": "dormant",
@@ -96,6 +98,10 @@ class Employment:
             "EMPSAMPLE": "sample_not_used",
             "EMPRESP_RATE": "response_rate",
             "EMPAGG": "aggregation_level",
+            "EMPAGGYEAR": "aggregation_year",
+            "EMPYEAR1": "aggregation_year_1",
+            "EMPYEAR2": "aggregation_year_2",
+            "EMPYEAR3": "aggregation_year_3",
             "EMPSBJ": "subject",
             "WORKSTUDY": "in_work_or_study",
             "PREVWORKSTUD": "unemp_prev_emp_since_grad",
@@ -134,6 +140,8 @@ class Entry:
             "ENTRESPONSE": "response_not_used",
             "ENTSAMPLE": "sample_not_used",
             "ENTAGG": "aggregation_level",
+            "ENTAGGYEAR": "aggregation_year",
+            "ENTYEAR1": "aggregation_year_1",
             "ENTSBJ": "subject",
             "ACCESS": "access",
             "ALEVEL": "a-level",
@@ -173,6 +181,8 @@ class JobType:
             "JOBRESPONSE": "response_not_used",
             "JOBSAMPLE": "sample_not_used",
             "JOBAGG": "aggregation_level",
+            "JOBAGGYEAR": "aggregation_year",
+            "JOBYEAR1": "aggregation_year_1",
             "JOBSBJ": "subject",
             "JOBRESP_RATE": "response_rate",
             "PROFMAN": "professional_or_managerial_jobs",
@@ -294,7 +304,7 @@ class JobList:
 class Nss:
     """Extracts and transforms the NSS course element"""
 
-    NUM_QUESTIONS = 27
+    NUM_QUESTIONS = 28
 
     def __init__(self):
         self.xml_element_key = "NSS"
@@ -320,6 +330,10 @@ class Nss:
         question["description"] = self.question_lookup[xml_key]
         question["agree_or_strongly_agree"] = int(xml_elem[xml_key])
         return question
+
+    def get_question_28(self, xml_elem, xml_key):
+
+        pass
 
     def get_mandatory_field(self, xml_elem, xml_key):
         if self.is_question(xml_key):
