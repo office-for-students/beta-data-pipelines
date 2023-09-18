@@ -331,10 +331,6 @@ class Nss:
         question["agree_or_strongly_agree"] = int(xml_elem[xml_key])
         return question
 
-    def get_question_28(self, xml_elem, xml_key):
-
-        pass
-
     def get_mandatory_field(self, xml_elem, xml_key):
         if self.is_question(xml_key):
             return self.get_question(xml_elem, xml_key)
