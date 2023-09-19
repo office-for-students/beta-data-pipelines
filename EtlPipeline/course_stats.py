@@ -4,6 +4,7 @@ import json
 import logging
 import os
 from collections import OrderedDict
+from typing import Dict
 from typing import Tuple
 
 import unicodedata
@@ -61,6 +62,7 @@ class Continuation:
             "CONTAGG": "aggregation_level",
             "CONTAGGYEAR": "aggregation_year",
             "CONTYEAR1": "aggregation_year_1",
+            "CONTYEAR2": "aggregation_year_2",
             "CONTSBJ": "subject",
             "UCONT": "continuing_with_provider",
             "UDORMANT": "dormant",
@@ -142,6 +144,7 @@ class Entry:
             "ENTAGG": "aggregation_level",
             "ENTAGGYEAR": "aggregation_year",
             "ENTYEAR1": "aggregation_year_1",
+            "ENTYEAR2": "aggregation_year_2",
             "ENTSBJ": "subject",
             "ACCESS": "access",
             "ALEVEL": "a-level",
@@ -183,6 +186,7 @@ class JobType:
             "JOBAGG": "aggregation_level",
             "JOBAGGYEAR": "aggregation_year",
             "JOBYEAR1": "aggregation_year_1",
+            "JOBYEAR2": "aggregation_year_2",
             "JOBSBJ": "subject",
             "JOBRESP_RATE": "response_rate",
             "PROFMAN": "professional_or_managerial_jobs",
@@ -304,7 +308,7 @@ class JobList:
 class Nss:
     """Extracts and transforms the NSS course element"""
 
-    NUM_QUESTIONS = 28
+    NUM_QUESTIONS = 25
 
     def __init__(self):
         self.xml_element_key = "NSS"
@@ -328,12 +332,33 @@ class Nss:
     def get_question(self, xml_elem, xml_key):
         question = {}
         question["description"] = self.question_lookup[xml_key]
-        question["agree_or_strongly_agree"] = int(xml_elem[xml_key])
+        try:
+            question["agree_or_strongly_agree"] = int(xml_elem[xml_key])
+        except KeyError as e:
+            print(e)
+            # if xml_key == "Q27":
+            #     question["question_28"] = self.get_nss_country_question(xml_elem)
         return question
 
-    def get_question_28(self, xml_elem, xml_key):
+    def get_nss_country_question(self, xml_elem) -> Dict[str, Dict[str, str]]:
+        question_key = self.determine_question_key(xml_elem)
+        question = dict(
+            unavailable_reason=xml_elem.get("NSSCOUNTRYUNAVAILREASON"),
+            number_of_students=xml_elem.get("NSSCOUNTRYPOP"),
+            response_rate=xml_elem.get("NSSCOUNTRYRESP_RATE"),
+            aggregation_level=xml_elem.get("NSSCOUNTRYAGG"),
+            aggregation_year=xml_elem.get("NSSCOUNTRYAGGYEAR"),
+            aggregation_year1=xml_elem.get("NSSCOUNTRYYEAR1"),
+            subject=xml_elem.get("NSSCOUNTRYSBJ")
+        )
+        question[question_key[1]] = xml_elem.get(question_key[0])
+        return {question_key[1]: question}
 
-        pass
+    @staticmethod
+    def determine_question_key(nss_country_data: OrderedDict) -> Tuple[str, str]:
+        if "Q27" in nss_country_data:
+            return "Q27", "question_27"
+        return "Q28", "question_28"
 
     def get_mandatory_field(self, xml_elem, xml_key):
         if self.is_question(xml_key):
@@ -368,14 +393,24 @@ class Nss:
         raw_xml_list = SharedUtils.get_raw_list(
             raw_course_data, self.xml_element_key
         )
+        raw_xml_list.append({"nss_country_data": raw_course_data["NSSCOUNTRY"]})
+
         for xml_elem in raw_xml_list:
             json_elem = OrderedDict()
             if self.shared_utils.has_data(xml_elem):
                 json_elem.update(self.get_json_data(xml_elem))
             if self.shared_utils.need_unavailable(xml_elem):
-                json_elem["unavailable"] = self.shared_utils.get_unavailable(
-                    xml_elem
-                )
+                if "nss_country_data" not in xml_elem:
+                    json_elem["unavailable"] = self.shared_utils.get_unavailable(
+                        xml_elem
+                    )
+            if "nss_country_data" in xml_elem:
+                nss_country_data = xml_elem["nss_country_data"]
+                if type(nss_country_data) == list:
+                    for item in nss_country_data:
+                        json_elem.update(self.get_nss_country_question(item))
+                else:
+                    json_elem.update(self.get_nss_country_question(nss_country_data))
             json_elem_list.append(json_elem)
         return json_elem_list
 

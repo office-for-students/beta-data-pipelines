@@ -27,7 +27,6 @@
     "Q24": ["question_24", "M"],
     "Q25": ["question_25", "M"],
     "Q26": ["question_26", "M"],
-    "Q27": ["question_27", "M"],
     "NSSRESP_RATE": ["response_rate", "M"],
     "NSSSBJ": ["subject", "O"]
 }
