@@ -404,14 +404,17 @@ class Nss:
                     json_elem["unavailable"] = self.shared_utils.get_unavailable(
                         xml_elem
                     )
-            if "nss_country_data" in xml_elem:
-                nss_country_data = xml_elem["nss_country_data"]
-                if type(nss_country_data) == list:
-                    for item in nss_country_data:
-                        json_elem.update(self.get_nss_country_question(item))
-                else:
-                    json_elem.update(self.get_nss_country_question(nss_country_data))
-            json_elem_list.append(json_elem)
+            try:
+                if "nss_country_data" in xml_elem:
+                    nss_country_data = xml_elem["nss_country_data"]
+                    if type(nss_country_data) == list:
+                        for item in nss_country_data:
+                            json_elem.update(self.get_nss_country_question(item))
+                    else:
+                        json_elem.update(self.get_nss_country_question(nss_country_data))
+                json_elem_list.append(json_elem)
+            except TypeError as e:
+                logging.error(f"lists are not being handled correctly, {e}")
         return json_elem_list
 
 
