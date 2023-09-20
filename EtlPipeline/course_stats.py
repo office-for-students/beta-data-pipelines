@@ -308,7 +308,7 @@ class JobList:
 class Nss:
     """Extracts and transforms the NSS course element"""
 
-    NUM_QUESTIONS = 25
+    NUM_QUESTIONS = 28
 
     def __init__(self):
         self.xml_element_key = "NSS"
@@ -332,33 +332,8 @@ class Nss:
     def get_question(self, xml_elem, xml_key):
         question = {}
         question["description"] = self.question_lookup[xml_key]
-        try:
-            question["agree_or_strongly_agree"] = int(xml_elem[xml_key])
-        except KeyError as e:
-            print(e)
-            # if xml_key == "Q27":
-            #     question["question_28"] = self.get_nss_country_question(xml_elem)
+        question["agree_or_strongly_agree"] = int(xml_elem[xml_key])
         return question
-
-    def get_nss_country_question(self, xml_elem) -> Dict[str, Dict[str, str]]:
-        question_key = self.determine_question_key(xml_elem)
-        question = dict(
-            unavailable_reason=xml_elem.get("NSSCOUNTRYUNAVAILREASON"),
-            number_of_students=xml_elem.get("NSSCOUNTRYPOP"),
-            response_rate=xml_elem.get("NSSCOUNTRYRESP_RATE"),
-            aggregation_level=xml_elem.get("NSSCOUNTRYAGG"),
-            aggregation_year=xml_elem.get("NSSCOUNTRYAGGYEAR"),
-            aggregation_year1=xml_elem.get("NSSCOUNTRYYEAR1"),
-            subject=xml_elem.get("NSSCOUNTRYSBJ")
-        )
-        question[question_key[1]] = xml_elem.get(question_key[0])
-        return {question_key[1]: question}
-
-    @staticmethod
-    def determine_question_key(nss_country_data: OrderedDict) -> Tuple[str, str]:
-        if "Q27" in nss_country_data:
-            return "Q27", "question_27"
-        return "Q28", "question_28"
 
     def get_mandatory_field(self, xml_elem, xml_key):
         if self.is_question(xml_key):
@@ -369,10 +344,13 @@ class Nss:
         lookup = self.nss_data_fields_lookup
         json_data = OrderedDict()
         for xml_key in lookup:
-            if lookup[xml_key][1] == "M":
-                json_data[lookup[xml_key][0]] = self.get_mandatory_field(
-                    xml_elem, xml_key
-                )
+            try:
+                if lookup[xml_key][1] == "M":
+                    json_data[lookup[xml_key][0]] = self.get_mandatory_field(
+                        xml_elem, xml_key
+                    )
+            except KeyError as e:
+                logging.info("this institution has no nss data except unavailable reason")
             else:
                 if xml_key in xml_elem:
                     json_key = lookup[xml_key][0]
@@ -393,28 +371,18 @@ class Nss:
         raw_xml_list = SharedUtils.get_raw_list(
             raw_course_data, self.xml_element_key
         )
-        raw_xml_list.append({"nss_country_data": raw_course_data["NSSCOUNTRY"]})
+        secondary_xml_list = SharedUtils.get_raw_list(raw_course_data, "NSSCOUNTRY")
+        raw_xml_list = [{**raw_xml_list[0], **secondary_xml_list[0]}]
 
         for xml_elem in raw_xml_list:
             json_elem = OrderedDict()
             if self.shared_utils.has_data(xml_elem):
                 json_elem.update(self.get_json_data(xml_elem))
             if self.shared_utils.need_unavailable(xml_elem):
-                if "nss_country_data" not in xml_elem:
-                    json_elem["unavailable"] = self.shared_utils.get_unavailable(
-                        xml_elem
-                    )
-            try:
-                if "nss_country_data" in xml_elem:
-                    nss_country_data = xml_elem["nss_country_data"]
-                    if type(nss_country_data) == list:
-                        for item in nss_country_data:
-                            json_elem.update(self.get_nss_country_question(item))
-                    else:
-                        json_elem.update(self.get_nss_country_question(nss_country_data))
-                json_elem_list.append(json_elem)
-            except TypeError as e:
-                logging.error(f"lists are not being handled correctly, {e}")
+                json_elem["unavailable"] = self.shared_utils.get_unavailable(
+                    xml_elem
+                )
+            json_elem_list.append(json_elem)
         return json_elem_list
 
 
@@ -635,8 +603,8 @@ class SharedUtils:
         raw_xml_list = SharedUtils.get_raw_list(
             raw_course_data, self.xml_element_key
         )
-        for xml_elem in raw_xml_list:
 
+        for xml_elem in raw_xml_list:
             json_elem = {}
             for xml_key in xml_elem:
                 json_key = get_key(xml_key)
@@ -658,10 +626,13 @@ class SharedUtils:
             return True
 
         unavail_reason_code = xml_elem[self.xml_unavail_reason_key]
-        agg = xml_elem[self.xml_agg_key]
-        agg_codes = self.get_aggs_for_code(unavail_reason_code)
-        if agg in agg_codes:
-            return True
+        try:
+            agg = xml_elem[self.xml_agg_key]
+            agg_codes = self.get_aggs_for_code(unavail_reason_code)
+            if agg in agg_codes:
+                return True
+        except KeyError:
+            logging.warning("course does not have agg code")
         return False
 
     def get_aggs_for_code(self, unavail_reason_code):

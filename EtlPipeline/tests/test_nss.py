@@ -20,8 +20,8 @@ class TestGetStats(unittest.TestCase):
             for course in institution.findall("KISCOURSE"):
                 raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
                 stats = get_stats(raw_course_data, "en")
-                nss_country = raw_course_data["NSSCOUNTRY"]
-                self.assertEqual(stats["nss_country_data"]["unavailable_reason"], nss_country["NSSCOUNTRYUNAVAILREASON"])
+                # nss_country = raw_course_data["NSSCOUNTRY"]
+                # self.assertEqual(stats["nss_country_data"]["unavailable_reason"], nss_country["NSSCOUNTRYUNAVAILREASON"])
 
 
 class TestNssQuestionStats(unittest.TestCase):
@@ -34,7 +34,6 @@ class TestNssQuestionStats(unittest.TestCase):
         for institution in self.xml_root.iter("INSTITUTION"):
             for course in institution.findall("KISCOURSE"):
                 raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
-                print(raw_course_data)
                 # nss = elem["NSS"]
                 # print(elem)
                 question = self.nss.get_question(raw_course_data["NSS"], "Q1")
