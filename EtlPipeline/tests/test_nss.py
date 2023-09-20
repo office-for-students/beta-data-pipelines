@@ -5,8 +5,42 @@ import unittest
 import defusedxml.ElementTree as ET
 import xmltodict
 
-from course_stats import Nss
-from testing_utils import get_string
+from EtlPipeline.course_stats import Nss
+from EtlPipeline.course_stats import get_stats
+from EtlPipeline.tests.test_helpers.testing_utils import get_string
+
+
+class TestGetStats(unittest.TestCase):
+    def setUp(self) -> None:
+        self.xml_string = get_string("fixtures/test_questions.xml")
+        self.xml_root = ET.fromstring(self.xml_string)
+
+    def test_get_stats(self):
+        for institution in self.xml_root.iter("INSTITUTION"):
+            for course in institution.findall("KISCOURSE"):
+                raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
+                stats = get_stats(raw_course_data, "en")
+                nss_country = raw_course_data["NSSCOUNTRY"]
+                self.assertEqual(stats["nss_country_data"]["unavailable_reason"], nss_country["NSSCOUNTRYUNAVAILREASON"])
+
+
+class TestNssQuestionStats(unittest.TestCase):
+    def setUp(self) -> None:
+        self.xml_string = get_string("fixtures/course_data_2023.xml")
+        self.xml_root = ET.fromstring(self.xml_string)
+        self.nss = Nss()
+
+    def test_question_data(self):
+        for institution in self.xml_root.iter("INSTITUTION"):
+            for course in institution.findall("KISCOURSE"):
+                raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
+                print(raw_course_data)
+                # nss = elem["NSS"]
+                # print(elem)
+                question = self.nss.get_question(raw_course_data["NSS"], "Q1")
+                expected = raw_course_data["NSS"]["Q1"]
+                print(question)
+                self.assertEqual(question.get("agree_or_strongly_agree"), int(expected))
 
 
 class TestLookupDataFields(unittest.TestCase):
