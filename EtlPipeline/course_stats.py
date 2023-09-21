@@ -308,7 +308,7 @@ class JobList:
 class Nss:
     """Extracts and transforms the NSS course element"""
 
-    NUM_QUESTIONS = 25
+    NUM_QUESTIONS = 28
 
     def __init__(self):
         self.xml_element_key = "NSS"
