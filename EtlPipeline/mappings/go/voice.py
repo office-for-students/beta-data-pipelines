@@ -19,8 +19,6 @@ class GoVoiceMappings(BaseMappings):
             (f'{self.mapping_id}WORKSBJ', "subject"),
             (f'{self.mapping_id}WORKAGG', "go_work_agg"),
             (f'{self.mapping_id}WORKAGGYEAR', "aggregation_year"),
-            (f'{self.mapping_id}WORKYEAR1', "aggregation_year_1"),
-            (f'{self.mapping_id}WORKYEAR2', "aggregation_year_2"),
             (f'{self.mapping_id}WORKSKILLS', "go_work_skills"),
             (f'{self.mapping_id}WORKMEAN', "go_work_mean"),
             (f'{self.mapping_id}WORKONTRACK', "go_work_on_track"),

@@ -17,8 +17,6 @@ class GoInstitutionMappings(BaseMappings):
             (f'{self.mapping_id}SALUNAVAILREASON', "unavail_reason"),
             (f'{self.mapping_id}SALPOP', "pop"),
             (f'{self.mapping_id}SALAGGYEAR', "aggregation_year"),
-            (f'{self.mapping_id}SALYEAR1', "aggregation_year_1"),
-            (f'{self.mapping_id}SALYEAR2', "aggregation_year_2"),
             (f'{self.mapping_id}SALRESP_RATE', "resp_rate"),
             (f'{self.mapping_id}SALAGG', "agg"),
             (f'{self.mapping_id}SALSBJ', "subject"),

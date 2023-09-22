@@ -38,6 +38,7 @@
     "NSSCOUNTRYAGG": ["nss_country_aggregation", "O"],
     "NSSCOUNTRYAGGYEAR": ["nss_country_aggregation_year", "O"],
     "NSSCOUNTRYYEAR1": ["nss_country_year_1", "O"],
+    "NSSCOUNTRYYEAR2": ["nss_country_year_2", "O"],
     "NSSCOUNTRYRESP_RATE": ["nss_country_response_rate", "O"],
     "NSSCOUNTRYSBJ": ["nss_country_subject", "O"],
     "NSSSBJ": ["subject", "O"]

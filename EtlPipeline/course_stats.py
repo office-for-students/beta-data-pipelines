@@ -63,7 +63,6 @@ class Continuation:
             "CONTAGG": "aggregation_level",
             "CONTAGGYEAR": "aggregation_year",
             "CONTYEAR1": "aggregation_year_1",
-            "CONTYEAR2": "aggregation_year_2",
             "CONTSBJ": "subject",
             "UCONT": "continuing_with_provider",
             "UDORMANT": "dormant",
@@ -103,8 +102,6 @@ class Employment:
             "EMPAGG": "aggregation_level",
             "EMPAGGYEAR": "aggregation_year",
             "EMPYEAR1": "aggregation_year_1",
-            "EMPYEAR2": "aggregation_year_2",
-            "EMPYEAR3": "aggregation_year_3",
             "EMPSBJ": "subject",
             "WORKSTUDY": "in_work_or_study",
             "PREVWORKSTUD": "unemp_prev_emp_since_grad",
@@ -145,7 +142,6 @@ class Entry:
             "ENTAGG": "aggregation_level",
             "ENTAGGYEAR": "aggregation_year",
             "ENTYEAR1": "aggregation_year_1",
-            "ENTYEAR2": "aggregation_year_2",
             "ENTSBJ": "subject",
             "ACCESS": "access",
             "ALEVEL": "a-level",
@@ -187,7 +183,6 @@ class JobType:
             "JOBAGG": "aggregation_level",
             "JOBAGGYEAR": "aggregation_year",
             "JOBYEAR1": "aggregation_year_1",
-            "JOBYEAR2": "aggregation_year_2",
             "JOBSBJ": "subject",
             "JOBRESP_RATE": "response_rate",
             "PROFMAN": "professional_or_managerial_jobs",
@@ -512,8 +507,6 @@ class Tariff:
         json_data["aggregation_level"] = int(xml_elem[self.xml_agg_key])
         json_data["number_of_students"] = int(xml_elem[self.xml_pop_key])
         json_data["aggregation_year"] = xml_elem[self.xml_agg_year]
-        json_data["aggregation_year_1"] = xml_elem["TARYEAR1"]
-        json_data["aggregation_year_2"] = xml_elem["TARYEAR2"]
         if self.xml_subj_key in xml_elem:
             json_data["subject"] = self.shared_utils.get_subject(xml_elem)
         json_data["tariffs"] = self.get_tariffs_list(xml_elem)
@@ -631,7 +624,7 @@ class SharedUtils:
                         json_elem[json_key] = self.get_unavailable(xml_elem)
                 else:
                     json_elem[json_key] = self.get_json_value(
-                        xml_elem[xml_key]
+                        xml_elem.get(xml_key)
                     )
                 ordered_json_elem = OrderedDict(sorted(json_elem.items()))
             json_elem_list.append(ordered_json_elem)
