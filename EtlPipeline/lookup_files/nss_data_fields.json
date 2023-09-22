@@ -3,6 +3,7 @@
     "NSSPOP": ["number_of_students", "M"],
     "NSSAGGYEAR": ["aggregation_year", "M"],
     "NSSYEAR1": ["aggregation_year_1", "M"],
+    "NSSYEAR2": ["aggregation_year_1", "O"],
     "Q1": ["question_1", "M"],
     "Q2": ["question_2", "M"],
     "Q3": ["question_3", "M"],

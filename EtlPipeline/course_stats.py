@@ -5,6 +5,7 @@ import logging
 import os
 from collections import OrderedDict
 from typing import Dict
+from typing import List
 from typing import Tuple
 
 import unicodedata
@@ -332,12 +333,7 @@ class Nss:
     def get_question(self, xml_elem, xml_key):
         question = {}
         question["description"] = self.question_lookup[xml_key]
-        try:
-            question["agree_or_strongly_agree"] = int(xml_elem[xml_key])
-        except KeyError as e:
-            print(e)
-            # if xml_key == "Q27":
-            #     question["question_28"] = self.get_nss_country_question(xml_elem)
+        question["agree_or_strongly_agree"] = int(xml_elem[xml_key])
         return question
 
     def get_mandatory_field(self, xml_elem, xml_key):
@@ -347,15 +343,15 @@ class Nss:
 
     def get_json_data(self, xml_elem):
         lookup = self.nss_data_fields_lookup
-        json_data = OrderedDict()
+        json_data = dict()
         for xml_key in lookup:
-            try:
-                if lookup[xml_key][1] == "M":
+            if lookup[xml_key][1] == "M":
+                try:
                     json_data[lookup[xml_key][0]] = self.get_mandatory_field(
                         xml_elem, xml_key
                     )
-            except KeyError as e:
-                logging.info("this institution has no nss data except unavailable reason")
+                except KeyError as e:
+                    logging.info("this institution has no nss data except unavailable reason")
             else:
                 if xml_key in xml_elem:
                     json_key = lookup[xml_key][0]
@@ -376,11 +372,11 @@ class Nss:
         raw_xml_list = SharedUtils.get_raw_list(
             raw_course_data, self.xml_element_key
         )
-        secondary_xml_list = SharedUtils.get_raw_list(raw_course_data, "NSSCOUNTRY")
-        raw_xml_list = [{**raw_xml_list[0], **secondary_xml_list[0]}]
-
+        secondary_xml_list = SharedUtils.get_raw_list(
+            raw_course_data, "NSSCOUNTRY"
+        )
+        json_elem = dict()
         for xml_elem in raw_xml_list:
-            json_elem = OrderedDict()
             if self.shared_utils.has_data(xml_elem):
                 json_elem.update(self.get_json_data(xml_elem))
             if self.shared_utils.need_unavailable(xml_elem):
@@ -388,8 +384,19 @@ class Nss:
                     xml_elem
                 )
             json_elem_list.append(json_elem)
-        return json_elem_list
 
+        for xml_elem in secondary_xml_list:
+            self.shared_utils_nss_country = SharedUtils(
+                "NSSCOUNTRY", "NSSSBJ", "NSSAGG", "NSSCOUNTRYUNAVAILREASON"
+            )
+            if self.shared_utils_nss_country.has_data(xml_elem):
+                json_elem.update(self.get_json_data(xml_elem))
+            if self.shared_utils_nss_country.need_unavailable(xml_elem):
+                json_elem["unavailable"] = self.shared_utils_nss_country.get_unavailable(
+                    xml_elem
+                )
+            json_elem_list.append(json_elem)
+        return json_elem_list
 
 class NhsNss:
     """Extracts and transforms the NHS NSS course element"""
@@ -731,6 +738,13 @@ class SharedUtils:
         if isinstance(data[element_key], dict):
             return [data[element_key]]
         return data[element_key]
+
+    @staticmethod
+    def get_raw_lists(data, element_key: List) -> List:
+        for key in element_key:
+            if isinstance(data[key], dict):
+                return [data[key]]
+            return data[key]
 
 
 def need_nhs_nss(course):
