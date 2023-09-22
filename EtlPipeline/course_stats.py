@@ -480,6 +480,7 @@ class Tariff:
         self.xml_element_key = "TARIFF"
         self.xml_subj_key = "TARSBJ"
         self.xml_agg_key = "TARAGG"
+        self.xml_agg_year = "TARAGGYEAR"
         self.xml_pop_key = "TARPOP"
         self.xml_unavail_reason_key = "TARUNAVAILREASON"
 
@@ -510,6 +511,9 @@ class Tariff:
         json_data = {}
         json_data["aggregation_level"] = int(xml_elem[self.xml_agg_key])
         json_data["number_of_students"] = int(xml_elem[self.xml_pop_key])
+        json_data["aggregation_year"] = xml_elem[self.xml_agg_year]
+        json_data["aggregation_year_1"] = xml_elem["TARYEAR1"]
+        json_data["aggregation_year_2"] = xml_elem["TARYEAR2"]
         if self.xml_subj_key in xml_elem:
             json_data["subject"] = self.shared_utils.get_subject(xml_elem)
         json_data["tariffs"] = self.get_tariffs_list(xml_elem)
