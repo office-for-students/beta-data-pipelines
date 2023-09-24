@@ -367,9 +367,10 @@ class Nss:
         raw_xml_list = SharedUtils.get_raw_list(
             raw_course_data, self.xml_element_key
         )
-        secondary_xml_list = SharedUtils.get_raw_list(
-            raw_course_data, "NSSCOUNTRY"
-        )
+        if raw_xml_list[0] is dict:
+            for key, value in raw_course_data.get("NSSCOUNTRY").items():
+                raw_xml_list[0][key] = value
+        print(raw_xml_list)
         json_elem = dict()
         for xml_elem in raw_xml_list:
             if self.shared_utils.has_data(xml_elem):
@@ -379,19 +380,6 @@ class Nss:
                     xml_elem
                 )
             json_elem_list.append(json_elem)
-
-        for xml_elem in secondary_xml_list:
-            self.shared_utils_nss_country = SharedUtils(
-                "NSSCOUNTRY", "NSSSBJ", "NSSAGG", "NSSCOUNTRYUNAVAILREASON"
-            )
-            if self.shared_utils_nss_country.has_data(xml_elem):
-                json_elem.update(self.get_json_data(xml_elem))
-            if self.shared_utils_nss_country.need_unavailable(xml_elem):
-                json_elem["unavailable"] = self.shared_utils_nss_country.get_unavailable(
-                    xml_elem
-                )
-            json_elem_list.append(json_elem)
-        return json_elem_list
 
 class NhsNss:
     """Extracts and transforms the NHS NSS course element"""
@@ -430,7 +418,7 @@ class NhsNss:
 
     def get_json_data(self, xml_elem):
         lookup = self.data_fields_lookup
-        json_data = OrderedDict()
+        json_data = dict()
         for xml_key in lookup:
             if lookup[xml_key][1] == "M":
                 json_data[lookup[xml_key][0]] = self.get_mandatory_field(
@@ -457,7 +445,7 @@ class NhsNss:
             raw_course_data, self.xml_element_key
         )
         for xml_elem in raw_xml_list:
-            json_elem = OrderedDict()
+            json_elem = dict()
             if self.shared_utils.has_data(xml_elem):
                 json_elem.update(self.get_json_data(xml_elem))
             if self.shared_utils.need_unavailable(xml_elem):
@@ -504,9 +492,9 @@ class Tariff:
 
     def get_json_data(self, xml_elem):
         json_data = {}
-        json_data["aggregation_level"] = int(xml_elem[self.xml_agg_key])
-        json_data["number_of_students"] = int(xml_elem[self.xml_pop_key])
-        json_data["aggregation_year"] = xml_elem[self.xml_agg_year]
+        json_data["aggregation_level"] = int(xml_elem.get(self.xml_agg_key))
+        json_data["number_of_students"] = int(xml_elem.get(self.xml_pop_key))
+        json_data["aggregation_year"] = xml_elem.get(self.xml_agg_year)
         if self.xml_subj_key in xml_elem:
             json_data["subject"] = self.shared_utils.get_subject(xml_elem)
         json_data["tariffs"] = self.get_tariffs_list(xml_elem)
@@ -527,7 +515,7 @@ class Tariff:
                 json_elem["unavailable"] = self.shared_utils.get_unavailable(
                     xml_elem
                 )
-            sorted_json_elem = OrderedDict(sorted(json_elem.items()))
+            sorted_json_elem = dict(sorted(json_elem.items()))
             json_elem_list.append(sorted_json_elem)
         return json_elem_list
 
@@ -626,7 +614,7 @@ class SharedUtils:
                     json_elem[json_key] = self.get_json_value(
                         xml_elem.get(xml_key)
                     )
-                ordered_json_elem = OrderedDict(sorted(json_elem.items()))
+                ordered_json_elem = dict(sorted(json_elem.items()))
             json_elem_list.append(ordered_json_elem)
         return json_elem_list
 
@@ -634,9 +622,9 @@ class SharedUtils:
         if not self.has_data(xml_elem):
             return True
 
-        unavail_reason_code = xml_elem[self.xml_unavail_reason_key]
+        unavail_reason_code = xml_elem.get(self.xml_unavail_reason_key)
         try:
-            agg = xml_elem[self.xml_agg_key]
+            agg = xml_elem.get(self.xml_agg_key)
             agg_codes = self.get_aggs_for_code(unavail_reason_code)
             if agg in agg_codes:
                 return True
