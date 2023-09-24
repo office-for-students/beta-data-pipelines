@@ -390,6 +390,7 @@ class Nss:
                     xml_elem
                 )
             json_elem_list.append(json_elem)
+        return json_elem_list
 
 class NhsNss:
     """Extracts and transforms the NHS NSS course element"""
