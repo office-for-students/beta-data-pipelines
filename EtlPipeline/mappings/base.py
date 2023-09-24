@@ -82,6 +82,6 @@ class BaseMappings:
     @staticmethod
     def in_and_not_na(key: str, data: Dict[str, Any]) -> bool:
         if key in data:
-            if data[key].lower() != "na":
+            if data.get(key).lower() != "na":
                 return True
         return False

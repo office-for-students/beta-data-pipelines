@@ -479,7 +479,7 @@ def get_code_label_entry(lookup_table_raw_xml, lookup_table_local, key):
     if key in lookup_table_raw_xml:
         code = get_code(lookup_table_raw_xml, key)
         entry["code"] = code
-        entry["label"] = lookup_table_local[code]
+        entry["label"] = lookup_table_local.get(code)
     return entry
 
 
