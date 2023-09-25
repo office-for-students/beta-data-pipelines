@@ -380,9 +380,10 @@ class Nss:
                 for key, value in data_dict.items():
                     if type(raw_xml_list[0]) == OrderedDict:
                         raw_xml_list[0][key] = value
-        json_elem = dict()
 
+        # print(raw_xml_list) THIS HAS CONFIRMED BOTH SBJ CODES ARE DIFFERENT
         for xml_elem in raw_xml_list:
+            json_elem = dict()
             if self.shared_utils.has_data(xml_elem):
                 json_elem.update(self.get_json_data(xml_elem))
             if self.shared_utils.need_unavailable(xml_elem):
