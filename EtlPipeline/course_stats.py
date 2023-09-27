@@ -376,10 +376,12 @@ class Nss:
                 if type(raw_xml_list[0]) == OrderedDict:
                     raw_xml_list[0][key] = value
         elif type(nss_country_data) == list:
-            for data_dict in nss_country_data:
+            for index, data_dict in enumerate(nss_country_data):
                 for key, value in data_dict.items():
-                    if type(raw_xml_list[0]) == OrderedDict:
-                        raw_xml_list[0][key] = value
+                    if index == len(raw_xml_list):
+                        raw_xml_list.append(data_dict)
+                    elif type(raw_xml_list[index]) == OrderedDict:
+                        raw_xml_list[index][key] = value
 
         # print(raw_xml_list) THIS HAS CONFIRMED BOTH SBJ CODES ARE DIFFERENT
         for xml_elem in raw_xml_list:
@@ -387,9 +389,12 @@ class Nss:
             if self.shared_utils.has_data(xml_elem):
                 json_elem.update(self.get_json_data(xml_elem))
             if self.shared_utils.need_unavailable(xml_elem):
-                json_elem["unavailable"] = self.shared_utils.get_unavailable(
-                    xml_elem
-                )
+                try:
+                    json_elem["unavailable"] = self.shared_utils.get_unavailable(
+                        xml_elem
+                    )
+                except AttributeError as e:
+                    print("no need unavail")
             json_elem_list.append(json_elem)
         return json_elem_list
 
@@ -645,6 +650,8 @@ class SharedUtils:
                 return True
         except KeyError:
             logging.warning("course does not have agg code")
+        except AttributeError:
+            logging.warning("this course has nss country data but no nss?")
         return False
 
     def get_aggs_for_code(self, unavail_reason_code):
