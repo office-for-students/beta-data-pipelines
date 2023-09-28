@@ -380,7 +380,7 @@ class Nss:
                 for key, value in data_dict.items():
                     if index == len(raw_xml_list):
                         raw_xml_list.append(data_dict)
-                        raw_xml_list[index]["NSSUNAVAILREASON"] = data_dict["NSSCOUNTRYUNAVAILREASON"]
+                        raw_xml_list[index]["NSSUNAVAILREASON"] = data_dict.get("NSSCOUNTRYUNAVAILREASON")
                         raw_xml_list[index]["NSSAGG"] = data_dict.get("NSSCOUNTRYAGG")
                     elif type(raw_xml_list[index]) == OrderedDict:
                         raw_xml_list[index][key] = value
