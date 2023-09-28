@@ -377,15 +377,16 @@ class Nss:
                     raw_xml_list[0][key] = value
         elif type(nss_country_data) == list:
             for index, data_dict in enumerate(nss_country_data):
+                updated_data_dict = OrderedDict(data_dict)
                 for key, value in data_dict.items():
                     if index == len(raw_xml_list):
-                        raw_xml_list.append(data_dict)
-                        raw_xml_list[index]["NSSUNAVAILREASON"] = data_dict.get("NSSCOUNTRYUNAVAILREASON")
-                        raw_xml_list[index]["NSSAGG"] = data_dict.get("NSSCOUNTRYAGG")
-                    elif type(raw_xml_list[index]) == OrderedDict:
+                        updated_data_dict["NSSUNAVAILREASON"] = data_dict.get("NSSCOUNTRYUNAVAILREASON")
+                        updated_data_dict["NSSAGG"] = data_dict.get("NSSCOUNTRYAGG")
+                        updated_data_dict["NSSSBJ"] = data_dict.get("NSSCOUNTRYSBJ")
+                        raw_xml_list.append(updated_data_dict)
+                    elif isinstance(raw_xml_list[index], OrderedDict):
                         raw_xml_list[index][key] = value
 
-        # print(raw_xml_list) THIS HAS CONFIRMED BOTH SBJ CODES ARE DIFFERENT
         for xml_elem in raw_xml_list:
             json_elem = dict()
             if self.shared_utils.has_data(xml_elem):
@@ -712,7 +713,6 @@ class SharedUtils:
             subj = self.get_unavailable_reason_subj_welsh(subj_key)
         else:
             subj = self.get_unavailable_reason_subj_english(subj_key)
-
         return partial_reason_str.replace("[Subject]", subj)
 
     def get_unavailable_reason_subj_english(self, sbj_key):
