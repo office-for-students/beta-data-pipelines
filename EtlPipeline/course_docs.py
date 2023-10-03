@@ -413,6 +413,7 @@ def get_go_inst_json(raw_go_inst_data, subject_enricher):
             mapping_id="GO",
             subject_enricher=subject_enricher
         )
+
         return mapper.map_xml_to_json_array(
             xml_as_array=raw_go_inst_data,
         )
@@ -598,8 +599,7 @@ def process_stats(
 
             if go_sector_salary is not None:
                 xml_array.append(go_sector_salary)
-
-        return xml_array
+    return xml_array
 
 
 def get_go_sector_json(
