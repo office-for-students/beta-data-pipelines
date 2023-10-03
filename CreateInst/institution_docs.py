@@ -57,7 +57,6 @@ def add_tef_data(raw_inst_data):
 def validate_column_headers(header_row):
     logging.info(f"Validating header row, headers: {header_row}")
     header_list = header_row.split(",")
-    print("HEADER LIST", header_list)
 
     try:
         valid = True
@@ -224,9 +223,9 @@ class InstitutionDocs:
         )
         if "TEFOutcome" in raw_inst_data:
             institution_element["tef_outcome"] = add_tef_data(raw_inst_data["TEFOutcome"])
-        if "QAA_Report_Type" in raw_inst_data:
-            institution_element["qaa_report_type"] = raw_inst_data["QAA_Report_Type"]
-            institution_element["qaa_url"] = raw_inst_data["QAA_URL"]
+        if "QAA_Report_Type" in raw_inst_data or "QAA_URL" in raw_inst_data:
+            institution_element["qaa_report_type"] = raw_inst_data.get("QAA_Report_Type")
+            institution_element["qaa_url"] = raw_inst_data.get("QAA_URL")
         institution_element[
             "total_number_of_courses"
         ] = get_total_number_of_courses(institution)
