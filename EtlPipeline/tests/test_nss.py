@@ -4,7 +4,7 @@ import unittest
 
 import defusedxml.ElementTree as ET
 import xmltodict
-
+import csv
 from EtlPipeline.course_stats import Nss
 from EtlPipeline.course_stats import get_stats
 from EtlPipeline.tests.test_helpers.testing_utils import get_string
@@ -14,14 +14,18 @@ class TestGetStats(unittest.TestCase):
     def setUp(self) -> None:
         self.xml_string = get_string("fixtures/test_questions.xml")
         self.xml_root = ET.fromstring(self.xml_string)
+        self.nss = Nss()
 
     def test_get_stats(self):
         for institution in self.xml_root.iter("INSTITUTION"):
+            raw_inst_data = xmltodict.parse(ET.tostring(institution))["INSTITUTION"]
+            course_list = list()
             for course in institution.findall("KISCOURSE"):
                 raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
-                stats = get_stats(raw_course_data, "en")
-                # nss_country = raw_course_data["NSSCOUNTRY"]
-                # self.assertEqual(stats["nss_country_data"]["unavailable_reason"], nss_country["NSSCOUNTRYUNAVAILREASON"])
+                course_list.append(get_stats(raw_course_data))
+            with open('fixtures/amounts.csv', mode='a', newline='') as file:
+                csv_writer = csv.writer(file)
+                csv_writer.writerow([raw_inst_data["PUBUKPRN"], len(course_list)])
 
 
 class TestNssQuestionStats(unittest.TestCase):
