@@ -265,10 +265,10 @@ class JobList:
             if lookup[xml_key][1] == "M":
                 json_data[
                     lookup[xml_key][0]
-                ] = self.shared_utils.get_json_value(xml_elem[xml_key])
+                ] = self.shared_utils.get_json_value(xml_elem.get(xml_key))
             else:
                 if xml_key in xml_elem:
-                    json_key = lookup[xml_key][0]
+                    json_key = lookup.get(xml_key, [])[0]
                     if json_key == "subject":
                         json_data[json_key] = self.shared_utils.get_subject(
                             xml_elem
@@ -277,7 +277,7 @@ class JobList:
                         json_data["list"] = self.get_list_field(xml_elem)
                     else:
                         json_data[json_key] = self.shared_utils.get_json_value(
-                            xml_elem[xml_key]
+                            xml_elem.get(xml_key)
                         )
         return json_data
 
@@ -371,11 +371,11 @@ class Nss:
         )
         nss_country_data = raw_course_data.get("NSSCOUNTRY")
 
-        if type(nss_country_data) == OrderedDict:
+        if isinstance(nss_country_data, OrderedDict):
             for key, value in nss_country_data.items():
-                if type(raw_xml_list[0]) == OrderedDict:
+                if isinstance(raw_xml_list[0], OrderedDict):
                     raw_xml_list[0][key] = value
-        elif type(nss_country_data) == list:
+        elif isinstance(nss_country_data, list):
             for index, data_dict in enumerate(nss_country_data):
                 updated_data_dict = OrderedDict(data_dict)
                 for key, value in data_dict.items():
@@ -425,7 +425,9 @@ class NhsNss:
     def get_question(self, xml_elem, xml_key):
         question = {}
         question["description"] = self.question_description_lookup.get(xml_key)
-        question["agree_or_strongly_agree"] = int(xml_elem.get(xml_key))
+        agree_or_strongly_agree = xml_elem.get(xml_key)
+        if agree_or_strongly_agree and agree_or_strongly_agree.isdigit():
+            question["agree_or_strongly_agree"] = int(xml_elem.get(xml_key))
         return question
 
     def get_mandatory_field(self, xml_elem, xml_key):
@@ -502,15 +504,19 @@ class Tariff:
             {
                 "code": xml_key,
                 "description": self.get_tariff_description(xml_key),
-                "entrants": int(xml_elem.get(xml_key)),
+                "entrants": int(xml_elem.get(xml_key, 0)),
             }
             for xml_key in self.tariff_description_lookup.keys()
         ]
 
     def get_json_data(self, xml_elem):
         json_data = {}
-        json_data["aggregation_level"] = int(xml_elem.get(self.xml_agg_key))
-        json_data["number_of_students"] = int(xml_elem.get(self.xml_pop_key))
+        agg_level = xml_elem.get(self.xml_agg_key)
+        population = xml_elem.get(self.xml_pop_key)
+        if agg_level:
+            json_data["aggregation_level"] = int(agg_level)
+        if population:
+            json_data["number_of_students"] = int(population)
         json_data["aggregation_year"] = xml_elem.get(self.xml_agg_year)
         if self.xml_subj_key in xml_elem:
             json_data["subject"] = self.shared_utils.get_subject(xml_elem)
@@ -532,8 +538,8 @@ class Tariff:
                 json_elem["unavailable"] = self.shared_utils.get_unavailable(
                     xml_elem
                 )
-            sorted_json_elem = dict(sorted(json_elem.items()))
-            json_elem_list.append(sorted_json_elem)
+            # sorted_json_elem = dict(json_elem.items())
+            json_elem_list.append(json_elem)
         return json_elem_list
 
 
@@ -631,11 +637,11 @@ class SharedUtils:
                     json_elem[json_key] = self.get_json_value(
                         xml_elem.get(xml_key)
                     )
-            # try:
-            #     ordered_json_elem = dict(sorted(json_elem.items()))
-            # except:
-            #     ordered_json_elem = dict(json_elem.items())
-            json_elem_list.append(json_elem)
+            try:
+                ordered_json_elem = dict(sorted(json_elem.items()))
+                json_elem_list.append(ordered_json_elem)
+            except:
+                json_elem_list.append(json_elem)
         return json_elem_list
 
     def need_unavailable(self, xml_elem):
@@ -643,13 +649,10 @@ class SharedUtils:
             return True
 
         unavail_reason_code = xml_elem.get(self.xml_unavail_reason_key)
-        try:
-            agg = xml_elem.get(self.xml_agg_key)
-            agg_codes = self.get_aggs_for_code(unavail_reason_code)
-            if agg in agg_codes:
-                return True
-        except KeyError:
-            logging.warning("course does not have agg code")
+        agg = xml_elem.get(self.xml_agg_key)
+        agg_codes = self.get_aggs_for_code(unavail_reason_code)
+        if agg in agg_codes:
+            return True
         return False
 
     def get_aggs_for_code(self, unavail_reason_code):
@@ -728,7 +731,7 @@ class SharedUtils:
     @staticmethod
     def has_data(xml_elem):
         """Returns True if the stats XML element has data otherwise False"""
-        return len(xml_elem) > 1
+        return xml_elem is not None and len(xml_elem) > 1
 
     @staticmethod
     def get_json_value(xml_value):
@@ -742,13 +745,6 @@ class SharedUtils:
         if isinstance(data.get(element_key), dict):
             return [data.get(element_key)]
         return data.get(element_key)
-
-    @staticmethod
-    def get_raw_lists(data, element_key: List) -> List:
-        for key in element_key:
-            if isinstance(data.get(key), dict):
-                return [data.get(key)]
-            return data.get(key)
 
 
 def need_nhs_nss(course):
