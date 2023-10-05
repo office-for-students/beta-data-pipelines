@@ -105,6 +105,7 @@ def load_course_docs(xml_string, version):
         logging.info(f"Ingesting course for: ({raw_inst_data['PUBUKPRN']})")
         for course in institution.findall("KISCOURSE"):
             raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
+            logging.info(f"COURSE COUNT: {course_count}")
             logging.info(
                 f"Ingesting course for: {raw_inst_data['PUBUKPRN']}/{raw_course_data['KISCOURSEID']}/{raw_course_data['KISMODE']}) | start")
             try:
@@ -128,6 +129,7 @@ def load_course_docs(xml_string, version):
                 logging.info(f"*****,{json.dumps(course_doc)},{raw_inst_data['PUBUKPRN']}/{raw_course_data['KISCOURSEID']}),doc created")
                 new_docs.append(course_doc)
                 sproc_count += 1
+                logging.info(f"FINISHED COUNT: {course_count}")
                 course_count += 1
 
                 if sproc_count >= 40:
@@ -137,8 +139,9 @@ def load_course_docs(xml_string, version):
                     # Reset values
                     new_docs = []
                     sproc_count = 0
-                    time.sleep(1)
+                    time.sleep(10)
             except Exception as e:
+                logging.warning(f"FAILED AT COUNT: {course_count}")
                 logging.warning(f"FAILED: Ingesting course for: {raw_inst_data['PUBUKPRN']}/{raw_course_data['KISCOURSEID']}/{raw_course_data['KISMODE']}) | end")
                 institution_id = raw_inst_data["UKPRN"]
                 course_id = raw_course_data["KISCOURSEID"]
