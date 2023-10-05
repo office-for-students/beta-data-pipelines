@@ -53,7 +53,7 @@ class Index:
             raise exceptions.StopEtlPipelineErrorException(e)
 
         if response.status_code == 204:
-            logging.warn(
+            logging.warning(
                 f"course search index already exists, successful deletion\
                            prior to recreation\n index: {self.index_name}"
             )
@@ -120,6 +120,7 @@ class Load:
     def course_documents(self):
 
         number_of_docs = len(self.docs)
+        logging.info(f"THERE ARE A TOTAL OF {number_of_docs} courses")
         course_count = 0
         bulk_course_count = 500
         documents = {}

@@ -126,7 +126,6 @@ def load_course_docs(xml_string, version):
                 enricher.enrich_course(course_doc)
                 subject_enricher.enrich_course(course_doc)
                 qualification_enricher.enrich_course(course_doc)
-                logging.info(f"*****,{json.dumps(course_doc)},{raw_inst_data['PUBUKPRN']}/{raw_course_data['KISCOURSEID']}),doc created")
                 new_docs.append(course_doc)
                 sproc_count += 1
                 logging.info(f"FINISHED COUNT: {course_count}")
