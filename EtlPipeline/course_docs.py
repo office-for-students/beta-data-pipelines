@@ -100,6 +100,7 @@ def load_course_docs(xml_string, version):
         raw_inst_data = xmltodict.parse(ET.tostring(institution))[
             "INSTITUTION"
         ]
+
         ukprn = raw_inst_data["UKPRN"]
         logging.info(f"Ingesting course for: ({raw_inst_data['PUBUKPRN']})")
         for course in institution.findall("KISCOURSE"):
@@ -107,9 +108,7 @@ def load_course_docs(xml_string, version):
             logging.info(
                 f"Ingesting course for: {raw_inst_data['PUBUKPRN']}/{raw_course_data['KISCOURSEID']}/{raw_course_data['KISMODE']}) | start")
             try:
-                raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
                 locids = get_locids(raw_course_data, ukprn)
-
                 course_doc = get_course_doc(
                     accreditations,
                     locations,
@@ -148,11 +147,6 @@ def load_course_docs(xml_string, version):
                 exception_text = f"There was an error: {e} when creating the course document for course with institution_id: {institution_id} course_id: {course_id} course_mode: {course_mode} TRACEBACK: {tb}"
                 logging.info(exception_text)
 
-                # with open("course_docs_exceptions_{}.txt".format(version), "a") as myfile:
-                #     myfile.write(exception_text + "\n")
-                #     myfile.write(tb + "\n")
-                #     myfile.write(
-                #         "================================================================================================\n")
 
     if sproc_count > 0:
         logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
@@ -170,30 +164,15 @@ def get_locids(raw_course_data, ukprn):
     locids = []
     if "COURSELOCATION" not in raw_course_data:
         return locids
+
     if isinstance(raw_course_data["COURSELOCATION"], list):
         for val in raw_course_data["COURSELOCATION"]:
-            # TODO if UCASCOURSEIDs present, then process accordingly
-            # For example, check distant learning is set True. May
-            # also need to change function name and return type.
-            try:
-                locids.append(f"{val['LOCID']}{ukprn}")
-            except KeyError:
-                # TODO: Handle COURSELOCATION without LOCID.
-                # See KISCOURSEID BADE for an example of this.
-                # Distant learning may provide a UCASCOURSEID
-                # under COURSELOCATION
-                pass
+            locids.append(f"{val['LOCID']}{ukprn}")
     else:
-        try:
-            locids.append(
-                f"{raw_course_data['COURSELOCATION']['LOCID']}{ukprn}"
-            )
-        except KeyError:
-            # TODO: Handle COURSELOCATION without LOCID.
-            # See KISCOURSEID BADE for an example of this.
-            # Distant learning may provide a UCASCOURSEID
-            # under COURSELOCATION
-            pass
+        locids.append(
+            f"{raw_course_data['COURSELOCATION']['LOCID']}{ukprn}"
+        )
+
     return locids
 
 
