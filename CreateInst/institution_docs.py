@@ -200,6 +200,7 @@ class InstitutionDocs:
         first_trading_name = raw_inst_data.get("FIRST_TRADING_NAME", "")
         other_names = raw_inst_data.get("OTHER_NAMES", "")
 
+        institution_element["legal_name"] = legal_name
         if first_trading_name:
             institution_element["first_trading_name"] = first_trading_name
             institution_element["pub_ukprn_name"] = first_trading_name
@@ -215,7 +216,6 @@ class InstitutionDocs:
             )
         if other_names:
             institution_element["other_names"] = pn_handler.presentable(other_names).split("###")
-        institution_element["legal_name"] = pn_handler.presentable(legal_name)
 
         institution_element["pub_ukprn"] = pubukprn
         institution_element["pub_ukprn_country"] = get_country(
