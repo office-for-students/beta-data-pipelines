@@ -10,6 +10,7 @@ during development and testing.
 """
 import datetime
 import inspect
+import json
 import logging
 import os
 import sys
@@ -100,7 +101,11 @@ def load_course_docs(xml_string, version):
             "INSTITUTION"
         ]
         ukprn = raw_inst_data["UKPRN"]
+        logging.info(f"Ingesting course for: ({raw_inst_data['PUBUKPRN']})")
         for course in institution.findall("KISCOURSE"):
+            raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
+            logging.info(
+                f"Ingesting course for: {raw_inst_data['PUBUKPRN']}/{raw_course_data['KISCOURSEID']}/{raw_course_data['KISMODE']}) | start")
             try:
                 raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
                 locids = get_locids(raw_course_data, ukprn)
@@ -121,7 +126,7 @@ def load_course_docs(xml_string, version):
                 enricher.enrich_course(course_doc)
                 subject_enricher.enrich_course(course_doc)
                 qualification_enricher.enrich_course(course_doc)
-
+                logging.info(f"*****,{json.dumps(course_doc)},{raw_inst_data['PUBUKPRN']}/{raw_course_data['KISCOURSEID']}),doc created")
                 new_docs.append(course_doc)
                 sproc_count += 1
                 course_count += 1
@@ -135,7 +140,7 @@ def load_course_docs(xml_string, version):
                     sproc_count = 0
                     time.sleep(3)
             except Exception as e:
-
+                logging.warning(f"FAILED: Ingesting course for: {raw_inst_data['PUBUKPRN']}/{raw_course_data['KISCOURSEID']}/{raw_course_data['KISMODE']}) | end")
                 institution_id = raw_inst_data["UKPRN"]
                 course_id = raw_course_data["KISCOURSEID"]
                 course_mode = raw_course_data["KISMODE"]
