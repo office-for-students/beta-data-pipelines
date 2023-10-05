@@ -138,7 +138,7 @@ def load_course_docs(xml_string, version):
                     # Reset values
                     new_docs = []
                     sproc_count = 0
-                    time.sleep(3)
+                    time.sleep(1)
             except Exception as e:
                 logging.warning(f"FAILED: Ingesting course for: {raw_inst_data['PUBUKPRN']}/{raw_course_data['KISCOURSEID']}/{raw_course_data['KISMODE']}) | end")
                 institution_id = raw_inst_data["UKPRN"]
