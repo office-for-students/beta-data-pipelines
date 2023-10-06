@@ -131,14 +131,13 @@ def load_course_docs(xml_string, version):
                 logging.info(f"FINISHED COUNT: {course_count}")
                 course_count += 1
 
-                if sproc_count >= 40:
+                if sproc_count >= 5:
                     logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
                     cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
                     logging.info(f"Successfully loaded another {sproc_count} documents")
                     # Reset values
                     new_docs = []
                     sproc_count = 0
-                    time.sleep(10)
             except Exception as e:
                 logging.warning(f"FAILED AT COUNT: {course_count}")
                 logging.warning(f"FAILED: Ingesting course for: {raw_inst_data['PUBUKPRN']}/{raw_course_data['KISCOURSEID']}/{raw_course_data['KISMODE']}) | end")
