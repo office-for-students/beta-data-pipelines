@@ -22,4 +22,4 @@ class Locations:
             self.lookup_dict[lockey] = raw_location_data
 
     def get_location_data_for_key(self, key):
-        return self.lookup_dict.get(key)
+        return self.lookup_dict.get(key, {})

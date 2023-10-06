@@ -508,7 +508,9 @@ def get_location_items(locations, locids, raw_course_data, pub_ukprn):
 
     course_locations = SharedUtils.get_raw_list(
         raw_course_data, "COURSELOCATION"
-    )
+    ) if SharedUtils.get_raw_list(
+        raw_course_data, "COURSELOCATION"
+    ) else []
     item = {}
     for course_location in course_locations:
         if "LOCID" not in course_location:
