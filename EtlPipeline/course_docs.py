@@ -107,7 +107,7 @@ def load_course_docs(xml_string, version):
             raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
             logging.info(f"COURSE COUNT: {course_count}")
             logging.info(
-                f"Ingesting course for: {raw_inst_data['PUBUKPRN']}/{raw_course_data['KISCOURSEID']}/{raw_course_data['KISMODE']}) | start")
+                f"Ingesting course for: {raw_inst_data['PUBUKPRN']}/{raw_course_data['KISCOURSEID']}/{raw_course_data['KISMODE']}) | start {version}")
             try:
                 locids = get_locids(raw_course_data, ukprn)
                 course_doc = get_course_doc(
@@ -140,12 +140,12 @@ def load_course_docs(xml_string, version):
                     sproc_count = 0
             except Exception as e:
                 logging.warning(f"FAILED AT COUNT: {course_count}")
-                logging.warning(f"FAILED: Ingesting course for: {raw_inst_data['PUBUKPRN']}/{raw_course_data['KISCOURSEID']}/{raw_course_data['KISMODE']}) | end")
+                logging.warning(f"FAILED: Ingesting course for: {raw_inst_data['PUBUKPRN']}/{raw_course_data['KISCOURSEID']}/{raw_course_data['KISMODE']}) | end {version}")
                 institution_id = raw_inst_data["UKPRN"]
                 course_id = raw_course_data["KISCOURSEID"]
                 course_mode = raw_course_data["KISMODE"]
                 tb = traceback.format_exc()
-                exception_text = f"There was an error: {e} when creating the course document for course with institution_id: {institution_id} course_id: {course_id} course_mode: {course_mode} TRACEBACK: {tb}"
+                exception_text = f"Failed error: {e} when creating the course document for course with institution_id: {institution_id} course_id: {course_id} course_mode: {course_mode} TRACEBACK: {tb}"
                 logging.info(exception_text)
 
 
@@ -168,10 +168,10 @@ def get_locids(raw_course_data, ukprn):
 
     if isinstance(raw_course_data["COURSELOCATION"], list):
         for val in raw_course_data["COURSELOCATION"]:
-            locids.append(f"{val.get('LOCID')}{ukprn}")
+            locids.append(f"{val.get('LOCID', {})}{ukprn}")
     else:
         locids.append(
-            f"{raw_course_data['COURSELOCATION'].get('LOCID')}{ukprn}"
+            f"{raw_course_data['COURSELOCATION'].get('LOCID', {})}{ukprn}"
         )
 
     return locids
