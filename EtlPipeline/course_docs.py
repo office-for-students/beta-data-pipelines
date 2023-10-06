@@ -168,10 +168,10 @@ def get_locids(raw_course_data, ukprn):
 
     if isinstance(raw_course_data["COURSELOCATION"], list):
         for val in raw_course_data["COURSELOCATION"]:
-            locids.append(f"{val['LOCID']}{ukprn}")
+            locids.append(f"{val.get('LOCID')}{ukprn}")
     else:
         locids.append(
-            f"{raw_course_data['COURSELOCATION']['LOCID']}{ukprn}"
+            f"{raw_course_data['COURSELOCATION'].get('LOCID')}{ukprn}"
         )
 
     return locids
@@ -515,7 +515,7 @@ def get_location_items(locations, locids, raw_course_data, pub_ukprn):
             continue
 
         if "UCASCOURSEID" in course_location:
-            lookup_key = course_location["LOCID"] + pub_ukprn
+            lookup_key = course_location.get("LOCID") + pub_ukprn
             item[lookup_key] = course_location["UCASCOURSEID"]
 
     for locid in locids:
