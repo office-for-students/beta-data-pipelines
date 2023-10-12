@@ -50,7 +50,7 @@ def add_tef_data(raw_inst_data):
         overall_rating=raw_inst_data["OVERALL_RATING"],
         student_experience_rating=raw_inst_data["STUDENT_EXPERIENCE_RATING"],
         student_outcomes_rating=raw_inst_data["STUDENT_OUTCOMES_RATING"],
-        outcome_url=raw_inst_data["OUTCOME_URL"]
+        outcome_url=raw_inst_data.get("OUTCOME_URL")
     )
 
 
@@ -215,14 +215,18 @@ class InstitutionDocs:
                 provider_name=institution_element["legal_name"]
             )
         if other_names:
-            institution_element["other_names"] = pn_handler.presentable(other_names).split("###")
+            institution_element["other_names"] = other_names.split("###")
 
         institution_element["pub_ukprn"] = pubukprn
         institution_element["pub_ukprn_country"] = get_country(
             raw_inst_data["PUBUKPRNCOUNTRY"]
         )
-        if "TEFOutcome" in raw_inst_data:
+        if "TEFOutcome" in raw_inst_data and not isinstance(raw_inst_data["TEFOutcome"], list):
             institution_element["tef_outcome"] = add_tef_data(raw_inst_data["TEFOutcome"])
+        elif isinstance(raw_inst_data.get("TEFOutcome"), list):
+            institution_element["tef_outcome"] = list()
+            for tef_outcome in raw_inst_data.get("TEFOutcome"):
+                institution_element["tef_outcome"].append(add_tef_data(tef_outcome))
         if "QAA_Report_Type" in raw_inst_data or "QAA_URL" in raw_inst_data:
             institution_element["qaa_report_type"] = raw_inst_data.get("QAA_Report_Type")
             institution_element["qaa_url"] = raw_inst_data.get("QAA_URL")
