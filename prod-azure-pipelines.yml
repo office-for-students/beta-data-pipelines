@@ -2,7 +2,7 @@
 
 # The code branch that will trigger a build
 trigger:
-- master
+  - release/*
 
 pr: none
 
@@ -23,7 +23,7 @@ steps:
       versionSpec: '$(python.version)'
     displayName: 'Use Python $(python.version)'
 
- # Create a Python Virtual Environment and download required dependencies
+  # Create a Python Virtual Environment and download required dependencies
   - script: |
       pip install --target="$(System.DefaultWorkingDirectory)/.python_packages/lib/site-packages" -r requirements.txt
     displayName: 'Install Python Dependencies'
