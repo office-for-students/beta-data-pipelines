@@ -8,11 +8,11 @@
 
   # Build Agent Resources
   pool:
-    vmImage: 'windows-latest'
+    vmImage: 'ubuntu-latest'
   strategy:
     matrix:
       Python38:
-        python.version: '3.8'
+        python.version: '3.10'
 
   # Build Process Tree
   steps:
@@ -134,6 +134,7 @@
         url = '$(DataPipelineURL)'
 
         print('Sending request to pipeline...')
+        print('URL: {}'.format('$(DataPipelineURL)')
 
         pipeline_request = urllib.request.Request(url, headers=hdr)
         pipeline_response = urllib.request.urlopen(pipeline_request, timeout=120)
