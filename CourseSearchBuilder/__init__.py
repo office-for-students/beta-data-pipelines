@@ -7,7 +7,7 @@ from datetime import datetime
 import azure.functions as func
 
 from SharedCode.dataset_helper import DataSetHelper
-from SharedCode.mail_helper import MailHelper
+# from SharedCode.mail_helper import MailHelper
 from SharedCode import utils
 from . import search
 from .build_institutions_json import build_institutions_json_files
@@ -18,7 +18,7 @@ from .build_version_json import build_version_json_file
 
 def main(msgin: func.QueueMessage):
     msgerror = ""
-    mail_helper = MailHelper()
+    # mail_helper = MailHelper()
     environment = os.environ["Environment"]
 
     dsh = DataSetHelper()
@@ -73,10 +73,10 @@ def main(msgin: func.QueueMessage):
         function_end_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
         function_end_date = datetime.today().strftime("%d.%m.%Y")
 
-        mail_helper.send_message(
-            f"Automated data import completed on {function_end_datetime}" + msgin.get_body().decode("utf-8") + msgerror,
-            f"Data Import {environment} - {function_end_date} - Completed"
-        )
+        # mail_helper.send_message(
+        #     f"Automated data import completed on {function_end_datetime}" + msgin.get_body().decode("utf-8") + msgerror,
+        #     f"Data Import {environment} - {function_end_date} - Completed"
+        # )
 
         logging.info(
             f"CourseSearchBuilder successfully finished on {function_end_datetime}"
@@ -90,10 +90,10 @@ def main(msgin: func.QueueMessage):
         function_fail_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
         function_fail_date = datetime.today().strftime("%d.%m.%Y")
 
-        mail_helper.send_message(
-            f"Automated data import failed on {function_fail_datetime} at CourseSearchBuilder" + msgin.get_body().decode("utf-8") + msgerror,
-            f"Data Import {environment} - {function_fail_date} - Failed"
-        )
+        # mail_helper.send_message(
+        #     f"Automated data import failed on {function_fail_datetime} at CourseSearchBuilder" + msgin.get_body().decode("utf-8") + msgerror,
+        #     f"Data Import {environment} - {function_fail_date} - Failed"
+        # )
 
         logging.error(f"CourseSearchBuilder failed on {function_fail_datetime}")
         logging.error(traceback.format_exc())

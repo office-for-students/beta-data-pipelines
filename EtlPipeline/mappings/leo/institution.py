@@ -21,6 +21,7 @@ class LeoInstitutionMappings(BaseMappings):
             (f"{self.mapping_id}UNAVAILREASON", "unavail_reason"),
             (f'{self.mapping_id}POP', "pop"),
             (f'{self.mapping_id}AGG', "agg"),
+            (f'{self.mapping_id}AGGYEAR', "aggregation_year"),
             (f'{self.mapping_id}SBJ', "subject"),
             (f'{self.mapping_id}INSTLQ', "lq"),
             (f'{self.mapping_id}INSTMED', "med"),

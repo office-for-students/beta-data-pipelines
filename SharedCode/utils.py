@@ -3,6 +3,8 @@
 import html
 import os
 import uuid
+from typing import Dict
+
 
 import azure.cosmos.cosmos_client as cosmos_client
 
@@ -123,7 +125,7 @@ def get_courses_by_version(version):
     return course_list
 
 
-def get_english_welsh_item(key, lookup_table):
+def get_english_welsh_item(key, lookup_table: Dict):
     item = {}
     keyw = key + "W"
     if key in lookup_table:

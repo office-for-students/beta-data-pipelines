@@ -17,9 +17,9 @@ class Locations:
                 "LOCATION"
             ]
             lockey = (
-                f"{raw_location_data['LOCID']}{raw_location_data['UKPRN']}"
+                f"{raw_location_data.get('LOCID')}{raw_location_data['UKPRN']}"
             )
             self.lookup_dict[lockey] = raw_location_data
 
     def get_location_data_for_key(self, key):
-        return self.lookup_dict.get(key)
+        return self.lookup_dict.get(key, {})
