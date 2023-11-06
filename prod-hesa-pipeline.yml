@@ -140,4 +140,3 @@
         pipeline_response = urllib.request.urlopen(pipeline_request, timeout=120)
 
         print('Request sent!')
-
