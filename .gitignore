@@ -154,3 +154,5 @@ pyproject.toml
 
 *.dev.*
 test_course.xml
+
+.azure_config
