@@ -6,31 +6,20 @@ import logging
 import os
 from datetime import datetime
 
-import azure.functions as func
-
 from EtlPipeline import course_docs
-from SharedCode.blob_helper import BlobHelper
-from SharedCode.dataset_helper import DataSetHelper
-# from SharedCode.mail_helper import MailHelper
-"AzureCosmosDbDatabaseId"
+from legacy.services.dataset_service import DataSetService
+from legacy.services.blob import BlobService
 
-def main(msgin: func.QueueMessage, msgout: func.Out[str]):
-    """ Master ETL Pipeline - note that currently, the end-to-end ETL pipeline is
-    executed via this single Azure Function which calls other Python functions
-    embedded within the same deployment codebase (see imports above).
-    TO DO: Investigate if/how this pipeline can be broken down into individual
-    Azure Functions chained/integrated and orchestrated using Azure Data Factory
-    and/or Function App. """
 
-    # TODO: apw: Ensure that UseLocalTestXMLFile is set to false in local.settings.json before going live.
-    use_local_test_XML_file = os.environ.get('UseLocalTestXMLFile')
 
-    msgerror = ""
+def create_courses(
+        blob_service:BlobService,
+        hesa_container_name:str,
+        hesa_blob_name:str,
+        local_test_xml_file=None
+):
 
-    # mail_helper = MailHelper()
-    environment = os.environ["Environment"]
-
-    dsh = DataSetHelper()
+    dsh = DataSetService()
 
     try:
 
@@ -51,24 +40,29 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
         # correctly with large blobs. Tests showed this is not a limitation
         # with Funtions written in C#.
 
-        blob_helper = BlobHelper()
 
-        storage_container_name = os.environ["AzureStorageHesaContainerName"]
-        storage_blob_name = os.environ["AzureStorageHesaBlobName"]
 
-        if use_local_test_XML_file:
-            mock_xml_source_file = open(os.environ["LocalTestXMLFile"], "r")
+
+
+        if local_test_xml_file:
+            mock_xml_source_file = open(local_test_xml_file, "r")
             xml_string = mock_xml_source_file.read()
         else:
-            xml_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
+            xml_string = blob_service.get_str_file(hesa_container_name, hesa_blob_name)
 
         version = dsh.get_latest_version_number()
 
         """ LOADING - Parse XML and load enriched JSON docs to database """
 
         dsh.update_status("courses", "in progress")
-        "AzureCosmosDbDatabaseId", "AzureCosmosDbSubjectsCollectionId"
-        course_docs.load_course_docs(xml_string, version)
+
+        course_docs.load_course_docs(
+            xml_string,
+            version,
+            "AzureCosmosDbDatabaseId",
+            "AzureCosmosDbSubjectsCollectionId",
+            "AzureCosmosDbCoursesCollectionId"
+        )
         dsh.update_status("courses", "succeeded")
 
         function_end_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
@@ -77,7 +71,6 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
             f"EtlPipeline successfully finished on {function_end_datetime}"
         )
 
-        msgout.set(msgin.get_body().decode("utf-8") + msgerror)
 
     except Exception as e:
 

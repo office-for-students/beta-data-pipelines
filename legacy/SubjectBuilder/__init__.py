@@ -7,8 +7,8 @@ from datetime import datetime
 
 import azure.functions as func
 
-from ..SharedCode.dataset_helper import DataSetHelper
-from ..SharedCode.blob_helper import BlobHelper
+from ..services.dataset_helper import DataSetHelper
+from ..services.blob_helper import BlobHelper
 # from ..SharedCode.mail_helper import MailHelper
 
 from . import validate, database, exceptions

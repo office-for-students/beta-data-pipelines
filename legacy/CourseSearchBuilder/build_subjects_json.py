@@ -9,9 +9,9 @@ from CourseSearchBuilder.get_collections import get_collections
 from SharedCode.blob_helper import BlobHelper
 
 
-def build_subjects_json_file():
+def build_subjects_json_file(blob_service_client:BlobHelper):
     blob_helper = BlobHelper()
-    subjects_list = get_collections("AzureCosmosDbSubjectsCollectionId")
+    subjects_list = get_collections("AzureCosmosDbSubjectsCollectionId") #subjects
     subjects_file = io.StringIO()
 
     subjects = []
@@ -20,9 +20,9 @@ def build_subjects_json_file():
         subjects.append(subject_entry)
 
     subjects.sort(key=lambda x: x["english_name"])
-
     json.dump(subjects, subjects_file, indent=4)
     encoded_file = subjects_file.getvalue().encode('utf-8')
+
 
     storage_container_name = os.environ["AzureStorageJSONFilesContainerName"]
     storage_blob_name = os.environ["AzureStorageSubjectsJSONFileBlobName"]

@@ -20,21 +20,20 @@ from SharedCode.exceptions import DataSetTooEarlyError
 
 
 class DataSetCreator:
-    def __init__(self):
+    def __init__(self, test_mode=False):
         self.dsh = DataSetHelper()
+        self.test_mode = test_mode
 
     def load_new_dataset_doc(self):
         dataset_doc = self.get_next_dataset_doc()
 
-        # TODO: apw: Ensure that UseLocalTestXMLFile is set to false in local.settings.json before going live.
-        use_local_test_XML_file = os.environ.get('UseLocalTestXMLFile')
-        if not use_local_test_XML_file:
+        if not self.test_mode:
             if dataset_doc["version"] != 1:
                 if not self.has_enough_time_elaspsed_since_last_dataset_created():
                     raise DataSetTooEarlyError
 
         self.dsh.create_item(dataset_doc)
-        logging.info(f"Created new vertsion {dataset_doc['version']} DataSet")
+        logging.info(f"Created new version {dataset_doc['version']} DataSet")
 
     def get_next_dataset_doc(self):
         next_version_number = self.get_next_dataset_version_number()

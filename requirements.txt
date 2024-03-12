@@ -11,3 +11,5 @@ azure-core==1.29.4
 azure-cosmos==4.5.1
 azure-functions==1.17.0
 azure-storage-blob==12.9.0
+python-decouple==3.8
+sendgrid==6.10.0

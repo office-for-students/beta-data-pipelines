@@ -9,11 +9,9 @@ from SharedCode import exceptions
 class QualificationCourseEnricher:
     """Handles enriching courses with Qualification data"""
 
-    def __init__(self):
+    def __init__(self, storage_container_name, storage_blob_name):
         blob_helper = BlobHelper()
 
-        storage_container_name = os.environ["AzureStorageQualificationsContainerName"]
-        storage_blob_name = os.environ["AzureStorageQualificationsBlobName"]
 
         csv_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
 

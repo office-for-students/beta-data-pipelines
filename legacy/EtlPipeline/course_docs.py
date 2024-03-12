@@ -51,7 +51,7 @@ from SharedCode import utils
 from SharedCode.utils import get_english_welsh_item
 
 
-def load_course_docs(xml_string, version):
+def load_course_docs(xml_string, version, cosmos_id, cosmos_subjects_collection_id, cosmos_course_collection_id):
     """Parse HESA XML passed in and create JSON course docs in Cosmos DB."""
 
     cosmosdb_client = utils.get_cosmos_client()
@@ -64,16 +64,19 @@ def load_course_docs(xml_string, version):
     logging.info(
         "adding subject data into memory ahead of building course documents"
     )
-    subject_enricher = SubjectCourseEnricher(version)
+    subject_enricher = SubjectCourseEnricher(version, cosmos_id, cosmos_subjects_collection_id)
     g_subject_enricher = subject_enricher
 
     logging.info(
         "adding qualification data into memory ahead of building course documents"
     )
-    qualification_enricher = QualificationCourseEnricher()
+    storage_container_name = os.environ["AzureStorageQualificationsContainerName"]
+    storage_blob_name = os.environ["AzureStorageQualificationsBlobName"]
+
+    qualification_enricher = QualificationCourseEnricher(storage_container_name, storage_blob_name)
 
     collection_link = utils.get_collection_link(
-        "AzureCosmosDbDatabaseId", "AzureCosmosDbCoursesCollectionId"
+        "AzureCosmosDbDatabaseId", cosmos_course_collection_id
     )
 
     # Import the XML dataset

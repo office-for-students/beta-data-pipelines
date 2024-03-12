@@ -12,7 +12,7 @@ from SharedCode.dataset_helper import DataSetHelper
 from .institution_docs import InstitutionDocs
 
 
-def main(msgin: func.QueueMessage, msgout: func.Out[str]):
+def create_institutions():
     # TODO: apw: Ensure that UseLocalTestXMLFile is set to false in local.settings.json before going live.
     use_local_test_XML_file = os.environ.get('UseLocalTestXMLFile')
 

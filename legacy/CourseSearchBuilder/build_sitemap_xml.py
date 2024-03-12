@@ -21,8 +21,8 @@ def build_sitemap_xml() -> None:
     storage_container_name = os.environ["AzureStorageJSONFilesContainerName"]
     storage_blob_name = os.environ["AzureStorageInstitutionsSitemapsBlobName"]
     blob_helper.write_stream_file(
-        storage_container_name=storage_container_name,
-        storage_blob_name=storage_blob_name,
+        container_name=storage_container_name,
+        blob_name=storage_blob_name,
         encoded_file=xml_file.read().encode('utf-8')
     )
 

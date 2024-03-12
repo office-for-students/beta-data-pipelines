@@ -11,12 +11,12 @@ PARENTDIR = os.path.dirname(CURRENTDIR)
 sys.path.insert(0, CURRENTDIR)
 sys.path.insert(0, PARENTDIR)
 
-from SharedCode.utils import get_cosmos_client, get_collection_link
+from .utils import get_cosmos_client, get_collection_link
 
 
-class DataSetHelper:
+class DataSetService:
     def __init__(self):
-        logging.info("Init for DataSetHelper")
+        logging.info("Init for DataSetService")
         self.cosmos_client = get_cosmos_client()
         self.collection_link = get_collection_link(
             "AzureCosmosDbDatabaseId", "AzureCosmosDbDataSetCollectionId"
@@ -33,7 +33,7 @@ class DataSetHelper:
             dataset_doc["updated_at"] = updated_at
         self.cosmos_client.UpsertItem(self.collection_link, dataset_doc)
         logging.info(
-            f"DataSetHelper: updated '{item}' to '{value}' for "
+            f"DataSetService: updated '{item}' to '{value}' for "
             f"DataSet version {dataset_doc['version']}"
         )
 
