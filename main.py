@@ -6,19 +6,18 @@ from fastapi import FastAPI
 
 from legacy.CourseSearchBuilder.entry import build_search
 from legacy.CreateDataSet.entry import create_dataset as create_dataset_legacy
-from legacy.services.blob_helper import BlobHelper
-
 from legacy.CreateInst.entry import create_institutions
 from legacy.EtlPipeline.entry import create_courses
+from legacy.services.blob import BlobService
 from legacy.services.exceptions import DataSetTooEarlyError
 from legacy.services.exceptions import StopEtlPipelineErrorException
-from mail_helper import MailHelper
+from legacy.services.mail import MailService
 
 app = FastAPI()
-mail_helper = MailHelper(
+mail_helper = MailService(
     send_grid_api_key=config("SendGridAPIKey"),
-    to_emails=config("SendGridToEmailList"),
     from_email=config("SendGridFromEmail"),
+    to_emails=config("SendGridToEmailList"),
     enabled=True
 )
 
@@ -26,7 +25,7 @@ BLOB_ACCOUNT_NAME = config("BLOB_ACCOUNT_NAME")
 BLOB_ACCOUNT_KEY = config("BLOB_ACCOUNT_KEY")
 BLOB_AZURE_CONNECT_STRING = f"DefaultEndpointsProtocol=https;AccountName={BLOB_ACCOUNT_NAME};AccountKey={BLOB_ACCOUNT_KEY};EndpointSuffix=core.windows.net"
 
-BLOB_HELPER = BlobHelper(
+BLOB_SERVICE = BlobService(
     azure_storage_connection_string=BLOB_AZURE_CONNECT_STRING
 )
 
@@ -73,15 +72,14 @@ async def create_dataset():
     send_message(mail_helper, "Started", "Create Dataset")
     try:
         create_dataset_legacy(
-            blob_service=
-            BLOB_HELPER,
-            HESA_STORAGE_CONTAINER_NAME, # hesa-raw-xml-ingest
-            HESA_STORAGE_BLOB_NAME, # latest.xml.gz
+            blob_service=BLOB_SERVICE,
+            storage_container_name=HESA_STORAGE_CONTAINER_NAME,  # hesa-raw-xml-ingest
+            storage_blob_name=HESA_STORAGE_BLOB_NAME,  # latest.xml.gz
         )
         send_message(mail_helper, "Succeeded", "Create Dataset")
         logging.info("Create Dataset succeeded")
         return {"message": f"created dataset"}
-    except DataSetTooEarlyError:
+    except DataSetTooEarlyError as e:
         logging.info(f"Create Dataset failed {e}")
         send_message(mail_helper, "Failed", "Create Dataset", error_message=e)
     except StopEtlPipelineErrorException as e:
@@ -90,7 +88,6 @@ async def create_dataset():
     except Exception as e:
         logging.info(f"Create Dataset failed {e}")
         send_message(mail_helper, "Failed", "Create Dataset", error_message=e)
-
 
 
 @app.get("CreateInst/")
@@ -111,7 +108,7 @@ async def etl_pipeline():
     logging.info("Etl Pipeline started")
 
     create_courses(
-        blob_service=BLOB_HELPER,
+        blob_service=BLOB_SERVICE,
         hesa_container_name=HESA_STORAGE_CONTAINER_NAME,
         hesa_blob_name=HESA_STORAGE_BLOB_NAME
     )
