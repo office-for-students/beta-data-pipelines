@@ -1,12 +1,20 @@
 import gzip
 import io
+from datetime import datetime
 
 from azure.storage.blob import BlobServiceClient
 
 
 class BlobService:
-    def __init__(self, azure_storage_connection_string):
-        self.blob_service_client = BlobServiceClient.from_connection_string(azure_storage_connection_string)
+    def __init__(self, azure_storage_connection_string=None, blob=None):
+        self.blob_service_client = BlobServiceClient.from_connection_string(
+            azure_storage_connection_string) if azure_storage_connection_string else None
+        self.blob = blob
+
+    def get_destination_blob_name(self):
+        blob_filename = self.blob.name.split("/")[1]
+        datetime_str = datetime.today().strftime("%Y%m%d-%H%M%S")
+        return f"{datetime_str}-{blob_filename}"
 
     def get_str_file(self, container_name, blob_name):
         blob_client = self.blob_service_client.get_blob_client(container=container_name, blob=blob_name)
@@ -25,6 +33,6 @@ class BlobService:
 
         return file_string
 
-    def write_stream_file(self, container_name:str, blob_name:str, encoded_file):
+    def write_stream_file(self, container_name: str, blob_name: str, encoded_file):
         blob_client = self.blob_service_client.get_blob_client(container=container_name, blob=blob_name)
         blob_client.upload_blob(encoded_file, overwrite=True)

@@ -4,10 +4,10 @@ from sendgrid.helpers.mail import Mail
 
 class MailService:
     def __init__(self, send_grid_api_key, from_email, to_emails, enabled=True):
-        self.enabled = enabled # True if os.environ.get("SendGridEnabled", "") == "True" else False
-        self.send_grid = SendGridAPIClient(send_grid_api_key)#os.environ["SendGridAPIKey"])
-        self.from_email = from_email #(os.environ["SendGridFromEmail"], os.environ["SendGridFromName"])
-        self.to_emails = to_emails #os.environ["SendGridToEmailList"].split(";")
+        self.send_grid = SendGridAPIClient(send_grid_api_key)  # os.environ["SendGridAPIKey"])
+        self.from_email = from_email  # (os.environ["SendGridFromEmail"], os.environ["SendGridFromName"])
+        self.to_emails = to_emails  # os.environ["SendGridToEmailList"].split(";")
+        self.enabled = enabled  # True if os.environ.get("SendGridEnabled", "") == "True" else False
 
     def send_message(self, message, subject):
         if not self.enabled:
