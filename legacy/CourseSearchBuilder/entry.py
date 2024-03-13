@@ -1,16 +1,12 @@
-import os
 import logging
 import traceback
-
 from datetime import datetime
-from typing import Any
-from typing import Dict
 
-import azure.functions as func
+from decouple import config
 
-from SharedCode.dataset_helper import DataSetHelper
+from legacy.services import utils
+from legacy.services.dataset_service import DataSetService
 # from SharedCode.mail_helper import MailHelper
-from SharedCode import utils
 from . import search
 from .build_institutions_json import build_institutions_json_files
 from .build_sitemap_xml import build_sitemap_xml
@@ -18,8 +14,8 @@ from .build_subjects_json import build_subjects_json_file
 from .build_version_json import build_version_json_file
 
 
-def build_search():
-    dsh = DataSetHelper()
+def build_search() -> None:
+    dsh = DataSetService()
 
     try:
 
@@ -33,9 +29,9 @@ def build_search():
             f"CourseSearchBuilder function started on {function_start_datetime}"
         )
 
-        api_key = os.environ["SearchAPIKey"]
-        search_url = os.environ["SearchURL"]
-        api_version = os.environ["AzureSearchAPIVersion"]
+        api_key = config("SEARCH_API_KEY")
+        search_url = config("SEARCH_URL")
+        api_version = config("SEARCH_API_VERSION")
 
         version = dsh.get_latest_version_number()
 

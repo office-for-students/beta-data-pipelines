@@ -2,17 +2,18 @@
 
 import io
 import json
-import os
 import re
 from typing import Any
 from typing import Dict
 from typing import List
 
-from CourseSearchBuilder.get_collections import get_institutions
-from SharedCode.blob_helper import BlobHelper
+from decouple import config
+
+from legacy.CourseSearchBuilder.get_collections import get_institutions
+from legacy.services.blob import BlobService
 
 
-def build_institutions_json_files():
+def build_institutions_json_files() -> None:
     institution_list = get_institutions()
 
     generate_file(
@@ -22,7 +23,7 @@ def build_institutions_json_files():
         first_trading_name="first_trading_name",
         legal_name="legal_name",
         other_names="other_names",
-        blob_file="AzureStorageInstitutionsCYJSONFileBlobName"
+        blob_file="BLOB_INSTITUTIONS_JSON_FILE_BLOB_NAME_CY"
     )
     generate_file(
         institution_list=institution_list,
@@ -31,11 +32,11 @@ def build_institutions_json_files():
         first_trading_name="first_trading_name",
         legal_name="legal_name",
         other_names="other_names",
-        blob_file="AzureStorageInstitutionsENJSONFileBlobName"
+        blob_file="BLOB_INSTITUTIONS_JSON_FILE_BLOB_NAME_EN"
     )
 
 
-def not_already_in_list(name, existing):
+def not_already_in_list(name: str, existing: List[str]) -> bool:
     if name not in existing:
         existing.append(name)
         return True
@@ -50,8 +51,8 @@ def generate_file(
         legal_name: str,
         other_names: str,
         blob_file: str
-):
-    blob_helper = BlobHelper()
+) -> None:
+    blob_service = BlobService()
     institutions_file = io.StringIO()
     institutions = []
     for val in institution_list:
@@ -77,32 +78,33 @@ def generate_file(
     json.dump(final, institutions_file, indent=4)
     encoded_file = institutions_file.getvalue().encode('utf-8')
 
-    storage_container_name = os.environ["AzureStorageJSONFilesContainerName"]
-    storage_blob_name = os.environ[blob_file]
-    blob_helper.write_stream_file(storage_container_name, storage_blob_name, encoded_file)
+    storage_container_name = config("BLOB_JSON_FILES_CONTAINER_NAME")
+    storage_blob_name = config(blob_file)
+    blob_service.write_stream_file(storage_container_name, storage_blob_name, encoded_file)
     institutions_file.close()
 
 
-def get_inst_entry(name, first_trading_name, legal_name, other_names):
-    entry = {}
+def get_inst_entry(name: str, first_trading_name: str, legal_name: str, other_names: str) -> Dict[str, Any]:
     order_by_name = get_order_by_name(name)
     alphabet = order_by_name[0]
-    entry["alphabet"] = alphabet
-    entry["name"] = name
-    entry["first_trading_name"] = first_trading_name
-    entry["legal_name"] = legal_name
-    entry["other_names"] = other_names
-    entry["order_by_name"] = order_by_name
+    entry = {
+        "alphabet": alphabet,
+        "name": name,
+        "first_trading_name": first_trading_name,
+        "legal_name": legal_name,
+        "other_names": other_names,
+        "order_by_name": order_by_name
+    }
     return entry
 
 
-def get_order_by_name(name):
+def get_order_by_name(name: str) -> str:
     name = name.lower()
     name = remove_phrases_from_start(name)
     return name
 
 
-def remove_phrases_from_start(name):
+def remove_phrases_from_start(name: str) -> str:
     if re.search(r"^the university of ", name):
         name = re.sub(r"^the university of ", "", name)
     if re.search(r"^university of ", name):

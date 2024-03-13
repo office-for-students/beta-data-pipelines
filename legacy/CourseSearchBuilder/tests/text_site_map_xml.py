@@ -1,8 +1,12 @@
 import unittest
 from datetime import datetime
 
-from CourseSearchBuilder.build_sitemap_xml import build_course_details_url, build_institution_details_url, \
-    build_xml_string, build_param_lists, get_institution_params, get_course_params
+from legacy.CourseSearchBuilder.build_sitemap_xml import build_course_details_url
+from legacy.CourseSearchBuilder.build_sitemap_xml import build_institution_details_url
+from legacy.CourseSearchBuilder.build_sitemap_xml import build_param_lists
+from legacy.CourseSearchBuilder.build_sitemap_xml import build_xml_string
+from legacy.CourseSearchBuilder.build_sitemap_xml import get_course_params
+from legacy.CourseSearchBuilder.build_sitemap_xml import get_institution_params
 from test_course_search_models import get_json
 
 

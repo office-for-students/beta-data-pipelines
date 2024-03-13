@@ -1,14 +1,12 @@
-from SharedCode.blob_helper import BlobHelper
-from SharedCode.dataset_helper import DataSetHelper
-from SharedCode.utils import get_cosmos_client, get_collection_link
+from legacy.services.dataset_service import DataSetService
+from legacy.services.utils import get_collection_link
+from legacy.services.utils import get_cosmos_client
 
 
 def get_collections(cosmos_field_db_id):
-    version = DataSetHelper().get_latest_version_number()
+    version = DataSetService().get_latest_version_number()
     cosmos_db_client = get_cosmos_client()
-    collection_link = get_collection_link(
-        "AzureCosmosDbDatabaseId", cosmos_field_db_id
-    )
+    collection_link = get_collection_link(cosmos_field_db_id)
 
     query = f"SELECT * from c where c.version = {version}"
 

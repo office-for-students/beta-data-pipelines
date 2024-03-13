@@ -2,15 +2,20 @@ import io
 import os
 from datetime import datetime
 from io import StringIO
+from typing import List
+from typing import Tuple
 
-from CourseSearchBuilder.get_collections import get_institutions, get_collections
-from SharedCode.blob_helper import BlobHelper
+from decouple import config
+
+from legacy.CourseSearchBuilder.get_collections import get_collections
+from legacy.CourseSearchBuilder.get_collections import get_institutions
+from legacy.services.blob import BlobService
 
 base_url = "https://discoveruni.gov.uk"
 
 
 def build_sitemap_xml() -> None:
-    blob_helper = BlobHelper()
+    blob_service = BlobService()
     institution_list = get_institutions()
     course_list = get_collections("AzureCosmosDbCoursesCollectionId")
     institution_params, course_params = build_param_lists(institution_list, course_list)
@@ -18,22 +23,22 @@ def build_sitemap_xml() -> None:
             <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">"""
     xml_data = build_xml_string(institution_params + course_params, xml)
     xml_file: StringIO = io.StringIO(xml_data)
-    storage_container_name = os.environ["AzureStorageJSONFilesContainerName"]
-    storage_blob_name = os.environ["AzureStorageInstitutionsSitemapsBlobName"]
-    blob_helper.write_stream_file(
+    storage_container_name = config("BLOB_JSON_FILES_CONTAINER_NAME")
+    storage_blob_name = config("BLOB_INSTITUTIONS_SITEMAPS_JSON_FILE_BLOB_NAME")
+    blob_service.write_stream_file(
         container_name=storage_container_name,
         blob_name=storage_blob_name,
         encoded_file=xml_file.read().encode('utf-8')
     )
 
 
-def build_param_lists(institution_list: list, course_list: list) -> tuple:
+def build_param_lists(institution_list: List, course_list: List) -> Tuple:
     institution_params = get_institution_params(institution_list)
     course_params = get_course_params(course_list)
     return institution_params, course_params
 
 
-def get_institution_params(institution_list: list) -> list:
+def get_institution_params(institution_list: List) -> List:
     institution_params = list()
     for institution in institution_list:
         institution_id = institution.get("institution", {}).get("pub_ukprn")
@@ -41,7 +46,7 @@ def get_institution_params(institution_list: list) -> list:
     return institution_params
 
 
-def get_course_params(course_list: list) -> list:
+def get_course_params(course_list: List) -> List:
     course_params = list()
     for course in course_list:
         institution_id = course.get("institution_id")
@@ -51,7 +56,7 @@ def get_course_params(course_list: list) -> list:
     return course_params
 
 
-def build_xml_string(arg_list: tuple, xml: str) -> str:
+def build_xml_string(arg_list: Tuple, xml: str) -> str:
     today = datetime.strftime(datetime.today(), "%Y-%m-%d")
     centre_xml = """"""
     for args in arg_list:

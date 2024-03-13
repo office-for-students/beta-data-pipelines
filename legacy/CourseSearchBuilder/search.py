@@ -1,26 +1,28 @@
-import logging
-import requests
 import json
+import logging
 import os
+from typing import List
 
-from SharedCode import exceptions
+import requests
+
+from legacy.services import exceptions
 from . import models
 
 
-def build_index(url, api_key, api_version, version):
+def build_index(url, api_key, api_version, version) -> None:
     index = Index(url, api_key, api_version, version)
 
     index.delete_if_already_exists()
     index.create()
 
 
-def load_index(url, api_key, api_version, version, docs):
+def load_index(url, api_key, api_version, version, docs) -> None:
     load = Load(url, api_key, api_version, version, docs)
 
     load.course_documents()
 
 
-def build_synonyms(url, api_key, api_version):
+def build_synonyms(url, api_key, api_version) -> None:
     synonyms = SynonymMap(url, api_key, api_version)
 
     synonyms.update()
@@ -29,7 +31,7 @@ def build_synonyms(url, api_key, api_version):
 class Index:
     """Creates a new index"""
 
-    def __init__(self, url, api_key, api_version, version):
+    def __init__(self, url: str, api_key: str, api_version: str, version: int) -> None:
 
         self.query_string = "?api-version=" + api_version
         self.index_name = f"courses-{version}"
@@ -41,7 +43,7 @@ class Index:
             "odata": "verbose",
         }
 
-    def delete_if_already_exists(self):
+    def delete_if_already_exists(self) -> None:
 
         try:
             delete_url = self.url + "/indexes/" + self.index_name + self.query_string
@@ -69,7 +71,7 @@ class Index:
 
             raise exceptions.StopEtlPipelineErrorException
 
-    def create(self):
+    def create(self) -> None:
         self.get_index()
 
         try:
@@ -92,7 +94,7 @@ class Index:
 
             raise exceptions.StopEtlPipelineErrorException
 
-    def get_index(self):
+    def get_index(self) -> None:
         cwd = os.path.dirname(os.path.abspath(__file__))
         with open(os.path.join(cwd, "schemas/course.json")) as json_file:
             schema = json.load(json_file)
@@ -104,7 +106,7 @@ class Index:
 class Load:
     """Loads course documents into search index"""
 
-    def __init__(self, url, api_key, api_version, version, docs):
+    def __init__(self, url: str, api_key: str, api_version: str, version: int, docs: List) -> None:
 
         self.url = url
         self.headers = {
@@ -117,7 +119,7 @@ class Load:
 
         self.docs = docs
 
-    def course_documents(self):
+    def course_documents(self) -> None:
 
         number_of_docs = len(self.docs)
         logging.info(f"THERE ARE A TOTAL OF {number_of_docs} courses")
@@ -132,7 +134,6 @@ class Load:
             search_courses.append(search_course)
 
             if course_count % bulk_course_count == 0 or course_count == number_of_docs:
-
                 documents["value"] = search_courses
 
                 self.bulk_create_courses(documents)
@@ -146,15 +147,15 @@ class Load:
                 documents = {}
                 search_courses = []
 
-    def bulk_create_courses(self, documents):
+    def bulk_create_courses(self, documents) -> None:
 
         try:
             url = (
-                self.url
-                + "/indexes/"
-                + self.index_name
-                + "/docs/index"
-                + self.query_string
+                    self.url
+                    + "/indexes/"
+                    + self.index_name
+                    + "/docs/index"
+                    + self.query_string
             )
             logging.info(f"url: {url}")
             response = requests.post(url, headers=self.headers, json=documents)
@@ -178,7 +179,7 @@ class SynonymMap:
 
     # TODO review this code and tidy up where needed when time permits
 
-    def __init__(self, url, api_key, api_version):
+    def __init__(self, url, api_key, api_version) -> None:
 
         self.query_string = "?api-version=" + api_version
         self.synonym_name = "english-course-title"
@@ -186,12 +187,12 @@ class SynonymMap:
 
         self.headers = {"Content-Type": "application/json", "api-key": api_key}
 
-    def update(self):
+    def update(self) -> None:
         self.get_synonym()
 
         try:
             update_url = (
-                self.url + "/synonymmaps/" + self.synonym_name + self.query_string
+                    self.url + "/synonymmaps/" + self.synonym_name + self.query_string
             )
             response = requests.put(
                 update_url, headers=self.headers, json=self.course_synonym_schema
@@ -227,7 +228,7 @@ class SynonymMap:
 
             raise exceptions.StopEtlPipelineErrorException
 
-    def create(self):
+    def create(self) -> None:
         try:
             create_url = self.url + "/synonymmaps" + self.query_string
             response = requests.put(
@@ -248,7 +249,7 @@ class SynonymMap:
 
             raise exceptions.StopEtlPipelineErrorException
 
-    def get_synonym(self):
+    def get_synonym(self) -> None:
         cwd = os.path.dirname(os.path.abspath(__file__))
         with open(os.path.join(cwd, "schemas/course_synonym.json")) as json_file:
             schema = json.load(json_file)
@@ -257,7 +258,7 @@ class SynonymMap:
 
             self.course_synonym_schema = schema
 
-    def get_synonym_list(self):
+    def get_synonym_list(self) -> str:
         dentist_synonyms = "dentist, dentistry, endodontics, orthodontics, dentofacial orthopedics, oral medicine, pediatric dentistry, public health dentistry, prosthodontist, tooth doctor, dental surgeon, dental practitioner, hygenist, clinical dentistry, preclinical dentistry, pre clinical dentistry, pre-clinical dentistry => dentistry"
         midwidfery_synonyms = "obstetrics, obstetrical delivery, perinatology, fetology, feotology, tocology => midwifery"
         dental_nursing_synonyms = (

@@ -1,7 +1,9 @@
 import logging
+from typing import Any
+from typing import Dict
 
 
-def build_course_search_doc(course):
+def build_course_search_doc(course: Dict[str, Any]) -> Dict[str, Any]:
     try:
         sort_pub_ukprn_name = create_sortable_name(
             course["course"]["institution"]["pub_ukprn_name"]
@@ -80,8 +82,7 @@ def build_course_search_doc(course):
         raise
 
 
-def create_sortable_name(name):
-
+def create_sortable_name(name: str) -> str:
     # lowercase institution name
     sortable_name = name.lower()
 
@@ -101,7 +102,6 @@ def create_sortable_name(name):
 
 
 def build_locations(course):
-
     search_locations = []
     if "locations" in course:
 
@@ -133,7 +133,6 @@ def build_locations(course):
 
 
 def build_subjects(course):
-
     subjects = []
     if "subjects" in course:
         subjects = course["subjects"]
@@ -141,8 +140,7 @@ def build_subjects(course):
     return subjects
 
 
-def build_title(course):
-
+def build_title(course) -> Dict[str, Any]:
     search_title = {}
     if "title" in course:
         if "english" in course["title"]:
@@ -159,15 +157,14 @@ def build_title(course):
     return search_title
 
 
-def build_length_of_course(course):
-
+def build_length_of_course(course) -> Dict[str, Any]:
     try:
         search_length_of_course = {}
         if "length_of_course" in course:
 
             if (
-                "label" in course["length_of_course"]
-                and "code" in course["length_of_course"]
+                    "label" in course["length_of_course"]
+                    and "code" in course["length_of_course"]
             ):
                 code = str(course["length_of_course"]["code"])
                 search_length_of_course["code"] = code

@@ -1,26 +1,26 @@
 """Module for creating the instituions.json file used by CMS"""
 
-import json
 import io
-import os
+import json
 
-from SharedCode.dataset_helper import DataSetHelper
-from SharedCode.blob_helper import BlobHelper
+from decouple import config
+
+from legacy.services.blob import BlobService
+from legacy.services.dataset_service import DataSetService
 
 
-def build_version_json_file():
-    version = DataSetHelper().get_latest_version_number()
+def build_version_json_file() -> None:
+    version = DataSetService().get_latest_version_number()
 
-    blob_helper = BlobHelper()
+    blob_service = BlobService()
 
     version_file = io.StringIO()
 
-    version_json = {}
-    version_json["version"] = version
-
+    version_json = {"version": version}
 
     json.dump(version_json, version_file, indent=4)
     encoded_file = version_file.getvalue().encode('utf-8')
 
-    storage_container_name = os.environ["AzureStorageJSONFilesContainerName"]
-    blob_helper.write_stream_file(storage_container_name, "version.json", encoded_file)
+    storage_container_name = config("BLOB_JSON_FILES_CONTAINER_NAME")
+    storage_blob_name = config("BLOB_VERSION_JSON_FILE_BLOB_NAME")
+    blob_service.write_stream_file(storage_container_name, storage_blob_name, encoded_file)
