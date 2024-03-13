@@ -1,15 +1,11 @@
-import os
 import unittest
-from unittest import mock
 
 import defusedxml.ElementTree as ET
-import json
 
-from CreateInst.institution_docs import InstitutionDocs
-from CreateInst.institution_docs import get_country
-from CreateInst.institution_docs import get_total_number_of_courses
-from CreateInst.tests.test_helpers.inst_test_utils import get_first
-from CreateInst.tests.test_helpers.inst_test_utils import get_string
+from legacy.CreateInst.institution_docs import get_country
+from legacy.CreateInst.institution_docs import get_total_number_of_courses
+from legacy.CreateInst.tests.test_helpers.inst_test_utils import get_first
+from legacy.CreateInst.tests.test_helpers.inst_test_utils import get_string
 
 
 class TestStaticHelperFunctions(unittest.TestCase):
@@ -77,7 +73,6 @@ class TestStaticHelperFunctions(unittest.TestCase):
 #         expected_number_of_courses = 75
 #         number_of_courses = get_total_number_of_courses(institution)
 #         self.assertEqual(expected_number_of_courses, number_of_courses)
-
 
 
 # TODO: Rework the test below

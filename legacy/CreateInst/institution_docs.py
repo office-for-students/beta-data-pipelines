@@ -14,37 +14,41 @@ import os
 import re
 import sys
 import time
+from typing import Any
+from typing import Dict
+from typing import List
 
 import defusedxml.ElementTree as ET
 import xmltodict
+from decouple import config
 
-from CreateInst.locations import Locations
-from EtlPipeline import course_lookup_tables as lookup
-from SharedCode import exceptions
-from SharedCode.blob_helper import BlobHelper
-from SharedCode.utils import get_collection_link
-from SharedCode.utils import get_cosmos_client
-from SharedCode.utils import get_english_welsh_item
-from SharedCode.utils import get_uuid
-from SharedCode.utils import normalise_url
-from SharedCode.utils import sanitise_address_string
+from legacy.CreateInst.locations import Locations
+from legacy.EtlPipeline import course_lookup_tables
+from legacy.services import exceptions
+from legacy.services.blob import BlobService
+from legacy.services.utils import get_collection_link
+from legacy.services.utils import get_cosmos_client
+from legacy.services.utils import get_english_welsh_item
+from legacy.services.utils import get_uuid
+from legacy.services.utils import normalise_url
+from legacy.services.utils import sanitise_address_string
 
-CURRENTDIR = os.path.dirname(
+CURRENT_DIR = os.path.dirname(
     os.path.abspath(inspect.getfile(inspect.currentframe()))
 )
-PARENTDIR = os.path.dirname(CURRENTDIR)
-sys.path.insert(0, CURRENTDIR)
-sys.path.insert(0, PARENTDIR)
+PARENT_DIR = os.path.dirname(CURRENT_DIR)
+sys.path.insert(0, CURRENT_DIR)
+sys.path.insert(0, PARENT_DIR)
 
 
-def validate_headers(header: str, xml: str):
+def validate_headers(header: str, xml: str) -> bool:
     if xml.find(header):
         return True
     logging.error(f"{header} not found")
     return False
 
 
-def add_tef_data(raw_inst_data):
+def add_tef_data(raw_inst_data: Dict[str, Any]) -> Dict[str, Any]:
     return dict(
         report_ukprn=raw_inst_data["REPORT_UKPRN"],
         overall_rating=raw_inst_data["OVERALL_RATING"],
@@ -54,7 +58,7 @@ def add_tef_data(raw_inst_data):
     )
 
 
-def validate_column_headers(header_row):
+def validate_column_headers(header_row: str) -> bool:
     logging.info(f"Validating header row, headers: {header_row}")
     header_list = header_row.split(",")
 
@@ -75,21 +79,21 @@ def validate_column_headers(header_row):
     return valid
 
 
-def get_welsh_uni_names():
-    use_local_test_XML_file = os.environ.get('UseLocalTestXMLFile')
+def get_welsh_uni_names() -> List[str]:
+    use_local_test_XML_file = config("USE_LOCAL_TEST_XML_FILE")
 
     if use_local_test_XML_file:
-        et_test = ET.parse(os.environ["LocalTestXMLFile"])
+        et_test = ET.parse(config("LOCAL_TEST_XML_FILE"))
         uprnEl = et_test.find('UKPRN')
-        mock_xml_source_file = open(os.environ["LocalTestXMLFile"], "r")
+        mock_xml_source_file = open(config("LOCAL_TEST_XML_FILE"), "r")
         csv_string = mock_xml_source_file.read()
         welsh_uni_names = ["welsh one", "welsh two"]
         return welsh_uni_names
     else:
-        storage_container_name = os.environ["AzureStorageWelshUnisContainerName"]
-        storage_blob_name = os.environ["AzureStorageWelshUnisBlobName"]
-        blob_helper = BlobHelper()
-        csv_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
+        storage_container_name = config("BLOB_WELSH_UNIS_CONTAINER_NAME")
+        storage_blob_name = config("BLOB_WELSH_UNIS_BLOB_NAME")
+        blob_service = BlobService()
+        csv_string = blob_service.get_str_file(storage_container_name, storage_blob_name)
 
         _welsh_uni_names = []
         if csv_string:
@@ -106,7 +110,7 @@ def get_welsh_uni_names():
         return _welsh_uni_names
 
 
-def get_white_list():
+def get_white_list() -> List[str]:
     file_path = os.path.realpath(
         os.path.join(os.getcwd(), os.path.dirname(__file__))
     )
@@ -118,12 +122,12 @@ def get_white_list():
 
 
 class InstitutionProviderNameHandler:
-    def __init__(self, white_list, welsh_uni_names):
+    def __init__(self, white_list: List[str], welsh_uni_names: List[str]) -> None:
         self.white_list = white_list
         self.welsh_uni_names = welsh_uni_names
 
     @staticmethod
-    def title_case(s):
+    def title_case(s: str) -> str:
         s = re.sub(
             r"[A-Za-z]+('[A-Za-z]+)?",
             lambda word: word.group(0).capitalize(),
@@ -140,7 +144,7 @@ class InstitutionProviderNameHandler:
 
         return s
 
-    def get_welsh_uni_name(self, pub_ukprn, provider_name) -> str:
+    def get_welsh_uni_name(self, pub_ukprn: str, provider_name: str) -> str:
         rows = csv.reader(self.welsh_uni_names)
         for row in rows:
             if row[0] == pub_ukprn:
@@ -148,24 +152,24 @@ class InstitutionProviderNameHandler:
                 return row[1]
         return provider_name
 
-    def should_edit_title(self, title):
+    def should_edit_title(self, title: str) -> bool:
         if title not in self.white_list:
             return True
         return False
 
-    def presentable(self, provider_name):
+    def presentable(self, provider_name: str) -> str:
         if self.should_edit_title(provider_name):
             provider_name = self.title_case(provider_name)
         return provider_name
 
 
 class InstitutionDocs:
-    def __init__(self, xml_string, version):
+    def __init__(self, xml_string: str, version: int) -> None:
         self.version = version
         self.root = ET.fromstring(xml_string)
         self.location_lookup = Locations(self.root)
 
-    def get_institution_element(self, institution):
+    def get_institution_element(self, institution) -> Dict[str, Any]:
         raw_inst_data = xmltodict.parse(ET.tostring(institution))[
             "INSTITUTION"
         ]
@@ -244,7 +248,7 @@ class InstitutionDocs:
 
         return institution_element
 
-    def get_institution_doc(self, institution):
+    def get_institution_doc(self, institution: ET) -> Dict[str, Any]:
         raw_inst_data = xmltodict.parse(ET.tostring(institution))[
             "INSTITUTION"
         ]
@@ -261,13 +265,13 @@ class InstitutionDocs:
         }
         return institution_doc
 
-    def create_institution_docs(self):
+    def create_institution_docs(self) -> None:
         """Parse HESA XML and create JSON institution docs in Cosmos DB."""
 
         cosmosdb_client = get_cosmos_client()
 
         collection_link = get_collection_link(
-            "AzureCosmosDbDatabaseId", "AzureCosmosDbInstitutionsCollectionId"
+            "COSMOS_COLLECTION_INSTITUTIONS"
         )
 
         options = {"partitionKey": str(self.version)}
@@ -297,12 +301,12 @@ class InstitutionDocs:
         logging.info(f"Processed {institution_count} institutions")
 
 
-def get_country(code):
-    country = {"code": code, "name": lookup.country_code[code]}
+def get_country(code: str) -> Dict[str, Any]:
+    country = {"code": code, "name": course_lookup_tables.country_code[code]}
     return country
 
 
-def get_student_unions(location_lookup, institution):
+def get_student_unions(location_lookup: Dict[str, Any], institution: ET) -> List[Dict[str, Any]]:
     pubukprn = xmltodict.parse(ET.tostring(institution))["INSTITUTION"][
         "PUBUKPRN"
     ]
@@ -328,7 +332,7 @@ def get_student_unions(location_lookup, institution):
     return student_unions
 
 
-def get_student_union(location):
+def get_student_union(location: Dict[str, Any]) -> Dict[str, Any]:
     student_union = {}
     link = get_english_welsh_item("SUURL", location)
     if link:
@@ -339,5 +343,5 @@ def get_student_union(location):
     return student_union
 
 
-def get_total_number_of_courses(institution):
+def get_total_number_of_courses(institution: ET) -> int:
     return len(institution.findall("KISCOURSE"))

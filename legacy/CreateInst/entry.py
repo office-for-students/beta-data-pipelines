@@ -1,27 +1,26 @@
 #!/usr/bin/env python
 import logging
-import os
 from datetime import datetime
 
-import azure.functions as func
+from decouple import config
 
-from SharedCode import exceptions
-from SharedCode.blob_helper import BlobHelper
-from SharedCode.dataset_helper import DataSetHelper
+from legacy.services import exceptions
+from legacy.services.blob import BlobService
+from legacy.services.dataset_service import DataSetService
 # from SharedCode.mail_helper import MailHelper
 from .institution_docs import InstitutionDocs
 
 
 def create_institutions():
     # TODO: apw: Ensure that UseLocalTestXMLFile is set to false in local.settings.json before going live.
-    use_local_test_XML_file = os.environ.get('UseLocalTestXMLFile')
+    use_local_test_XML_file = config("USE_LOCAL_TEST_XML_FILE")
 
-    msgerror = ""
+    # msgerror = ""
 
     # mail_helper = MailHelper()
-    environment = os.environ["Environment"]
+    environment = config("ENVIRONMENT")
 
-    dsh = DataSetHelper()
+    dsh = DataSetService()
 
     try:
         logging.info(
@@ -40,16 +39,16 @@ def create_institutions():
         # where Functions written in Python do not get triggered # correctly with large blobs. Tests showed this is not a limitation
         # with Funtions written in C#.
 
-        blob_helper = BlobHelper()
+        blob_service = BlobService()
 
-        storage_container_name = os.environ["AzureStorageHesaContainerName"]
-        storage_blob_name = os.environ["AzureStorageHesaBlobName"]
+        storage_container_name = config("BLOB_HESA_CONTAINER_NAME")
+        storage_blob_name = config("BLOB_HESA_BLOB_NAME")
 
         if use_local_test_XML_file:
-            mock_xml_source_file = open(os.environ["LocalTestXMLFile"], "r")
+            mock_xml_source_file = open(config("LOCAL_TEST_XML_FILE"), "r")
             hesa_xml_file_as_string = mock_xml_source_file.read()
         else:
-            hesa_xml_file_as_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
+            hesa_xml_file_as_string = blob_service.get_str_file(storage_container_name, storage_blob_name)
 
         version = dsh.get_latest_version_number()
 
@@ -68,7 +67,7 @@ def create_institutions():
             f"CreateInst successfully finished on {function_end_datetime}"
         )
 
-        msgout.set(msgin.get_body().decode("utf-8") + msgerror)
+        # msgout.set(msgin.get_body().decode("utf-8") + msgerror)
 
     except exceptions.StopEtlPipelineWarningException:
 

@@ -1,9 +1,10 @@
 import unittest
-import defusedxml.ElementTree as ET
 
-from CreateInst.institution_docs import add_tef_data
-from CreateInst.tests.test_helpers.inst_test_utils import get_string
+import defusedxml.ElementTree as ET
 import xmltodict
+
+from legacy.CreateInst.institution_docs import add_tef_data
+from legacy.CreateInst.tests.test_helpers.inst_test_utils import get_string
 
 
 class TestTefData(unittest.TestCase):
@@ -23,14 +24,15 @@ class TestTefData(unittest.TestCase):
                 tef_outcome = institution_element["tef_outcome"]
                 self.assertEqual(tef_outcome["report_ukprn"], raw_inst_data["TEFOutcome"]["REPORT_UKPRN"])
                 self.assertEqual(tef_outcome["overall_rating"], raw_inst_data["TEFOutcome"]["OVERALL_RATING"])
-                self.assertEqual(tef_outcome["student_experience_rating"], raw_inst_data["TEFOutcome"]["STUDENT_EXPERIENCE_RATING"])
-                self.assertEqual(tef_outcome["student_outcomes_rating"], raw_inst_data["TEFOutcome"]["STUDENT_OUTCOMES_RATING"])
+                self.assertEqual(tef_outcome["student_experience_rating"],
+                                 raw_inst_data["TEFOutcome"]["STUDENT_EXPERIENCE_RATING"])
+                self.assertEqual(tef_outcome["student_outcomes_rating"],
+                                 raw_inst_data["TEFOutcome"]["STUDENT_OUTCOMES_RATING"])
                 self.assertEqual(tef_outcome["outcome_url"], raw_inst_data["TEFOutcome"]["OUTCOME_URL"])
             else:
                 self.assertIsNone(institution_element.get("tef_outcome"))
 
-
-    #COMMENT THIS TEST OUT BEFORE RUNNING PIPELINE - requires testing of whole xml file
+    # COMMENT THIS TEST OUT BEFORE RUNNING PIPELINE - requires testing of whole xml file
     # def test_total_tef(self):
     #     """test to check whether total number of institutions matches with xml - also writes output to json"""
     #     whole_xml = get_string("fixtures/latest.xml")
@@ -44,5 +46,3 @@ class TestTefData(unittest.TestCase):
     #     with open("inst_with_tef_json_dump.json", 'w') as json_file:
     #         json.dump(inst_list, json_file, indent=4)
     #     self.assertEqual(len(inst_list), self.total_institutions)
-
-

@@ -5,7 +5,7 @@ import xmltodict
 class Locations:
     """Provides lookup of location data based on UKPRN and LOCID"""
 
-    def __init__(self, root):
+    def __init__(self, root: ET) -> None:
         """Build the locations lookup table
 
         The key is comprised of two parts:
