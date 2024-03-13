@@ -2,16 +2,13 @@
 """ Creates a new DataSet for each new file we get from HESA """
 
 import logging
-import os
 from typing import Optional
-
-from SharedCode.exceptions import StopEtlPipelineErrorException
-from SharedCode.exceptions import XmlValidationError
 
 from . import validators
 from .dataset_creator import DataSetCreator
-from ..services.blob import BlobService
-
+from legacy.services.blob import BlobService
+from legacy.services.exceptions import StopEtlPipelineErrorException
+from legacy.services.exceptions import XmlValidationError
 
 
 def create_dataset(

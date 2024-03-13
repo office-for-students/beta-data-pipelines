@@ -2,10 +2,10 @@ import logging
 
 import defusedxml.ElementTree as ET
 
-from SharedCode.exceptions import XmlValidationError
+from legacy.services.exceptions import XmlValidationError
 
 
-def parse_xml_data(xml_string):
+def parse_xml_data(xml_string) -> None:
     """ Basic check that we can parse the received XML"""
 
     try:
