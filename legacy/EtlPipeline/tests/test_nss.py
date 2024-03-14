@@ -1,13 +1,14 @@
 """Test the course NSS statistics"""
+import csv
 import json
 import unittest
 
 import defusedxml.ElementTree as ET
 import xmltodict
-import csv
-from EtlPipeline.course_stats import Nss
-from EtlPipeline.course_stats import get_stats
-from EtlPipeline.tests.test_helpers.testing_utils import get_string
+
+from legacy.EtlPipeline.course_stats import Nss
+from legacy.EtlPipeline.course_stats import get_stats
+from legacy.EtlPipeline.tests.test_helpers.testing_utils import get_string
 
 
 class TestGetStats(unittest.TestCase):

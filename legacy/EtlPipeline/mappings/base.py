@@ -4,7 +4,8 @@ from typing import List
 from typing import Optional
 from typing import Tuple
 
-from EtlPipeline.utils import get_subject
+from legacy.EtlPipeline.subject_enricher import SubjectCourseEnricher
+from legacy.EtlPipeline.utils import get_subject
 
 
 class InvalidMappingId(Exception):
@@ -22,7 +23,7 @@ class BaseMappings:
     OPTIONS = []
     unavailable_keys = []
 
-    def __init__(self, mapping_id, subject_enricher):
+    def __init__(self, mapping_id: str, subject_enricher: SubjectCourseEnricher):
         if mapping_id not in self.OPTIONS:
             raise InvalidMappingId(f"Invalid mapping_id {mapping_id}for {self}")
 
@@ -68,14 +69,14 @@ class BaseMappings:
 
         return json_array
 
-    def per_course_unavailable(self, json_data):
+    def per_course_unavailable(self, json_data: Dict[str, Any]) -> None:
         pass
 
     def custom_unavailable(self, json_data: Dict[str, Any], elem: List, key: str) -> None:
         # Required if you have set unavailable_keys and that key is found during mapping
         raise NotImplemented
 
-    def final_unavailable(self, json_data):
+    def final_unavailable(self, json_data: Dict[str, Any]) -> None:
         # optional
         pass
 

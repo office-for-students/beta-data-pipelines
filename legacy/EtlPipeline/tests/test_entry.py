@@ -1,11 +1,10 @@
 import json
 import unittest
 
-import defusedxml.ElementTree as ET
 import xmltodict
 
-from course_stats import Entry
-from testing_utils import get_string
+from legacy.EtlPipeline.course_stats import Entry
+from legacy.EtlPipeline.tests.test_helpers.testing_utils import get_string
 
 
 class TestGetEntryKey(unittest.TestCase):

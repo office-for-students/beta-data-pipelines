@@ -1,22 +1,22 @@
 """Data extraction and transformation for statistical data."""
-
 import json
 import logging
 import os
+import unicodedata
 from collections import OrderedDict
-
+from typing import Any
+from typing import Dict
 from typing import List
 from typing import Tuple
+from typing import Union
 
-import unicodedata
-
-from EtlPipeline.validators import validate_agg
-from EtlPipeline.validators import validate_unavailable_reason_code
-from SharedCode.dataset_helper import DataSetHelper
-from SharedCode.utils import get_subject_lookups
+from .validators import validate_agg
+from .validators import validate_unavailable_reason_code
+from ..services.dataset_service import DataSetService
+from ..services.utils import get_subject_lookups
 
 
-def get_stats(raw_course_data, country_code=None):
+def get_stats(raw_course_data: Dict[str, Any], country_code=None) -> Dict[str, Any]:
     continuation = Continuation()
     employment = Employment()
     entry = Entry()
@@ -26,12 +26,13 @@ def get_stats(raw_course_data, country_code=None):
     nss = Nss()
     tariff = Tariff()
 
-    stats = {}
-    stats["continuation"] = continuation.get_stats(raw_course_data)
-    stats["employment"] = employment.get_stats(raw_course_data)
-    stats["entry"] = entry.get_stats(raw_course_data)
-    stats["job_type"] = job_type.get_stats(raw_course_data)
-    stats["job_list"] = job_list.get_stats(raw_course_data)
+    stats = {
+        "continuation": continuation.get_stats(raw_course_data),
+        "employment": employment.get_stats(raw_course_data),
+        "entry": entry.get_stats(raw_course_data),
+        "job_type": job_type.get_stats(raw_course_data),
+        "job_list": job_list.get_stats(raw_course_data)
+    }
     if need_nhs_nss(raw_course_data):
         stats["nhs_nss"] = nhs_nss.get_stats(raw_course_data)
     stats["nss"] = nss.get_stats(raw_course_data)
@@ -42,7 +43,7 @@ def get_stats(raw_course_data, country_code=None):
 class Continuation:
     """Extracts and transforms the Continuation course element"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.xml_element_key = "CONTINUATION"
         self.xml_subj_key = "CONTSBJ"
         self.xml_agg_key = "CONTAGG"
@@ -56,7 +57,7 @@ class Continuation:
         )
 
     @staticmethod
-    def get_key(xml_key):
+    def get_key(xml_key) -> str:
         return {
             "CONTUNAVAILREASON": "unavailable",
             "CONTPOP": "number_of_students",
@@ -71,14 +72,14 @@ class Continuation:
             "ULOWER": "lower",
         }.get(xml_key)
 
-    def get_stats(self, raw_course_data):
+    def get_stats(self, raw_course_data: Dict[str, Any]) -> List[Dict[str, Any]]:
         return self.shared_utils.get_json_list(raw_course_data, self.get_key)
 
 
 class Employment:
     """Extracts and transforms the Employment course element"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.xml_element_key = "EMPLOYMENT"
         self.xml_subj_key = "EMPSBJ"
         self.xml_agg_key = "EMPAGG"
@@ -92,7 +93,7 @@ class Employment:
         )
 
     @staticmethod
-    def get_key(xml_key):
+    def get_key(xml_key) -> str:
         return {
             "EMPUNAVAILREASON": "unavailable",
             "EMPPOP": "number_of_students",
@@ -112,14 +113,14 @@ class Employment:
             "WORK": "in_work",
         }.get(xml_key)
 
-    def get_stats(self, raw_course_data):
+    def get_stats(self, raw_course_data: Dict[str, Any]) -> List[Dict[str, Any]]:
         return self.shared_utils.get_json_list(raw_course_data, self.get_key)
 
 
 class Entry:
     """Extracts and transforms the Entry course element"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.xml_element_key = "ENTRY"
         self.xml_subj_key = "ENTSBJ"
         self.xml_agg_key = "ENTAGG"
@@ -133,7 +134,7 @@ class Entry:
         )
 
     @staticmethod
-    def get_key(xml_key):
+    def get_key(xml_key: str) -> str:
         return {
             "ENTUNAVAILREASON": "unavailable",
             "ENTPOP": "number_of_students",
@@ -153,14 +154,14 @@ class Entry:
             "OTHERHE": "another_higher_education_qualifications",
         }.get(xml_key)
 
-    def get_stats(self, raw_course_data):
+    def get_stats(self, raw_course_data: Dict[str, Any]) -> List[Dict[str, Any]]:
         return self.shared_utils.get_json_list(raw_course_data, self.get_key)
 
 
 class JobType:
     """Extracts and transforms the JobType course element"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.xml_element_key = "JOBTYPE"
         self.xml_subj_key = "JOBSBJ"
         self.xml_agg_key = "JOBAGG"
@@ -174,7 +175,7 @@ class JobType:
         )
 
     @staticmethod
-    def get_key(xml_key):
+    def get_key(xml_key: str) -> str:
         return {
             "JOBUNAVAILREASON": "unavailable",
             "JOBPOP": "number_of_students",
@@ -190,7 +191,7 @@ class JobType:
             "UNKWN": "unknown_professions",
         }.get(xml_key)
 
-    def get_stats(self, raw_course_data):
+    def get_stats(self, raw_course_data: Dict[str, Any]) -> List[Dict[str, Any]]:
         return self.shared_utils.get_json_list(raw_course_data, self.get_key)
 
 
@@ -223,7 +224,7 @@ class JobList:
 
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.xml_element_key = "COMMON"
         self.xml_subj_key = "COMSBJ"
         self.xml_agg_key = "COMAGG"
@@ -238,7 +239,7 @@ class JobList:
             "common_data_fields"
         )
 
-    def get_stats(self, raw_course_data):
+    def get_stats(self, raw_course_data: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Extracts and transforms the COMMON entries in a KISCOURSE"""
 
         json_elem_list = []
@@ -256,7 +257,7 @@ class JobList:
             json_elem_list.append(json_elem)
         return json_elem_list
 
-    def get_json_data(self, xml_elem):
+    def get_json_data(self, xml_elem: Dict[str, Any]) -> Dict[str, Any]:
         """Extracts and transforms a COMMON entry with data in a KISCOURSE"""
 
         lookup = self.data_fields_lookup
@@ -281,7 +282,7 @@ class JobList:
                         )
         return json_data
 
-    def get_list_field(self, xml_elem):
+    def get_list_field(self, xml_elem: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Extracts and transforms the JOBLIST entries in a COMMON element"""
 
         list_field = []
@@ -306,7 +307,7 @@ class Nss:
 
     NUM_QUESTIONS = 28
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.xml_element_key = "NSS"
 
         self.shared_utils = SharedUtils(
@@ -322,23 +323,24 @@ class Nss:
             f"Q{i}" for i in range(1, Nss.NUM_QUESTIONS + 1)
         ]
 
-    def is_question(self, xml_key):
+    def is_question(self, xml_key: str) -> bool:
         return xml_key in self.is_question_lookup
 
-    def get_question(self, xml_elem, xml_key):
-        question = {}
-        question["description"] = self.question_lookup.get(xml_key)
+    def get_question(self, xml_elem: Dict[str, Any], xml_key: str) -> Dict[str, Any]:
+        question = {
+            "description": self.question_lookup.get(xml_key)
+        }
         agree_or_strongly_agree = xml_elem.get(xml_key)
         if agree_or_strongly_agree and agree_or_strongly_agree.isdigit():
             question["agree_or_strongly_agree"] = int(xml_elem.get(xml_key))
         return question
 
-    def get_mandatory_field(self, xml_elem, xml_key):
+    def get_mandatory_field(self, xml_elem: Dict[str, Any], xml_key: str) -> Dict[str, Any]:
         if self.is_question(xml_key):
             return self.get_question(xml_elem, xml_key)
         return self.shared_utils.get_json_value(xml_elem.get(xml_key))
 
-    def get_json_data(self, xml_elem):
+    def get_json_data(self, xml_elem: Dict[str, Any]) -> Dict[str, Any]:
         lookup = self.nss_data_fields_lookup
         json_data = dict()
         for xml_key in lookup:
@@ -362,7 +364,7 @@ class Nss:
                         )
         return json_data
 
-    def get_stats(self, raw_course_data):
+    def get_stats(self, raw_course_data: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Returns a list of JSON objects (as dicts) for this stats element"""
 
         json_elem_list = []
@@ -398,12 +400,13 @@ class Nss:
             json_elem_list.append(json_elem)
         return json_elem_list
 
+
 class NhsNss:
     """Extracts and transforms the NHS NSS course element"""
 
     NUM_QUESTIONS = 6
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.xml_element_key = "NHSNSS"
 
         self.shared_utils = SharedUtils(
@@ -419,23 +422,24 @@ class NhsNss:
             f"NHSQ{i}" for i in range(1, NhsNss.NUM_QUESTIONS + 1)
         ]
 
-    def is_question(self, xml_key):
+    def is_question(self, xml_key: str) -> bool:
         return xml_key in self.is_question_lookup
 
-    def get_question(self, xml_elem, xml_key):
-        question = {}
-        question["description"] = self.question_description_lookup.get(xml_key)
+    def get_question(self, xml_elem: Dict[str, Any], xml_key: str) -> Dict[str, Any]:
+        question = {
+            "description": self.question_description_lookup.get(xml_key)
+        }
         agree_or_strongly_agree = xml_elem.get(xml_key)
         if agree_or_strongly_agree and agree_or_strongly_agree.isdigit():
             question["agree_or_strongly_agree"] = int(xml_elem.get(xml_key))
         return question
 
-    def get_mandatory_field(self, xml_elem, xml_key):
+    def get_mandatory_field(self, xml_elem: Dict[str, Any], xml_key: str) -> Union[Dict[str, Any], int]:
         if self.is_question(xml_key):
             return self.get_question(xml_elem, xml_key)
         return self.shared_utils.get_json_value(xml_elem.get(xml_key))
 
-    def get_json_data(self, xml_elem):
+    def get_json_data(self, xml_elem: Dict[str, Any]) -> Dict[str, Any]:
         lookup = self.data_fields_lookup
         json_data = dict()
         for xml_key in lookup:
@@ -456,7 +460,7 @@ class NhsNss:
                         )
         return json_data
 
-    def get_stats(self, raw_course_data):
+    def get_stats(self, raw_course_data: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Returns a list of JSON objects (as dicts) for this stats element"""
 
         json_elem_list = []
@@ -478,7 +482,7 @@ class NhsNss:
 class Tariff:
     """Extracts and transforms the Tariff course element"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.xml_element_key = "TARIFF"
         self.xml_subj_key = "TARSBJ"
         self.xml_agg_key = "TARAGG"
@@ -496,10 +500,10 @@ class Tariff:
             "tariff_description"
         )
 
-    def get_tariff_description(self, xml_key):
+    def get_tariff_description(self, xml_key: str) -> Dict[str, Any]:
         return self.tariff_description_lookup.get(xml_key)
 
-    def get_tariffs_list(self, xml_elem):
+    def get_tariffs_list(self, xml_elem: Dict[str, Any]) -> List[Dict[str, Any]]:
         return [
             {
                 "code": xml_key,
@@ -509,7 +513,7 @@ class Tariff:
             for xml_key in self.tariff_description_lookup.keys()
         ]
 
-    def get_json_data(self, xml_elem):
+    def get_json_data(self, xml_elem: Dict[str, Any]) -> Dict[str, Any]:
         json_data = {}
         agg_level = xml_elem.get(self.xml_agg_key)
         population = xml_elem.get(self.xml_pop_key)
@@ -523,7 +527,7 @@ class Tariff:
         json_data["tariffs"] = self.get_tariffs_list(xml_elem)
         return json_data
 
-    def get_stats(self, raw_course_data):
+    def get_stats(self, raw_course_data: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Returns a list of JSON objects (as dicts) for this stats element"""
 
         json_elem_list = []
@@ -547,7 +551,7 @@ class SharedUtils:
     """Functionality required by several stats related classes"""
 
     try:
-        dsh = DataSetHelper()  # TODO: warning presented as dsh wasn't assigned, but the catch all
+        dsh = DataSetService()  # TODO: warning presented as dsh wasn't assigned, but the catch all
         # Exception below would have masked this - leading to no subject codes.
         version = dsh.get_latest_version_number()
         subj_codes = get_subject_lookups(version)
@@ -563,7 +567,7 @@ class SharedUtils:
             xml_subj_key,
             xml_agg_key,
             xml_unavail_reason_key,
-    ):
+    ) -> None:
 
         self.xml_element_key = xml_element_key
         self.xml_subj_key = xml_subj_key
@@ -575,7 +579,7 @@ class SharedUtils:
         self.unavail_reason_welsh = self.get_lookup("unavail_reason_welsh")
 
     @staticmethod
-    def get_lookup(lookup_name):
+    def get_lookup(lookup_name: str) -> Dict[str, Any]:
         cwd = os.path.dirname(os.path.abspath(__file__))
         filename = {
             "subj_code_english": "subj_code_english.json",
@@ -598,25 +602,26 @@ class SharedUtils:
         with open(os.path.join(cwd, f"lookup_files/{filename}")) as infile:
             return json.load(infile)
 
-    def get_subject(self, xml_elem):
+    def get_subject(self, xml_elem: Dict[str, Any]) -> Dict[str, Any]:
         subj_key = xml_elem[self.xml_subj_key]
-        subject = {}
-        subject["code"] = subj_key
-        subject["english_label"] = self.get_english_sbj_label(subj_key)
-        subject["welsh_label"] = self.get_welsh_sbj_label(subj_key)
+        subject = {
+            "code": subj_key,
+            "english_label": self.get_english_sbj_label(subj_key),
+            "welsh_label": self.get_welsh_sbj_label(subj_key)
+        }
         return subject
 
-    def get_english_sbj_label(self, code):
+    def get_english_sbj_label(self, code: str) -> Dict[str, Any]:
         if SharedUtils.subj_codes != {}:
             return SharedUtils.subj_codes[code].get("english_name")
         return self.subj_code_english.get(code)
 
-    def get_welsh_sbj_label(self, code):
+    def get_welsh_sbj_label(self, code: str) -> Dict[str, Any]:
         if SharedUtils.subj_codes != {}:
             return SharedUtils.subj_codes[code].get("welsh_name")
         return self.subj_code_welsh.get(code)
 
-    def get_json_list(self, raw_course_data, get_key):
+    def get_json_list(self, raw_course_data: Dict[str, Any], get_key: str) -> List[Dict[str, Any]]:
         """Returns a list of JSON objects (as dicts) for this stats element"""
 
         json_elem_list = []
@@ -644,7 +649,7 @@ class SharedUtils:
                 json_elem_list.append(json_elem)
         return json_elem_list
 
-    def need_unavailable(self, xml_elem):
+    def need_unavailable(self, xml_elem: Dict[str, Any]) -> bool:
         if not self.has_data(xml_elem):
             return True
 
@@ -655,10 +660,10 @@ class SharedUtils:
             return True
         return False
 
-    def get_aggs_for_code(self, unavail_reason_code):
+    def get_aggs_for_code(self, unavail_reason_code: str) -> List[str]:
         return self.unavail_reason_english.get("data").get(unavail_reason_code).keys()
 
-    def get_unavailable(self, elem):
+    def get_unavailable(self, elem: Dict[str, Any]) -> Union[Dict[str, Any], str]:
         unavailable = {}
         subj_key = elem.get(self.xml_subj_key)
         agg = elem.get(self.xml_agg_key) if self.has_data(elem) else None
@@ -686,7 +691,13 @@ class SharedUtils:
         return unavailable
 
     def get_unavailable_reason_str(
-            self, unavail_reason_code, subj_key, agg, xml_elem, resp_rate_state, welsh=False
+            self,
+            unavail_reason_code: str,
+            subj_key: str,
+            agg: str,
+            xml_elem: Dict[str, Any],
+            resp_rate_state: str,
+            welsh: bool = False
     ):
         validate_unavailable_reason_code(unavail_reason_code)
         if welsh:
@@ -718,29 +729,29 @@ class SharedUtils:
             subj = self.get_unavailable_reason_subj_english(subj_key)
         return partial_reason_str.replace("[Subject]", subj)
 
-    def get_unavailable_reason_subj_english(self, sbj_key):
+    def get_unavailable_reason_subj_english(self, sbj_key: str) -> Dict[str, Any]:
         if sbj_key:
             return self.get_english_sbj_label(sbj_key)
         return self.unavail_reason_english["no-subject"]
 
-    def get_unavailable_reason_subj_welsh(self, sbj_key):
+    def get_unavailable_reason_subj_welsh(self, sbj_key: str) -> Dict[str, Any]:
         if sbj_key:
             return self.get_welsh_sbj_label(sbj_key)
         return self.unavail_reason_welsh["no-subject"]
 
     @staticmethod
-    def has_data(xml_elem):
+    def has_data(xml_elem: Dict[str, Any]) -> bool:
         """Returns True if the stats XML element has data otherwise False"""
         return xml_elem is not None and len(xml_elem) > 1
 
     @staticmethod
-    def get_json_value(xml_value):
+    def get_json_value(xml_value: str) -> int:
         if xml_value and xml_value.isdigit():
             xml_value = int(xml_value)
         return xml_value
 
     @staticmethod
-    def get_raw_list(data, element_key):
+    def get_raw_list(data: Dict[str, Any], element_key: str) -> Union[List[Dict[str, Any]], str]:
         """If value is a dict, return in list, otherwise return value"""
         if isinstance(data.get(element_key), dict):
             return [data.get(element_key)]
@@ -755,7 +766,7 @@ def need_nhs_nss(course):
 
 
 # apw for unavail messages
-def get_earnings_unavail_text(inst_or_sect, data_source, key_level_3) -> Tuple[str, str]:
+def get_earnings_unavail_text(inst_or_sect: str, data_source: str, key_level_3: str) -> Tuple[str, str]:
     """Returns the relevant unavail reason text in English and Welsh"""
 
     shared_utils = SharedUtils(
@@ -776,4 +787,4 @@ def get_earnings_unavail_text(inst_or_sect, data_source, key_level_3) -> Tuple[s
     unavail_text_welsh = earnings_unavail_reason_lookup_welsh[inst_or_sect][data_source][key_level_3]
 
     return unicodedata.normalize("NFKD", unavail_text_english), \
-           unicodedata.normalize("NFKD", unavail_text_welsh)
+        unicodedata.normalize("NFKD", unavail_text_welsh)

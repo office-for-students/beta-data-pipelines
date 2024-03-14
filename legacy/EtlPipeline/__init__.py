@@ -3,16 +3,18 @@
 """ EtlPipeline: Execute the ETL pipeline based on a message queue trigger """
 
 import logging
-import os
 from datetime import datetime
 
 import azure.functions as func
+from decouple import config
 
-from EtlPipeline import course_docs
-from SharedCode.blob_helper import BlobHelper
-from SharedCode.dataset_helper import DataSetHelper
+from legacy.EtlPipeline import course_docs
+from legacy.services.blob import BlobService
+from legacy.services.dataset_service import DataSetService
+
+
 # from SharedCode.mail_helper import MailHelper
-"AzureCosmosDbDatabaseId"
+# "AzureCosmosDbDatabaseId"
 
 def main(msgin: func.QueueMessage, msgout: func.Out[str]):
     """ Master ETL Pipeline - note that currently, the end-to-end ETL pipeline is
@@ -23,14 +25,14 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
     and/or Function App. """
 
     # TODO: apw: Ensure that UseLocalTestXMLFile is set to false in local.settings.json before going live.
-    use_local_test_XML_file = os.environ.get('UseLocalTestXMLFile')
+    use_local_test_XML_file = config("USE_LOCAL_TEST_XML_FILE")
 
     msgerror = ""
 
     # mail_helper = MailHelper()
-    environment = os.environ["Environment"]
+    environment = config("ENVIRONMENT")
 
-    dsh = DataSetHelper()
+    dsh = DataSetService()
 
     try:
 
@@ -51,13 +53,13 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
         # correctly with large blobs. Tests showed this is not a limitation
         # with Funtions written in C#.
 
-        blob_helper = BlobHelper()
+        blob_helper = BlobService()
 
-        storage_container_name = os.environ["AzureStorageHesaContainerName"]
-        storage_blob_name = os.environ["AzureStorageHesaBlobName"]
+        storage_container_name = config("BLOB_HESA_CONTAINER_NAME")
+        storage_blob_name = config("BLOB_HESA_BLOB_NAME")
 
         if use_local_test_XML_file:
-            mock_xml_source_file = open(os.environ["LocalTestXMLFile"], "r")
+            mock_xml_source_file = open(config("LOCAL_TEST_XML_FILE"), "r")
             xml_string = mock_xml_source_file.read()
         else:
             xml_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
@@ -67,7 +69,7 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
         """ LOADING - Parse XML and load enriched JSON docs to database """
 
         dsh.update_status("courses", "in progress")
-        "AzureCosmosDbDatabaseId", "AzureCosmosDbSubjectsCollectionId"
+        # "AzureCosmosDbDatabaseId", "AzureCosmosDbSubjectsCollectionId"
         course_docs.load_course_docs(xml_string, version)
         dsh.update_status("courses", "succeeded")
 

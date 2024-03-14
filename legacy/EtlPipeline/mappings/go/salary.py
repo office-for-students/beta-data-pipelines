@@ -1,15 +1,18 @@
+from typing import Any
+from typing import Dict
 from typing import List
 from typing import Tuple
 
-from EtlPipeline.course_stats import get_earnings_unavail_text
-from EtlPipeline.mappings.base import BaseMappings
+from legacy.EtlPipeline.course_stats import get_earnings_unavail_text
+from legacy.EtlPipeline.mappings.base import BaseMappings
+from legacy.EtlPipeline.subject_enricher import SubjectCourseEnricher
 
 
 class GoSalaryMappings(BaseMappings):
     OPTIONS = ["GO"]
     unavailable_keys = []
 
-    def __init__(self, mapping_id, subject_enricher):
+    def __init__(self, mapping_id: str, subject_enricher: SubjectCourseEnricher):
         super().__init__(mapping_id=mapping_id, subject_enricher=subject_enricher)
 
     def get_mappings(self) -> List[Tuple[str, str]]:
@@ -44,7 +47,7 @@ class GoSalaryMappings(BaseMappings):
             (f'{self.mapping_id}SECRESP_NI', "resp_ni"),
         ]
 
-    def per_course_unavailable(self, json_data):
+    def per_course_unavailable(self, json_data: Dict[str, Any]) -> None:
         json_data["unavail_text_region_not_exists_english"], json_data["unavail_text_region_not_exists_welsh"] = \
             get_earnings_unavail_text("sector", "go", "region_not_exists")
         json_data["unavail_text_region_not_nation_english"], json_data["unavail_text_region_not_nation_welsh"] = \

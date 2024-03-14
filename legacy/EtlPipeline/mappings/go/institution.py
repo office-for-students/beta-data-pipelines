@@ -3,9 +3,9 @@ from typing import Dict
 from typing import List
 from typing import Tuple
 
-from EtlPipeline.course_stats import get_earnings_unavail_text
-from EtlPipeline.mappings.base import BaseMappings
-from EtlPipeline.utils import get_earnings_agg_unavail_messages
+from legacy.EtlPipeline.course_stats import get_earnings_unavail_text
+from legacy.EtlPipeline.mappings.base import BaseMappings
+from legacy.EtlPipeline.utils import get_earnings_agg_unavail_messages
 
 
 class GoInstitutionMappings(BaseMappings):
@@ -38,7 +38,7 @@ class GoInstitutionMappings(BaseMappings):
             json_data["unavail_reason"]
         )
 
-    def final_unavailable(self, json_data):
+    def final_unavailable(self, json_data: Dict[str, Any]) -> None:
         if 'agg' in json_data and 'subject' in json_data:
             json_data["earnings_agg_unavail_message"] = get_earnings_agg_unavail_messages(
                 json_data["agg"],

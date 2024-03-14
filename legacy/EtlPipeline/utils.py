@@ -1,9 +1,14 @@
-from EtlPipeline.course_stats import SharedUtils
+from typing import Any
+from typing import Dict
+from typing import Union
+
+from legacy.EtlPipeline.stats.sharedutils import SharedUtils
+from legacy.EtlPipeline.subject_enricher import SubjectCourseEnricher
 
 
 # TODO: **House-keeping** g_subject_enricher review why this is setup this way
 
-def get_subject(subject_code, subject_enricher):
+def get_subject(subject_code: str, subject_enricher: SubjectCourseEnricher):
     subject = {
         "code": subject_code,
         "english_label": subject_enricher.subject_lookups[subject_code]["english_name"],
@@ -13,7 +18,12 @@ def get_subject(subject_code, subject_enricher):
     return subject
 
 
-def get_go_work_unavail_messages(xml_element_key, xml_agg_key, xml_unavail_reason_key, raw_data_element):
+def get_go_work_unavail_messages(
+        xml_element_key: str,
+        xml_agg_key: str,
+        xml_unavail_reason_key: str,
+        raw_data_element: Dict[str, Any]
+) -> Union[Dict[str, Any], str]:
     shared_utils = SharedUtils(
         xml_element_key=xml_element_key,
         xml_subj_key="GOWORKSBJ",
@@ -23,7 +33,7 @@ def get_go_work_unavail_messages(xml_element_key, xml_agg_key, xml_unavail_reaso
     return shared_utils.get_unavailable(raw_data_element)
 
 
-def get_earnings_agg_unavail_messages(agg_value, subject):
+def get_earnings_agg_unavail_messages(agg_value: str, subject: Dict[str, Any]) -> Union[Dict[str, Any], str]:
     earnings_agg_unavail_messages = {}
 
     if agg_value in ['21', '22']:

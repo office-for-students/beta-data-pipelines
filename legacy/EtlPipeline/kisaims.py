@@ -1,3 +1,6 @@
+from typing import Any
+from typing import Dict
+
 import xmltodict
 import defusedxml.ElementTree as ET
 
@@ -5,7 +8,7 @@ import defusedxml.ElementTree as ET
 class KisAims:
     """Provides lookup of raw kisaim label based on KISAIMCODE"""
 
-    def __init__(self, root):
+    def __init__(self, root: ET) -> None:
         """Build the KisAim lookup table
 
         Locations are unique on KISAIMCODE
@@ -17,5 +20,5 @@ class KisAims:
             key = f"{raw_kisaim_data['KISAIMCODE']}"
             self.lookup_dict[key] = raw_kisaim_data["KISAIMLABEL"]
 
-    def get_kisaim_label_for_key(self, key):
+    def get_kisaim_label_for_key(self, key: str) -> str:
         return self.lookup_dict.get(key)

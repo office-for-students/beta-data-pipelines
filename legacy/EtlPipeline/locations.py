@@ -1,3 +1,6 @@
+from typing import Any
+from typing import Dict
+
 import xmltodict
 import defusedxml.ElementTree as ET
 
@@ -5,7 +8,7 @@ import defusedxml.ElementTree as ET
 class Locations:
     """Provides lookup of raw location data based on UKPRN and LOCID"""
 
-    def __init__(self, root):
+    def __init__(self, root: ET) -> None:
         """Build the locations lookup table
 
         Locations are unique on UKPRN and LOCID
@@ -21,5 +24,5 @@ class Locations:
             )
             self.lookup_dict[lockey] = raw_location_data
 
-    def get_location_data_for_key(self, key):
+    def get_location_data_for_key(self, key: str) -> Dict[str, Any]:
         return self.lookup_dict.get(key, {})

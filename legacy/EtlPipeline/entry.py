@@ -3,22 +3,19 @@
 """ EtlPipeline: Execute the ETL pipeline based on a message queue trigger """
 
 import logging
-import os
 from datetime import datetime
 
-from EtlPipeline import course_docs
-from legacy.services.dataset_service import DataSetService
+from legacy.EtlPipeline import course_docs
 from legacy.services.blob import BlobService
-
+from legacy.services.dataset_service import DataSetService
 
 
 def create_courses(
-        blob_service:BlobService,
-        hesa_container_name:str,
-        hesa_blob_name:str,
+        blob_service: BlobService,
+        hesa_container_name: str,
+        hesa_blob_name: str,
         local_test_xml_file=None
-):
-
+) -> None:
     dsh = DataSetService()
 
     try:
@@ -40,10 +37,6 @@ def create_courses(
         # correctly with large blobs. Tests showed this is not a limitation
         # with Funtions written in C#.
 
-
-
-
-
         if local_test_xml_file:
             mock_xml_source_file = open(local_test_xml_file, "r")
             xml_string = mock_xml_source_file.read()
@@ -59,9 +52,9 @@ def create_courses(
         course_docs.load_course_docs(
             xml_string,
             version,
-            "AzureCosmosDbDatabaseId",
-            "AzureCosmosDbSubjectsCollectionId",
-            "AzureCosmosDbCoursesCollectionId"
+            "COSMOS_DATABASE_ID",
+            "COSMOS_COLLECTION_SUBJECTS",
+            "COSMOS_COLLECTION_COURSES"
         )
         dsh.update_status("courses", "succeeded")
 
@@ -70,7 +63,6 @@ def create_courses(
         logging.info(
             f"EtlPipeline successfully finished on {function_end_datetime}"
         )
-
 
     except Exception as e:
 

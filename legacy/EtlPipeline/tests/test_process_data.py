@@ -3,15 +3,14 @@ import unittest
 
 import defusedxml.ElementTree as ET
 import xmltodict
-
-from EtlPipeline.course_docs import get_go_inst_json
-from EtlPipeline.course_docs import get_go_sector_json
-from EtlPipeline.course_docs import process_stats
-from EtlPipeline.sector_salaries import GOSectorSalaries
-from EtlPipeline.sector_salaries import LEO3SectorSalaries
-from EtlPipeline.sector_salaries import LEO5SectorSalaries
-from EtlPipeline.tests.test_helpers.testing_utils import get_string
 from unittest import mock
+
+from legacy.EtlPipeline.course_docs import get_go_inst_json
+from legacy.EtlPipeline.course_docs import get_go_sector_json
+from legacy.EtlPipeline.sector_salaries import GOSectorSalaries
+from legacy.EtlPipeline.sector_salaries import LEO3SectorSalaries
+from legacy.EtlPipeline.sector_salaries import LEO5SectorSalaries
+from legacy.EtlPipeline.tests.test_helpers.testing_utils import get_string
 
 
 class TestProcessData(unittest.TestCase):

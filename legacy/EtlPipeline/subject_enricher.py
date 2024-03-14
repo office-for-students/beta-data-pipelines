@@ -1,21 +1,23 @@
-import logging
+from typing import Any
+from typing import Dict
+from typing import List
 
-from SharedCode import utils
+from legacy.services import utils
 
 
 class SubjectCourseEnricher:
     """Handles enriching courses with UKRLP data"""
 
-    def __init__(self, version, cosmos_id, collection_id):
-        self.subject_lookups = utils.get_subject_lookups(version, cosmos_id, collection_id)
+    def __init__(self, version: int) -> None:
+        self.subject_lookups = utils.get_subject_lookups(version)
 
-    def enrich_course(self, course):
+    def enrich_course(self, course: Dict[str, Any]) -> None:
         """Takes a course and enriches subject object with subject names"""
 
         subjects = course["course"]["subjects"]
         course["course"]["subjects"] = self.get_subjects(subjects)
 
-    def get_subjects(self, subject_codes):
+    def get_subjects(self, subject_codes: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """Returns a subject object containing code, english_name, welsh_name and level"""
 
         subjects = []

@@ -3,15 +3,16 @@ from typing import Dict
 from typing import List
 from typing import Tuple
 
-from EtlPipeline.mappings.base import BaseMappings
-from EtlPipeline.utils import get_go_work_unavail_messages
+from legacy.EtlPipeline.mappings.base import BaseMappings
+from legacy.EtlPipeline.subject_enricher import SubjectCourseEnricher
+from legacy.EtlPipeline.utils import get_go_work_unavail_messages
 
 
 class GoVoiceMappings(BaseMappings):
     OPTIONS = ["GO"]
     unavailable_keys = ["unavailable"]
 
-    def __init__(self, mapping_id, subject_enricher):
+    def __init__(self, mapping_id: str, subject_enricher: SubjectCourseEnricher):
         super().__init__(mapping_id=mapping_id, subject_enricher=subject_enricher)
 
     def get_mappings(self) -> List[Tuple[str, str]]:

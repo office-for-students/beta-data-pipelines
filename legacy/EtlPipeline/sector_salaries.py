@@ -1,11 +1,14 @@
-import xmltodict
+from typing import Any
+from typing import Dict
+
 import defusedxml.ElementTree as ET
+import xmltodict
 
 
 class SectorSalaries:
     """Provides lookup of raw sector salary data based on GO- LEO3- LEO5- -SECSBJ"""
 
-    def __init__(self, root, sector_type):
+    def __init__(self, root: ET, sector_type: str) -> None:
         """Build the sector salaries lookup table
 
         Sector salaries are unique on -SECSBJ
@@ -29,26 +32,26 @@ class SectorSalaries:
             )
             self.lookup_dict[sector_salary_key] = raw_sector_salary_data
 
-    def get_sector_salaries_data_for_key(self, key):
+    def get_sector_salaries_data_for_key(self, key: str) -> Dict[str, Any]:
         return self.lookup_dict.get(key)
 
 
 class GOSectorSalaries(SectorSalaries):
 
-    def __init__(self, root):
+    def __init__(self, root: ET) -> None:
         self.geo_sector_salary_type = 'GO'
         super().__init__(root, self.geo_sector_salary_type)
 
 
 class LEO3SectorSalaries(SectorSalaries):
 
-    def __init__(self, root):
+    def __init__(self, root: ET) -> None:
         self.leo3_sector_salary_type = 'LEO3'
         super().__init__(root, self.leo3_sector_salary_type)
 
 
 class LEO5SectorSalaries(SectorSalaries):
 
-    def __init__(self, root):
+    def __init__(self, root: ET) -> None:
         self.leo5_sector_salary_type = 'LEO5'
         super().__init__(root, self.leo5_sector_salary_type)

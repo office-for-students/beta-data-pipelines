@@ -1,7 +1,7 @@
 import unittest
 from unittest import mock
 
-import ukrlp_enricher
+from legacy.EtlPipeline import ukrlp_enricher
 
 TEST_LOOKUP = {
     "10002863": {

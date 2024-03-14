@@ -1,6 +1,6 @@
 import unittest
 
-from EtlPipeline.mappings.base import BaseMappings
+from legacy.EtlPipeline.mappings.base import BaseMappings
 
 
 class TestMappings(unittest.TestCase):

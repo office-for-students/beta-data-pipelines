@@ -1,12 +1,10 @@
 import json
 import unittest
 
-import defusedxml.ElementTree as ET
 import xmltodict
 
-from unittest import mock
-from course_stats import Continuation
-from testing_utils import get_string
+from legacy.EtlPipeline.course_stats import Continuation
+from legacy.EtlPipeline.tests.test_helpers.testing_utils import get_string
 
 
 class TestGetContinuationKey(unittest.TestCase):
