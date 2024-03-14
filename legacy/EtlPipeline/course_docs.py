@@ -34,7 +34,7 @@ from legacy.EtlPipeline.mappings.go.voice import GoVoiceMappings
 from legacy.EtlPipeline.mappings.leo.institution import LeoInstitutionMappings
 from legacy.EtlPipeline.mappings.leo.sector import LeoSectorMappings
 from legacy.EtlPipeline.sector_salaries import SectorSalaries
-from legacy.EtlPipeline.stats.sharedutils import SharedUtils
+from legacy.EtlPipeline.stats.shared_utils import SharedUtils
 from legacy.services import utils
 from legacy.services.utils import get_english_welsh_item
 from locations import Locations
