@@ -80,12 +80,12 @@ def validate_column_headers(header_row: str) -> bool:
 
 
 def get_welsh_uni_names() -> List[str]:
-    use_local_test_XML_file = config("USE_LOCAL_TEST_XML_FILE")
+    use_local_test_XML_file = config("XML_USE_LOCAL_TEST_XML_FILE")
 
     if use_local_test_XML_file:
-        et_test = ET.parse(config("LOCAL_TEST_XML_FILE"))
+        et_test = ET.parse(config("XML_LOCAL_TEST_XML_FILE"))
         uprnEl = et_test.find('UKPRN')
-        mock_xml_source_file = open(config("LOCAL_TEST_XML_FILE"), "r")
+        mock_xml_source_file = open(config("XML_LOCAL_TEST_XML_FILE"), "r")
         csv_string = mock_xml_source_file.read()
         welsh_uni_names = ["welsh one", "welsh two"]
         return welsh_uni_names

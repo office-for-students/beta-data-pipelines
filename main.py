@@ -34,7 +34,7 @@ HESA_STORAGE_BLOB_NAME = config("BLOB_HESA_BLOB_NAME")
 
 # Local test xml file is to be used for testing the pipeline locally
 # defaults to None, as in production this will not be set
-LOCAL_TEST_XML_FILE = config("LOCAL_TEST_XML_FILE", default=None)
+LOCAL_TEST_XML_FILE = config("XML_LOCAL_TEST_XML_FILE", default=None)
 
 ENVIRONMENT = config("Environment")  # i.e. dev, pre-prod or prod
 STORAGE_URL = config("StorageUrl")

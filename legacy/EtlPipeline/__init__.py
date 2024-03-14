@@ -25,7 +25,7 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
     and/or Function App. """
 
     # TODO: apw: Ensure that UseLocalTestXMLFile is set to false in local.settings.json before going live.
-    use_local_test_XML_file = config("USE_LOCAL_TEST_XML_FILE")
+    use_local_test_XML_file = config("XML_USE_LOCAL_TEST_XML_FILE")
 
     msgerror = ""
 
@@ -59,7 +59,7 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
         storage_blob_name = config("BLOB_HESA_BLOB_NAME")
 
         if use_local_test_XML_file:
-            mock_xml_source_file = open(config("LOCAL_TEST_XML_FILE"), "r")
+            mock_xml_source_file = open(config("XML_LOCAL_TEST_XML_FILE"), "r")
             xml_string = mock_xml_source_file.read()
         else:
             xml_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
