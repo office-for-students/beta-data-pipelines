@@ -2,7 +2,7 @@ from typing import Any
 from typing import Dict
 from typing import Union
 
-from legacy.EtlPipeline.stats.sharedutils import SharedUtils
+from legacy.EtlPipeline.stats.shared_utils import SharedUtils
 from legacy.EtlPipeline.subject_enricher import SubjectCourseEnricher
 
 

@@ -17,5 +17,5 @@ def get_collections(cosmos_field_db_id):
     return collections_list
 
 def get_institutions():
-    return get_collections("AzureCosmosDbInstitutionsCollectionId")
+    return get_collections("COSMOS_COLLECTION_INSTITUTIONS")
 
