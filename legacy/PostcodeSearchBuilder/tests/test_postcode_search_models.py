@@ -1,20 +1,19 @@
-import unittest
+import inspect
 import os
 import sys
-import inspect
+import unittest
 
-CURRENTDIR = os.path.dirname(
+from legacy.PostcodeSearchBuilder.models import build_postcode_search_doc
+from legacy.PostcodeSearchBuilder.models import validate_header
+from legacy.PostcodeSearchBuilder.models import validate_latitude
+from legacy.PostcodeSearchBuilder.models import validate_longitude
+
+CURRENT_DIR = os.path.dirname(
     os.path.abspath(inspect.getfile(inspect.currentframe()))
 )
-PARENTDIR = os.path.dirname(CURRENTDIR)
-sys.path.insert(0, PARENTDIR)
+PARENT_DIR = os.path.dirname(CURRENT_DIR)
+sys.path.insert(0, PARENT_DIR)
 
-from PostcodeSearchBuilder.models import (
-    build_postcode_search_doc,
-    validate_latitude,
-    validate_longitude,
-    validate_header
-)
 
 class TestValidateLatitude(unittest.TestCase):
     def test_within_latitudinal_range(self):

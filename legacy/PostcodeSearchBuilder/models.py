@@ -1,7 +1,12 @@
 import logging
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Tuple
+from typing import Union
 
 
-def build_postcode_search_doc(postcode_list):
+def build_postcode_search_doc(postcode_list: List[str]) -> Union[Dict[str, Any], None]:
     try:
         postcode_object = {
             "postcode": postcode_list[1],
@@ -45,7 +50,7 @@ def build_postcode_search_doc(postcode_list):
         raise
 
 
-def validate_latitude(latitude):
+def validate_latitude(latitude: int) -> bool:
     if latitude < 49 or latitude > 61:
         logging.warning(f"latitude not valid for a UK postcode\n\
                           latitude:{latitude}")
@@ -54,7 +59,7 @@ def validate_latitude(latitude):
     return False
 
 
-def validate_longitude(longitude):
+def validate_longitude(longitude: int) -> bool:
     if longitude < -11 or longitude > 2.5:
         logging.warning(f"longitude not valid for a UK postcode\n\
                           longitude:{longitude}")
@@ -63,24 +68,23 @@ def validate_longitude(longitude):
     return False
 
 
-def validate_header(header_row):
-    invalid = False
+def validate_header(header_row: List[str]) -> bool:
     if header_row[0] != "id":
-        invalid = True
+        return False
 
     if header_row[1] != "postcode":
-        invalid = True
+        return False
 
     if header_row[2] != "latitude":
-        invalid = True
+        return False
 
     if header_row[3] != "longitude":
-        invalid = True
+        return False
 
-    return invalid
+    return True
 
 
-def is_float(value):
+def is_float(value: Any) -> Tuple[bool, Union[float, None]]:
     try:
         new_value = float(value)
         return True, new_value

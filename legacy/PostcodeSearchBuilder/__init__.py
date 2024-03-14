@@ -8,39 +8,40 @@ import traceback
 from datetime import datetime
 
 import azure.functions as func
+from decouple import config
 
-from SharedCode.blob_helper import BlobHelper
 # from SharedCode.mail_helper import MailHelper
 
 from . import search
+from legacy.services.blob import BlobService
 
 
-def main(req: func.HttpRequest,) -> None:
+def main(req: func.HttpRequest) -> None:
     """Create the postcode search index"""
 
     logging.info(f"PostcodeSearchBuilder request triggered")
 
     # mail_helper = MailHelper()
-    environment = os.environ["Environment"]
+    environment = config("ENVIRONMENT")
     # mail_helper.send_message(f"Postcode search builder started on {function_start_datetime}", f"Postcode Search Builder {environment} - {function_start_date} - Started")
 
     # logging.info(
     #     f"PostcodeSearchBuilder function started on {function_start_datetime}"
     # )
 
-    api_key = os.environ['SearchAPIKey']
-    search_url = os.environ['SearchURL']
-    api_version = os.environ['AzureSearchAPIVersion']
-    index_name = os.environ['PostcodeIndexName']
+    api_key = config("SEARCH_API_KEY")
+    search_url = config("SEARCH_URL")
+    api_version = config("SEARCH_API_VERSION")
+    index_name = config("POSTCODE_INDEX_NAME")
 
     try:
-        blob_helper = BlobHelper()
+        blob_service = BlobService()
 
         # Read the Blob into a BytesIO object
         storage_container_name = os.environ["AzureStoragePostcodesContainerName"]
         storage_blob_name = os.environ["AzureStoragePostcodesBlobName"]
 
-        csv_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
+        csv_string = blob_service.get_str_file(storage_container_name, storage_blob_name)
 
         rows = csv_string.splitlines()
         number_of_postcodes = len(rows)
