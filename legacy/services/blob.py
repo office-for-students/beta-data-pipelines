@@ -33,6 +33,6 @@ class BlobService:
 
         return file_string
 
-    def write_stream_file(self, container_name: str, blob_name: str, encoded_file: str) -> None:
+    def write_stream_file(self, container_name: str, blob_name: str, encoded_file: bytes) -> None:
         blob_client = self.blob_service_client.get_blob_client(container=container_name, blob=blob_name)
         blob_client.upload_blob(encoded_file, overwrite=True)

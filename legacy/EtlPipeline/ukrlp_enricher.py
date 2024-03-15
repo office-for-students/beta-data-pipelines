@@ -8,7 +8,7 @@ from legacy.services import utils
 class UkRlpCourseEnricher:
     """Handles enriching courses with UKRLP data"""
 
-    def __init__(self, version: int) -> None:
+    def __init__(self, version: str) -> None:
         self.ukrlp_lookups = utils.get_ukrlp_lookups(version)
 
     def enrich_course(self, course: Dict[str, Any]) -> None:

@@ -86,7 +86,7 @@ def get_ukrlp_lookups(version):
     }
 
 
-def get_subject_lookups(version: int) -> Dict[str, Any]:
+def get_subject_lookups(version: str) -> Dict[str, Any]:
     """Returns a dictionary of UKRLP lookups"""
 
     cosmos_db_client = get_cosmos_client()
