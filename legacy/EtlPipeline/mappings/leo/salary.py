@@ -1,7 +1,7 @@
 from typing import List
 from typing import Tuple
 
-from EtlPipeline.mappings.base import BaseMappings
+from legacy.EtlPipeline.mappings.base import BaseMappings
 
 
 class LeoSalaryMappings(BaseMappings):

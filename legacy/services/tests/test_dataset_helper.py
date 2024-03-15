@@ -1,8 +1,10 @@
 import unittest
 from unittest import mock
 
+from legacy.services.dataset_service import DataSetService
+
+
 # import SharedCode
-from SharedCode.dataset_helper import DataSetHelper
 
 
 class TestDataSetHelper(unittest.TestCase):
@@ -18,7 +20,7 @@ class TestDataSetHelper(unittest.TestCase):
     def test_initialisation(self, mock_get_cosmos_client):
         mock_get_cosmos_client.return_value = mock.MagicMock()
         try:
-            DataSetHelper()
+            DataSetService()
         except:
             self.fail(
                 "DataSetHelper initialisation raised unexpected Exception"
@@ -34,7 +36,7 @@ class TestDataSetHelper(unittest.TestCase):
     )
     @mock.patch("SharedCode.dataset_helper.get_cosmos_client")
     def test_update_status(self, mock_get_cosmos_client):
-        dsh = DataSetHelper()
+        dsh = DataSetService()
 
         latest_dataset_doc = {}
         latest_dataset_doc["version"] = 3
@@ -69,7 +71,7 @@ class TestDataSetHelper(unittest.TestCase):
     def test_have_all_builds_succeeded_with_all_pending(
         self, mock_get_cosmos_client
     ):
-        dsh = DataSetHelper()
+        dsh = DataSetService()
 
         latest_dataset_doc = {}
         latest_dataset_doc["version"] = 3
@@ -94,7 +96,7 @@ class TestDataSetHelper(unittest.TestCase):
     def test_have_all_builds_succeeded_with_one_pending(
         self, mock_get_cosmos_client
     ):
-        dsh = DataSetHelper()
+        dsh = DataSetService()
 
         latest_dataset_doc = {}
         latest_dataset_doc["version"] = 3
@@ -119,7 +121,7 @@ class TestDataSetHelper(unittest.TestCase):
     def test_have_all_builds_succeeded_with_two_pending(
         self, mock_get_cosmos_client
     ):
-        dsh = DataSetHelper()
+        dsh = DataSetService()
 
         latest_dataset_doc = {}
         latest_dataset_doc["version"] = 3
@@ -144,7 +146,7 @@ class TestDataSetHelper(unittest.TestCase):
     def test_have_all_builds_succeeded_with_all_succeeded(
         self, mock_get_cosmos_client
     ):
-        dsh = DataSetHelper()
+        dsh = DataSetService()
 
         latest_dataset_doc = {}
         latest_dataset_doc["version"] = 3

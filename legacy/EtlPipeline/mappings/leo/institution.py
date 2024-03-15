@@ -4,9 +4,9 @@ from typing import List
 from typing import Optional
 from typing import Tuple
 
-from EtlPipeline.course_stats import get_earnings_unavail_text
-from EtlPipeline.mappings.base import BaseMappings
-from EtlPipeline.utils import get_earnings_agg_unavail_messages
+from legacy.EtlPipeline.course_stats import get_earnings_unavail_text
+from legacy.EtlPipeline.mappings.base import BaseMappings
+from legacy.EtlPipeline.utils import get_earnings_agg_unavail_messages
 
 
 class LeoInstitutionMappings(BaseMappings):

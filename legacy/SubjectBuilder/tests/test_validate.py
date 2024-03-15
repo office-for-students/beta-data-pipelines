@@ -1,13 +1,13 @@
-import unittest
+import inspect
 import os
 import sys
-import inspect
+import unittest
 
-CURRENTDIR = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-PARENTDIR = os.path.dirname(CURRENTDIR)
-sys.path.insert(0, PARENTDIR)
+from legacy.SubjectBuilder.validate import column_headers
 
-from validate import column_headers
+CURRENT_DIR = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+PARENT_DIR = os.path.dirname(CURRENT_DIR)
+sys.path.insert(0, PARENT_DIR)
 
 
 class TestValidateColumnHeaders(unittest.TestCase):

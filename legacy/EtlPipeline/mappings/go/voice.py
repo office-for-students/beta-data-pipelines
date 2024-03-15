@@ -29,7 +29,7 @@ class GoVoiceMappings(BaseMappings):
         ]
 
     #
-    def custom_unavailable(self, json_data: Dict[str, Any], elem, key: str) -> None:
+    def custom_unavailable(self, json_data: Dict[str, Any], elem: Dict[str, Any], key: str) -> None:
         json_data["unavailable"] = get_go_work_unavail_messages(
             xml_element_key="GO",
             xml_agg_key='GOWORKAGG',

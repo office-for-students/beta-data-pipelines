@@ -3,8 +3,8 @@ import unittest
 
 import xmltodict
 
-from legacy.EtlPipeline.stats.sharedutils import SharedUtils
 from legacy.EtlPipeline.course_stats import Tariff
+from legacy.EtlPipeline.stats.shared_utils import SharedUtils
 from legacy.EtlPipeline.tests.test_helpers.testing_utils import get_string
 
 

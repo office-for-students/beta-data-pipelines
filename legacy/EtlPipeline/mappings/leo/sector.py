@@ -1,8 +1,8 @@
 from typing import List
 from typing import Tuple
 
-from EtlPipeline.course_stats import get_earnings_unavail_text
-from EtlPipeline.mappings.base import BaseMappings
+from legacy.EtlPipeline.course_stats import get_earnings_unavail_text
+from legacy.EtlPipeline.mappings.base import BaseMappings
 
 
 class LeoSectorMappings(BaseMappings):
