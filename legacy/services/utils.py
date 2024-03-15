@@ -90,7 +90,7 @@ def get_ukrlp_lookups(version):
     }
 
 
-def get_subject_lookups(version: int):
+def get_subject_lookups(version: int) -> Dict[str, Any]:
     """Returns a dictionary of UKRLP lookups"""
 
     cosmos_db_client = get_cosmos_client()
@@ -128,7 +128,7 @@ def get_courses_by_version(version: int) -> List:
     return course_list
 
 
-def get_english_welsh_item(key, lookup_table: Dict) -> Dict[str, Any]:
+def get_english_welsh_item(key: str, lookup_table: Dict) -> Dict[str, Any]:
     item = {}
     keyw = key + "W"
     if key in lookup_table:

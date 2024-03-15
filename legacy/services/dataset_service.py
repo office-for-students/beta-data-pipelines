@@ -3,26 +3,27 @@ import inspect
 import logging
 import os
 import sys
+from typing import Any
+from typing import Dict
+from typing import List
 
-CURRENTDIR = os.path.dirname(
+CURRENT_DIR = os.path.dirname(
     os.path.abspath(inspect.getfile(inspect.currentframe()))
 )
-PARENTDIR = os.path.dirname(CURRENTDIR)
-sys.path.insert(0, CURRENTDIR)
-sys.path.insert(0, PARENTDIR)
+PARENT_DIR = os.path.dirname(CURRENT_DIR)
+sys.path.insert(0, CURRENT_DIR)
+sys.path.insert(0, PARENT_DIR)
 
 from .utils import get_cosmos_client, get_collection_link
 
 
 class DataSetService:
-    def __init__(self):
+    def __init__(self) -> None:
         logging.info("Init for DataSetService")
         self.cosmos_client = get_cosmos_client()
-        self.collection_link = get_collection_link(
-            "AzureCosmosDbDatabaseId", "AzureCosmosDbDataSetCollectionId"
-        )
+        self.collection_link = get_collection_link("COSMOS_COLLECTION_DATASET")
 
-    def update_status(self, item, value, updated_at=None):
+    def update_status(self, item: str, value: str, updated_at: str = None) -> None:
         dataset_doc = self.get_latest_doc()
         if item == "root":
             dataset_doc["status"] = value
@@ -37,7 +38,7 @@ class DataSetService:
             f"DataSet version {dataset_doc['version']}"
         )
 
-    def get_latest_doc(self):
+    def get_latest_doc(self) -> Dict[str, Any]:
         latest_version_number = self.get_latest_version_number()
         query = f"SELECT * FROM c WHERE c.version = {latest_version_number}"
         options = {"enableCrossPartitionQuery": True}
@@ -45,7 +46,7 @@ class DataSetService:
         the_list_item = the_list[0]
         return the_list_item
 
-    def get_latest_version_number(self):
+    def get_latest_version_number(self) -> int:
         query = "SELECT VALUE MAX(c.version) from c "
         options = {"enableCrossPartitionQuery": True}
         max_version_number_list = list(
@@ -53,16 +54,16 @@ class DataSetService:
         )
         return max_version_number_list[0]
 
-    def query_items(self, query):
+    def query_items(self, query: str) -> List[Dict[str, Any]]:
         options = {"enableCrossPartitionQuery": True}
         return list(
             self.cosmos_client.QueryItems(self.collection_link, query, options)
         )
 
-    def create_item(self, dataset_doc):
+    def create_item(self, dataset_doc: Dict[str, Any]) -> None:
         self.cosmos_client.CreateItem(self.collection_link, dataset_doc)
 
-    def have_all_builds_succeeded(self):
+    def have_all_builds_succeeded(self) -> bool:
         dataset_doc = self.get_latest_doc()
         build_statuses = [
             dataset_doc["builds"][item]["status"] == "succeeded"

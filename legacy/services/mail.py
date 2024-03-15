@@ -9,7 +9,7 @@ class MailService:
         self.to_emails = to_emails  # os.environ["SendGridToEmailList"].split(";")
         self.enabled = enabled  # True if os.environ.get("SendGridEnabled", "") == "True" else False
 
-    def send_message(self, message, subject):
+    def send_message(self, message: str, subject: str):
         if not self.enabled:
             return
 
