@@ -20,7 +20,7 @@ def create_institutions_main():
 
     # mail_helper = MailHelper()
 
-    dsh = DataSetService()
+    dataset_service = DataSetService()
 
     try:
         logging.info(
@@ -47,16 +47,16 @@ def create_institutions_main():
         else:
             hesa_xml_file_as_string = blob_service.get_str_file(BLOB_HESA_CONTAINER_NAME, BLOB_HESA_BLOB_NAME)
 
-        version = dsh.get_latest_version_number()
+        version = dataset_service.get_latest_version_number()
 
         """ LOADING - extract data and load JSON Documents """
 
         logging.info(f"using version number: {version}")
-        dsh.update_status("institutions", "in progress")
+        dataset_service.update_status("institutions", "in progress")
 
         inst_docs = InstitutionDocs(hesa_xml_file_as_string, version)
         inst_docs.create_institution_docs()
-        dsh.update_status("institutions", "succeeded")
+        dataset_service.update_status("institutions", "succeeded")
 
         function_end_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
 
@@ -87,12 +87,12 @@ def create_institutions_main():
         # )
 
         logging.error(f"CreateInst failed on {function_fail_datetime}")
-        dsh.update_status("institutions", "failed")
+        dataset_service.update_status("institutions", "failed")
         raise Exception(error_message)
 
     except Exception as e:
         # Unexpected exception
-        dsh.update_status("institutions", "failed")
+        dataset_service.update_status("institutions", "failed")
 
         function_fail_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
         function_fail_date = datetime.today().strftime("%d.%m.%Y")

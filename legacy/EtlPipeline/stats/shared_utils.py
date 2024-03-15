@@ -18,9 +18,9 @@ class SharedUtils:
     """Functionality required by several stats related classes"""
 
     try:
-        dsh = DataSetService()  # TODO: warning presented as dsh wasn't assigned, but the catch all
+        dataset_service = DataSetService()  # TODO: warning presented as dsh wasn't assigned, but the catch all
         # Exception below would have masked this - leading to no subject codes.
-        version = dsh.get_latest_version_number()
+        version = dataset_service.get_latest_version_number()
         subj_codes = get_subject_lookups(version)
         logging.info("Using database subject codes.")
 

@@ -16,7 +16,7 @@ from .build_version_json import build_version_json_file
 
 
 def course_search_builder_main() -> None:
-    dsh = DataSetService()
+    dataset_service = DataSetService()
 
     try:
 
@@ -30,9 +30,9 @@ def course_search_builder_main() -> None:
             f"CourseSearchBuilder function started on {function_start_datetime}"
         )
 
-        version = dsh.get_latest_version_number()
+        version = dataset_service.get_latest_version_number()
 
-        dsh.update_status("search", "in progress")
+        dataset_service.update_status("search", "in progress")
 
         search.build_synonyms(SEARCH_URL, SEARCH_API_KEY, SEARCH_API_VERSION)
 
@@ -48,18 +48,18 @@ def course_search_builder_main() -> None:
         )
 
         search.load_index(SEARCH_URL, SEARCH_API_KEY, SEARCH_API_VERSION, version, courses)
-        dsh.update_status("search", "succeeded")
+        dataset_service.update_status("search", "succeeded")
         courses = None
 
-        if dsh.have_all_builds_succeeded():
+        if dataset_service.have_all_builds_succeeded():
             build_institutions_json_files()
             build_subjects_json_file()
             build_version_json_file()
             build_sitemap_xml()
 
-            dsh.update_status("root", "succeeded")
+            dataset_service.update_status("root", "succeeded")
         else:
-            dsh.update_status("root", "failed")
+            dataset_service.update_status("root", "failed")
 
         function_end_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
         function_end_date = datetime.today().strftime("%d.%m.%Y")
@@ -75,8 +75,8 @@ def course_search_builder_main() -> None:
 
     except Exception as e:
         # Unexpected exception
-        dsh.update_status("search", "failed")
-        dsh.update_status("root", "failed")
+        dataset_service.update_status("search", "failed")
+        dataset_service.update_status("root", "failed")
 
         function_fail_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
         function_fail_date = datetime.today().strftime("%d.%m.%Y")

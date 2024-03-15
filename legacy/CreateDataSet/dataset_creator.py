@@ -24,7 +24,7 @@ sys.path.insert(0, PARENT_DIR)
 
 class DataSetCreator:
     def __init__(self, test_mode=False) -> None:
-        self.dsh = DataSetService()
+        self.dataset_service = DataSetService()
         self.test_mode = test_mode
 
     def load_new_dataset_doc(self) -> None:
@@ -35,7 +35,7 @@ class DataSetCreator:
                 if not self.has_enough_time_elaspsed_since_last_dataset_created():
                     raise DataSetTooEarlyError
 
-        self.dsh.create_item(dataset_doc)
+        self.dataset_service.create_item(dataset_doc)
         logging.info(f"Created new version {dataset_doc['version']} DataSet")
 
     def get_next_dataset_doc(self) -> Dict[str, Any]:
@@ -53,13 +53,13 @@ class DataSetCreator:
         if self.get_number_of_dataset_docs() == 0:
             return 1
 
-        version = int(self.dsh.get_latest_version_number()) + 1
+        version = int(self.dataset_service.get_latest_version_number()) + 1
         return version
         # return self.dsh.get_latest_version_number() + 1
 
     def get_number_of_dataset_docs(self) -> int:
         query = "SELECT * FROM c "
-        data_set_list = self.dsh.query_items(query)
+        data_set_list = self.dataset_service.query_items(query)
         return len(data_set_list)
 
     def has_enough_time_elaspsed_since_last_dataset_created(self) -> bool:
@@ -73,9 +73,9 @@ class DataSetCreator:
         return True
 
     def get_datetime_of_latest_dataset_doc(self) -> datetime:
-        max_version_number = self.dsh.get_latest_version_number()
+        max_version_number = self.dataset_service.get_latest_version_number()
         query = f"SELECT * FROM c WHERE c.version = {max_version_number}"
-        latest_doc = self.dsh.query_items(query)[0]
+        latest_doc = self.dataset_service.query_items(query)[0]
         return convert_dt_str_to_dt_object(latest_doc["created_at"])
 
 

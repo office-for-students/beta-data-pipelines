@@ -18,7 +18,7 @@ from legacy.services.dataset_service import DataSetService
 def subject_builder_main() -> None:
     msgerror = ""
 
-    dsh = DataSetService()
+    dataset_service = DataSetService()
 
     logging.info(f"SubjectBuilder message queue triggered")
 
@@ -47,10 +47,10 @@ def subject_builder_main() -> None:
             raise exceptions.StopEtlPipelineErrorException
 
         reader = csv.reader(rows)
-        version = dsh.get_latest_version_number()
+        version = dataset_service.get_latest_version_number()
 
         logging.info(f"using version number: {version}")
-        dsh.update_status("subjects", "in progress")
+        dataset_service.update_status("subjects", "in progress")
 
         # add subject docs to new collection
         load_collection(
@@ -58,7 +58,7 @@ def subject_builder_main() -> None:
         )
 
         logging.info(f"Successfully loaded in {number_of_subjects} subject documents")
-        dsh.update_status("subjects", "succeeded")
+        dataset_service.update_status("subjects", "succeeded")
 
         function_end_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
 
@@ -68,7 +68,7 @@ def subject_builder_main() -> None:
 
     except Exception as e:
         # Unexpected exception
-        dsh.update_status("subjects", "failed")
+        dataset_service.update_status("subjects", "failed")
 
         function_fail_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
         function_fail_date = datetime.today().strftime("%d.%m.%Y")

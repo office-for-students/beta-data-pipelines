@@ -16,7 +16,7 @@ def etl_pipeline_main(
         hesa_blob_name: str,
         local_test_xml_file=None
 ) -> None:
-    dsh = DataSetService()
+    dataset_service = DataSetService()
 
     try:
 
@@ -43,11 +43,11 @@ def etl_pipeline_main(
         else:
             xml_string = blob_service.get_str_file(hesa_container_name, hesa_blob_name)
 
-        version = dsh.get_latest_version_number()
+        version = dataset_service.get_latest_version_number()
 
         """ LOADING - Parse XML and load enriched JSON docs to database """
 
-        dsh.update_status("courses", "in progress")
+        dataset_service.update_status("courses", "in progress")
 
         course_docs.load_course_docs(
             xml_string,
@@ -56,7 +56,7 @@ def etl_pipeline_main(
             "COSMOS_COLLECTION_SUBJECTS",
             "COSMOS_COLLECTION_COURSES"
         )
-        dsh.update_status("courses", "succeeded")
+        dataset_service.update_status("courses", "succeeded")
 
         function_end_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
 
@@ -66,7 +66,7 @@ def etl_pipeline_main(
 
     except Exception as e:
 
-        dsh.update_status("courses", "failed")
+        dataset_service.update_status("courses", "failed")
         # A WARNING is raised during the ETL Pipeline and StopEtlPipelineOnWarning=True
         # For example, the incoming raw XML is not valid against its XSD
 
