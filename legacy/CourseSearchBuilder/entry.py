@@ -14,7 +14,7 @@ from .build_subjects_json import build_subjects_json_file
 from .build_version_json import build_version_json_file
 
 
-def build_search() -> None:
+def course_search_builder_main() -> None:
     dsh = DataSetService()
 
     try:

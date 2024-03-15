@@ -10,7 +10,7 @@ from legacy.services.blob import BlobService
 from legacy.services.dataset_service import DataSetService
 
 
-def create_courses(
+def etl_pipeline_main(
         blob_service: BlobService,
         hesa_container_name: str,
         hesa_blob_name: str,

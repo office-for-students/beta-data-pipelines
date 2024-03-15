@@ -11,7 +11,7 @@ from legacy.services.exceptions import StopEtlPipelineErrorException
 from legacy.services.exceptions import XmlValidationError
 
 
-def create_dataset(
+def create_dataset_main(
         blob_service: BlobService,
         storage_container_name: str,
         storage_blob_name: str,

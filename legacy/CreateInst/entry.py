@@ -11,7 +11,7 @@ from legacy.services.dataset_service import DataSetService
 from .institution_docs import InstitutionDocs
 
 
-def create_institutions():
+def create_institutions_main():
     # TODO: apw: Ensure that UseLocalTestXMLFile is set to false in local.settings.json before going live.
     use_local_test_XML_file = config("XML_USE_LOCAL_TEST_XML_FILE")
 
