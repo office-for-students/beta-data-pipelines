@@ -26,7 +26,7 @@ def build_subjects_json_file() -> None:
     encoded_file = subjects_file.getvalue().encode('utf-8')
 
     storage_container_name = config("BLOB_JSON_FILES_CONTAINER_NAME")
-    storage_blob_name = config("BLOB_SUBJECTS_JSON_FILE_BLOB_NAME")
+    storage_blob_name = config("BLOB_SUBJECTS_JSON_BLOB_NAME")
     blob_service.write_stream_file(storage_container_name, storage_blob_name, encoded_file)
     subjects_file.close()
 
