@@ -7,17 +7,17 @@ from datetime import datetime
 
 import azure.functions as func
 
-from ..services.dataset_helper import DataSetHelper
-from ..services.blob_helper import BlobHelper
 # from ..SharedCode.mail_helper import MailHelper
 
 from . import validate, database, exceptions
+from ..services.blob import BlobService
+from ..services.dataset_service import DataSetService
 
 
-def main(msgin: func.QueueMessage, msgout: func.Out[str]):
+def main(msgin: func.QueueMessage, msgout: func.Out[str]) -> None:
     msgerror = ""
 
-    dsh = DataSetHelper()
+    dsh = DataSetService()
 
     logging.info(f"SubjectBuilder message queue triggered")
 
@@ -36,7 +36,7 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
     collection_id = os.environ["AzureCosmosDbSubjectsCollectionId"]
 
     try:
-        blob_helper = BlobHelper()
+        blob_helper = BlobService()
 
         # Read the Blob into a BytesIO object
         storage_container_name = os.environ["AzureStorageSubjectsContainerName"]

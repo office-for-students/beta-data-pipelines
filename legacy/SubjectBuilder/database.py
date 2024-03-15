@@ -1,9 +1,8 @@
 import logging
-import requests
-import azure.cosmos.cosmos_client as cosmos_client
-import azure.cosmos.errors as errors
-import azure.cosmos.documents as documents
 import time
+from typing import List
+
+import azure.cosmos.cosmos_client as cosmos_client
 
 from . import models
 
@@ -15,12 +14,20 @@ def load_collection(url, api_key, db_id, collection_id, rows, version):
 
 
 class Loader:
-    def __init__(self, cosmosdb_uri, cosmos_key, db_id, collection_id, rows, version):
+    def __init__(
+            self,
+            cosmosdb_uri: str,
+            cosmos_key: str,
+            db_id: str,
+            collection_id: str,
+            rows: List[str],
+            version: str
+    ) -> None:
 
         master_key = "masterKey"
 
         self.cosmos_db_client = cosmos_client.CosmosClient(
-            url_connection=cosmosdb_uri, auth={master_key: cosmos_key}
+            url=cosmosdb_uri, credential={master_key: cosmos_key}
         )
 
         self.collection_link = "dbs/" + db_id + "/colls/" + collection_id
@@ -29,7 +36,7 @@ class Loader:
         self.rows = rows
         self.version = version
 
-    def load_subject_documents(self):
+    def load_subject_documents(self) -> None:
         options = {"partitionKey": str(self.version)}
         sproc_link = self.collection_link + "/sprocs/bulkImport"
 

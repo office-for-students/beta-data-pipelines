@@ -1,7 +1,7 @@
 import logging
 
 
-def column_headers(header_row):
+def column_headers(header_row: str) -> bool:
     logging.info(f"Validating header row, headers: {header_row}")
     header_list = header_row.split(",")
 

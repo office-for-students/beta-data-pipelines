@@ -1,8 +1,11 @@
 import datetime
 import uuid
+from typing import Any
+from typing import Dict
+from typing import List
 
 
-def build_subject_doc(subject_list, version):
+def build_subject_doc(subject_list: List[str], version: int) -> Dict[str, Any]:
 
     doc = {
         "id": str(uuid.uuid1()),
