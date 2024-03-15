@@ -1,12 +1,12 @@
 import io
-import os
 from datetime import datetime
 from io import StringIO
 from typing import List
 from typing import Tuple
 
-from decouple import config
-
+from constants import BLOB_INSTITUTIONS_SITEMAPS_JSON_FILE_BLOB_NAME
+from constants import BLOB_JSON_FILES_CONTAINER_NAME
+from constants import COSMOS_COLLECTION_COURSES
 from legacy.CourseSearchBuilder.get_collections import get_collections
 from legacy.CourseSearchBuilder.get_collections import get_institutions
 from legacy.services.blob import BlobService
@@ -17,17 +17,15 @@ base_url = "https://discoveruni.gov.uk"
 def build_sitemap_xml() -> None:
     blob_service = BlobService()
     institution_list = get_institutions()
-    course_list = get_collections("AzureCosmosDbCoursesCollectionId")
+    course_list = get_collections(COSMOS_COLLECTION_COURSES)
     institution_params, course_params = build_param_lists(institution_list, course_list)
     xml = """
             <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">"""
     xml_data = build_xml_string(institution_params + course_params, xml)
     xml_file: StringIO = io.StringIO(xml_data)
-    storage_container_name = config("BLOB_JSON_FILES_CONTAINER_NAME")
-    storage_blob_name = config("BLOB_INSTITUTIONS_SITEMAPS_JSON_FILE_BLOB_NAME")
     blob_service.write_stream_file(
-        container_name=storage_container_name,
-        blob_name=storage_blob_name,
+        container_name=BLOB_JSON_FILES_CONTAINER_NAME,
+        blob_name=BLOB_INSTITUTIONS_SITEMAPS_JSON_FILE_BLOB_NAME,
         encoded_file=xml_file.read().encode('utf-8')
     )
 

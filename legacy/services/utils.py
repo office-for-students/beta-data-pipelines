@@ -7,18 +7,17 @@ from typing import Dict
 from typing import List
 
 import azure.cosmos.cosmos_client as cosmos_client
-from decouple import config
+
+from constants import COSMOS_DATABASE_ID
+from constants import COSMOS_DATABASE_KEY
+from constants import COSMOS_DATABASE_URI
 
 
 def get_collection_link(collection_id: str) -> str:
     """Create and return collection link based on values passed in"""
 
-    # Get the relevant properties from Application Settings
-    cosmosdb_database_id = config("COSMOS_DATABASE_ID")
-    cosmosdb_collection_id = config(collection_id)
-
     # Return a link to the relevant CosmosDB Container/Document Collection
-    return "dbs/" + cosmosdb_database_id + "/colls/" + cosmosdb_collection_id
+    return "dbs/" + COSMOS_DATABASE_ID + "/colls/" + collection_id
 
 
 def sanitise_address_string(address_string: str) -> str:
@@ -45,13 +44,10 @@ def normalise_url(website_url: str) -> str:
 
 
 def get_cosmos_client() -> cosmos_client.CosmosClient:
-    cosmosdb_uri = config("COSMOS_DATABASE_URI")
-    cosmosdb_key = config("COSMOS_DATABASE_KEY")
-
     master_key = "masterKey"
 
     return cosmos_client.CosmosClient(
-        url=cosmosdb_uri, credential={master_key: cosmosdb_key}
+        url=COSMOS_DATABASE_URI, credential={master_key: COSMOS_DATABASE_KEY}
     )
 
 

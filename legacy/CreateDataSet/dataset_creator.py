@@ -8,8 +8,8 @@ from typing import Any
 from typing import Dict
 
 from dateutil import parser
-from decouple import config
 
+from constants import MINUTES_WAIT_BEFORE_CREATE_NEW_DATASET
 # from SharedCode.utils import get_cosmos_client, get_collection_link
 from legacy.services.dataset_service import DataSetService
 from legacy.services.exceptions import DataSetTooEarlyError
@@ -67,9 +67,7 @@ class DataSetCreator:
         time_in_minutes_since_latest_dataset_doc = get_time_in_minutes_since_given_datetime(
             dt_of_latest_dataset_doc
         )
-        time_in_minutes_to_wait = int(
-            config("MINUTES_WAIT_BEFORE_CREATE_NEW_DATASET")
-        )
+        time_in_minutes_to_wait = int(MINUTES_WAIT_BEFORE_CREATE_NEW_DATASET)
         if time_in_minutes_to_wait > time_in_minutes_since_latest_dataset_doc:
             return False
         return True

@@ -7,8 +7,9 @@ from typing import Any
 from typing import Dict
 from typing import List
 
-from decouple import config
-
+from constants import BLOB_INSTITUTIONS_JSON_FILE_BLOB_NAME_CY
+from constants import BLOB_INSTITUTIONS_JSON_FILE_BLOB_NAME_EN
+from constants import BLOB_JSON_FILES_CONTAINER_NAME
 from legacy.CourseSearchBuilder.get_collections import get_institutions
 from legacy.services.blob import BlobService
 
@@ -23,7 +24,7 @@ def build_institutions_json_files() -> None:
         first_trading_name="first_trading_name",
         legal_name="legal_name",
         other_names="other_names",
-        blob_file="BLOB_INSTITUTIONS_JSON_FILE_BLOB_NAME_CY"
+        blob_file=BLOB_INSTITUTIONS_JSON_FILE_BLOB_NAME_CY
     )
     generate_file(
         institution_list=institution_list,
@@ -32,7 +33,7 @@ def build_institutions_json_files() -> None:
         first_trading_name="first_trading_name",
         legal_name="legal_name",
         other_names="other_names",
-        blob_file="BLOB_INSTITUTIONS_JSON_FILE_BLOB_NAME_EN"
+        blob_file=BLOB_INSTITUTIONS_JSON_FILE_BLOB_NAME_EN
     )
 
 
@@ -78,9 +79,7 @@ def generate_file(
     json.dump(final, institutions_file, indent=4)
     encoded_file = institutions_file.getvalue().encode('utf-8')
 
-    storage_container_name = config("BLOB_JSON_FILES_CONTAINER_NAME")
-    storage_blob_name = config(blob_file)
-    blob_service.write_stream_file(storage_container_name, storage_blob_name, encoded_file)
+    blob_service.write_stream_file(BLOB_JSON_FILES_CONTAINER_NAME, blob_file, encoded_file)
     institutions_file.close()
 
 

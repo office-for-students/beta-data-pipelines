@@ -3,8 +3,8 @@
 import io
 import json
 
-from decouple import config
-
+from constants import BLOB_JSON_FILES_CONTAINER_NAME
+from constants import BLOB_VERSION_JSON_FILE_BLOB_NAME
 from legacy.services.blob import BlobService
 from legacy.services.dataset_service import DataSetService
 
@@ -21,6 +21,4 @@ def build_version_json_file() -> None:
     json.dump(version_json, version_file, indent=4)
     encoded_file = version_file.getvalue().encode('utf-8')
 
-    storage_container_name = config("BLOB_JSON_FILES_CONTAINER_NAME")
-    storage_blob_name = config("BLOB_VERSION_JSON_FILE_BLOB_NAME")
-    blob_service.write_stream_file(storage_container_name, storage_blob_name, encoded_file)
+    blob_service.write_stream_file(BLOB_JSON_FILES_CONTAINER_NAME, BLOB_VERSION_JSON_FILE_BLOB_NAME, encoded_file)

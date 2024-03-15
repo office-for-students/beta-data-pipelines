@@ -20,10 +20,11 @@ from typing import List
 
 import defusedxml.ElementTree as ET
 import xmltodict
-from decouple import config
 
 import course_lookup_tables as lookup
 from accreditations import Accreditations
+from constants import BLOB_QUALIFICATIONS_BLOB_NAME
+from constants import BLOB_QUALIFICATIONS_CONTAINER_NAME
 from course_stats import get_earnings_unavail_text
 from course_stats import get_stats
 from course_subjects import get_subjects
@@ -56,8 +57,6 @@ sys.path.insert(0, PARENT_DIR)
 def load_course_docs(
         xml_string: str,
         version: str,
-        cosmos_id: str,
-        cosmos_subjects_collection_id: str,
         cosmos_course_collection_id: str
 ) -> None:
     """Parse HESA XML passed in and create JSON course docs in Cosmos DB."""
@@ -72,16 +71,15 @@ def load_course_docs(
     logging.info(
         "adding subject data into memory ahead of building course documents"
     )
-    subject_enricher = SubjectCourseEnricher(version, cosmos_id, cosmos_subjects_collection_id)
+    subject_enricher = SubjectCourseEnricher(version)
     g_subject_enricher = subject_enricher
 
     logging.info(
         "adding qualification data into memory ahead of building course documents"
     )
-    storage_container_name = config("BLOB_QUALIFICATIONS_CONTAINER_NAME")
-    storage_blob_name = config("BLOB_QUALIFICATIONS_BLOB_NAME")
 
-    qualification_enricher = QualificationCourseEnricher(storage_container_name, storage_blob_name)
+    qualification_enricher = QualificationCourseEnricher(BLOB_QUALIFICATIONS_CONTAINER_NAME,
+                                                         BLOB_QUALIFICATIONS_BLOB_NAME)
 
     collection_link = utils.get_collection_link(
         cosmos_course_collection_id

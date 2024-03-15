@@ -20,8 +20,11 @@ from typing import List
 
 import defusedxml.ElementTree as ET
 import xmltodict
-from decouple import config
 
+from constants import BLOB_WELSH_UNIS_BLOB_NAME
+from constants import BLOB_WELSH_UNIS_CONTAINER_NAME
+from constants import XML_LOCAL_TEST_XML_FILE
+from constants import XML_USE_LOCAL_TEST_XML_FILE
 from legacy.CreateInst.locations import Locations
 from legacy.EtlPipeline import course_lookup_tables
 from legacy.services import exceptions
@@ -80,20 +83,16 @@ def validate_column_headers(header_row: str) -> bool:
 
 
 def get_welsh_uni_names() -> List[str]:
-    use_local_test_XML_file = config("XML_USE_LOCAL_TEST_XML_FILE")
-
-    if use_local_test_XML_file:
-        et_test = ET.parse(config("XML_LOCAL_TEST_XML_FILE"))
+    if XML_USE_LOCAL_TEST_XML_FILE:
+        et_test = ET.parse(XML_LOCAL_TEST_XML_FILE)
         uprnEl = et_test.find('UKPRN')
-        mock_xml_source_file = open(config("XML_LOCAL_TEST_XML_FILE"), "r")
+        mock_xml_source_file = open(XML_LOCAL_TEST_XML_FILE, "r")
         csv_string = mock_xml_source_file.read()
         welsh_uni_names = ["welsh one", "welsh two"]
         return welsh_uni_names
     else:
-        storage_container_name = config("BLOB_WELSH_UNIS_CONTAINER_NAME")
-        storage_blob_name = config("BLOB_WELSH_UNIS_BLOB_NAME")
         blob_service = BlobService()
-        csv_string = blob_service.get_str_file(storage_container_name, storage_blob_name)
+        csv_string = blob_service.get_str_file(BLOB_WELSH_UNIS_CONTAINER_NAME, BLOB_WELSH_UNIS_BLOB_NAME)
 
         _welsh_uni_names = []
         if csv_string:

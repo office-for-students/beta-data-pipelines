@@ -2,8 +2,12 @@ import csv
 import logging
 from datetime import datetime
 
-from decouple import config
-
+from constants import BLOB_SUBJECTS_BLOB_NAME
+from constants import BLOB_SUBJECTS_CONTAINER_NAME
+from constants import COSMOS_COLLECTION_SUBJECTS
+from constants import COSMOS_DATABASE_ID
+from constants import COSMOS_DATABASE_KEY
+from constants import COSMOS_DATABASE_URI
 from legacy.SubjectBuilder.database import load_collection
 from legacy.SubjectBuilder.validate import column_headers
 from legacy.services import exceptions
@@ -21,25 +25,16 @@ def subject_builder_main() -> None:
     function_start_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
 
     # mail_helper = MailHelper()
-    environment = config("ENVIRONMENT")
 
     logging.info(
         f"SubjectBuilder function started on {function_start_datetime}"
     )
 
-    cosmosdb_uri = config("COSMOS_DATABASE_URI")
-    cosmosdb_key = config("COSMOS_DATABASE_KEY")
-    db_id = config("COSMOS_DATABASE_ID")
-    collection_id = config("COSMOS_COLLECTION_SUBJECTS")
-
     try:
         blob_helper = BlobService()
 
         # Read the Blob into a BytesIO object
-        storage_container_name = config("BLOB_SUBJECTS_CONTAINER_NAME")
-        storage_blob_name = config("BLOB_SUBJECTS_BLOB_NAME")
-
-        csv_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
+        csv_string = blob_helper.get_str_file(BLOB_SUBJECTS_CONTAINER_NAME, BLOB_SUBJECTS_BLOB_NAME)
 
         rows = csv_string.splitlines()
         number_of_subjects = len(rows) - 1
@@ -59,7 +54,7 @@ def subject_builder_main() -> None:
 
         # add subject docs to new collection
         load_collection(
-            cosmosdb_uri, cosmosdb_key, db_id, collection_id, reader, version
+            COSMOS_DATABASE_URI, COSMOS_DATABASE_KEY, COSMOS_DATABASE_ID, COSMOS_COLLECTION_SUBJECTS, reader, version
         )
 
         logging.info(f"Successfully loaded in {number_of_subjects} subject documents")

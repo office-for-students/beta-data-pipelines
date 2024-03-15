@@ -2,8 +2,10 @@
 import logging
 from datetime import datetime
 
-from decouple import config
-
+from constants import BLOB_HESA_BLOB_NAME
+from constants import BLOB_HESA_CONTAINER_NAME
+from constants import XML_LOCAL_TEST_XML_FILE
+from constants import XML_USE_LOCAL_TEST_XML_FILE
 from legacy.services import exceptions
 from legacy.services.blob import BlobService
 from legacy.services.dataset_service import DataSetService
@@ -13,12 +15,10 @@ from .institution_docs import InstitutionDocs
 
 def create_institutions_main():
     # TODO: apw: Ensure that UseLocalTestXMLFile is set to false in local.settings.json before going live.
-    use_local_test_XML_file = config("XML_USE_LOCAL_TEST_XML_FILE")
 
     # msgerror = ""
 
     # mail_helper = MailHelper()
-    environment = config("ENVIRONMENT")
 
     dsh = DataSetService()
 
@@ -41,14 +41,11 @@ def create_institutions_main():
 
         blob_service = BlobService()
 
-        storage_container_name = config("BLOB_HESA_CONTAINER_NAME")
-        storage_blob_name = config("BLOB_HESA_BLOB_NAME")
-
-        if use_local_test_XML_file:
-            mock_xml_source_file = open(config("XML_LOCAL_TEST_XML_FILE"), "r")
+        if XML_USE_LOCAL_TEST_XML_FILE:
+            mock_xml_source_file = open(XML_LOCAL_TEST_XML_FILE, "r")
             hesa_xml_file_as_string = mock_xml_source_file.read()
         else:
-            hesa_xml_file_as_string = blob_service.get_str_file(storage_container_name, storage_blob_name)
+            hesa_xml_file_as_string = blob_service.get_str_file(BLOB_HESA_CONTAINER_NAME, BLOB_HESA_BLOB_NAME)
 
         version = dsh.get_latest_version_number()
 

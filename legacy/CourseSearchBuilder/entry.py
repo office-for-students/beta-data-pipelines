@@ -2,8 +2,9 @@ import logging
 import traceback
 from datetime import datetime
 
-from decouple import config
-
+from constants import SEARCH_API_KEY
+from constants import SEARCH_API_VERSION
+from constants import SEARCH_URL
 from legacy.services import utils
 from legacy.services.dataset_service import DataSetService
 # from SharedCode.mail_helper import MailHelper
@@ -29,17 +30,13 @@ def course_search_builder_main() -> None:
             f"CourseSearchBuilder function started on {function_start_datetime}"
         )
 
-        api_key = config("SEARCH_API_KEY")
-        search_url = config("SEARCH_URL")
-        api_version = config("SEARCH_API_VERSION")
-
         version = dsh.get_latest_version_number()
 
         dsh.update_status("search", "in progress")
 
-        search.build_synonyms(search_url, api_key, api_version)
+        search.build_synonyms(SEARCH_URL, SEARCH_API_KEY, SEARCH_API_VERSION)
 
-        search.build_index(search_url, api_key, api_version, version)
+        search.build_index(SEARCH_URL, SEARCH_API_KEY, SEARCH_API_VERSION, version)
 
         courses = utils.get_courses_by_version(version)
 
@@ -50,7 +47,7 @@ def course_search_builder_main() -> None:
                         number_of_courses: {number_of_courses}\n"
         )
 
-        search.load_index(search_url, api_key, api_version, version, courses)
+        search.load_index(SEARCH_URL, SEARCH_API_KEY, SEARCH_API_VERSION, version, courses)
         dsh.update_status("search", "succeeded")
         courses = None
 
