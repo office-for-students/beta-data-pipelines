@@ -2,8 +2,8 @@ import logging
 
 from azure.cosmos import CosmosClient
 
-database_id = "discoveruni"
-container_id = "datasets"
+# database_id = "discoveruni"
+# container_id = "datasets"
 
 
 class CosmosService:
