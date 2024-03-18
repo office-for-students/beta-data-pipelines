@@ -16,16 +16,26 @@ class CosmosService:
         Initialise CosmosDB class: create CosmosDB client, database and container
 
         :param cosmosdb_uri: URI for a cosmosdb
+        :type cosmosdb_uri: str
         :param cosmosdb_key: Access key for cosmosdb
+        :type cosmosdb_key: str
         :param database_id: e.g. 'discoveruni' refers to the database in cosmosdb and is the database_id
+        :type database_id: str
         :param container_id: e.g. 'datasets' refers to the database document in cosmosdb and is the container_id
-
+        :type container_id: str
+        :return: None
         """
         self.client = CosmosClient(cosmosdb_uri, cosmosdb_key)
         self.database = self.client.get_database_client(database_id)
         self.container = self.database.get_container_client(container_id)
 
-    def get_highest_successful_version_number(self) -> None:
+    def get_highest_successful_version_number(self) -> int:
+        """
+        Retrieves the version number of the latest successful ingestion
+
+        :return: Highest successful version number
+        :rtype: int
+        """
         query = "SELECT VALUE MAX(c.version) from c WHERE c.status = 'succeeded'"
         max_version_number_list = list(
             self.container.query_items(

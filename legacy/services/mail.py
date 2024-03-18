@@ -1,3 +1,7 @@
+from typing import Any
+from typing import Dict
+from typing import Union
+
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 
@@ -9,7 +13,17 @@ class MailService:
         self.to_emails = to_emails  # os.environ["SendGridToEmailList"].split(";")
         self.enabled = enabled  # True if os.environ.get("SendGridEnabled", "") == "True" else False
 
-    def send_message(self, message: str, subject: str):
+    def send_message(self, message: str, subject: str) -> Union[Dict[str, Any], None]:
+        """
+        Sends an email with the passed message and subject.
+
+        :param message: Message of email to send
+        :type message: str
+        :param subject: Subject of email to send
+        :type subject: str
+        :return: Response object as a JSON dictionary, or None if the mail service is not enabled
+        :rtype: Dict[str, Any]
+        """
         if not self.enabled:
             return
 
