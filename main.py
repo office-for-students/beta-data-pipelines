@@ -52,7 +52,7 @@ async def search_builder():
     logging.info("Search Builder started")
     error = None
     try:
-        course_search_builder_main()
+        course_search_builder_main(BLOB_SERVICE, DATASET_SERVICE)
     except Exception as e:
         message = f"Search Builder failed: {e}"
         error = e

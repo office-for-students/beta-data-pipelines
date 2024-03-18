@@ -14,8 +14,7 @@ from legacy.services.blob import BlobService
 base_url = "https://discoveruni.gov.uk"
 
 
-def build_sitemap_xml() -> None:
-    blob_service = BlobService()
+def build_sitemap_xml(blob_service: BlobService) -> None:
     institution_list = get_institutions()
     course_list = get_collections(COSMOS_COLLECTION_COURSES)
     institution_params, course_params = build_param_lists(institution_list, course_list)

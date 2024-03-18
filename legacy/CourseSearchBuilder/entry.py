@@ -13,11 +13,10 @@ from .build_institutions_json import build_institutions_json_files
 from .build_sitemap_xml import build_sitemap_xml
 from .build_subjects_json import build_subjects_json_file
 from .build_version_json import build_version_json_file
+from legacy.services.blob import BlobService
 
 
-def course_search_builder_main() -> None:
-    dataset_service = DataSetService()
-
+def course_search_builder_main(blob_service: BlobService, dataset_service: DataSetService) -> None:
     try:
 
         logging.info(
@@ -55,7 +54,7 @@ def course_search_builder_main() -> None:
             build_institutions_json_files()
             build_subjects_json_file()
             build_version_json_file()
-            build_sitemap_xml()
+            build_sitemap_xml(blob_service)
 
             dataset_service.update_status("root", "succeeded")
         else:
