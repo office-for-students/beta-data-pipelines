@@ -105,7 +105,7 @@ def get_subject_lookups(version: str) -> Dict[str, Any]:
     return {lookup["code"]: lookup for lookup in lookup_list}
 
 
-def get_courses_by_version(version: int) -> List:
+def get_courses_by_version(version: int) -> List[Dict[str, Any]]:
     """Returns a dictionary of courses for a version of the dataset"""
 
     cosmos_db_client = get_cosmos_client()
