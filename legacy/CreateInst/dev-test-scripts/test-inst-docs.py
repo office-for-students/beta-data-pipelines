@@ -9,7 +9,7 @@ import logging
 import os
 import sys
 
-from legacy.CreateInst.institution_docs import InstitutionDocs
+from legacy.CreateInst.docs.institution_docs import InstitutionDocs
 
 logging.basicConfig(level=logging.DEBUG)
 

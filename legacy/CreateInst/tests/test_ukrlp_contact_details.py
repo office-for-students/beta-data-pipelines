@@ -1,6 +1,6 @@
 import unittest
 
-from legacy.CreateInst.institution_docs import InstitutionProviderNameHandler
+from legacy.CreateInst.docs.name_handler import InstitutionProviderNameHandler
 from legacy.services.utils import normalise_url
 
 

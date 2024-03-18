@@ -6,11 +6,11 @@ from constants import BLOB_HESA_BLOB_NAME
 from constants import BLOB_HESA_CONTAINER_NAME
 from constants import XML_LOCAL_TEST_XML_FILE
 from constants import XML_USE_LOCAL_TEST_XML_FILE
+from legacy.CreateInst.docs.institution_docs import InstitutionDocs
 from legacy.services import exceptions
 from legacy.services.blob import BlobService
 from legacy.services.dataset_service import DataSetService
 # from SharedCode.mail_helper import MailHelper
-from .institution_docs import InstitutionDocs
 
 
 def create_institutions_main():
