@@ -16,6 +16,11 @@ from legacy.services.dataset_service import DataSetService
 
 
 def subject_builder_main() -> None:
+    """
+    Builds subject dataset using the CSV stored in the subjects blob
+
+    :return: None
+    """
     msgerror = ""
 
     dataset_service = DataSetService()

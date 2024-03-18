@@ -1,13 +1,30 @@
 import logging
 import time
-from typing import List
+from typing import Iterable
 
 import azure.cosmos.cosmos_client as cosmos_client
 
 from . import models
 
 
-def load_collection(url, api_key, db_id, collection_id, rows, version):
+def load_collection(url: str, api_key: str, db_id: str, collection_id: str, rows: Iterable, version: int) -> None:
+    """
+    Creates a loader class with the given parameters, used to load subjects into the dataset
+
+    :param url: URL of the database
+    :type url: str
+    :param api_key: Cosmos API key
+    :type api_key: str
+    :param db_id: Database ID
+    :type db_id: str
+    :param collection_id: Collection ID
+    :type collection_id: str
+    :param rows: Rows from CSV containing subject data
+    :type rows: Iterable[str]
+    :param version: Version of the dataset
+    :type version: int
+    :return: None
+    """
     loader = Loader(url, api_key, db_id, collection_id, rows, version)
 
     loader.load_subject_documents()
@@ -20,8 +37,8 @@ class Loader:
             cosmos_key: str,
             db_id: str,
             collection_id: str,
-            rows: List[str],
-            version: str
+            rows: Iterable,
+            version: int
     ) -> None:
 
         master_key = "masterKey"
@@ -37,6 +54,9 @@ class Loader:
         self.version = version
 
     def load_subject_documents(self) -> None:
+        """
+        Loads subject data from the CSV rows and stores it in the database
+        """
         options = {"partitionKey": str(self.version)}
         sproc_link = self.collection_link + "/sprocs/bulkImport"
 
