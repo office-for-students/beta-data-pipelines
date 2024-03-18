@@ -23,6 +23,11 @@ class Index():
         }
 
     def delete_if_already_exists(self) -> None:
+        """
+        Sends delete request to search index URL if it already exists.
+
+        :return: None
+        """
 
         try:
             delete_url = self.url + "/indexes/" + self.index_name + \
@@ -50,6 +55,11 @@ class Index():
             raise exceptions.StopEtlPipelineErrorException
 
     def create(self) -> None:
+        """
+        Sends post request to the search index URL.
+
+        :return: None
+        """
         self.build_postcode_schema()
 
         try:
@@ -70,6 +80,11 @@ class Index():
             raise exceptions.StopEtlPipelineErrorException
 
     def build_postcode_schema(self) -> None:
+        """
+        Sets the postcode schema name using the postcode JSON
+
+        :return: None
+        """
         cwd = os.path.dirname(os.path.abspath(__file__))
         with open(os.path.join(cwd, 'schemas/postcode.json')) as json_file:
             schema = json.load(json_file)

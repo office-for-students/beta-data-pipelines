@@ -7,6 +7,15 @@ from typing import Union
 
 
 def build_postcode_search_doc(postcode_list: List[str]) -> Union[Dict[str, Any], None]:
+    """
+    Takes a list containing postcode data and converts to a dictionary to be used for search.
+    Returns none if any data is invalid
+
+    :param postcode_list: List containing postcode data
+    :type postcode_list: List[str]
+    :return: Dictionary containing postcode data for search, or None if data is invalid
+    :rtype: Union[Dict[str, Any], None]
+    """
     try:
         postcode_object = {
             "postcode": postcode_list[1],
@@ -50,7 +59,16 @@ def build_postcode_search_doc(postcode_list: List[str]) -> Union[Dict[str, Any],
         raise
 
 
-def validate_latitude(latitude: int) -> bool:
+def validate_latitude(latitude: float) -> bool:
+    """
+    Takes a latitude as an integer and ensures it lies within the UK (so that it's valid for a UK postcode)
+    Returns True if the latitude lies outside the UK, otherwise returns False
+
+    :param latitude: Longitude to check
+    :type latitude: float
+    :return: True if the longitude is outside the UK (invalid), otherwise False (valid)
+    :rtype: bool
+    """
     if latitude < 49 or latitude > 61:
         logging.warning(f"latitude not valid for a UK postcode\n\
                           latitude:{latitude}")
@@ -59,7 +77,16 @@ def validate_latitude(latitude: int) -> bool:
     return False
 
 
-def validate_longitude(longitude: int) -> bool:
+def validate_longitude(longitude: float) -> bool:
+    """
+    Takes a longitude as an integer and ensures it lies within the UK (so that it's valid for a UK postcode)
+    Returns True if the longitude lies outside the UK, otherwise returns False
+
+    :param longitude: Longitude to check
+    :type longitude: float
+    :return: True if the longitude is outside the UK (invalid), otherwise False (valid)
+    :rtype: bool
+    """
     if longitude < -11 or longitude > 2.5:
         logging.warning(f"longitude not valid for a UK postcode\n\
                           longitude:{longitude}")
@@ -69,6 +96,15 @@ def validate_longitude(longitude: int) -> bool:
 
 
 def validate_header(header_row: List[str]) -> bool:
+    """
+    Takes a header row as a list of strings and checks that all required headers are present. Returns False if any
+    of the headers are incorrect, otherwise True.
+
+    :param header_row: List of column header strings
+    :type header_row: List[str]
+    :return: True if the headers are valid, otherwise False
+    :rtype: bool
+    """
     if header_row[0] != "id":
         return False
 
@@ -85,6 +121,15 @@ def validate_header(header_row: List[str]) -> bool:
 
 
 def is_float(value: Any) -> Tuple[bool, Union[float, None]]:
+    """
+    Checks if the passed value is a float and returns a tuple with the boolean result, and the new float value if
+    it is indeed a float.
+
+    :param value: Value to check
+    :type value: Any
+    :return: Tuple containing the boolean result and new float value if applicable
+    :rtype: Tuple[bool, Union[float, None]]
+    """
     try:
         new_value = float(value)
         return True, new_value

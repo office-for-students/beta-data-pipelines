@@ -9,7 +9,7 @@ from legacy.PostcodeSearchBuilder import models
 from legacy.services import exceptions
 
 
-class Loader():
+class Loader:
     """Loads postcode documents into search index"""
 
     def __init__(self, url: str, api_key: str, api_version: str, index_name: str, rows: List[str]) -> None:
@@ -26,6 +26,11 @@ class Loader():
         self.rows = rows
 
     def postcode_documents(self) -> None:
+        """
+        Calls method to load courses into search index
+
+        :return: None
+        """
 
         number_of_docs = len(self.rows)
         postcode_count = 0
@@ -64,6 +69,12 @@ class Loader():
                 search_postcodes = []
 
     def bulk_create_postcodes(self, documents: Dict[str, Any]) -> None:
+        """
+        Sends a post request to the search API to load postcodes into the index.
+
+        :param documents: Postcode data to load into search index
+        :type documents: Dict[str, Any]
+        """
         try:
             url = self.url + "/indexes/" + self.index_name + \
                   "/docs/index" + self.query_string
