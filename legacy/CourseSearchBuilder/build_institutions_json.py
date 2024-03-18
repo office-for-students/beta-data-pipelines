@@ -15,6 +15,10 @@ from legacy.services.blob import BlobService
 
 
 def build_institutions_json_files() -> None:
+    """
+    Retrieves a list of institutions and generates two JSON files, one for Welsh institution
+    names and one for English. Files are stored as a blob and are not returned by this function.
+    """
     institution_list = get_institutions()
 
     generate_file(
@@ -38,6 +42,18 @@ def build_institutions_json_files() -> None:
 
 
 def not_already_in_list(name: str, existing: List[str]) -> bool:
+    """
+    Takes a name of an institution and a list of existing institution names.
+    If the name is already in the list, it will be added to the list and this function returns True.
+    Otherwise, it returns False.
+
+    :param name: Name of institution to check
+    :type name: str
+    :param existing: List of existing institution names
+    :type existing: List[str]
+    :return: True if the name is already in the list, False otherwise
+    :rtype: bool
+    """
     if name not in existing:
         existing.append(name)
         return True
@@ -53,6 +69,26 @@ def generate_file(
         other_names: str,
         blob_file: str
 ) -> None:
+    """
+    Takes parameters relating to the institution dataset and generates a JSON file using institution data
+    from the passed institution list. The JSON file is saved to the blob referenced by the passed parameter
+    and is not returned by this function.
+
+    :param institution_list: List of dictionaries containing institution data
+    :type institution_list: List[Dict[str, Any]]
+    :param primary_name: Key for the institution's primary name
+    :type primary_name: str
+    :param secondary_name: Key for the institution's secondary name
+    :type secondary_name: str
+    :param first_trading_name: Key for the institution's first trading name
+    :type first_trading_name: str
+    :param legal_name: Key for the institution's legal name
+    :type legal_name: str
+    :param other_names: Key for the institution's other names
+    :type other_names: str
+    :param blob_file: Path to the blob for the generated file to be stored
+    :type blob_file: str
+    """
     blob_service = BlobService()
     institutions_file = io.StringIO()
     institutions = []
@@ -84,6 +120,21 @@ def generate_file(
 
 
 def get_inst_entry(name: str, first_trading_name: str, legal_name: str, other_names: str) -> Dict[str, Any]:
+    """
+    Takes relevant institution parameters and returns a dictionary containing these parameters.
+    Also includes the institution's name without any prefixes and its first letter.
+
+    :param name: Name of institution
+    :type name: str
+    :param first_trading_name: First trading name of institution
+    :type first_trading_name: str
+    :param legal_name: Legal name of institution
+    :type legal_name: str
+    :param other_names: Any other names of the institution
+    :type other_names: str
+    :return: Dictionary containing all relevant parameters for the institution
+    :rtype: Dict[str, Any]
+    """
     order_by_name = get_order_by_name(name)
     alphabet = order_by_name[0]
     entry = {
@@ -98,12 +149,29 @@ def get_inst_entry(name: str, first_trading_name: str, legal_name: str, other_na
 
 
 def get_order_by_name(name: str) -> str:
+    """
+    Takes an institution name and removes prefixes then returns the raw institution name in lowercase.
+
+    :param name: Name of institution
+    :type name: str
+    :return: Lowercase institution name without any prefixes
+    :rtype: str
+    """
     name = name.lower()
     name = remove_phrases_from_start(name)
     return name
 
 
 def remove_phrases_from_start(name: str) -> str:
+    """
+    Takes an institution name and removes any prefixes (e.g., "The university of", etc.), then returns
+    the raw institution name.
+
+    :param name: Institution name from which to remove prefixes
+    :type name: str
+    :return: Institution name without prefixes
+    :rtype: str
+    """
     if re.search(r"^the university of ", name):
         name = re.sub(r"^the university of ", "", name)
     if re.search(r"^university of ", name):

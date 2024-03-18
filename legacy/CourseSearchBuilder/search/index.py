@@ -23,6 +23,9 @@ class Index:
         }
 
     def delete_if_already_exists(self) -> None:
+        """
+        Sends delete request to search index URL if it already exists.
+        """
 
         try:
             delete_url = self.url + "/indexes/" + self.index_name + self.query_string
@@ -51,6 +54,9 @@ class Index:
             raise exceptions.StopEtlPipelineErrorException
 
     def create(self) -> None:
+        """
+        Sends post request to search index URL.
+        """
         self.get_index()
 
         try:
@@ -74,6 +80,9 @@ class Index:
             raise exceptions.StopEtlPipelineErrorException
 
     def get_index(self) -> None:
+        """
+        Sets the index schema name using the index json
+        """
         cwd = os.path.dirname(os.path.abspath(__file__))
         with open(os.path.join(cwd, "schemas/course.json")) as json_file:
             schema = json.load(json_file)

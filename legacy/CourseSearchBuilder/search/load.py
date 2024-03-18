@@ -1,4 +1,6 @@
 import logging
+from typing import Any
+from typing import Dict
 from typing import List
 
 import requests
@@ -24,6 +26,9 @@ class Load:
         self.docs = docs
 
     def course_documents(self) -> None:
+        """
+        Calls method to load courses into search index
+        """
 
         number_of_docs = len(self.docs)
         logging.info(f"THERE ARE A TOTAL OF {number_of_docs} courses")
@@ -51,7 +56,13 @@ class Load:
                 documents = {}
                 search_courses = []
 
-    def bulk_create_courses(self, documents) -> None:
+    def bulk_create_courses(self, documents: Dict[str, Any]) -> None:
+        """
+        Sends a post request to the search API to load courses into the index.
+
+        :param documents: Course data to load into search index
+        :type documents: Dict[str, Any]
+        """
 
         try:
             url = (

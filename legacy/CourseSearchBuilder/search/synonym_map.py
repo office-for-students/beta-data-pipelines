@@ -21,6 +21,9 @@ class SynonymMap:
         self.headers = {"Content-Type": "application/json", "api-key": api_key}
 
     def update(self) -> None:
+        """
+        Sends a put request to the API to update the synonym map
+        """
         self.get_synonym()
 
         try:
@@ -62,6 +65,9 @@ class SynonymMap:
             raise exceptions.StopEtlPipelineErrorException
 
     def create(self) -> None:
+        """
+        Sends a put request to the API to create a synonym map
+        """
         try:
             create_url = self.url + "/synonymmaps" + self.query_string
             response = requests.put(
@@ -83,6 +89,9 @@ class SynonymMap:
             raise exceptions.StopEtlPipelineErrorException
 
     def get_synonym(self) -> None:
+        """
+        Sets the synonym map schema name using the synonym map json
+        """
         cwd = os.path.dirname(os.path.abspath(__file__))
         with open(os.path.join(cwd, "schemas/course_synonym.json")) as json_file:
             schema = json.load(json_file)
@@ -92,6 +101,12 @@ class SynonymMap:
             self.course_synonym_schema = schema
 
     def get_synonym_list(self) -> str:
+        """
+        Returns a hardcoded list of synonyms for subject search
+
+        :return: String of synonyms for subject search
+        :rtype: str
+        """
         dentist_synonyms = "dentist, dentistry, endodontics, orthodontics, dentofacial orthopedics, oral medicine, pediatric dentistry, public health dentistry, prosthodontist, tooth doctor, dental surgeon, dental practitioner, hygenist, clinical dentistry, preclinical dentistry, pre clinical dentistry, pre-clinical dentistry => dentistry"
         midwidfery_synonyms = "obstetrics, obstetrical delivery, perinatology, fetology, feotology, tocology => midwifery"
         dental_nursing_synonyms = (

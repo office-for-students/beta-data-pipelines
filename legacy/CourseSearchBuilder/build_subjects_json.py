@@ -12,6 +12,13 @@ from legacy.services.blob import BlobService
 
 
 def build_subjects_json_file(blob_service: BlobService) -> None:
+    """
+    Calls required functions to generate a JSON containing subject data.
+    File is saved to a blob and not returned by the function.
+
+    :param blob_service: Blob service used to save the file
+    :type blob_service: BlobService
+    """
     subjects_list = get_collections("AzureCosmosDbSubjectsCollectionId")  # subjects
     subjects_file = io.StringIO()
 
@@ -29,6 +36,14 @@ def build_subjects_json_file(blob_service: BlobService) -> None:
 
 
 def get_subject_entry(subject: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Takes a dictionary of subject data and returns a dictionary containing the same keys and subject data
+
+    :param subject: Dictionary containing subject data
+    :type subject: Dict[str, Any]
+    :return: Dictionary of subject data
+    :rtype: Dict[str, Any]
+    """
     entry = {
         "code": subject["code"],
         "english_name": subject["english_name"],

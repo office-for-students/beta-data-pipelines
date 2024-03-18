@@ -10,6 +10,14 @@ from legacy.services.dataset_service import DataSetService
 
 
 def build_version_json_file(blob_service: BlobService, dataset_service: DataSetService) -> None:
+    """
+    Calls required functions to generate a version.json file which contains the version of the dataset service
+
+    :param blob_service: Blob service used to store the JSON file
+    :type blob_service: BlobService
+    :param dataset_service: Dataset service used to store the JSON file
+    :type dataset_service: DataSetService
+    """
     version = dataset_service.get_latest_version_number()
 
     version_file = io.StringIO()
