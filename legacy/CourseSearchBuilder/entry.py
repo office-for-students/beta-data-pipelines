@@ -17,6 +17,15 @@ from legacy.services.blob import BlobService
 
 
 def course_search_builder_main(blob_service: BlobService, dataset_service: DataSetService) -> None:
+    """
+    Builds the course search index
+
+    :param blob_service: Blob service to store JSON files
+    :type blob_service: BlobService
+    :param dataset_service: Dataset service used to build course search and version JSON
+    :type dataset_service: DataSetService
+    :return: None
+    """
     try:
 
         logging.info(
