@@ -52,8 +52,8 @@ def course_search_builder_main(blob_service: BlobService, dataset_service: DataS
 
         if dataset_service.have_all_builds_succeeded():
             build_institutions_json_files()
-            build_subjects_json_file()
-            build_version_json_file()
+            build_subjects_json_file(blob_service)
+            build_version_json_file(blob_service, dataset_service)
             build_sitemap_xml(blob_service)
 
             dataset_service.update_status("root", "succeeded")

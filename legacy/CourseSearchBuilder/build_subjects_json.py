@@ -11,8 +11,7 @@ from legacy.CourseSearchBuilder.get_collections import get_collections
 from legacy.services.blob import BlobService
 
 
-def build_subjects_json_file() -> None:
-    blob_service = BlobService()
+def build_subjects_json_file(blob_service: BlobService) -> None:
     subjects_list = get_collections("AzureCosmosDbSubjectsCollectionId")  # subjects
     subjects_file = io.StringIO()
 

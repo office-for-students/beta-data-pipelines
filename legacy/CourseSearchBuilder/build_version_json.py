@@ -9,10 +9,8 @@ from legacy.services.blob import BlobService
 from legacy.services.dataset_service import DataSetService
 
 
-def build_version_json_file() -> None:
-    version = DataSetService().get_latest_version_number()
-
-    blob_service = BlobService()
+def build_version_json_file(blob_service: BlobService, dataset_service: DataSetService) -> None:
+    version = dataset_service.get_latest_version_number()
 
     version_file = io.StringIO()
 
