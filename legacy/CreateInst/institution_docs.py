@@ -6,14 +6,10 @@ Currently, if expected data is missing, we let the exception
 bubble up.
 """
 
-import csv
-import datetime
 import inspect
 import logging
 import os
-import re
 import sys
-import time
 from typing import Any
 from typing import Dict
 from typing import List
@@ -29,12 +25,7 @@ from legacy.CreateInst.locations import Locations
 from legacy.EtlPipeline import course_lookup_tables
 from legacy.services import exceptions
 from legacy.services.blob import BlobService
-from legacy.services.utils import get_collection_link
-from legacy.services.utils import get_cosmos_client
 from legacy.services.utils import get_english_welsh_item
-from legacy.services.utils import get_uuid
-from legacy.services.utils import normalise_url
-from legacy.services.utils import sanitise_address_string
 
 CURRENT_DIR = os.path.dirname(
     os.path.abspath(inspect.getfile(inspect.currentframe()))
@@ -45,6 +36,16 @@ sys.path.insert(0, PARENT_DIR)
 
 
 def validate_headers(header: str, xml: str) -> bool:
+    """
+    Takes a header and an XML string, returns True if the header is found in the XML else False
+
+    :param header: Header to search for in XML string
+    :type header: str
+    :param xml: XML string to search for header
+    :type xml: str
+    :return: True if the header is found in the XML, else False
+    :rtype: bool
+    """
     if xml.find(header):
         return True
     logging.error(f"{header} not found")
@@ -52,6 +53,14 @@ def validate_headers(header: str, xml: str) -> bool:
 
 
 def add_tef_data(raw_inst_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Returns a dictionary of TEF data using the given raw institution data
+
+    :param raw_inst_data: Raw institution data used to build TEF dictionary
+    :type raw_inst_data: Dict[str, Any]
+    :return: Dictionary of TEF data
+    :rtype: Dict[str, Any]
+    """
     return dict(
         report_ukprn=raw_inst_data["REPORT_UKPRN"],
         overall_rating=raw_inst_data["OVERALL_RATING"],
@@ -62,6 +71,14 @@ def add_tef_data(raw_inst_data: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def validate_column_headers(header_row: str) -> bool:
+    """
+    Takes a header row as a string and checks it is of a valid format.
+
+    :param header_row: Header row to validate
+    :type header_row: str
+    :return: True if the header row is valid, False otherwise
+    :rtype: bool
+    """
     logging.info(f"Validating header row, headers: {header_row}")
     header_list = header_row.split(",")
 
@@ -83,6 +100,12 @@ def validate_column_headers(header_row: str) -> bool:
 
 
 def get_welsh_uni_names() -> List[str]:
+    """
+    Gets Welsh institution names from either a local test XML file or the blob storage.
+
+    :return: List of Welsh institution names
+    :rtype: List[str]
+    """
     if XML_USE_LOCAL_TEST_XML_FILE:
         et_test = ET.parse(XML_LOCAL_TEST_XML_FILE)
         uprnEl = et_test.find('UKPRN')
@@ -110,6 +133,12 @@ def get_welsh_uni_names() -> List[str]:
 
 
 def get_white_list() -> List[str]:
+    """
+    Returns a list of white listed institutions
+
+    :return: List of white listed institutions
+    :rtype: List[str]
+    """
     file_path = os.path.realpath(
         os.path.join(os.getcwd(), os.path.dirname(__file__))
     )
@@ -121,60 +150,31 @@ def get_white_list() -> List[str]:
 
 
 
-        institution_doc = {
-            "_id": get_uuid(),
-            "created_at": datetime.datetime.utcnow().isoformat(),
-            "version": self.version,
-            "institution_id": raw_inst_data["PUBUKPRN"],
-            "partition_key": str(self.version),
-            "institution": self.get_institution_element(
-                institution
-            ),
-        }
-        return institution_doc
+def get_country(code: str) -> Dict[str, str]:
+    """
+    Takes a country code and returns a dictionary of country data additionally containing the country name
 
-    def create_institution_docs(self) -> None:
-        """Parse HESA XML and create JSON institution docs in Cosmos DB."""
-
-        cosmosdb_client = get_cosmos_client()
-
-        collection_link = get_collection_link(
-            "COSMOS_COLLECTION_INSTITUTIONS"
-        )
-
-        options = {"partitionKey": str(self.version)}
-        sproc_link = collection_link + "/sprocs/bulkImport"
-
-        institution_count = 0
-        new_docs = []
-        sproc_count = 0
-        for institution in self.root.iter("INSTITUTION"):
-            institution_count += 1
-            sproc_count += 1
-            new_docs.append(self.get_institution_doc(institution))
-            if sproc_count == 100:
-                logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-                cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
-                logging.info(f"Successfully loaded another {sproc_count} documents")
-                # Reset values
-                new_docs = []
-                sproc_count = 0
-                time.sleep(10)
-
-        if sproc_count > 0:
-            logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-            cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
-            logging.info(f"Successfully loaded another {sproc_count} documents")
-
-        logging.info(f"Processed {institution_count} institutions")
-
-
-def get_country(code: str) -> Dict[str, Any]:
+    :param code: Code used to lookup country
+    :type code: str
+    :return: Country data
+    :rtype: Dict[str, Any]
+    """
     country = {"code": code, "name": course_lookup_tables.country_code[code]}
     return country
 
 
-def get_student_unions(location_lookup: Dict[str, Any], institution: ET) -> List[Dict[str, Any]]:
+def get_student_unions(location_lookup: Locations, institution: ET) -> List[Dict[str, Any]]:
+    """
+    Takes a lookup location object and institution XML element and returns a list of student union data for that
+    location and institution.
+
+    :param location_lookup: Location used to retrieve student unions
+    :type location_lookup: Locations
+    :param institution: Institution used to retrieve student unions
+    :type institution: ElementTree
+    :return: List of student union data
+    :rtype: List[Dict[str, Any]]
+    """
     pubukprn = xmltodict.parse(ET.tostring(institution))["INSTITUTION"][
         "PUBUKPRN"
     ]
@@ -201,6 +201,14 @@ def get_student_unions(location_lookup: Dict[str, Any], institution: ET) -> List
 
 
 def get_student_union(location: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Takes location data and returns a dictionary of student union data using the corresponding location
+
+    :param location: Location data to get student union with
+    :type location: Dict[str, Any]
+    :return: Student union data
+    :rtype: Dict[str, Any]
+    """
     student_union = {}
     link = get_english_welsh_item("SUURL", location)
     if link:
@@ -212,4 +220,12 @@ def get_student_union(location: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def get_total_number_of_courses(institution: ET) -> int:
+    """
+    Takes an XML element and returns the total number of kis courses
+
+    :param institution: Institution XML element
+    :type institution: ElementTree
+    :return: Total number of courses
+    :rtype: int
+    """
     return len(institution.findall("KISCOURSE"))

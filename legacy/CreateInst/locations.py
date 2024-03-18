@@ -1,3 +1,5 @@
+from typing import Any
+
 import defusedxml.ElementTree as ET
 import xmltodict
 
@@ -48,5 +50,13 @@ class Locations:
                 # f.write("======================================================================================\n")
                 # f.close()
 
-    def get_location(self, key):
+    def get_location(self, key: str) -> Any:
+        """
+        Takes a key and returns the corresponding value from the lookup dictionary, defaults to returning an
+        empty dictionary.
+
+        :param key: Key to lookup with
+        :return: Value of the lookup dictionary with the passed key
+        :rtype: Any
+        """
         return self.lookup_dict.get(key, {})
