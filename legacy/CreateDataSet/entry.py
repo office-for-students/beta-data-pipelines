@@ -22,13 +22,16 @@ def create_dataset_main(
     Creates a new DataSet for each new file we get from HESA
 
     :param blob_service: Class that contains methods for interacting with Azure Blob Storage
-    :param storage_container_name: azure storage container
-    :param storage_blob_name: azure storage blob name
+    :type blob_service: BlobService
+    :param storage_container_name: Azure storage container
+    :type storage_container_name: str
+    :param storage_blob_name: Azure storage blob name
+    :type storage_container_name: str
     :param use_test_xml: If True will use mock xml file
+    :type use_test_xml: bool
     :param mock_xml: For testing pass in a mock XML string
-
+    :type mock_xml: Optional[str]
     :return: None
-    :rtype: None
     """
 
     if use_test_xml:
