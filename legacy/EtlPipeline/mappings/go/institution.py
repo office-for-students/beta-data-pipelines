@@ -30,7 +30,7 @@ class GoInstitutionMappings(BaseMappings):
             (f'{self.mapping_id}PROV_PC_W', "inst_prov_pc_w")
         ]
 
-    def custom_unavailable(self, json_data: Dict[str, Any], elem: Dict[str, Any], key: str) -> None:
+    def custom_unavailable(self, json_data: Dict[str, Any], elem: Dict[str, Any]) -> None:
         json_data["unavail_reason"] = elem["GOSALUNAVAILREASON"]
         json_data["unavail_text_english"], json_data["unavail_text_welsh"] = get_earnings_unavail_text(
             "institution",
