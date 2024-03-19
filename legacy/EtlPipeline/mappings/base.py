@@ -72,7 +72,7 @@ class BaseMappings:
     def per_course_unavailable(self, json_data: Dict[str, Any]) -> None:
         pass
 
-    def custom_unavailable(self, json_data: Dict[str, Any], elem: List) -> None:
+    def custom_unavailable(self, json_data: Dict[str, Any], elem: List, key: str) -> None:
         # Required if you have set unavailable_keys and that key is found during mapping
         raise NotImplemented
 
