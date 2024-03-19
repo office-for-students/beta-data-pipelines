@@ -19,7 +19,7 @@ def build_subjects_json_file(blob_service: BlobService) -> None:
     :param blob_service: Blob service used to save the file
     :type blob_service: BlobService
     """
-    subjects_list = get_collections("AzureCosmosDbSubjectsCollectionId")  # subjects
+    subjects_list = get_collections("COSMOS_COLLECTION_SUBJECTS")  # subjects
     subjects_file = io.StringIO()
 
     subjects = []

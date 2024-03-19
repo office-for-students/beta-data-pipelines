@@ -8,6 +8,9 @@ from typing import List
 
 from azure.cosmos import CosmosClient
 
+from constants import COSMOS_COLLECTION_COURSES
+from constants import COSMOS_COLLECTION_INSTITUTIONS
+from constants import COSMOS_COLLECTION_SUBJECTS
 from constants import COSMOS_DATABASE_ID
 from constants import COSMOS_DATABASE_KEY
 from constants import COSMOS_DATABASE_URI
@@ -99,19 +102,13 @@ def get_ukrlp_lookups(version: int) -> Dict[str, Any]:
     :rtype: Dict[str, Any]
     """
 
-    cosmos_db_client = get_cosmos_client()
-
-    collection_link = get_collection_link(
-        collection_id="COSMOS_COLLECTION_INSTITUTIONS"
-    )
+    cosmos_client = get_cosmos_client()
+    cosmos_db_client = cosmos_client.get_database_client(COSMOS_DATABASE_ID)
+    cosmos_container_client = cosmos_db_client.get_container_client(COSMOS_COLLECTION_INSTITUTIONS)
 
     query = f"SELECT * from c WHERE c.version = {version}"
 
-    options = {"enableCrossPartitionQuery": True}
-
-    lookup_list = list(
-        cosmos_db_client.QueryItems(collection_link, query, options)
-    )
+    lookup_list = list(cosmos_container_client.query_items(query))
 
     # Previous data from the UKRLP smashed the ukprn number with the pub_ukprn,
     # to limit changes doing the same now.
@@ -127,7 +124,7 @@ def get_ukrlp_lookups(version: int) -> Dict[str, Any]:
     }
 
 
-def get_subject_lookups(version: str) -> Dict[str, Any]:
+def get_subject_lookups(version: int) -> Dict[str, Any]:
     """
     Returns a dictionary of subject lookups, including the subject code.
 
@@ -137,18 +134,12 @@ def get_subject_lookups(version: str) -> Dict[str, Any]:
     :rtype: Dict[str, Any]
     """
 
-    cosmos_db_client = get_cosmos_client()
-    collection_link = get_collection_link(
-        collection_id="COSMOS_COLLECTION_SUBJECTS"
-    )
+    cosmos_client = get_cosmos_client()
+    cosmos_db_client = cosmos_client.get_database_client(COSMOS_DATABASE_ID)
+    cosmos_container_client = cosmos_db_client.get_container_client(COSMOS_COLLECTION_SUBJECTS)
 
     query = f"SELECT * from c WHERE c.version = {version}"
-
-    options = {"enableCrossPartitionQuery": True}
-
-    lookup_list = list(
-        cosmos_db_client.QueryItems(collection_link, query, options)
-)
+    lookup_list = list(cosmos_container_client.query_items(query, enable_cross_partition_query=True))
 
     return {lookup["code"]: lookup for lookup in lookup_list}
 
@@ -163,18 +154,12 @@ def get_courses_by_version(version: int) -> List[Dict[str, Any]]:
     :rtype: List[Dict[str, Any]]
     """
 
-    cosmos_db_client = get_cosmos_client()
-    collection_link = get_collection_link(
-        collection_id="COSMOS_COLLECTION_COURSES"
-    )
+    cosmos_client = get_cosmos_client()
+    cosmos_db_client = cosmos_client.get_database_client(COSMOS_DATABASE_ID)
+    cosmos_container_client = cosmos_db_client.get_container_client(COSMOS_COLLECTION_COURSES)
 
     query = f"SELECT * from c WHERE c.version = {version}"
-
-    options = {"enableCrossPartitionQuery": True}
-
-    course_list = list(
-        cosmos_db_client.QueryItems(collection_link, query, options)
-    )
+    course_list = list(cosmos_container_client.query_items(query, enable_cross_partition_query=True))
 
     return course_list
 

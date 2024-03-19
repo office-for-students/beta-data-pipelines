@@ -2,6 +2,7 @@ from typing import Any
 from typing import Dict
 from typing import List
 
+from constants import COSMOS_DATABASE_ID
 from legacy.services.dataset_service import DataSetService
 from legacy.services.utils import get_collection_link
 from legacy.services.utils import get_cosmos_client
@@ -17,14 +18,12 @@ def get_collections(cosmos_field_db_id: str) -> List[Dict[str, Any]]:
     :rtype: List[Dict[str, Any]]
     """
     version = DataSetService().get_latest_version_number()
-    cosmos_db_client = get_cosmos_client()
-    collection_link = get_collection_link(cosmos_field_db_id)
+    cosmos_client = get_cosmos_client()
+    cosmos_db_client = cosmos_client.get_database_client(COSMOS_DATABASE_ID)
+    cosmos_container_client = cosmos_db_client.get_container_client(cosmos_field_db_id)
 
     query = f"SELECT * from c where c.version = {version}"
-
-    options = {"enableCrossPartitionQuery": True}
-
-    collections_list = list(cosmos_db_client.QueryItems(collection_link, query, options))
+    collections_list = list(cosmos_container_client.query_items(query, enable_cross_partition_query=True))
 
     return collections_list
 

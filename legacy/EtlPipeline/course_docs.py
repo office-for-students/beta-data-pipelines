@@ -25,6 +25,8 @@ import course_lookup_tables as lookup
 from accreditations import Accreditations
 from constants import BLOB_QUALIFICATIONS_BLOB_NAME
 from constants import BLOB_QUALIFICATIONS_CONTAINER_NAME
+from constants import COSMOS_COLLECTION_COURSES
+from constants import COSMOS_DATABASE_ID
 from course_stats import get_earnings_unavail_text
 from course_stats import get_stats
 from course_subjects import get_subjects
@@ -54,14 +56,12 @@ sys.path.insert(0, CURRENT_DIR)
 sys.path.insert(0, PARENT_DIR)
 
 
-def load_course_docs(
-        xml_string: str,
-        version: str,
-        cosmos_course_collection_id: str
-) -> None:
+def load_course_docs(xml_string: str, version: int) -> None:
     """Parse HESA XML passed in and create JSON course docs in Cosmos DB."""
 
-    cosmosdb_client = utils.get_cosmos_client()
+    cosmos_client = utils.get_cosmos_client()
+    cosmos_db_client = cosmos_client.get_database_client(COSMOS_DATABASE_ID)
+    cosmos_container_client = cosmos_db_client.get_container_client(COSMOS_COLLECTION_COURSES)
 
     logging.info(
         "adding ukrlp data into memory ahead of building course documents"
@@ -81,15 +81,13 @@ def load_course_docs(
     qualification_enricher = QualificationCourseEnricher(BLOB_QUALIFICATIONS_CONTAINER_NAME,
                                                          BLOB_QUALIFICATIONS_BLOB_NAME)
 
-    collection_link = utils.get_collection_link(
-        cosmos_course_collection_id
-    )
+    collection_link = utils.get_collection_link(COSMOS_COLLECTION_COURSES)
 
     # Import the XML dataset
     root = ET.fromstring(xml_string)
 
-    options = {"partitionKey": str(version)}
     sproc_link = collection_link + "/sprocs/bulkImport"
+    partition_key = str(version)
 
     new_docs = []
     sproc_count = 0
@@ -142,7 +140,8 @@ def load_course_docs(
 
                 if sproc_count >= 5:
                     logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-                    cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
+                    cosmos_container_client.scripts.execute_stored_procedure(sproc_link, params=[new_docs],
+                                                                             partition_key=partition_key)
                     logging.info(f"Successfully loaded another {sproc_count} documents")
                     # Reset values
                     new_docs = []
@@ -160,7 +159,8 @@ def load_course_docs(
 
     if sproc_count > 0:
         logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-        cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
+        cosmos_container_client.scripts.execute_stored_procedure(sproc_link, params=[new_docs],
+                                                                 partition_key=partition_key)
         logging.info(f"Successfully loaded another {sproc_count} documents")
         # Reset values
         new_docs = []
@@ -193,7 +193,7 @@ def get_course_doc(
         raw_inst_data: Dict[str, Any],
         raw_course_data: Dict[str, Any],
         kisaims: KisAims,
-        version: str,
+        version: int,
         go_sector_salaries: GOSectorSalaries,
         leo3_sector_salaries: LEO3SectorSalaries,
         leo5_sector_salaries: LEO5SectorSalaries,
@@ -313,9 +313,7 @@ def get_course_doc(
             raw_course_data, lookup.year_abroad, "YEARABROAD"
         )
 
-    course["statistics"] = get_stats(
-        raw_course_data, course["country"]["code"]
-    )
+    course["statistics"] = get_stats(raw_course_data)
 
     # Extract the appropriate sector-level earnings data for the current course.
     go_sector_json_array = get_go_sector_json(
@@ -589,8 +587,8 @@ def process_stats(
         primary_dataset: List[Dict[str, Any]],
         secondary_dataset: List[Dict[str, Any]],
         tertiary_dataset: List[Dict[str, Any]],
-        course_mode: str,
-        course_level: str,
+        course_mode: int,
+        course_level: int,
         salary_lookup: SectorSalaries,
 ) -> List[Dict[str, Any]]:
     xml_array = []
@@ -624,8 +622,8 @@ def get_go_sector_json(
         leo3_salary_inst_list: List[Dict[str, Any]],
         leo5_salary_inst_list: List[Dict[str, Any]],
         go_sector_salary_lookup: SectorSalaries,
-        course_mode: str,
-        course_level: str,
+        course_mode: int,
+        course_level: int,
         subject_enricher: SubjectCourseEnricher
 ) -> List[Dict[str, Any]]:
     go_salary_sector_xml_array = process_stats(
@@ -648,8 +646,8 @@ def get_leo3_sector_json(
         go_salary_inst_list: List[Dict[str, Any]],
         leo5_salary_inst_list: List[Dict[str, Any]],
         leo3_sector_salary_lookup: SectorSalaries,
-        course_mode: str,
-        course_level: str,
+        course_mode: int,
+        course_level: int,
         subject_enricher: SubjectCourseEnricher
 ):
     leo3_sector_xml_array = process_stats(
@@ -672,8 +670,8 @@ def get_leo5_sector_json(
         go_salary_inst_list: List[Dict[str, Any]],
         leo3_salary_inst_list: List[Dict[str, Any]],
         leo5_sector_salary_lookup: SectorSalaries,
-        course_mode: str,
-        course_level: str,
+        course_mode: int,
+        course_level: int,
         subject_enricher: SubjectCourseEnricher
 ):
     leo5_sector_xml_array = process_stats(

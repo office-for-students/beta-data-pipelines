@@ -49,13 +49,7 @@ def etl_pipeline_main(
 
         dataset_service.update_status("courses", "in progress")
 
-        course_docs.load_course_docs(
-            xml_string,
-            version,
-            "COSMOS_DATABASE_ID",
-            "COSMOS_COLLECTION_SUBJECTS",
-            "COSMOS_COLLECTION_COURSES"
-        )
+        course_docs.load_course_docs(xml_string, version)
         dataset_service.update_status("courses", "succeeded")
 
         function_end_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")

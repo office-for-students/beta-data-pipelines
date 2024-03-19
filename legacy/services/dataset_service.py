@@ -7,6 +7,8 @@ from typing import Any
 from typing import Dict
 from typing import List
 
+from constants import COSMOS_COLLECTION_DATASET
+from constants import COSMOS_DATABASE_ID
 from .utils import get_collection_link
 from .utils import get_cosmos_client
 
@@ -22,6 +24,8 @@ class DataSetService:
     def __init__(self) -> None:
         logging.info("Init for DataSetService")
         self.cosmos_client = get_cosmos_client()
+        self.database_client = self.cosmos_client.get_database_client(COSMOS_DATABASE_ID)
+        self.container_client = self.database_client.get_container_client(COSMOS_COLLECTION_DATASET)
         self.collection_link = get_collection_link("COSMOS_COLLECTION_DATASET")
 
     def update_status(self, item: str, value: str, updated_at: str = None) -> None:
@@ -45,7 +49,7 @@ class DataSetService:
         dataset_doc["updated_at"] = datetime.datetime.utcnow().isoformat()
         if updated_at:
             dataset_doc["updated_at"] = updated_at
-        self.cosmos_client.UpsertItem(self.collection_link, dataset_doc)
+        self.container_client.upsert_item(dataset_doc)
         logging.info(
             f"DataSetService: updated '{item}' to '{value}' for "
             f"DataSet version {dataset_doc['version']}"
@@ -60,8 +64,7 @@ class DataSetService:
         """
         latest_version_number = self.get_latest_version_number()
         query = f"SELECT * FROM c WHERE c.version = {latest_version_number}"
-        options = {"enableCrossPartitionQuery": True}
-        the_list = list(self.cosmos_client.QueryItems(self.collection_link, query, options))
+        the_list = list(self.container_client.query_items(query, enable_cross_partition_query=True))
         the_list_item = the_list[0]
         return the_list_item
 
@@ -73,10 +76,7 @@ class DataSetService:
         :rtype: int
         """
         query = "SELECT VALUE MAX(c.version) from c "
-        options = {"enableCrossPartitionQuery": True}
-        max_version_number_list = list(
-            self.cosmos_client.QueryItems(self.collection_link, query, options)
-        )
+        max_version_number_list = list(self.container_client.query_items(query, enable_cross_partition_query=True))
         return max_version_number_list[0]
 
     def query_items(self, query: str) -> List[Dict[str, Any]]:
@@ -86,10 +86,7 @@ class DataSetService:
         :param query: Query to run on the database
         :return: List of dictionaries containing the query results
         """
-        options = {"enableCrossPartitionQuery": True}
-        return list(
-            self.cosmos_client.QueryItems(self.collection_link, query, options)
-        )
+        return list(self.container_client.query_items(query, enable_cross_partition_query=True))
 
     def create_item(self, dataset_doc: Dict[str, Any]) -> None:
         """
@@ -98,7 +95,7 @@ class DataSetService:
         :param dataset_doc: Dataset to create a database item with
         :return: None
         """
-        self.cosmos_client.CreateItem(self.collection_link, dataset_doc)
+        self.container_client.create_item(dataset_doc)
 
     def have_all_builds_succeeded(self) -> bool:
         """
