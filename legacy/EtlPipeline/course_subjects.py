@@ -5,7 +5,12 @@ from typing import Union
 
 
 def get_subjects(raw_course_data: Dict[str, Any]) -> List[Dict[str, Any]]:
-    """Extracts and transforms the SBJ entries in a KISCOURSE"""
+    """
+    Extracts and transforms the SBJ entries in a KISCOURSE.
+    Returns subject data as a list of dictionaries.
+
+    :param raw_course_data: Course dictionary containing subject data
+    """
 
     subjects = []
     subject_codes = raw_course_data["SBJ"]
@@ -20,7 +25,14 @@ def get_subjects(raw_course_data: Dict[str, Any]) -> List[Dict[str, Any]]:
 
 
 def convert_to_list(subject_codes: Union[str, Any]) -> Union[List[str], Any]:
-    """If value is a dict, return in list, otherwise return value"""
+    """
+    If value is a str, return in list, otherwise return value
+
+    :param subject_codes: Value to check
+    :type subject_codes: Union[str, Any]
+    :return: Value as a list if it's a string, otherwise the value
+    :rtype: Union[List[str], Any]
+    """
     if isinstance(subject_codes, str):
         return [subject_codes]
 

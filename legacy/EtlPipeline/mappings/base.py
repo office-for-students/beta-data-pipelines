@@ -35,9 +35,20 @@ class BaseMappings:
 
     def map_xml_to_json_array(
             self,
-            xml_as_array: List[Any],
+            xml_as_array: List[Dict[str, Any]],
             mappings: Optional[List[Tuple[str, str]]] = None,
     ) -> List[Dict[str, Any]]:
+        """
+        Takes an XML as a list and optionally a list of mappings, and returns a list of JSON objects for each
+        dictionary in the passed XML as array. Optionally takes mappings to override the defaults.
+
+        :param xml_as_array: XML element to convert to a JSON list
+        :type xml_as_array: List[Dict[str, Any]]
+        :param mappings: Optional, if provided will overwrite the default mappings
+        :type mappings: Optional[List[Tuple[str, str]]]
+        :return: List of JSON dictionaries
+        :rtype: List[Dict[str, Any]]
+        """
         json_array = []
         # Can overwrite mappings if needed, otherwise the default is get_mappings()
         if not mappings:
@@ -72,7 +83,7 @@ class BaseMappings:
     def per_course_unavailable(self, json_data: Dict[str, Any]) -> None:
         pass
 
-    def custom_unavailable(self, json_data: Dict[str, Any], elem: List, key: str) -> None:
+    def custom_unavailable(self, json_data: Dict[str, Any], elem: Dict[str, Any], key: str) -> None:
         # Required if you have set unavailable_keys and that key is found during mapping
         raise NotImplemented
 
@@ -82,7 +93,17 @@ class BaseMappings:
 
     @staticmethod
     def in_and_not_na(key: str, data: Dict[str, Any]) -> bool:
-        if key in data:
-            if data.get(key).lower() != "na":
-                return True
+        """
+        Takes a key and a data dictionary, and checks if the corresponding value exists and is not "na".
+        Returns True if both of these conditions are met, otherwise False.
+
+        :param key: Key to lookup data dictionary
+        :type key: str
+        :param data: Data dictionary to check value of
+        :type data: Dict[str, Any]
+        :return: True if the value exists and is not "na", otherwise False
+        :rtype: bool
+        """
+        if key in data and data.get(key).lower() != "na":
+            return True
         return False

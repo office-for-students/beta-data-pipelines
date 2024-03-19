@@ -9,6 +9,7 @@ from legacy.EtlPipeline.utils import get_go_work_unavail_messages
 
 
 class GoVoiceMappings(BaseMappings):
+    """GO Mappings for voices"""
     OPTIONS = ["GO"]
     unavailable_keys = ["unavailable"]
 
@@ -16,6 +17,12 @@ class GoVoiceMappings(BaseMappings):
         super().__init__(mapping_id=mapping_id, subject_enricher=subject_enricher)
 
     def get_mappings(self) -> List[Tuple[str, str]]:
+        """
+        Returns the list of mappings as a list of tuples with the class' mapping ID.
+
+        :return: List of mappings
+        :rtype: List[Tuple[str, str]]
+        """
         return [
             (f'{self.mapping_id}WORKSBJ', "subject"),
             (f'{self.mapping_id}WORKAGG', "go_work_agg"),
@@ -28,8 +35,17 @@ class GoVoiceMappings(BaseMappings):
             (f'{self.mapping_id}WORKUNAVAILREASON', "unavailable")
         ]
 
-    #
     def custom_unavailable(self, json_data: Dict[str, Any], elem: Dict[str, Any], key: str) -> None:
+        """
+        Takes a JSON and a raw data element as dictionaries and sets the appropriate unavailable message
+
+        :param json_data: JSON data
+        :type json_data: Dict[str, Any]
+        :param elem: Raw data element used to get unavailable message
+        :type elem: Dict[str, Any]
+        :param key: Not required
+        :return: None
+        """
         json_data["unavailable"] = get_go_work_unavail_messages(
             xml_element_key="GO",
             xml_agg_key='GOWORKAGG',

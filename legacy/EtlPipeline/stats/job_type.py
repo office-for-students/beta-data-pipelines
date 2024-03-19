@@ -23,6 +23,14 @@ class JobType:
 
     @staticmethod
     def get_key(xml_key: str) -> str:
+        """
+        Takes an XML key and returns the corresponding value.
+
+        :param xml_key: Key of value to return
+        :type xml_key: str
+        :return: Value corresponding to the passed key
+        :rtype: str
+        """
         return {
             "JOBUNAVAILREASON": "unavailable",
             "JOBPOP": "number_of_students",
@@ -39,4 +47,12 @@ class JobType:
         }.get(xml_key)
 
     def get_stats(self, raw_course_data: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """
+        Takes a dictionary of course data and returns a list of JSON dictionaries for the job type element.
+
+        :param raw_course_data: Dictionary of course data
+        :type raw_course_data: Dict[str, Any]
+        :return: List of JSON dictionaries for the job type element
+        :rtype: List[Dict[str, Any]]
+        """
         return self.shared_utils.get_json_list(raw_course_data, self.get_key)

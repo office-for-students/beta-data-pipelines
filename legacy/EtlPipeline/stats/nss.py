@@ -30,9 +30,27 @@ class Nss:
         ]
 
     def is_question(self, xml_key: str) -> bool:
+        """
+        Takes an XML key and returns whether it is a question key.
+
+        :param xml_key: XML key to check
+        :type xml_key: str
+        :return: True if the XML key is a question, else False
+        :rtype: bool
+        """
         return xml_key in self.is_question_lookup
 
     def get_question(self, xml_elem: Dict[str, Any], xml_key: str) -> Dict[str, Any]:
+        """
+        Takes an XML element as a dictionary and a key, and returns a constructed question JSON using these parameters
+
+        :param xml_elem: XML element to construct question object with
+        :type xml_elem: Dict[str, Any]
+        :param xml_key: XML key used with xml_elem
+        :type xml_key: str
+        :return: Constructed question object
+        :rtype: Dict[str, Any]
+        """
         question = {
             "description": self.question_lookup.get(xml_key)
         }
@@ -42,11 +60,30 @@ class Nss:
         return question
 
     def get_mandatory_field(self, xml_elem: Dict[str, Any], xml_key: str) -> Union[Dict[str, Any], int]:
+        """
+        Takes an XML element and a key, and returns a constructed question object if the key is a question,
+        otherwise returns the key's value as an integer.
+
+        :param xml_elem: XML element to construct question object with
+        :type xml_elem: Dict[str, Any]
+        :param xml_key: Key to extract value from
+        :type xml_key: str
+        :return: Constructed question object or the key's integer value if the key is not a question
+        :rtype: Union[Dict[str, Any], int]
+        """
         if self.is_question(xml_key):
             return self.get_question(xml_elem, xml_key)
         return self.shared_utils.get_json_value(xml_elem.get(xml_key))
 
     def get_json_data(self, xml_elem: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Takes an XML element and transforms the data into a JSON for nss
+
+        :param xml_elem: XML element to transform
+        :type xml_elem: Dict[str, Any]
+        :return: JSON object containing XML data
+        :rtype: Dict[str, Any]
+        """
         lookup = self.nss_data_fields_lookup
         json_data = dict()
         for xml_key in lookup:
@@ -71,7 +108,15 @@ class Nss:
         return json_data
 
     def get_stats(self, raw_course_data: Dict[str, Any]) -> List[Dict[str, Any]]:
-        """Returns a list of JSON objects (as dicts) for this stats element"""
+        """
+        Returns a list of JSON objects (as dicts) for this stats element.
+        Takes raw course data as a dictionary.
+
+        :param raw_course_data: Raw course data to be processed
+        :type raw_course_data: Dict[str, Any]
+        :return: List of JSON objects for the nhs_nss element
+        :rtype: List[Dict[str, Any]]
+        """
 
         json_elem_list = []
         raw_xml_list = SharedUtils.get_raw_list(

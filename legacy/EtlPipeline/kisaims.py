@@ -21,4 +21,12 @@ class KisAims:
             self.lookup_dict[key] = raw_kisaim_data["KISAIMLABEL"]
 
     def get_kisaim_label_for_key(self, key: str) -> str:
+        """
+        Takes a key and returns the KIS aim data from the KisAims object's lookup dict.
+
+        :param key: Key to extract KIS aim data with
+        :type key: str
+        :return: Corresponding KIS aim data
+        :rtype: Dict[str, Any]
+        """
         return self.lookup_dict.get(key)

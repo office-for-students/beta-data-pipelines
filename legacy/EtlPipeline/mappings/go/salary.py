@@ -9,6 +9,7 @@ from legacy.EtlPipeline.subject_enricher import SubjectCourseEnricher
 
 
 class GoSalaryMappings(BaseMappings):
+    """GO Mappings for salaries"""
     OPTIONS = ["GO"]
     unavailable_keys = []
 
@@ -16,6 +17,12 @@ class GoSalaryMappings(BaseMappings):
         super().__init__(mapping_id=mapping_id, subject_enricher=subject_enricher)
 
     def get_mappings(self) -> List[Tuple[str, str]]:
+        """
+        Returns the list of mappings as a list of tuples with the class' mapping ID.
+
+        :return: List of mappings
+        :rtype: List[Tuple[str, str]]
+        """
         return [
             (f'{self.mapping_id}SECSBJ', "subject"),
             ('KISMODE', "mode"),
@@ -48,6 +55,13 @@ class GoSalaryMappings(BaseMappings):
         ]
 
     def per_course_unavailable(self, json_data: Dict[str, Any]) -> None:
+        """
+        Takes a JSON as a dictionary and sets the unavailable texts for both languages.
+
+        :param json_data: JSON data as a dictionary
+        :type json_data: Dict[str, Any]
+        :return: None
+        """
         json_data["unavail_text_region_not_exists_english"], json_data["unavail_text_region_not_exists_welsh"] = \
             get_earnings_unavail_text("sector", "go", "region_not_exists")
         json_data["unavail_text_region_not_nation_english"], json_data["unavail_text_region_not_nation_welsh"] = \

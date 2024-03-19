@@ -30,10 +30,10 @@ class SharedUtils:
 
     def __init__(
             self,
-            xml_element_key,
-            xml_subj_key,
-            xml_agg_key,
-            xml_unavail_reason_key,
+            xml_element_key: str,
+            xml_subj_key: str,
+            xml_agg_key: str,
+            xml_unavail_reason_key: str,
     ) -> None:
 
         self.xml_element_key = xml_element_key
@@ -47,6 +47,14 @@ class SharedUtils:
 
     @staticmethod
     def get_lookup(lookup_name: str) -> Dict[str, Any]:
+        """
+        Takes a lookup name and returns the corresponding file loaded as a JSON dictionary
+
+        :param lookup_name: Lookup value associated with the desired JSON file
+        :type lookup_name: str
+        :return: Corresponding JSON file as a dictionary
+        :rtype: Dict[str, Any]
+        """
         cwd = os.path.dirname(os.path.abspath(__file__))
         filename = {
             "subj_code_english": "subj_code_english.json",
@@ -70,6 +78,14 @@ class SharedUtils:
             return json.load(infile)
 
     def get_subject(self, xml_elem: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Takes an XML element and returns the subject associated with the SharedUtils' subject key.
+
+        :param xml_elem: XML element containing desired subject data
+        :type xml_elem: Dict[str, Any]
+        :return: Constructed subject dictionary
+        :rtype: Dict[str, Any]
+        """
         subj_key = xml_elem[self.xml_subj_key]
         subject = {
             "code": subj_key,
@@ -78,18 +94,44 @@ class SharedUtils:
         }
         return subject
 
-    def get_english_sbj_label(self, code: str) -> Dict[str, Any]:
+    def get_english_sbj_label(self, code: str) -> str:
+        """
+        Takes a subject code and returns the english name for the associated subject.
+
+        :param code: Subject code to perform lookup with
+        :type code: str
+        :return: Subject label for the associated subject
+        :rtype: str
+        """
         if SharedUtils.subj_codes != {}:
             return SharedUtils.subj_codes[code].get("english_name")
         return self.subj_code_english.get(code)
 
-    def get_welsh_sbj_label(self, code: str) -> Dict[str, Any]:
+    def get_welsh_sbj_label(self, code: str) -> str:
+        """
+        Takes a subject code and returns the welsh name for the associated subject.
+
+        :param code: Subject code to perform lookup with
+        :type code: str
+        :return: Subject label for the associated subject
+        :rtype: str
+        """
         if SharedUtils.subj_codes != {}:
             return SharedUtils.subj_codes[code].get("welsh_name")
         return self.subj_code_welsh.get(code)
 
     def get_json_list(self, raw_course_data: Dict[str, Any], get_key: Callable) -> List[Dict[str, Any]]:
-        """Returns a list of JSON objects (as dicts) for this stats element"""
+        """
+        Takes raw course data as a dictionary and a get_key function that returns the key associated with an element.
+        Returns a list of JSON objects (as dicts) for this stats element.
+
+        :param raw_course_data: Raw course data to use to generate JSON list
+        :type raw_course_data: Dict[str, Any]
+        :param get_key: Function to get the JSON key for each key in the XML
+        :type get_key: Callable
+        :return: List of JSON objects for each stats element in the raw course data
+        :rtype: List[Dict[str, Any]]
+        """
 
         json_elem_list = []
         raw_xml_list = SharedUtils.get_raw_list(
@@ -117,6 +159,15 @@ class SharedUtils:
         return json_elem_list
 
     def need_unavailable(self, xml_elem: Dict[str, Any]) -> bool:
+        """
+        Checks whether the passed XML element dictionary requires an unavailable reason.
+        Returns True if an unavailable reason is required, otherwise False.
+
+        :param xml_elem: XML element to check requirement
+        :type xml_elem: Dict[str, Any]
+        :return: True if an unavailable reason is required, otherwise False.
+        :rtype: bool
+        """
         if not self.has_data(xml_elem):
             return True
 
@@ -128,9 +179,26 @@ class SharedUtils:
         return False
 
     def get_aggs_for_code(self, unavail_reason_code: str) -> List[str]:
+        """
+        Returns the list of aggregation codes for the passed unavailable reason.
+
+        :param unavail_reason_code: Unavailable reason code to get list of aggregation codes for.
+        :type unavail_reason_code: str
+        :return: List of corresponding aggregation codes
+        :rtype: List[str]
+        """
         return self.unavail_reason_english.get("data").get(unavail_reason_code).keys()
 
     def get_unavailable(self, elem: Dict[str, Any]) -> Union[Dict[str, Any], str]:
+        """
+        Takes an element and constructs a dictionary for unavailable reason data, and returns it.
+        Returns an empty string if the aggregation code is "14".
+
+        :param elem: Element to construct unavailable reason dictionary for
+        :type elem: Dict[str, Any]
+        :return: Dictionary of unavailable reason data, or an empty string if the aggregation code is "14"
+        :rtype: Union[Dict[str, Any], str]
+        """
         unavailable = {}
         subj_key = elem.get(self.xml_subj_key)
         agg = elem.get(self.xml_agg_key) if self.has_data(elem) else None
@@ -165,7 +233,25 @@ class SharedUtils:
             xml_elem: Dict[str, Any],
             resp_rate_state: str,
             welsh: bool = False
-    ):
+    ) -> str:
+        """
+        Returns the unavailable reason string for the passed parameters.
+
+        :param unavail_reason_code: Code for unavailable reason
+        :type unavail_reason_code: str
+        :param subj_key: Subject key for subject to be displayed with unavailable reason
+        :type subj_key: str
+        :param agg: Aggregation code
+        :type agg: str
+        :param xml_elem: XML element
+        :type xml_elem: Dict[str, Any]
+        :param resp_rate_state: Response rate
+        :type resp_rate_state: str
+        :param welsh: Defaults to False, function returns unavailable reason string in Welsh if set to True
+        :type welsh: bool
+        :return: Constructed unavailable reason string
+        :rtype: str
+        """
         validate_unavailable_reason_code(unavail_reason_code)
         if welsh:
             unavail_reason_lookup = self.unavail_reason_welsh
@@ -196,30 +282,72 @@ class SharedUtils:
             subj = self.get_unavailable_reason_subj_english(subj_key)
         return partial_reason_str.replace("[Subject]", subj)
 
-    def get_unavailable_reason_subj_english(self, sbj_key: str) -> Dict[str, Any]:
+    def get_unavailable_reason_subj_english(self, sbj_key: str) -> str:
+        """
+        Takes a subject key and returns the english subject, or returns an appropriate unavailable reason if
+        the subject key is empty.
+
+        :param sbj_key: Key to return corresponding subject label for
+        :type sbj_key: str
+        :return: Corresponding english subject label, or an unavailable reason if the subject key doesn't exist
+        :rtype: str
+        """
         if sbj_key:
             return self.get_english_sbj_label(sbj_key)
         return self.unavail_reason_english["no-subject"]
 
-    def get_unavailable_reason_subj_welsh(self, sbj_key: str) -> Dict[str, Any]:
+    def get_unavailable_reason_subj_welsh(self, sbj_key: str) -> str:
+        """
+        Takes a subject key and returns the welsh subject, or returns an appropriate unavailable reason if
+        the subject key is empty.
+
+        :param sbj_key: Key to return corresponding subject label for
+        :type sbj_key: str
+        :return: Corresponding welsh subject label, or an unavailable reason if the subject key doesn't exist
+        :rtype: str
+        """
         if sbj_key:
             return self.get_welsh_sbj_label(sbj_key)
         return self.unavail_reason_welsh["no-subject"]
 
     @staticmethod
     def has_data(xml_elem: Dict[str, Any]) -> bool:
-        """Returns True if the stats XML element has data otherwise False"""
+        """
+        Returns True if the stats XML element has data otherwise False
+
+        :param xml_elem: XML element as a dictionary
+        :type xml_elem: Dict[str, Any]
+        :return: True if the XML element has data else False
+        :rtype: bool
+        """
         return xml_elem is not None and len(xml_elem) > 1
 
     @staticmethod
     def get_json_value(xml_value: str) -> int:
+        """
+        Takes a value as a string and returns it as an integer
+
+        :param xml_value: Value to return as an integer
+        :type xml_value: str
+        :return: XML value converted to an integer
+        :rtype: int
+        """
         if xml_value and xml_value.isdigit():
             xml_value = int(xml_value)
         return xml_value
 
     @staticmethod
     def get_raw_list(data: Dict[str, Any], element_key: str) -> Union[List[Dict[str, Any]], str]:
-        """If value is a dict, return in list, otherwise return value"""
+        """
+        If value is a dict, return in list, otherwise return value
+
+        :param data: Data to be processed and returned
+        :type data: Dict[str, Any]
+        :param element_key: Key to extract from data
+        :type element_key: str
+        :return: Value in a list if the value is a dict, otherwise only the value
+        :rtype: Union[List[Dict[str, Any]], str]
+        """
         if isinstance(data.get(element_key), dict):
             return [data.get(element_key)]
         return data.get(element_key)

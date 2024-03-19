@@ -1,3 +1,5 @@
+from typing import Any
+from typing import Dict
 from typing import List
 from typing import Tuple
 
@@ -6,12 +8,19 @@ from legacy.EtlPipeline.mappings.base import BaseMappings
 
 
 class LeoSectorMappings(BaseMappings):
+    """LEO mappings for sectors"""
     OPTIONS = ["LEO3", "LEO5"]
 
     def __init__(self, mapping_id, subject_enricher):
         super().__init__(mapping_id=mapping_id, subject_enricher=subject_enricher)
 
     def get_mappings(self) -> List[Tuple[str, str]]:
+        """
+        Returns the list of mappings as a list of tuples with the class' mapping ID.
+
+        :return: List of mappings
+        :rtype: List[Tuple[str, str]]
+        """
         return [
             ('KISMODE', 'mode'),
             ('KISLEVEL', 'level'),
@@ -82,7 +91,14 @@ class LeoSectorMappings(BaseMappings):
             (f'{self.mapping_id}SECPOP_CF', 'pop_cf')
         ]
 
-    def per_course_unavailable(self, json_data):
+    def per_course_unavailable(self, json_data: Dict[str, Any]) -> None:
+        """
+        Takes a JSON as a dictionary and sets the unavailable texts for both languages.
+
+        :param json_data: JSON data as a dictionary
+        :type json_data: Dict[str, Any]
+        :return: None
+        """
         json_data["unavail_text_region_not_exists_english"], json_data["unavail_text_region_not_exists_welsh"] = \
             get_earnings_unavail_text("sector", "leo", "region_not_exists")
         json_data["unavail_text_region_is_ni_english"], json_data["unavail_text_region_is_ni_welsh"] = \

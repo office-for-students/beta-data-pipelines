@@ -16,6 +16,14 @@ from .stats.tariff import Tariff
 
 
 def get_stats(raw_course_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Takes a course data dictionary and creates a stats data dictionary such as employment
+    after the course, NSS results, etc.
+
+    :param raw_course_data: Dictionary containing course data
+    :type raw_course_data: Dict[str, Any]
+    :return:
+    """
     continuation = Continuation()
     employment = Employment()
     entry = Entry()
@@ -39,7 +47,16 @@ def get_stats(raw_course_data: Dict[str, Any]) -> Dict[str, Any]:
     return stats
 
 
-def need_nhs_nss(course):
+def need_nhs_nss(course: Dict[str, Any]) -> bool:
+    """
+    Takes a course data dictionary and checks if the NHS NSS results are required.
+    Returns True if they are, else False
+
+    :param course: Dictionary containing course data
+    :type course: Dict[str, Any]
+    :return: True if the NHS NSS results are required, else False
+    :rtype: bool
+    """
     nhs_nss_elem = SharedUtils.get_raw_list(course, "NHSNSS")[0]
     if SharedUtils.has_data(nhs_nss_elem):
         return True
@@ -48,7 +65,18 @@ def need_nhs_nss(course):
 
 # apw for unavail messages
 def get_earnings_unavail_text(inst_or_sect: str, data_source: str, key_level_3: str) -> Tuple[str, str]:
-    """Returns the relevant unavail reason text in English and Welsh"""
+    """
+    Returns the relevant unavail reason text in English and Welsh
+
+    :param inst_or_sect: Key for institution or sector for extracting unavailable text
+    :type inst_or_sect: str
+    :param data_source: Key for data source for extracting unavailable text
+    :type data_source: str
+    :param key_level_3: Third level key for extracting unavailable text
+    :type key_level_3: str
+    :return: Tuple containing the English and Welsh unavailable text strings
+    :rtype: Tuple[str, str]
+    """
 
     shared_utils = SharedUtils(
         data_source,  # xml_element_key

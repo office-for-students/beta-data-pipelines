@@ -17,6 +17,7 @@ import traceback
 from typing import Any
 from typing import Dict
 from typing import List
+from typing import Union
 
 import defusedxml.ElementTree as ET
 import xmltodict
@@ -57,7 +58,15 @@ sys.path.insert(0, PARENT_DIR)
 
 
 def load_course_docs(xml_string: str, version: int) -> None:
-    """Parse HESA XML passed in and create JSON course docs in Cosmos DB."""
+    """
+    Parse HESA XML passed in and create JSON course docs in Cosmos DB.
+
+    :param xml_string: XML dataset to be imported
+    :type xml_string: str
+    :param version: Version of the dataset to be created
+    :type version: int
+    :return: None
+    """
 
     cosmos_client = utils.get_cosmos_client()
     cosmos_db_client = cosmos_client.get_database_client(COSMOS_DATABASE_ID)
@@ -170,7 +179,17 @@ def load_course_docs(xml_string: str, version: int) -> None:
 
 
 def get_locids(raw_course_data: Dict[str, Any], ukprn: str) -> List[str]:
-    """Returns a list of lookup keys for use with the locations class"""
+    """
+    Returns a list of lookup keys for use with the locations class.
+    If the course does not contain a location, returns an empty list.
+
+    :param raw_course_data: Course data dictionary
+    :type raw_course_data: Dict[str, Any]
+    :param ukprn: UKPRN added to each location ID
+    :type ukprn: str
+    :return: List of location IDs for the course provided
+    :rtype: List[str]
+    """
     locids = []
     if "COURSELOCATION" not in raw_course_data:
         return locids
@@ -199,6 +218,35 @@ def get_course_doc(
         leo5_sector_salaries: LEO5SectorSalaries,
         g_subject_enricher: SubjectCourseEnricher
 ) -> Dict[str, Any]:
+    """
+    Performs required lookups to construct a comprehensive dictionary with course data. Adds an outer wrapper
+    containing information such as date updated.
+
+    :param accreditations: Accreditations object containing a lookup dictionary
+    :type accreditations: Accreditations
+    :param locations: Locations object containing a lookup dictionary
+    :type locations: Locations
+    :param locids: List of location IDs as strings
+    :type locids: List[str]
+    :param raw_inst_data: Raw institution data dictionary
+    :type raw_inst_data: Dict[str, Any]
+    :param raw_course_data: Raw course data dictionary
+    :type raw_course_data: Dict[str, Any]
+    :param kisaims: KisAims object containing a lookup dictionary
+    :type kisaims: KisAims
+    :param version: Version of the dataset to be generated
+    :type version: int
+    :param go_sector_salaries: GOSectorSalaries object containing a lookup dictionary
+    :type go_sector_salaries: GOSectorSalaries
+    :param leo3_sector_salaries: LEO3SectorSalaries object containing a lookup dictionary
+    :type leo3_sector_salaries: LEO3SectorSalaries
+    :param leo5_sector_salaries: LEO5SectorSalaries object containing a lookup dictionary
+    :type leo5_sector_salaries: LEO5SectorSalaries
+    :param g_subject_enricher: SubjectCourseEnricher object for adding ukprn data
+    :type g_subject_enricher: SubjectCourseEnricher
+    :return: Dictionary containing all course data
+    :rtype: Dict[str, Any]
+    """
     outer_wrapper = {
         "_id": utils.get_uuid(),
         "created_at": datetime.datetime.utcnow().isoformat(),
@@ -357,6 +405,16 @@ def get_course_doc(
 
 
 def get_accreditations(raw_course_data: Dict[str, Any], acc_lookup: Accreditations) -> List[Dict[str, Any]]:
+    """
+    Takes a course data dictionary and returns a list of associated accreditations as dictionaries.
+
+    :param raw_course_data: Course data dictionary to extract accreditations from
+    :type raw_course_data: Dict[str, Any]
+    :param acc_lookup: Accreditations object containing a lookup dictionary
+    :type acc_lookup: Accreditations
+    :return: List of accreditations dictionaries
+    :rtype: List[Dict[str, Any]]
+    """
     acc_list = []
     raw_xml_list = SharedUtils.get_raw_list(raw_course_data, "ACCREDITATION")
 
@@ -391,6 +449,15 @@ def get_accreditations(raw_course_data: Dict[str, Any], acc_lookup: Accreditatio
 
 
 def get_country(raw_inst_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Takes institution data and returns a dictionary with that institution's country data.
+    Returns an empty dictionary if the institution does not have a country element.
+
+    :param raw_inst_data: Institution data dictionary
+    :type raw_inst_data: Dict[str, Any]
+    :return: Dictionary containing country data, or an empty dictionary if the institution has no country
+    :rtype: Dict[str, Any]
+    """
     country = {}
     if "COUNTRY" in raw_inst_data:
         code = raw_inst_data["COUNTRY"]
@@ -400,6 +467,18 @@ def get_country(raw_inst_data: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def get_go_inst_json(raw_go_inst_data: Dict[str, Any], subject_enricher: SubjectCourseEnricher) -> List[Dict[str, str]]:
+    """
+    Takes GO institution data and returns as a list of dictionaries.
+    If no data is supplied, returns a dictionary with unavailable texts.
+
+    :param raw_go_inst_data: Data dictionary of LEO5 institution data
+    :type raw_go_inst_data: Dict[str, Any]
+    :param subject_enricher: SubjectCourseEnricher object to add ukprn data
+    :type subject_enricher: SubjectCourseEnricher
+    :return: List of JSON dictionaries containing GO institution data, or a list with a dictionary containing
+    unavailable texts if no data is supplied
+    :rtype: List[Dict[str, Any]]
+    """
     if raw_go_inst_data:
         if isinstance(raw_go_inst_data, dict):
             raw_go_inst_data = [raw_go_inst_data]
@@ -426,6 +505,18 @@ def get_leo3_inst_json(
         raw_leo3_inst_data: Dict[str, Any],
         subject_enricher: SubjectCourseEnricher
 ) -> List[Dict[str, str]]:
+    """
+    Takes LEO3 institution data and returns as a list of dictionaries.
+    If no data is supplied, returns a dictionary with unavailable texts.
+
+    :param raw_leo3_inst_data: Data dictionary of LEO5 institution data
+    :type raw_leo3_inst_data: Dict[str, Any]
+    :param subject_enricher: SubjectCourseEnricher object to add ukprn data
+    :type subject_enricher: SubjectCourseEnricher
+    :return: List of JSON dictionaries containing LEO3 institution data, or a list with a dictionary containing
+    unavailable texts if no data is supplied
+    :rtype: List[Dict[str, Any]]
+    """
     if raw_leo3_inst_data:
         if isinstance(raw_leo3_inst_data, dict):
             raw_leo3_inst_data = [raw_leo3_inst_data]
@@ -447,6 +538,18 @@ def get_leo5_inst_json(
         raw_leo5_inst_data: Dict[str, Any],
         subject_enricher: SubjectCourseEnricher
 ) -> List[Dict[str, Any]]:
+    """
+    Takes LEO5 institution data and returns as a list of dictionaries.
+    If no data is supplied, returns a dictionary with unavailable texts.
+
+    :param raw_leo5_inst_data: Data dictionary of LEO5 institution data
+    :type raw_leo5_inst_data: Dict[str, Any]
+    :param subject_enricher: SubjectCourseEnricher object to add ukprn data
+    :type subject_enricher: SubjectCourseEnricher
+    :return: List of JSON dictionaries containing LEO5 institution data, or a list with a dictionary containing
+    unavailable texts if no data is supplied
+    :rtype: List[Dict[str, Any]]
+    """
     if raw_leo5_inst_data:
         if isinstance(raw_leo5_inst_data, dict):
             raw_leo5_inst_data = [raw_leo5_inst_data]
@@ -466,7 +569,18 @@ def get_leo5_inst_json(
 def get_go_voice_work_json(
         raw_go_voice_work_data: Dict[str, Any],
         subject_enricher: SubjectCourseEnricher
-) -> List[Dict[str, Any]]:
+) -> Union[List[Dict[str, Any]], None]:
+    """
+    Takes go voice data as a dictionary and returns the data as a list of dictionaries.
+    Returns None if no data is supplied
+
+    :param raw_go_voice_work_data: GO voice data as a dictionary
+    :type raw_go_voice_work_data: Dict[str, Any]
+    :param subject_enricher: SubjectCourseEnricher object to add ukprn data
+    :type subject_enricher: SubjectCourseEnricher
+    :return: List of GO voice data dictionaries, or None if no data is supplied
+    :rtype: Union[List[Dict[str, Any]], None]
+    """
     if raw_go_voice_work_data:
         if isinstance(raw_go_voice_work_data, dict):
             raw_go_voice_work_data = [raw_go_voice_work_data]
@@ -484,6 +598,19 @@ def get_code_label_entry(
         lookup_table_local: Dict[int, str],
         key: str
 ) -> Dict[str, Any]:
+    """
+    Takes a code from the XML lookup table and constructs a dictionary pairing them with corresponding codes
+    from the local lookup table, which is then returned.
+
+    :param lookup_table_raw_xml: XML lookup table
+    :type lookup_table_raw_xml: Dict[str, Any]
+    :param lookup_table_local: Local lookup table
+    :type lookup_table_local: Dict[int, str]
+    :param key: Key of code to construct code/label dictionary for
+    :type key: str
+    :return: Code/label dictionary for value of passed key
+    :rtype: Dict[str, Any]
+    """
     entry = {}
     if key in lookup_table_raw_xml:
         code = get_code(lookup_table_raw_xml, key)
@@ -493,6 +620,14 @@ def get_code_label_entry(
 
 
 def get_institution(raw_inst_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Takes raw institution data as a dictionary and returns a constructed dictionary with ukprn data.
+
+    :param raw_inst_data: Institution data as a dictionary
+    :type raw_inst_data: Dict[str, Any]
+    :return: Constructed dictionary with ukprn data.
+    :rtype: Dict[str, Any]
+    """
     return {
         "pub_ukprn_name": "n/a",
         "pub_ukprn_welsh_name": "n/a",
@@ -504,6 +639,16 @@ def get_institution(raw_inst_data: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def get_links(raw_inst_data: Dict[str, Any], raw_course_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Takes raw course and institution data, and returns a dictionary containing the corresponding URLs for each page.
+
+    :param raw_inst_data: Data dictionary for institution
+    :type raw_inst_data: Dict[str, Any]
+    :param raw_course_data: Data dictionary for course
+    :type raw_inst_data: Dict[str, Any]
+    :return: Dictionary containing URLs for the provided course and institution
+    :rtype: Dict[str, Any]
+    """
     links = {}
 
     item_details = [
@@ -530,6 +675,21 @@ def get_location_items(
         raw_course_data: Dict[str, Any],
         pub_ukprn: str
 ) -> List[Dict[str, Any]]:
+    """
+    Returns a list of location data based on the passed raw course data.
+    If the raw course data does not have a location, returns an empty list.
+
+    :param locations: Locations object with a lookup dictionary
+    :type locations: Locations
+    :param locids: List of location IDs
+    :type locids: List[str]
+    :param raw_course_data: Raw course data to extract location data from
+    :type raw_course_data: Dict[str, Any]
+    :param pub_ukprn: pub_ukprn added to location lookup ID
+    :type pub_ukprn: str
+    :return: List of location data from raw course data
+    :rtype: List[Dict[str, Any]]
+    """
     location_items = []
     if "COURSELOCATION" not in raw_course_data:
         return location_items
@@ -591,6 +751,24 @@ def process_stats(
         course_level: int,
         salary_lookup: SectorSalaries,
 ) -> List[Dict[str, Any]]:
+    """
+    Processes datasets for construction of sector salary JSONs.
+
+    :param primary_dataset: Primary dataset for JSON construction
+    :type primary_dataset: List[Dict[str, Any]]
+    :param secondary_dataset: Secondary dataset for JSON construction
+    :type secondary_dataset: List[Dict[str, Any]]
+    :param tertiary_dataset: Tertiary dataset for json construction
+    :type tertiary_dataset: List[Dict[str, Any]]
+    :param course_mode: Course mode
+    :type course_mode: int
+    :param course_level: Course level
+    :type course_level: int
+    :param salary_lookup: SectorSalaries object containing lookup dictionaries
+    :type salary_lookup: SectorSalaries
+    :return: List of dictionaries containing JSONs with sector salary data
+    :rtype: List[Dict[str, Any]]
+    """
     xml_array = []
     for index, primary_inst in enumerate(primary_dataset):
         # If the subject is unavailable for the specific source (GO/LEO3/LEO5), use a sibling source instead.
@@ -626,6 +804,26 @@ def get_go_sector_json(
         course_level: int,
         subject_enricher: SubjectCourseEnricher
 ) -> List[Dict[str, Any]]:
+    """
+    Builds a JSON list for the GO sector mapping.
+
+    :param go_salary_inst_list: List of institution data for GO salaries
+    :type go_salary_inst_list: List[Dict[str, Any]]
+    :param leo3_salary_inst_list: List of institution data for LEO3 salaries
+    :type leo3_salary_inst_list: List[Dict[str, Any]]
+    :param leo5_salary_inst_list: List of institution data for LEO5 salaries
+    :type leo5_salary_inst_list: List[Dict[str, Any]]
+    :param go_sector_salary_lookup: SectorSalaries object containing lookup dictionaries
+    :type go_sector_salary_lookup: SectorSalaries
+    :param course_mode: Course mode
+    :type course_mode: int
+    :param course_level: Course level
+    :type course_level: int
+    :param subject_enricher: SubjectCourseEnricher object to add UKRLP data
+    :type subject_enricher: SubjectCourseEnricher
+    :return: List of JSON dictionaries for GO salary data
+    :rtype: List[Dict[str, Any]]
+    """
     go_salary_sector_xml_array = process_stats(
         primary_dataset=go_salary_inst_list,
         secondary_dataset=leo3_salary_inst_list,
@@ -649,7 +847,27 @@ def get_leo3_sector_json(
         course_mode: int,
         course_level: int,
         subject_enricher: SubjectCourseEnricher
-):
+) -> List[Dict[str, Any]]:
+    """
+    Builds a JSON list for the LEO3 sector mapping.
+
+    :param leo3_salary_inst_list: List of institution data for LEO3 salaries
+    :type leo3_salary_inst_list: List[Dict[str, Any]]
+    :param go_salary_inst_list: List of institution data for GO salaries
+    :type go_salary_inst_list: List[Dict[str, Any]]
+    :param leo5_salary_inst_list: List of institution data for LEO5 salaries
+    :type leo5_salary_inst_list: List[Dict[str, Any]]
+    :param leo3_sector_salary_lookup: SectorSalaries object containing lookup dictionaries
+    :type leo3_sector_salary_lookup: SectorSalaries
+    :param course_mode: Course mode
+    :type course_mode: int
+    :param course_level: Course level
+    :type course_level: int
+    :param subject_enricher: SubjectCourseEnricher object to add UKRLP data
+    :type subject_enricher: SubjectCourseEnricher
+    :return: List of JSON dictionaries for LEO3 salary data
+    :rtype: List[Dict[str, Any]]
+    """
     leo3_sector_xml_array = process_stats(
         primary_dataset=leo3_salary_inst_list,
         secondary_dataset=go_salary_inst_list,
@@ -673,7 +891,27 @@ def get_leo5_sector_json(
         course_mode: int,
         course_level: int,
         subject_enricher: SubjectCourseEnricher
-):
+) -> List[Dict[str, Any]]:
+    """
+    Builds a JSON list for the LEO5 sector mapping.
+
+    :param leo5_salary_inst_list: List of institution data for LEO5 salaries
+    :type leo5_salary_inst_list: List[Dict[str, Any]]
+    :param go_salary_inst_list: List of institution data for GO salaries
+    :type go_salary_inst_list: List[Dict[str, Any]]
+    :param leo3_salary_inst_list: List of institution data for LEO3 salaries
+    :type leo3_salary_inst_list: List[Dict[str, Any]]
+    :param leo5_sector_salary_lookup: SectorSalaries object containing lookup dictionaries
+    :type leo5_sector_salary_lookup: SectorSalaries
+    :param course_mode: Course mode
+    :type course_mode: int
+    :param course_level: Course level
+    :type course_level: int
+    :param subject_enricher: SubjectCourseEnricher object to add UKRLP data
+    :type subject_enricher: SubjectCourseEnricher
+    :return: List of JSON dictionaries for LEO5 salary data
+    :rtype: List[Dict[str, Any]]
+    """
     leo5_sector_xml_array = process_stats(
         primary_dataset=leo5_salary_inst_list,
         secondary_dataset=go_salary_inst_list,
@@ -689,7 +927,18 @@ def get_leo5_sector_json(
     )
 
 
-def get_code(lookup_table_raw_xml: Dict[str, Any], key: str) -> int:
+def get_code(lookup_table_raw_xml: Dict[str, Any], key: str) -> Union[int, str]:
+    """
+    Takes a lookup table dictionary and a key, and returns the corresponding code as an integer if it's a digit,
+    otherwise returns the code as a string.
+
+    :param lookup_table_raw_xml: Lookup table dictionary
+    :type lookup_table_raw_xml: Dict[str, Any]
+    :param key: Key to extract code
+    :type key: str
+    :return: Code as an integer if it's a digit, otherwise a string
+    :rtype: Union[int, str]
+    """
     code = lookup_table_raw_xml[key]
     if code.isdigit():
         code = int(code)
@@ -697,6 +946,16 @@ def get_code(lookup_table_raw_xml: Dict[str, Any], key: str) -> int:
 
 
 def get_qualification(lookup_table_raw_xml: Dict[str, Any], kisaims: KisAims) -> Dict[str, Any]:
+    """
+    Takes a lookup table XML and a KisAims object, and if the lookup table contains a KIS aim code element, returns
+    a dictionary with the corresponding code and label. Otherwise returns an empty dictionary.
+
+    :param lookup_table_raw_xml: Lookup table dictionary
+    :type lookup_table_raw_xml: Dict[str, Any]
+    :param kisaims: KisAims object containing lookup dictionary
+    :return: Constructed dictionary containing KIS code data, or an empty dictionary
+    :rtype: Dict[str, Any]
+    """
     entry = {}
     if "KISAIMCODE" in lookup_table_raw_xml:
         code = lookup_table_raw_xml["KISAIMCODE"]
@@ -708,5 +967,13 @@ def get_qualification(lookup_table_raw_xml: Dict[str, Any], kisaims: KisAims) ->
 
 
 def get_kis_aim_label(code: str, kisaims: KisAims) -> str:
+    """
+    Takes a code and KisAims object and returns the corresponding kis aim label.
+
+    :param code: KIS code
+    :param kisaims: KisAims object containing KIS aims lookup dictionary
+    :return: Corresponding KIS aims label
+    :rtype: str
+    """
     label = kisaims.get_kisaim_label_for_key(code)
     return label
