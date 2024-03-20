@@ -28,6 +28,15 @@ class QualificationCourseEnricher:
             self.qualification_levels = rows
 
     def validate_column_headers(self, header_row: str) -> bool:
+        """
+        Takes a header row string and ensures that the column headers are correct.
+        Returns True if they are valid, otherwise False
+
+        :param header_row: Header row to validate
+        :type header_row: str
+        :return: True if the header is valid, otherwise False
+        :rtype: bool
+        """
         logging.info(f"Validating header row, headers: {header_row}")
         header_list = header_row.split(",")
 
@@ -47,12 +56,27 @@ class QualificationCourseEnricher:
         return valid
 
     def enrich_course(self, course: Dict[str, Any]) -> None:
-        """Takes a course and enriches ukprn names with UKRLP data"""
+        """
+        Takes a course and enriches ukprn names with UKRLP data.
+
+        :param course: Course data
+        :type course: Dict[str, Any]
+        :return: None
+        """
 
         qualification_code = course["course"]["qualification"]["code"]
         course["course"]["qualification"]["level"] = self.get_qualification_level(qualification_code)
 
     def get_qualification_level(self, code: str) -> str:
+        """
+        Takes a qualification code and returns the corresponding qualification found in the QualificationCourseEnricher
+        object's CSV.
+
+        :param code: Code used for lookup
+        :type code: str
+        :return: Qualification level string
+        :rtype: str
+        """
         rows = csv.reader(self.qualification_levels)
         for row in rows:
             if row[0] == code:

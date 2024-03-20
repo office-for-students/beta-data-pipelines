@@ -10,6 +10,9 @@ def get_subjects(raw_course_data: Dict[str, Any]) -> List[Dict[str, Any]]:
     Returns subject data as a list of dictionaries.
 
     :param raw_course_data: Course dictionary containing subject data
+    :type raw_course_data: Dict[str, Any]
+    :return: List of subject data as dictionaries
+    :rtype: List[Dict[str, Any]]
     """
 
     subjects = []

@@ -18,7 +18,15 @@ class SubjectCourseEnricher:
         course["course"]["subjects"] = self.get_subjects(subjects)
 
     def get_subjects(self, subject_codes: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        """Returns a subject object containing code, english_name, welsh_name and level"""
+        """
+        Returns a subject object containing code, english_name, welsh_name and level.
+        If a subject is not found, adds the subject code to the list of subjects.
+
+        :param subject_codes: List of subject codes used for lookup
+        :type subject_codes: List[Dict[str, Any]]
+        :return: List of subject objects
+        :rtype: List[Dict[str, Any]]
+        """
 
         subjects = []
         for subject in subject_codes:

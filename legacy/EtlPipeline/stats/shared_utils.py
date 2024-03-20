@@ -35,7 +35,6 @@ class SharedUtils:
             xml_agg_key: str,
             xml_unavail_reason_key: str,
     ) -> None:
-
         self.xml_element_key = xml_element_key
         self.xml_subj_key = xml_subj_key
         self.xml_agg_key = xml_agg_key
