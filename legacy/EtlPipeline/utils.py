@@ -7,7 +7,7 @@ from constants import COSMOS_COLLECTION_SUBJECTS
 from constants import COSMOS_DATABASE_ID
 from legacy.EtlPipeline.stats.shared_utils import SharedUtils
 from legacy.EtlPipeline.subject_enricher import SubjectCourseEnricher
-from legacy.services.utils import get_cosmos_client
+from legacy.services.utils import get_cosmos_service
 
 
 # TODO: **House-keeping** g_subject_enricher review why this is setup this way
@@ -102,13 +102,11 @@ def get_ukrlp_lookups(version: int) -> Dict[str, Any]:
     :rtype: Dict[str, Any]
     """
 
-    cosmos_client = get_cosmos_client()
-    cosmos_db_client = cosmos_client.get_database_client(COSMOS_DATABASE_ID)
-    cosmos_container_client = cosmos_db_client.get_container_client(COSMOS_COLLECTION_INSTITUTIONS)
+    cosmos_service = get_cosmos_service(COSMOS_COLLECTION_INSTITUTIONS)
 
     query = f"SELECT * from c WHERE c.version = {version}"
 
-    lookup_list = list(cosmos_container_client.query_items(query))
+    lookup_list = list(cosmos_service.container.query_items(query))
 
     # Previous data from the UKRLP smashed the ukprn number with the pub_ukprn,
     # to limit changes doing the same now.
@@ -134,11 +132,9 @@ def get_subject_lookups(version: int) -> Dict[str, Any]:
     :rtype: Dict[str, Any]
     """
 
-    cosmos_client = get_cosmos_client()
-    cosmos_db_client = cosmos_client.get_database_client(COSMOS_DATABASE_ID)
-    cosmos_container_client = cosmos_db_client.get_container_client(COSMOS_COLLECTION_SUBJECTS)
+    cosmos_service = get_cosmos_service(COSMOS_COLLECTION_SUBJECTS)
 
     query = f"SELECT * from c WHERE c.version = {version}"
-    lookup_list = list(cosmos_container_client.query_items(query, enable_cross_partition_query=True))
+    lookup_list = list(cosmos_service.container.query_items(query, enable_cross_partition_query=True))
 
     return {lookup["code"]: lookup for lookup in lookup_list}

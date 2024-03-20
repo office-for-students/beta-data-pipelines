@@ -25,7 +25,6 @@ import xmltodict
 from constants import BLOB_QUALIFICATIONS_BLOB_NAME
 from constants import BLOB_QUALIFICATIONS_CONTAINER_NAME
 from constants import COSMOS_COLLECTION_COURSES
-from constants import COSMOS_DATABASE_ID
 from course_stats import get_earnings_unavail_text
 from course_stats import get_stats
 from course_subjects import get_subjects
@@ -44,6 +43,7 @@ from legacy.EtlPipeline.mappings.leo.institution import LeoInstitutionMappings
 from legacy.EtlPipeline.mappings.leo.sector import LeoSectorMappings
 from legacy.EtlPipeline.stats.shared_utils import SharedUtils
 from legacy.services import utils
+from legacy.services.utils import get_cosmos_service
 from legacy.services.utils import get_english_welsh_item
 from qualification_enricher import QualificationCourseEnricher
 from subject_enricher import SubjectCourseEnricher
@@ -67,10 +67,7 @@ def load_course_docs(xml_string: str, version: int) -> None:
     :type version: int
     :return: None
     """
-
-    cosmos_client = utils.get_cosmos_client()
-    cosmos_db_client = cosmos_client.get_database_client(COSMOS_DATABASE_ID)
-    cosmos_container_client = cosmos_db_client.get_container_client(COSMOS_COLLECTION_COURSES)
+    cosmos_service = get_cosmos_service(COSMOS_COLLECTION_COURSES)
 
     logging.info(
         "adding ukrlp data into memory ahead of building course documents"
@@ -90,7 +87,7 @@ def load_course_docs(xml_string: str, version: int) -> None:
     qualification_enricher = QualificationCourseEnricher(BLOB_QUALIFICATIONS_CONTAINER_NAME,
                                                          BLOB_QUALIFICATIONS_BLOB_NAME)
 
-    collection_link = utils.get_collection_link(COSMOS_COLLECTION_COURSES)
+    collection_link = cosmos_service.get_collection_link()
 
     # Import the XML dataset
     root = ET.fromstring(xml_string)
@@ -149,8 +146,8 @@ def load_course_docs(xml_string: str, version: int) -> None:
 
                 if sproc_count >= 5:
                     logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-                    cosmos_container_client.scripts.execute_stored_procedure(sproc_link, params=[new_docs],
-                                                                             partition_key=partition_key)
+                    cosmos_service.container.scripts.execute_stored_procedure(sproc_link, params=[new_docs],
+                                                                              partition_key=partition_key)
                     logging.info(f"Successfully loaded another {sproc_count} documents")
                     # Reset values
                     new_docs = []
@@ -168,8 +165,8 @@ def load_course_docs(xml_string: str, version: int) -> None:
 
     if sproc_count > 0:
         logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-        cosmos_container_client.scripts.execute_stored_procedure(sproc_link, params=[new_docs],
-                                                                 partition_key=partition_key)
+        cosmos_service.container.scripts.execute_stored_procedure(sproc_link, params=[new_docs],
+                                                                  partition_key=partition_key)
         logging.info(f"Successfully loaded another {sproc_count} documents")
         # Reset values
         new_docs = []

@@ -2,7 +2,7 @@
 import os.path
 import unittest
 
-from legacy.services.utils import sanitise_address_string
+from legacy.CreateInst.docs.institution_docs import sanitise_address_string
 
 TEST_FILE_ADDRESSES = "tests/fixtures/hesa_test_data/test_addresses.txt"
 TEST_FILE_PHONE_NUMBER = "tests/fixtures/hesa_test_data/test_phone_numbers.txt"

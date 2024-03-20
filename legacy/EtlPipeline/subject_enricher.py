@@ -2,14 +2,14 @@ from typing import Any
 from typing import Dict
 from typing import List
 
-from legacy.services import utils
+from legacy.EtlPipeline.utils import get_subject_lookups
 
 
 class SubjectCourseEnricher:
     """Handles enriching courses with UKRLP data"""
 
     def __init__(self, version: int) -> None:
-        self.subject_lookups = utils.get_subject_lookups(version)
+        self.subject_lookups = get_subject_lookups(version)
 
     def enrich_course(self, course: Dict[str, Any]) -> None:
         """Takes a course and enriches subject object with subject names"""

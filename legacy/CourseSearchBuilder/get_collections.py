@@ -2,9 +2,8 @@ from typing import Any
 from typing import Dict
 from typing import List
 
-from constants import COSMOS_DATABASE_ID
 from legacy.services.dataset_service import DataSetService
-from legacy.services.utils import get_cosmos_client
+from legacy.services.utils import get_cosmos_service
 
 
 def get_collections(cosmos_field_db_id: str, version: int = None) -> List[Dict[str, Any]]:
@@ -22,11 +21,9 @@ def get_collections(cosmos_field_db_id: str, version: int = None) -> List[Dict[s
     """
     if not version:
         version = DataSetService().get_latest_version_number()
-    cosmos_client = get_cosmos_client()
-    cosmos_db_client = cosmos_client.get_database_client(COSMOS_DATABASE_ID)
-    cosmos_container_client = cosmos_db_client.get_container_client(cosmos_field_db_id)
+    cosmos_service = get_cosmos_service(cosmos_field_db_id)
 
     query = f"SELECT * from c where c.version = {version}"
-    collections_list = list(cosmos_container_client.query_items(query, enable_cross_partition_query=True))
+    collections_list = list(cosmos_service.container.query_items(query, enable_cross_partition_query=True))
 
     return collections_list

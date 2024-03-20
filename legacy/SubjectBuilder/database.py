@@ -2,14 +2,10 @@ import logging
 import time
 from typing import Iterable
 
-import azure.cosmos.cosmos_client as cosmos_client
-
 from constants import COSMOS_COLLECTION_SUBJECTS
 from constants import COSMOS_DATABASE_ID
-from constants import COSMOS_DATABASE_KEY
-from constants import COSMOS_DATABASE_URI
 from . import models
-from ..services.utils import get_cosmos_client
+from legacy.services.utils import get_cosmos_service
 
 
 def load_collection(rows: Iterable, version: int) -> None:
@@ -32,10 +28,7 @@ class Loader:
             rows: Iterable,
             version: int
     ) -> None:
-
-        self.cosmos_client = get_cosmos_client()
-        self.cosmos_db_client = self.cosmos_client.get_database_client(COSMOS_DATABASE_ID)
-        self.cosmos_container_client = self.cosmos_db_client.get_container_client(COSMOS_COLLECTION_SUBJECTS)
+        self.cosmos_service = get_cosmos_service(COSMOS_COLLECTION_SUBJECTS)
 
         self.collection_link = "dbs/" + COSMOS_DATABASE_ID + "/colls/" + COSMOS_COLLECTION_SUBJECTS
         self.db_id = COSMOS_DATABASE_ID
@@ -67,8 +60,8 @@ class Loader:
 
             if sproc_count == 100:
                 logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-                self.cosmos_container_client.scripts.execute_stored_procedure(sproc_link, params=[new_docs],
-                                                                              partition_key=partition_key)
+                self.cosmos_service.container.scripts.execute_stored_procedure(sproc_link, params=[new_docs],
+                                                                               partition_key=partition_key)
                 logging.info(f"Successfully loaded another {sproc_count} documents")
                 # Reset values
                 new_docs = []
@@ -77,8 +70,8 @@ class Loader:
 
         if sproc_count > 0:
             logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-            self.cosmos_container_client.scripts.execute_stored_procedure(sproc_link, params=[new_docs],
-                                                                          partition_key=partition_key)
+            self.cosmos_service.container.scripts.execute_stored_procedure(sproc_link, params=[new_docs],
+                                                                           partition_key=partition_key)
             logging.info(f"Successfully loaded another {sproc_count} documents")
 
         logging.info(

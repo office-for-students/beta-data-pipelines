@@ -8,7 +8,6 @@ import defusedxml.ElementTree as ET
 import xmltodict
 
 from constants import COSMOS_COLLECTION_INSTITUTIONS
-from constants import COSMOS_DATABASE_ID
 from legacy.CreateInst.docs.name_handler import InstitutionProviderNameHandler
 from legacy.CreateInst.institution_docs import add_tef_data
 from legacy.CreateInst.institution_docs import get_country
@@ -17,8 +16,7 @@ from legacy.CreateInst.institution_docs import get_total_number_of_courses
 from legacy.CreateInst.institution_docs import get_welsh_uni_names
 from legacy.CreateInst.institution_docs import get_white_list
 from legacy.CreateInst.locations import Locations
-from legacy.services.utils import get_collection_link
-from legacy.services.utils import get_cosmos_client
+from legacy.services.utils import get_cosmos_service
 from legacy.services.utils import get_uuid
 
 
@@ -137,12 +135,8 @@ class InstitutionDocs:
         :return: None
         """
 
-        cosmos_client = get_cosmos_client()
-        cosmos_db_client = cosmos_client.get_database_client(COSMOS_DATABASE_ID)
-        cosmos_container_client = cosmos_db_client.get_container_client(COSMOS_COLLECTION_INSTITUTIONS)
-
-        collection_link = get_collection_link("COSMOS_COLLECTION_INSTITUTIONS")
-
+        cosmos_service = get_cosmos_service(COSMOS_COLLECTION_INSTITUTIONS)
+        collection_link = cosmos_service.get_collection_link()
         sproc_link = collection_link + "/sprocs/bulkImport"
         partition_key = str(self.version)
 
@@ -155,8 +149,8 @@ class InstitutionDocs:
             new_docs.append(self.get_institution_doc(institution))
             if sproc_count == 100:
                 logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-                cosmos_container_client.scripts.execute_stored_procedure(sproc_link, params=[new_docs],
-                                                                         partition_key=partition_key)
+                cosmos_service.container.scripts.execute_stored_procedure(sproc_link, params=[new_docs],
+                                                                          partition_key=partition_key)
                 logging.info(f"Successfully loaded another {sproc_count} documents")
                 # Reset values
                 new_docs = []
@@ -165,8 +159,8 @@ class InstitutionDocs:
 
         if sproc_count > 0:
             logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-            cosmos_container_client.scripts.execute_stored_procedure(sproc_link, params=[new_docs],
-                                                                     partition_key=partition_key)
+            cosmos_service.container.scripts.execute_stored_procedure(sproc_link, params=[new_docs],
+                                                                      partition_key=partition_key)
             logging.info(f"Successfully loaded another {sproc_count} documents")
 
         logging.info(f"Processed {institution_count} institutions")

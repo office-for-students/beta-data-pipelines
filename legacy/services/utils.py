@@ -5,36 +5,51 @@ import uuid
 from typing import Any
 from typing import Dict
 
-from azure.cosmos import CosmosClient
-
 from constants import COSMOS_DATABASE_ID
 from constants import COSMOS_DATABASE_KEY
 from constants import COSMOS_DATABASE_URI
-from constants import KEY_COSMOS_MASTER_KEY
+from legacy.services.cosmosservice import CosmosService
 
 
-def get_collection_link(collection_id: str) -> str:
+# def get_collection_link(collection_id: str) -> str:
+#     """
+#     Create and return collection link based on values passed in
+#
+#     :param collection_id: ID of collection to return link of
+#     :type collection_id: str
+#     :return: Collection link
+#     :rtype: str
+#     """
+#
+#     # Return a link to the relevant CosmosDB Container/Document Collection
+#     return "dbs/" + COSMOS_DATABASE_ID + "/colls/" + collection_id
+
+
+# def get_cosmos_client() -> CosmosClient:
+#     """
+#     Creates and returns a cosmos client object with the appropriate credentials as specified in the environment variables
+#
+#     :return: Cosmos client object
+#     :rtype: CosmosClient
+#     """
+#     return CosmosClient(url=COSMOS_DATABASE_URI, credential={KEY_COSMOS_MASTER_KEY: COSMOS_DATABASE_KEY})
+
+
+def get_cosmos_service(container_id: str) -> CosmosService:
     """
-    Create and return collection link based on values passed in
+    Creates and returns a cosmos service object with the appropriate credentials as specified in the environment variables.
 
-    :param collection_id: ID of collection to return link of
-    :type collection_id: str
-    :return: Collection link
-    :rtype: str
+    :param container_id: ID of container to create cosmos service for
+    :type container_id: str
+    :return: Cosmos service object
+    :rtype: CosmosService
     """
-
-    # Return a link to the relevant CosmosDB Container/Document Collection
-    return "dbs/" + COSMOS_DATABASE_ID + "/colls/" + collection_id
-
-
-def get_cosmos_client() -> CosmosClient:
-    """
-    Creates and returns a cosmos client object with the appropriate credentials as specified in the environment variables
-
-    :return: Cosmos client object
-    :rtype: CosmosClient
-    """
-    return CosmosClient(url=COSMOS_DATABASE_URI, credential={KEY_COSMOS_MASTER_KEY: COSMOS_DATABASE_KEY})
+    return CosmosService(
+        cosmosdb_uri=COSMOS_DATABASE_URI,
+        cosmosdb_key=COSMOS_DATABASE_KEY,
+        database_id=COSMOS_DATABASE_ID,
+        container_id=container_id
+    )
 
 
 def get_uuid() -> str:

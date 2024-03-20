@@ -8,10 +8,10 @@ from typing import Dict
 from typing import List
 from typing import Union
 
+from legacy.EtlPipeline.utils import get_subject_lookups
 from legacy.EtlPipeline.validators import validate_agg
 from legacy.EtlPipeline.validators import validate_unavailable_reason_code
 from legacy.services.dataset_service import DataSetService
-from legacy.services.utils import get_subject_lookups
 
 
 class SharedUtils:
