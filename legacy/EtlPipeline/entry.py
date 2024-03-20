@@ -5,6 +5,10 @@
 import logging
 from datetime import datetime
 
+from constants import BLOB_HESA_BLOB_NAME
+from constants import BLOB_HESA_CONTAINER_NAME
+from constants import XML_LOCAL_TEST_XML_FILE
+from constants import XML_USE_LOCAL_TEST_XML_FILE
 from legacy.EtlPipeline import course_docs
 from legacy.services.blob import BlobService
 from legacy.services.dataset_service import DataSetService
@@ -12,9 +16,6 @@ from legacy.services.dataset_service import DataSetService
 
 def etl_pipeline_main(
         blob_service: BlobService,
-        hesa_container_name: str,
-        hesa_blob_name: str,
-        local_test_xml_file=None
 ) -> None:
     dataset_service = DataSetService()
 
@@ -37,11 +38,11 @@ def etl_pipeline_main(
         # correctly with large blobs. Tests showed this is not a limitation
         # with Funtions written in C#.
 
-        if local_test_xml_file:
-            mock_xml_source_file = open(local_test_xml_file, "r")
+        if XML_USE_LOCAL_TEST_XML_FILE:
+            mock_xml_source_file = open(XML_LOCAL_TEST_XML_FILE, "r")
             xml_string = mock_xml_source_file.read()
         else:
-            xml_string = blob_service.get_str_file(hesa_container_name, hesa_blob_name)
+            xml_string = blob_service.get_str_file(BLOB_HESA_CONTAINER_NAME, BLOB_HESA_BLOB_NAME)
 
         version = dataset_service.get_latest_version_number()
 

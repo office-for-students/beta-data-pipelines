@@ -116,11 +116,7 @@ async def etl_pipeline():
     logging.info("Etl Pipeline started")
     error = None
     try:
-        etl_pipeline_main(
-            blob_service=BLOB_SERVICE,
-            hesa_container_name=BLOB_HESA_CONTAINER_NAME,
-            hesa_blob_name=BLOB_HESA_BLOB_NAME
-        )
+        etl_pipeline_main(blob_service=BLOB_SERVICE)
     except Exception as e:
         message = f"Etl Pipeline failed: {e}"
         error = e
