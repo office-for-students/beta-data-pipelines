@@ -22,8 +22,6 @@ from typing import Union
 import defusedxml.ElementTree as ET
 import xmltodict
 
-import course_lookup_tables as lookup
-from accreditations import Accreditations
 from constants import BLOB_QUALIFICATIONS_BLOB_NAME
 from constants import BLOB_QUALIFICATIONS_CONTAINER_NAME
 from constants import COSMOS_COLLECTION_COURSES
@@ -31,21 +29,23 @@ from constants import COSMOS_DATABASE_ID
 from course_stats import get_earnings_unavail_text
 from course_stats import get_stats
 from course_subjects import get_subjects
-from kisaims import KisAims
+from legacy.EtlPipeline.lookups import course_lookup_tables as lookup
+from legacy.EtlPipeline.lookups.accreditations import Accreditations
+from legacy.EtlPipeline.lookups.kisaims import KisAims
+from legacy.EtlPipeline.lookups.locations import Locations
+from legacy.EtlPipeline.lookups.sector_salaries import GOSectorSalaries
+from legacy.EtlPipeline.lookups.sector_salaries import LEO3SectorSalaries
+from legacy.EtlPipeline.lookups.sector_salaries import LEO5SectorSalaries
+from legacy.EtlPipeline.lookups.sector_salaries import SectorSalaries
 from legacy.EtlPipeline.mappings.go.institution import GoInstitutionMappings
 from legacy.EtlPipeline.mappings.go.salary import GoSalaryMappings
 from legacy.EtlPipeline.mappings.go.voice import GoVoiceMappings
 from legacy.EtlPipeline.mappings.leo.institution import LeoInstitutionMappings
 from legacy.EtlPipeline.mappings.leo.sector import LeoSectorMappings
-from legacy.EtlPipeline.sector_salaries import SectorSalaries
 from legacy.EtlPipeline.stats.shared_utils import SharedUtils
 from legacy.services import utils
 from legacy.services.utils import get_english_welsh_item
-from locations import Locations
 from qualification_enricher import QualificationCourseEnricher
-from sector_salaries import GOSectorSalaries
-from sector_salaries import LEO3SectorSalaries
-from sector_salaries import LEO5SectorSalaries
 from subject_enricher import SubjectCourseEnricher
 from ukrlp_enricher import UkRlpCourseEnricher
 

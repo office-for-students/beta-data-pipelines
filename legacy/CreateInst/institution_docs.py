@@ -22,7 +22,7 @@ from constants import BLOB_WELSH_UNIS_CONTAINER_NAME
 from constants import XML_LOCAL_TEST_XML_FILE
 from constants import XML_USE_LOCAL_TEST_XML_FILE
 from legacy.CreateInst.locations import Locations
-from legacy.EtlPipeline import course_lookup_tables
+from legacy.EtlPipeline.lookups import course_lookup_tables
 from legacy.services import exceptions
 from legacy.services.blob import BlobService
 from legacy.services.utils import get_english_welsh_item

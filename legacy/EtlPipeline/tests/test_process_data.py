@@ -1,4 +1,3 @@
-import json
 import unittest
 
 import defusedxml.ElementTree as ET
@@ -7,9 +6,9 @@ from unittest import mock
 
 from legacy.EtlPipeline.course_docs import get_go_inst_json
 from legacy.EtlPipeline.course_docs import get_go_sector_json
-from legacy.EtlPipeline.sector_salaries import GOSectorSalaries
-from legacy.EtlPipeline.sector_salaries import LEO3SectorSalaries
-from legacy.EtlPipeline.sector_salaries import LEO5SectorSalaries
+from legacy.EtlPipeline.lookups.sector_salaries import GOSectorSalaries
+from legacy.EtlPipeline.lookups.sector_salaries import LEO3SectorSalaries
+from legacy.EtlPipeline.lookups.sector_salaries import LEO5SectorSalaries
 from legacy.EtlPipeline.tests.test_helpers.testing_utils import get_string
 
 

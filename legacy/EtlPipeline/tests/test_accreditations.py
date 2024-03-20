@@ -4,7 +4,7 @@ import unittest
 import defusedxml.ElementTree as ET
 import xmltodict
 
-from legacy.EtlPipeline.accreditations import Accreditations
+from legacy.EtlPipeline.lookups.accreditations import Accreditations
 from legacy.EtlPipeline.course_docs import get_accreditations
 from legacy.EtlPipeline.tests.test_helpers.testing_utils import get_string
 

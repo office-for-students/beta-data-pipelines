@@ -6,7 +6,7 @@ import xmltodict
 
 from legacy.EtlPipeline.course_docs import get_location_items
 from legacy.EtlPipeline.course_docs import get_locids
-from legacy.EtlPipeline.locations import Locations
+from legacy.EtlPipeline.lookups.locations import Locations
 from legacy.EtlPipeline.tests.test_helpers.testing_utils import get_string
 
 
