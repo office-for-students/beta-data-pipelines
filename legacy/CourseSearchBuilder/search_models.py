@@ -20,6 +20,7 @@ def build_index(url: str, api_key: str, api_version: str, version: int) -> None:
     :type api_version: str
     :param version: Version of the dataset
     :type version: int
+    :return: None
     """
     index = Index(url, api_key, api_version, version)
 
@@ -41,6 +42,7 @@ def load_index(url: str, api_key: str, api_version: str, version: int, docs: Lis
     :type version: int
     :param docs: List of course data
     :type docs: List[Dict[str, Any]]
+    :return: None
     """
     load = Load(url, api_key, api_version, version, docs)
 
@@ -57,6 +59,7 @@ def build_synonyms(url: str, api_key: str, api_version: str) -> None:
     :type api_key: str
     :param api_version: Version of the search API
     :type api_version: str
+    :return: None
     """
     synonyms = SynonymMap(url, api_key, api_version)
 

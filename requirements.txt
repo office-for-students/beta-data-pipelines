@@ -13,3 +13,4 @@ azure-functions==1.17.0
 azure-storage-blob==12.9.0
 python-decouple==3.8
 sendgrid==6.10.0
+Sphinx==7.2.6
