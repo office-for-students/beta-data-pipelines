@@ -7,7 +7,7 @@ import requests
 from legacy.services import exceptions
 
 
-class Index():
+class Index:
     """Creates a new index"""
 
     def __init__(self, url: str, api_key: str, api_version: str, index_name: str) -> None:

@@ -109,7 +109,7 @@ def get_welsh_uni_names() -> List[str]:
     """
     if XML_USE_LOCAL_TEST_XML_FILE:
         et_test = ET.parse(XML_LOCAL_TEST_XML_FILE)
-        uprnEl = et_test.find('UKPRN')
+        uprn_el = et_test.find('UKPRN')
         mock_xml_source_file = open(XML_LOCAL_TEST_XML_FILE, "r")
         csv_string = mock_xml_source_file.read()
         welsh_uni_names = ["welsh one", "welsh two"]

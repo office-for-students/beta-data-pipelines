@@ -21,9 +21,9 @@ class TestDataSetHelper(unittest.TestCase):
         mock_get_cosmos_client.return_value = mock.MagicMock()
         try:
             DataSetService()
-        except:
+        except Exception as e:
             self.fail(
-                "DataSetHelper initialisation raised unexpected Exception"
+                f"DataSetHelper initialisation raised unexpected Exception: {e}"
             )
 
     @mock.patch.dict(
@@ -69,7 +69,7 @@ class TestDataSetHelper(unittest.TestCase):
     )
     @mock.patch("SharedCode.dataset_helper.get_cosmos_client")
     def test_have_all_builds_succeeded_with_all_pending(
-        self, mock_get_cosmos_client
+            self, mock_get_cosmos_client
     ):
         dataset_service = DataSetService()
 
@@ -94,7 +94,7 @@ class TestDataSetHelper(unittest.TestCase):
     )
     @mock.patch("SharedCode.dataset_helper.get_cosmos_client")
     def test_have_all_builds_succeeded_with_one_pending(
-        self, mock_get_cosmos_client
+            self, mock_get_cosmos_client
     ):
         dataset_service = DataSetService()
 
@@ -119,7 +119,7 @@ class TestDataSetHelper(unittest.TestCase):
     )
     @mock.patch("SharedCode.dataset_helper.get_cosmos_client")
     def test_have_all_builds_succeeded_with_two_pending(
-        self, mock_get_cosmos_client
+            self, mock_get_cosmos_client
     ):
         dataset_service = DataSetService()
 
@@ -144,7 +144,7 @@ class TestDataSetHelper(unittest.TestCase):
     )
     @mock.patch("SharedCode.dataset_helper.get_cosmos_client")
     def test_have_all_builds_succeeded_with_all_succeeded(
-        self, mock_get_cosmos_client
+            self, mock_get_cosmos_client
     ):
         dataset_service = DataSetService()
 

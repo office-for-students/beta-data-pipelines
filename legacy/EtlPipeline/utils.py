@@ -4,7 +4,6 @@ from typing import Union
 
 from constants import COSMOS_COLLECTION_INSTITUTIONS
 from constants import COSMOS_COLLECTION_SUBJECTS
-from constants import COSMOS_DATABASE_ID
 from legacy.EtlPipeline.stats.shared_utils import SharedUtils
 from legacy.EtlPipeline.subject_enricher import SubjectCourseEnricher
 from legacy.services.utils import get_cosmos_service
@@ -77,13 +76,13 @@ def get_earnings_agg_unavail_messages(agg_value: str, subject: Dict[str, Any]) -
     earnings_agg_unavail_messages = {}
 
     if agg_value in ['21', '22']:
-        message_english = "The data displayed is from students on this and other " \
-                          "courses in [Subject].\n\nThis includes data from this and related courses at the same university or " \
-                          "college. There was not enough data to publish more specific information. This does not reflect on " \
-                          "the quality of the course."
-        message_welsh = "Daw'r data a ddangosir gan fyfyrwyr ar y cwrs hwn a chyrsiau " \
-                        "[Subject] eraill.\n\nMae hwn yn cynnwys data o'r cwrs hwn a chyrsiau cysylltiedig yn yr un brifysgol " \
-                        "neu goleg. Nid oedd digon o ddata ar gael i gyhoeddi gwybodaeth fwy manwl. Nid yw hyn yn adlewyrchu " \
+        message_english = "The data displayed is from students on this and other courses in [Subject].\n\nThis "\
+                          "includes data from this and related courses at the same university or college. There "\
+                          "was not enough data to publish more specific information. This does not reflect on the "\
+                          "quality of the course."
+        message_welsh = "Daw'r data a ddangosir gan fyfyrwyr ar y cwrs hwn a chyrsiau [Subject] eraill.\n\nMae "\
+                        "hwn yn cynnwys data o'r cwrs hwn a chyrsiau cysylltiedig yn yr un brifysgol neu goleg. "\
+                        "Nid oedd digon o ddata ar gael i gyhoeddi gwybodaeth fwy manwl. Nid yw hyn yn adlewyrchu "\
                         "ansawdd y cwrs."
 
         earnings_agg_unavail_messages['english'] = message_english.replace("[Subject]", subject['english_label'])

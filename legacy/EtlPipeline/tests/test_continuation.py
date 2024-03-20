@@ -17,7 +17,7 @@ class TestGetContinuationKey(unittest.TestCase):
         key = self.continuation.get_key(xml_key)
         self.assertEqual(expected_key, key)
 
-    def test_with_valid_key(self):
+    def test_with_invalid_key(self):
         invalid_xml_key = "invalid_key"
         with self.assertRaises(KeyError):
             self.continuation.get_key(invalid_xml_key)

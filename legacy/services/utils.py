@@ -27,7 +27,8 @@ from legacy.services.cosmosservice import CosmosService
 
 # def get_cosmos_client() -> CosmosClient:
 #     """
-#     Creates and returns a cosmos client object with the appropriate credentials as specified in the environment variables
+#     Creates and returns a cosmos client object with the appropriate credentials as
+#     specified in the environment variables
 #
 #     :return: Cosmos client object
 #     :rtype: CosmosClient
@@ -37,7 +38,8 @@ from legacy.services.cosmosservice import CosmosService
 
 def get_cosmos_service(container_id: str) -> CosmosService:
     """
-    Creates and returns a cosmos service object with the appropriate credentials as specified in the environment variables.
+    Creates and returns a cosmos service object with the appropriate credentials as specified
+    in the environment variables.
 
     :param container_id: ID of container to create cosmos service for
     :type container_id: str

@@ -100,7 +100,8 @@ class SynonymMap:
 
             self.course_synonym_schema = schema
 
-    def get_synonym_list(self) -> str:
+    @staticmethod
+    def get_synonym_list() -> str:
         """
         Returns a hardcoded list of synonyms for subject search
 

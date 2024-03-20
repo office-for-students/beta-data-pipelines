@@ -53,7 +53,7 @@ class TestSiteMapXml(unittest.TestCase):
         today = datetime.strftime(datetime.today(), "%Y-%m-%d")
         xml = """
         <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">"""
-        input = [
+        input_list = [
             ("10008071", "AAUNDERGRADUATE5YEAR", "Full-time", "en"),
             ("10008071", "AAUNDERGRADUATE5YEAR", "Full-time", "cy"),
             ("10008071", "en"),
@@ -78,4 +78,4 @@ class TestSiteMapXml(unittest.TestCase):
                 <lastmod>{today}</lastmod>
             </url>
         </urlset>"""
-        self.assertEqual(build_xml_string(input, xml), result, "XML is not equal")
+        self.assertEqual(build_xml_string(input_list, xml), result, "XML is not equal")

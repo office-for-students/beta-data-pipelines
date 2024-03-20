@@ -25,7 +25,8 @@ class TestStaticHelperFunctions(unittest.TestCase):
         number_of_courses = get_total_number_of_courses(institution)
         self.assertEqual(expected_number_of_courses, number_of_courses)
 
-    def get_country(self, expected_resp):
+    @staticmethod
+    def get_country(expected_resp):
         code = expected_resp["code"]
         resp = get_country(code)
         return resp

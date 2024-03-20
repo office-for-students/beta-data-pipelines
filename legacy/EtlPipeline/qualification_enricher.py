@@ -27,7 +27,8 @@ class QualificationCourseEnricher:
 
             self.qualification_levels = rows
 
-    def validate_column_headers(self, header_row: str) -> bool:
+    @staticmethod
+    def validate_column_headers(header_row: str) -> bool:
         """
         Takes a header row string and ensures that the column headers are correct.
         Returns True if they are valid, otherwise False

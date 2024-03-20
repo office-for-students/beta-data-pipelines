@@ -38,6 +38,7 @@ class SectorSalaries:
 
 class GOSectorSalaries(SectorSalaries):
     """Subclass for GO sector salaries"""
+
     def __init__(self, root: ET) -> None:
         self.geo_sector_salary_type = 'GO'
         super().__init__(root, self.geo_sector_salary_type)
@@ -45,6 +46,7 @@ class GOSectorSalaries(SectorSalaries):
 
 class LEO3SectorSalaries(SectorSalaries):
     """Subclass for LEO3 sector salaries"""
+
     def __init__(self, root: ET) -> None:
         self.leo3_sector_salary_type = 'LEO3'
         super().__init__(root, self.leo3_sector_salary_type)
@@ -52,6 +54,7 @@ class LEO3SectorSalaries(SectorSalaries):
 
 class LEO5SectorSalaries(SectorSalaries):
     """Subclass for LEO5 sector salaries"""
+
     def __init__(self, root: ET) -> None:
         self.leo5_sector_salary_type = 'LEO5'
         super().__init__(root, self.leo5_sector_salary_type)
