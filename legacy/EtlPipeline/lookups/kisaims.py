@@ -1,8 +1,7 @@
-from typing import Any
 from typing import Dict
 
-import xmltodict
 import defusedxml.ElementTree as ET
+import xmltodict
 
 
 class KisAims:

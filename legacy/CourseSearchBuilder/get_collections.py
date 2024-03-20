@@ -4,7 +4,6 @@ from typing import List
 
 from constants import COSMOS_DATABASE_ID
 from legacy.services.dataset_service import DataSetService
-from legacy.services.utils import get_collection_link
 from legacy.services.utils import get_cosmos_client
 
 
@@ -36,4 +35,3 @@ def get_institutions() -> List[Dict[str, Any]]:
     :rtype: List[Dict[str, Any]]
     """
     return get_collections("COSMOS_COLLECTION_INSTITUTIONS")
-

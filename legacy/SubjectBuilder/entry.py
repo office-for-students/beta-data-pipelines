@@ -4,10 +4,6 @@ from datetime import datetime
 
 from constants import BLOB_SUBJECTS_BLOB_NAME
 from constants import BLOB_SUBJECTS_CONTAINER_NAME
-from constants import COSMOS_COLLECTION_SUBJECTS
-from constants import COSMOS_DATABASE_ID
-from constants import COSMOS_DATABASE_KEY
-from constants import COSMOS_DATABASE_URI
 from legacy.SubjectBuilder.database import load_collection
 from legacy.SubjectBuilder.validate import column_headers
 from legacy.services import exceptions
@@ -58,9 +54,7 @@ def subject_builder_main() -> None:
         dataset_service.update_status("subjects", "in progress")
 
         # add subject docs to new collection
-        load_collection(
-            COSMOS_DATABASE_URI, COSMOS_DATABASE_KEY, COSMOS_DATABASE_ID, COSMOS_COLLECTION_SUBJECTS, reader, version
-        )
+        load_collection(reader, version)
 
         logging.info(f"Successfully loaded in {number_of_subjects} subject documents")
         dataset_service.update_status("subjects", "succeeded")

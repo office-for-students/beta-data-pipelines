@@ -4,52 +4,44 @@ from typing import Iterable
 
 import azure.cosmos.cosmos_client as cosmos_client
 
+from constants import COSMOS_COLLECTION_SUBJECTS
+from constants import COSMOS_DATABASE_ID
+from constants import COSMOS_DATABASE_KEY
+from constants import COSMOS_DATABASE_URI
 from . import models
 
 
-def load_collection(url: str, api_key: str, db_id: str, collection_id: str, rows: Iterable, version: int) -> None:
+def load_collection(rows: Iterable, version: int) -> None:
     """
     Creates a loader class with the given parameters, used to load subjects into the dataset
 
-    :param url: URL of the database
-    :type url: str
-    :param api_key: Cosmos API key
-    :type api_key: str
-    :param db_id: Database ID
-    :type db_id: str
-    :param collection_id: Collection ID
-    :type collection_id: str
     :param rows: Rows from CSV containing subject data
     :type rows: Iterable[str]
     :param version: Version of the dataset
     :type version: int
     :return: None
     """
-    loader = Loader(url, api_key, db_id, collection_id, rows, version)
-
+    loader = Loader(rows, version)
     loader.load_subject_documents()
 
 
 class Loader:
     def __init__(
             self,
-            cosmosdb_uri: str,
-            cosmos_key: str,
-            db_id: str,
-            collection_id: str,
             rows: Iterable,
             version: int
     ) -> None:
 
         master_key = "masterKey"
 
-        self.cosmos_db_client = cosmos_client.CosmosClient(
-            url=cosmosdb_uri, credential={master_key: cosmos_key}
-        )
+        self.cosmos_client = cosmos_client.CosmosClient(url=COSMOS_DATABASE_URI,
+                                                        credential={master_key: COSMOS_DATABASE_KEY})
+        self.cosmos_db_client = self.cosmos_client.get_database_client(COSMOS_DATABASE_ID)
+        self.cosmos_container_client = self.cosmos_db_client.get_container_client(COSMOS_COLLECTION_SUBJECTS)
 
-        self.collection_link = "dbs/" + db_id + "/colls/" + collection_id
-        self.db_id = db_id
-        self.collection_id = collection_id
+        self.collection_link = "dbs/" + COSMOS_DATABASE_ID + "/colls/" + COSMOS_COLLECTION_SUBJECTS
+        self.db_id = COSMOS_DATABASE_ID
+        self.collection_id = COSMOS_COLLECTION_SUBJECTS
         self.rows = rows
         self.version = version
 
@@ -57,8 +49,8 @@ class Loader:
         """
         Loads subject data from the CSV rows and stores it in the database
         """
-        options = {"partitionKey": str(self.version)}
         sproc_link = self.collection_link + "/sprocs/bulkImport"
+        partition_key = str(self.version)
 
         subject_count = 0
         new_docs = []
@@ -77,7 +69,8 @@ class Loader:
 
             if sproc_count == 100:
                 logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-                self.cosmos_db_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
+                self.cosmos_container_client.scripts.execute_stored_procedure(sproc_link, params=[new_docs],
+                                                                              partition_key=partition_key)
                 logging.info(f"Successfully loaded another {sproc_count} documents")
                 # Reset values
                 new_docs = []
@@ -86,7 +79,8 @@ class Loader:
 
         if sproc_count > 0:
             logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-            self.cosmos_db_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
+            self.cosmos_container_client.scripts.execute_stored_procedure(sproc_link, params=[new_docs],
+                                                                          partition_key=partition_key)
             logging.info(f"Successfully loaded another {sproc_count} documents")
 
         logging.info(

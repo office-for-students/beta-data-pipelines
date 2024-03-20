@@ -13,6 +13,7 @@ import sys
 from typing import Any
 from typing import Dict
 from typing import List
+from typing import Union
 
 import defusedxml.ElementTree as ET
 import xmltodict
@@ -52,14 +53,14 @@ def validate_headers(header: str, xml: str) -> bool:
     return False
 
 
-def add_tef_data(raw_inst_data: Dict[str, Any]) -> Dict[str, Any]:
+def add_tef_data(raw_inst_data: Dict[str, Any]) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
     """
     Returns a dictionary of TEF data using the given raw institution data
 
     :param raw_inst_data: Raw institution data used to build TEF dictionary
     :type raw_inst_data: Dict[str, Any]
     :return: Dictionary of TEF data
-    :rtype: Dict[str, Any]
+    :rtype: Union[Dict[str, Any], List[Dict[str, Any]]]
     """
     return dict(
         report_ukprn=raw_inst_data["REPORT_UKPRN"],
@@ -147,7 +148,6 @@ def get_white_list() -> List[str]:
     ) as f:
         institutions_whitelist = f.readlines()
         return [institution.strip() for institution in institutions_whitelist]
-
 
 
 def get_country(code: str) -> Dict[str, str]:

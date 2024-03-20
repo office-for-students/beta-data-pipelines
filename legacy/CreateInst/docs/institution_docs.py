@@ -7,6 +7,8 @@ from typing import Dict
 import defusedxml.ElementTree as ET
 import xmltodict
 
+from constants import COSMOS_COLLECTION_INSTITUTIONS
+from constants import COSMOS_DATABASE_ID
 from legacy.CreateInst.docs.name_handler import InstitutionProviderNameHandler
 from legacy.CreateInst.institution_docs import add_tef_data
 from legacy.CreateInst.institution_docs import get_country
@@ -137,14 +139,14 @@ class InstitutionDocs:
         :return: None
         """
 
-        cosmosdb_client = get_cosmos_client()
+        cosmos_client = get_cosmos_client()
+        cosmos_db_client = cosmos_client.get_database_client(COSMOS_DATABASE_ID)
+        cosmos_container_client = cosmos_db_client.get_container_client(COSMOS_COLLECTION_INSTITUTIONS)
 
-        collection_link = get_collection_link(
-            "COSMOS_COLLECTION_INSTITUTIONS"
-        )
+        collection_link = get_collection_link("COSMOS_COLLECTION_INSTITUTIONS")
 
-        options = {"partitionKey": str(self.version)}
         sproc_link = collection_link + "/sprocs/bulkImport"
+        partition_key = str(self.version)
 
         institution_count = 0
         new_docs = []
@@ -155,7 +157,8 @@ class InstitutionDocs:
             new_docs.append(self.get_institution_doc(institution))
             if sproc_count == 100:
                 logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-                cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
+                cosmos_container_client.scripts.execute_stored_procedure(sproc_link, params=[new_docs],
+                                                                         partition_key=partition_key)
                 logging.info(f"Successfully loaded another {sproc_count} documents")
                 # Reset values
                 new_docs = []
@@ -164,7 +167,8 @@ class InstitutionDocs:
 
         if sproc_count > 0:
             logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-            cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
+            cosmos_container_client.scripts.execute_stored_procedure(sproc_link, params=[new_docs],
+                                                                     partition_key=partition_key)
             logging.info(f"Successfully loaded another {sproc_count} documents")
 
         logging.info(f"Processed {institution_count} institutions")
