@@ -10,8 +10,8 @@ from typing import Tuple
 from constants import BLOB_INSTITUTIONS_SITEMAPS_JSON_FILE_BLOB_NAME
 from constants import BLOB_JSON_FILES_CONTAINER_NAME
 from constants import COSMOS_COLLECTION_COURSES
+from constants import COSMOS_COLLECTION_INSTITUTIONS
 from legacy.CourseSearchBuilder.get_collections import get_collections
-from legacy.CourseSearchBuilder.get_collections import get_institutions
 from legacy.services.blob import BlobService
 
 BASE_URL = "https://discoveruni.gov.uk"
@@ -24,7 +24,7 @@ def build_sitemap_xml(blob_service: BlobService) -> None:
     :param blob_service: Blob service used to store the sitemap XML
     :type blob_service: BlobService
     """
-    institution_list = get_institutions()
+    institution_list = get_collections(COSMOS_COLLECTION_INSTITUTIONS)
     course_list = get_collections(COSMOS_COLLECTION_COURSES)
     institution_params, course_params = build_param_lists(institution_list, course_list)
     xml = """<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">"""

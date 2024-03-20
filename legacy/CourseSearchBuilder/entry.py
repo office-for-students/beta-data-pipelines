@@ -2,10 +2,11 @@ import logging
 import traceback
 from datetime import datetime
 
+from constants import COSMOS_COLLECTION_COURSES
 from constants import SEARCH_API_KEY
 from constants import SEARCH_API_VERSION
 from constants import SEARCH_URL
-from legacy.services import utils
+from legacy.services.blob import BlobService
 from legacy.services.dataset_service import DataSetService
 # from SharedCode.mail_helper import MailHelper
 from . import search
@@ -13,7 +14,7 @@ from .build_institutions_json import build_institutions_json_files
 from .build_sitemap_xml import build_sitemap_xml
 from .build_subjects_json import build_subjects_json_file
 from .build_version_json import build_version_json_file
-from legacy.services.blob import BlobService
+from .get_collections import get_collections
 
 
 def course_search_builder_main(blob_service: BlobService, dataset_service: DataSetService) -> None:
@@ -37,17 +38,14 @@ def course_search_builder_main(blob_service: BlobService, dataset_service: DataS
         logging.info(
             f"CourseSearchBuilder function started on {function_start_datetime}"
         )
+        dataset_service.update_status("search", "in progress")
 
         version = dataset_service.get_latest_version_number()
 
-        dataset_service.update_status("search", "in progress")
-
         search.build_synonyms(SEARCH_URL, SEARCH_API_KEY, SEARCH_API_VERSION)
-
         search.build_index(SEARCH_URL, SEARCH_API_KEY, SEARCH_API_VERSION, version)
 
-        courses = utils.get_courses_by_version(version)
-
+        courses = get_collections(COSMOS_COLLECTION_COURSES, version)
         number_of_courses = len(courses)
 
         logging.info(

@@ -9,6 +9,7 @@ from constants import COSMOS_DATABASE_ID
 from constants import COSMOS_DATABASE_KEY
 from constants import COSMOS_DATABASE_URI
 from . import models
+from ..services.utils import get_cosmos_client
 
 
 def load_collection(rows: Iterable, version: int) -> None:
@@ -32,10 +33,7 @@ class Loader:
             version: int
     ) -> None:
 
-        master_key = "masterKey"
-
-        self.cosmos_client = cosmos_client.CosmosClient(url=COSMOS_DATABASE_URI,
-                                                        credential={master_key: COSMOS_DATABASE_KEY})
+        self.cosmos_client = get_cosmos_client()
         self.cosmos_db_client = self.cosmos_client.get_database_client(COSMOS_DATABASE_ID)
         self.cosmos_container_client = self.cosmos_db_client.get_container_client(COSMOS_COLLECTION_SUBJECTS)
 

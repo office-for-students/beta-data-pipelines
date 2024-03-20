@@ -2,6 +2,9 @@ import logging
 
 from azure.cosmos import CosmosClient
 
+from constants import KEY_COSMOS_MASTER_KEY
+
+
 # database_id = "discoveruni"
 # container_id = "datasets"
 
@@ -25,7 +28,7 @@ class CosmosService:
         :type container_id: str
         :return: None
         """
-        self.client = CosmosClient(cosmosdb_uri, cosmosdb_key)
+        self.client = CosmosClient(url=cosmosdb_uri, credential={KEY_COSMOS_MASTER_KEY: cosmosdb_key})
         self.database = self.client.get_database_client(database_id)
         self.container = self.database.get_container_client(container_id)
 

@@ -20,8 +20,6 @@ from legacy.CreateInst.locations import Locations
 from legacy.services.utils import get_collection_link
 from legacy.services.utils import get_cosmos_client
 from legacy.services.utils import get_uuid
-from legacy.services.utils import normalise_url
-from legacy.services.utils import sanitise_address_string
 
 
 class InstitutionDocs:
@@ -172,3 +170,43 @@ class InstitutionDocs:
             logging.info(f"Successfully loaded another {sproc_count} documents")
 
         logging.info(f"Processed {institution_count} institutions")
+
+
+def sanitise_address_string(address_string: str) -> str:
+    """
+    Sanitises passed address string by removing leading and trailing whitespace and removing extra commas
+
+    :param address_string: Address string to sanitise
+    :type address_string: str
+    :return: Cleaned address string
+    :rtype: str
+    """
+    cleaned = address_string.replace(",,", ",")
+    as_array = cleaned.split(',')
+
+    final = []
+    for a in as_array:
+        final.append(a.rstrip())
+
+    sanitised = ','.join(final)
+
+    return sanitised
+
+
+def normalise_url(website_url: str) -> str:
+    """
+    Normalises a website URL by removing trailing whitespace and adding "https://".
+    Returns an empty string if an empty string is provided.
+
+    :param website_url: Website URL string to normalise
+    :type website_url: str
+    :return: Normalized website URL
+    :rtype: str
+    """
+    if website_url == "":
+        return ""
+    params = website_url.split("://")
+    if len(params) == 1:
+        return f"https://{website_url.rstrip()}"
+    else:
+        return f"https://{params[1].rstrip()}"

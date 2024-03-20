@@ -1,4 +1,4 @@
-"""Module for creating the instituions.json file used by CMS"""
+"""Module for creating the institutions.json file used by CMS"""
 
 import io
 import json
@@ -10,7 +10,8 @@ from typing import List
 from constants import BLOB_INSTITUTIONS_JSON_FILE_BLOB_NAME_CY
 from constants import BLOB_INSTITUTIONS_JSON_FILE_BLOB_NAME_EN
 from constants import BLOB_JSON_FILES_CONTAINER_NAME
-from legacy.CourseSearchBuilder.get_collections import get_institutions
+from constants import COSMOS_COLLECTION_INSTITUTIONS
+from legacy.CourseSearchBuilder.get_collections import get_collections
 from legacy.services.blob import BlobService
 
 
@@ -19,7 +20,7 @@ def build_institutions_json_files() -> None:
     Retrieves a list of institutions and generates two JSON files, one for Welsh institution
     names and one for English. Files are stored as a blob and are not returned by this function.
     """
-    institution_list = get_institutions()
+    institution_list = get_collections(COSMOS_COLLECTION_INSTITUTIONS)
 
     generate_file(
         institution_list=institution_list,

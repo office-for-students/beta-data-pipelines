@@ -2,14 +2,14 @@ from typing import Any
 from typing import Dict
 from typing import Union
 
-from legacy.services import utils
+from legacy.EtlPipeline.utils import get_ukrlp_lookups
 
 
 class UkRlpCourseEnricher:
     """Handles enriching courses with UKRLP data"""
 
     def __init__(self, version: int) -> None:
-        self.ukrlp_lookups = utils.get_ukrlp_lookups(version)
+        self.ukrlp_lookups = get_ukrlp_lookups(version)
 
     def enrich_course(self, course: Dict[str, Any]) -> None:
         """
