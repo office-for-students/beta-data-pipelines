@@ -11,31 +11,6 @@ from constants import COSMOS_DATABASE_URI
 from legacy.services.cosmosservice import CosmosService
 
 
-# def get_collection_link(collection_id: str) -> str:
-#     """
-#     Create and return collection link based on values passed in
-#
-#     :param collection_id: ID of collection to return link of
-#     :type collection_id: str
-#     :return: Collection link
-#     :rtype: str
-#     """
-#
-#     # Return a link to the relevant CosmosDB Container/Document Collection
-#     return "dbs/" + COSMOS_DATABASE_ID + "/colls/" + collection_id
-
-
-# def get_cosmos_client() -> CosmosClient:
-#     """
-#     Creates and returns a cosmos client object with the appropriate credentials as
-#     specified in the environment variables
-#
-#     :return: Cosmos client object
-#     :rtype: CosmosClient
-#     """
-#     return CosmosClient(url=COSMOS_DATABASE_URI, credential={KEY_COSMOS_MASTER_KEY: COSMOS_DATABASE_KEY})
-
-
 def get_cosmos_service(container_id: str) -> CosmosService:
     """
     Creates and returns a cosmos service object with the appropriate credentials as specified
