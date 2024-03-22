@@ -21,6 +21,7 @@ def get_cosmos_service(container_id: str) -> CosmosService:
     :return: Cosmos service object
     :rtype: CosmosService
     """
+
     return CosmosService(
         cosmosdb_uri=COSMOS_DATABASE_URI,
         cosmosdb_key=COSMOS_DATABASE_KEY,
@@ -29,7 +30,7 @@ def get_cosmos_service(container_id: str) -> CosmosService:
     )
 
 
-def get_uuid() -> str:
+def generate_uuid() -> str:
     """
     Generates and returns a UUID.
 

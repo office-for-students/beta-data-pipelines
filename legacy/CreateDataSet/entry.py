@@ -9,14 +9,14 @@ from .dataset_creator import DataSetCreator
 from legacy.services.blob import BlobService
 from legacy.services.exceptions import StopEtlPipelineErrorException
 from legacy.services.exceptions import XmlValidationError
+from ..services.cosmosservice import CosmosService
 
 
 def create_dataset_main(
         blob_service: BlobService,
+        cosmos_service: CosmosService,
         storage_container_name: str,
-        storage_blob_name: str,
-        use_test_xml: bool = False,
-        mock_xml: Optional[str] = None
+        storage_blob_name: str
 ) -> None:
     """
     Creates a new DataSet for each new file we get from HESA
@@ -27,18 +27,11 @@ def create_dataset_main(
     :type storage_container_name: str
     :param storage_blob_name: Azure storage blob name
     :type storage_container_name: str
-    :param use_test_xml: If True will use mock xml file
-    :type use_test_xml: bool
-    :param mock_xml: For testing pass in a mock XML string
-    :type mock_xml: Optional[str]
+
     :return: None
     """
 
-    if use_test_xml:
-        mock_xml_source_file = open(mock_xml, "r")
-        xml_string = mock_xml_source_file.read()
-    else:
-        xml_string = blob_service.get_str_file(storage_container_name, storage_blob_name)
+    xml_string = blob_service.get_str_file(storage_container_name, storage_blob_name)
 
     # BASIC XML Validation
     try:
@@ -48,5 +41,5 @@ def create_dataset_main(
         raise StopEtlPipelineErrorException
 
     # CREATE NEW DATASET
-    data_set_creator = DataSetCreator()
+    data_set_creator = DataSetCreator(cosmos_service=cosmos_service)
     data_set_creator.load_new_dataset_doc()

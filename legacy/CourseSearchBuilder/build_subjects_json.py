@@ -4,6 +4,7 @@ import io
 import json
 from typing import Any
 from typing import Dict
+from typing import List
 
 from constants import BLOB_JSON_FILES_CONTAINER_NAME
 from constants import BLOB_SUBJECTS_JSON_BLOB_NAME
@@ -13,7 +14,7 @@ from legacy.services.blob import BlobService
 from legacy.services.dataset_service import DataSetService
 
 
-def build_subjects_json_file(blob_service: BlobService, dataset_service: DataSetService) -> None:
+def build_subjects_json_file(subjects_list: List[Dict[str, Any]], blob_service: BlobService) -> None:
     """
     Calls required functions to generate a JSON containing subject data.
     File is saved to a blob and not returned by the function.
@@ -24,7 +25,6 @@ def build_subjects_json_file(blob_service: BlobService, dataset_service: DataSet
     :type dataset_service: DataSetService
     :return: None
     """
-    subjects_list = get_collections(COSMOS_COLLECTION_SUBJECTS, dataset_service)  # subjects
     subjects_file = io.StringIO()
 
     subjects = []

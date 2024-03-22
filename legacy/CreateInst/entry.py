@@ -12,18 +12,18 @@ from legacy.CreateInst.institution_docs import get_welsh_uni_names
 from legacy.CreateInst.institution_docs import get_white_list
 from legacy.services import exceptions
 from legacy.services.blob import BlobService
+from legacy.services.cosmosservice import CosmosService
 from legacy.services.dataset_service import DataSetService
 
 
 # from SharedCode.mail_helper import MailHelper
 
 
-def create_institutions_main(blob_service: BlobService):
-    # msgerror = ""
-
-    # mail_helper = MailHelper()
-
-    dataset_service = DataSetService()
+def create_institutions_main(
+        blob_service: BlobService,
+        cosmos_service: CosmosService,
+        dataset_service: DataSetService
+):
 
     try:
         logging.info(
@@ -60,8 +60,11 @@ def create_institutions_main(blob_service: BlobService):
         inst_docs = InstitutionDocs(
             xml_string=hesa_xml_file_as_string,
             version=version,
-            provider_name_handler=provider_name_handler
+            provider_name_handler=provider_name_handler,
+            cosmos_service=cosmos_service
         )
+        # cosmos_service = get_cosmos_service(COSMOS_COLLECTION_INSTITUTIONS)
+
         inst_docs.create_institution_docs()
         dataset_service.update_status("institutions", "succeeded")
 

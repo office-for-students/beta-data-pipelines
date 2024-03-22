@@ -5,10 +5,10 @@ from typing import Iterable
 from constants import COSMOS_COLLECTION_SUBJECTS
 from constants import COSMOS_DATABASE_ID
 from . import models
-from legacy.services.utils import get_cosmos_service
+from ..services.cosmosservice import CosmosService
 
 
-def load_collection(rows: Iterable, version: int) -> None:
+def load_collection(rows: Iterable, version: int, cosmos_service: CosmosService) -> None:
     """
     Creates a loader class with the given parameters, used to load subjects into the dataset
 
@@ -16,9 +16,11 @@ def load_collection(rows: Iterable, version: int) -> None:
     :type rows: Iterable[str]
     :param version: Version of the dataset
     :type version: int
+    :param cosmos_service: Cosmos service to load collection from
+    :type cosmos_service: CosmosService
     :return: None
     """
-    loader = Loader(rows, version)
+    loader = Loader(rows, version, cosmos_service=cosmos_service)
     loader.load_subject_documents()
 
 
@@ -26,13 +28,15 @@ class Loader:
     def __init__(
             self,
             rows: Iterable,
-            version: int
+            version: int,
+            cosmos_service: CosmosService,
+            collection_id: str = COSMOS_COLLECTION_SUBJECTS
     ) -> None:
-        self.cosmos_service = get_cosmos_service(COSMOS_COLLECTION_SUBJECTS)
 
-        self.collection_link = "dbs/" + COSMOS_DATABASE_ID + "/colls/" + COSMOS_COLLECTION_SUBJECTS
+        self.cosmos_service = cosmos_service
+        self.collection_link = self.cosmos_service.get_collection_link(collection_id)
         self.db_id = COSMOS_DATABASE_ID
-        self.collection_id = COSMOS_COLLECTION_SUBJECTS
+        self.collection_id = collection_id
         self.rows = rows
         self.version = version
 
@@ -46,6 +50,7 @@ class Loader:
         subject_count = 0
         new_docs = []
         sproc_count = 0
+        container = self.cosmos_service.get_container(container_id=self.collection_id)
 
         for row in self.rows:
             subject_count += 1
@@ -59,9 +64,13 @@ class Loader:
             new_docs.append(models.build_subject_doc(row, self.version))
 
             if sproc_count == 100:
-                logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-                self.cosmos_service.container.scripts.execute_stored_procedure(sproc_link, params=[new_docs],
-                                                                               partition_key=partition_key)
+                logging.info(f"Beginning execution of stored procedure for {sproc_count} documents")
+
+                container.scripts.execute_stored_procedure(
+                    sproc_link,
+                    params=[new_docs],
+                    partition_key=partition_key
+                )
                 logging.info(f"Successfully loaded another {sproc_count} documents")
                 # Reset values
                 new_docs = []
@@ -69,9 +78,12 @@ class Loader:
                 time.sleep(10)
 
         if sproc_count > 0:
-            logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-            self.cosmos_service.container.scripts.execute_stored_procedure(sproc_link, params=[new_docs],
-                                                                           partition_key=partition_key)
+            logging.info(f"Beginning execution of stored procedure for {sproc_count} documents")
+            container.scripts.execute_stored_procedure(
+                sproc_link,
+                params=[new_docs],
+                partition_key=partition_key
+            )
             logging.info(f"Successfully loaded another {sproc_count} documents")
 
         logging.info(

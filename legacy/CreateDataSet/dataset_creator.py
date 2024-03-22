@@ -10,6 +10,7 @@ from typing import Dict
 from dateutil import parser
 
 from constants import MINUTES_WAIT_BEFORE_CREATE_NEW_DATASET
+from legacy.services.cosmosservice import CosmosService
 # from SharedCode.utils import get_cosmos_client, get_collection_link
 from legacy.services.dataset_service import DataSetService
 from legacy.services.exceptions import DataSetTooEarlyError
@@ -24,8 +25,8 @@ sys.path.insert(0, PARENT_DIR)
 
 class DataSetCreator:
     """Creates a new dataset"""
-    def __init__(self, test_mode: bool = False) -> None:
-        self.dataset_service = DataSetService()
+    def __init__(self, cosmos_service: CosmosService, test_mode: bool = False) -> None:
+        self.dataset_service = DataSetService(cosmos_service=cosmos_service)
         self.test_mode = test_mode
 
     def load_new_dataset_doc(self) -> None:
@@ -68,6 +69,7 @@ class DataSetCreator:
         :return: Version number of the next dataset
         :rtype: int
         """
+        # TODO: Improve this process
         if self.get_number_of_dataset_docs() == 0:
             return 1
 

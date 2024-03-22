@@ -16,13 +16,11 @@ from legacy.services.blob import BlobService
 from legacy.services.dataset_service import DataSetService
 
 
-def build_institutions_json_files(dataset_service: DataSetService) -> None:
+def build_institutions_json_files(institution_list, blob_service: BlobService) -> None:
     """
     Retrieves a list of institutions and generates two JSON files, one for Welsh institution
     names and one for English. Files are stored as a blob and are not returned by this function.
     """
-    institution_list = get_collections(COSMOS_COLLECTION_INSTITUTIONS, dataset_service)
-
     generate_file(
         institution_list=institution_list,
         primary_name="pub_ukprn_welsh_name",
@@ -30,7 +28,8 @@ def build_institutions_json_files(dataset_service: DataSetService) -> None:
         first_trading_name="first_trading_name",
         legal_name="legal_name",
         other_names="other_names",
-        blob_file=BLOB_INSTITUTIONS_JSON_FILE_BLOB_NAME_CY
+        blob_file=BLOB_INSTITUTIONS_JSON_FILE_BLOB_NAME_CY,
+        blob_service=blob_service
     )
     generate_file(
         institution_list=institution_list,
@@ -39,7 +38,8 @@ def build_institutions_json_files(dataset_service: DataSetService) -> None:
         first_trading_name="first_trading_name",
         legal_name="legal_name",
         other_names="other_names",
-        blob_file=BLOB_INSTITUTIONS_JSON_FILE_BLOB_NAME_EN
+        blob_file=BLOB_INSTITUTIONS_JSON_FILE_BLOB_NAME_EN,
+        blob_service=blob_service
     )
 
 

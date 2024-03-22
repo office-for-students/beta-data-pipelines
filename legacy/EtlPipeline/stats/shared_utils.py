@@ -12,13 +12,14 @@ from legacy.EtlPipeline.utils import get_subject_lookups
 from legacy.EtlPipeline.validators import validate_agg
 from legacy.EtlPipeline.validators import validate_unavailable_reason_code
 from legacy.services.dataset_service import DataSetService
+from main import COSMOS_DATABASE_SERVICE
 
 
 class SharedUtils:
     """Functionality required by several stats related classes"""
 
     try:
-        dataset_service = DataSetService()  # TODO: warning presented as dsh wasn't assigned, but the catch all
+        dataset_service = DataSetService(cosmos_service=COSMOS_DATABASE_SERVICE)  # TODO: warning presented as dsh wasn't assigned, but the catch all
         # Exception below would have masked this - leading to no subject codes.
         version = dataset_service.get_latest_version_number()
         subj_codes = get_subject_lookups(version)

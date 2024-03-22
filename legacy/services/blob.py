@@ -26,10 +26,10 @@ class BlobServiceBase:
         return f"{datetime_str}-{blob_filename}"
 
     def get_str_file(self, container_name: str, blob_name: str) -> str:
-        pass
+        NotImplementedError("This method must be implemented by subclasses")
 
     def write_stream_file(self, container_name: str, blob_name: str, encoded_file: bytes) -> None:
-        pass
+        NotImplementedError("This method must be implemented by subclasses")
 
 
 class BlobService(BlobServiceBase):

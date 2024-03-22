@@ -7,23 +7,29 @@ from typing import Dict
 import defusedxml.ElementTree as ET
 import xmltodict
 
-from constants import COSMOS_COLLECTION_INSTITUTIONS
 from legacy.CreateInst.docs.name_handler import InstitutionProviderNameHandler
 from legacy.CreateInst.institution_docs import add_tef_data
 from legacy.CreateInst.institution_docs import get_country
 from legacy.CreateInst.institution_docs import get_student_unions
 from legacy.CreateInst.institution_docs import get_total_number_of_courses
 from legacy.CreateInst.locations import Locations
-from legacy.services.utils import get_cosmos_service
-from legacy.services.utils import get_uuid
+from legacy.services.cosmosservice import CosmosService
+from legacy.services.utils import generate_uuid
 
 
 class InstitutionDocs:
-    def __init__(self, xml_string: str, version: int, provider_name_handler: InstitutionProviderNameHandler) -> None:
+    def __init__(
+            self,
+            xml_string: str,
+            version: int,
+            provider_name_handler: InstitutionProviderNameHandler,
+            cosmos_service: CosmosService
+    ) -> None:
         self.version = version
         self.root = ET.fromstring(xml_string)
         self.location_lookup = Locations(self.root)
         self.provider_name_handler = provider_name_handler
+        self.cosmos_service = cosmos_service
 
     def get_institution_element(self, institution: ET) -> Dict[str, Any]:
         """
@@ -113,7 +119,7 @@ class InstitutionDocs:
         ]
 
         institution_doc = {
-            "_id": get_uuid(),
+            "_id": generate_uuid(),
             "created_at": datetime.datetime.utcnow().isoformat(),
             "version": self.version,
             "institution_id": raw_inst_data["PUBUKPRN"],
@@ -129,8 +135,7 @@ class InstitutionDocs:
         :return: None
         """
 
-        cosmos_service = get_cosmos_service(COSMOS_COLLECTION_INSTITUTIONS)
-        collection_link = cosmos_service.get_collection_link()
+        collection_link = self.cosmos_service.get_collection_link()
         sproc_link = collection_link + "/sprocs/bulkImport"
         partition_key = str(self.version)
 
@@ -143,8 +148,8 @@ class InstitutionDocs:
             new_docs.append(self.get_institution_doc(institution))
             if sproc_count == 100:
                 logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-                cosmos_service.container.scripts.execute_stored_procedure(sproc_link, params=[new_docs],
-                                                                          partition_key=partition_key)
+                self.cosmos_service.container.scripts.execute_stored_procedure(sproc_link, params=[new_docs],
+                                                                               partition_key=partition_key)
                 logging.info(f"Successfully loaded another {sproc_count} documents")
                 # Reset values
                 new_docs = []
@@ -153,8 +158,8 @@ class InstitutionDocs:
 
         if sproc_count > 0:
             logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-            cosmos_service.container.scripts.execute_stored_procedure(sproc_link, params=[new_docs],
-                                                                      partition_key=partition_key)
+            self.cosmos_service.container.scripts.execute_stored_procedure(sproc_link, params=[new_docs],
+                                                                           partition_key=partition_key)
             logging.info(f"Successfully loaded another {sproc_count} documents")
 
         logging.info(f"Processed {institution_count} institutions")

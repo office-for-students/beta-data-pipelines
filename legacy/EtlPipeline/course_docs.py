@@ -17,7 +17,6 @@ import traceback
 from typing import Any
 from typing import Dict
 from typing import List
-from typing import Type
 from typing import Union
 
 import defusedxml.ElementTree as ET
@@ -45,8 +44,7 @@ from legacy.EtlPipeline.mappings.leo.sector import LeoSectorMappings
 from legacy.EtlPipeline.stats.shared_utils import SharedUtils
 from legacy.services import utils
 from legacy.services.blob import BlobService
-from legacy.services.blob import BlobServiceBase
-from legacy.services.utils import get_cosmos_service
+from legacy.services.cosmosservice import CosmosService
 from legacy.services.utils import get_english_welsh_item
 from qualification_enricher import QualificationCourseEnricher
 from subject_enricher import SubjectCourseEnricher
@@ -60,7 +58,7 @@ sys.path.insert(0, CURRENT_DIR)
 sys.path.insert(0, PARENT_DIR)
 
 
-def load_course_docs(xml_string: str, version: int, blob_service: BlobService) -> None:
+def load_course_docs(xml_string: str, version: int, blob_service: BlobService, cosmos_service: CosmosService) -> None:
     """
     Parse HESA XML passed in and create JSON course docs in Cosmos DB.
 
@@ -72,7 +70,7 @@ def load_course_docs(xml_string: str, version: int, blob_service: BlobService) -
     :type blob_service: BlobService
     :return: None
     """
-    cosmos_service = get_cosmos_service(COSMOS_COLLECTION_COURSES)
+    # cosmos_service = get_cosmos_service(COSMOS_COLLECTION_COURSES)
 
     logging.info(
         "adding ukrlp data into memory ahead of building course documents"
@@ -93,7 +91,8 @@ def load_course_docs(xml_string: str, version: int, blob_service: BlobService) -
                                            blob_name=BLOB_QUALIFICATIONS_BLOB_NAME)
     qualification_enricher = QualificationCourseEnricher(csv_string)
 
-    collection_link = cosmos_service.get_collection_link()
+    collection_link = cosmos_service.get_collection_link(COSMOS_COLLECTION_COURSES)
+    container = cosmos_service.get_container(COSMOS_COLLECTION_COURSES)
 
     # Import the XML dataset
     root = ET.fromstring(xml_string)
@@ -152,8 +151,11 @@ def load_course_docs(xml_string: str, version: int, blob_service: BlobService) -
 
                 if sproc_count >= 5:
                     logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-                    cosmos_service.container.scripts.execute_stored_procedure(sproc_link, params=[new_docs],
-                                                                              partition_key=partition_key)
+                    container.scripts.execute_stored_procedure(
+                        sproc_link,
+                        params=[new_docs],
+                        partition_key=partition_key
+                    )
                     logging.info(f"Successfully loaded another {sproc_count} documents")
                     # Reset values
                     new_docs = []
@@ -171,12 +173,12 @@ def load_course_docs(xml_string: str, version: int, blob_service: BlobService) -
 
     if sproc_count > 0:
         logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-        cosmos_service.container.scripts.execute_stored_procedure(sproc_link, params=[new_docs],
-                                                                  partition_key=partition_key)
+        container.scripts.execute_stored_procedure(
+            sproc_link,
+            params=[new_docs],
+            partition_key=partition_key
+        )
         logging.info(f"Successfully loaded another {sproc_count} documents")
-        # Reset values
-        new_docs = []
-        sproc_count = 0
 
     logging.info(f"Processed {course_count} courses")
 
@@ -251,7 +253,7 @@ def get_course_doc(
     :rtype: Dict[str, Any]
     """
     outer_wrapper = {
-        "_id": utils.get_uuid(),
+        "_id": utils.generate_uuid(),
         "created_at": datetime.datetime.utcnow().isoformat(),
         "updated_at": datetime.datetime.utcnow().isoformat(),
         "version": version,

@@ -8,12 +8,14 @@ from legacy.SubjectBuilder.database import load_collection
 from legacy.SubjectBuilder.validate import column_headers
 from legacy.services import exceptions
 from legacy.services.blob import BlobService
+from legacy.services.cosmosservice import CosmosService
 from legacy.services.dataset_service import DataSetService
 
 
 def subject_builder_main(
         blob_service: BlobService,
-        dataset_service: DataSetService
+        dataset_service: DataSetService,
+        cosmos_service: CosmosService
 ) -> None:
     """
     Builds subject dataset using the CSV stored in the subjects blob
@@ -53,7 +55,7 @@ def subject_builder_main(
         dataset_service.update_status("subjects", "in progress")
 
         # add subject docs to new collection
-        load_collection(reader, version)
+        load_collection(rows=reader, version=version, cosmos_service=cosmos_service)
 
         logging.info(f"Successfully loaded in {number_of_subjects} subject documents")
         dataset_service.update_status("subjects", "succeeded")
