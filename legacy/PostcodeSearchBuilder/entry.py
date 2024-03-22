@@ -13,7 +13,7 @@ from legacy.PostcodeSearchBuilder.search import load_index
 from legacy.services.blob import BlobService
 
 
-def postcode_search_builder_main() -> None:
+def postcode_search_builder_main(blob_service: BlobService) -> None:
     """Create the postcode search index"""
 
     logging.info(f"PostcodeSearchBuilder request triggered")
@@ -26,8 +26,6 @@ def postcode_search_builder_main() -> None:
     # )
 
     try:
-        blob_service = BlobService()
-
         # Read the Blob into a BytesIO object
         csv_string = blob_service.get_str_file(BLOB_POSTCODES_CONTAINER_NAME, BLOB_POSTCODES_BLOB_NAME)
 

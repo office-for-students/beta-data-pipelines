@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime
 
+from azure.storage.blob import BlobServiceClient
 from fastapi import FastAPI
 
 from constants import BLOB_AZURE_CONNECT_STRING
@@ -31,7 +32,9 @@ MAIL_SERVICE = MailService(
     enabled=True
 )
 DATASET_SERVICE = DataSetService()
-BLOB_SERVICE = BlobService(azure_storage_connection_string=BLOB_AZURE_CONNECT_STRING)
+BLOB_SERVICE = BlobService(
+    blob_service_client=BlobServiceClient.from_connection_string(BLOB_AZURE_CONNECT_STRING)
+)
 
 
 def send_message(mailer, result, function, error_message=None):
@@ -98,7 +101,7 @@ async def create_inst():
     # send_message(mail_helper, "Started", "Create Institutions")
     error = None
     try:
-        create_institutions_main()
+        create_institutions_main(blob_service=BLOB_SERVICE)
     except Exception as e:
         message = f"Create Institutions failed: {e}"
         error = e

@@ -17,6 +17,7 @@ import traceback
 from typing import Any
 from typing import Dict
 from typing import List
+from typing import Type
 from typing import Union
 
 import defusedxml.ElementTree as ET
@@ -43,6 +44,8 @@ from legacy.EtlPipeline.mappings.leo.institution import LeoInstitutionMappings
 from legacy.EtlPipeline.mappings.leo.sector import LeoSectorMappings
 from legacy.EtlPipeline.stats.shared_utils import SharedUtils
 from legacy.services import utils
+from legacy.services.blob import BlobService
+from legacy.services.blob import BlobServiceBase
 from legacy.services.utils import get_cosmos_service
 from legacy.services.utils import get_english_welsh_item
 from qualification_enricher import QualificationCourseEnricher
@@ -57,7 +60,7 @@ sys.path.insert(0, CURRENT_DIR)
 sys.path.insert(0, PARENT_DIR)
 
 
-def load_course_docs(xml_string: str, version: int) -> None:
+def load_course_docs(xml_string: str, version: int, blob_service: BlobService) -> None:
     """
     Parse HESA XML passed in and create JSON course docs in Cosmos DB.
 
@@ -65,6 +68,8 @@ def load_course_docs(xml_string: str, version: int) -> None:
     :type xml_string: str
     :param version: Version of the dataset to be created
     :type version: int
+    :param blob_service: Blob service to get CSV file with
+    :type blob_service: BlobService
     :return: None
     """
     cosmos_service = get_cosmos_service(COSMOS_COLLECTION_COURSES)
@@ -84,8 +89,9 @@ def load_course_docs(xml_string: str, version: int) -> None:
         "adding qualification data into memory ahead of building course documents"
     )
 
-    qualification_enricher = QualificationCourseEnricher(BLOB_QUALIFICATIONS_CONTAINER_NAME,
-                                                         BLOB_QUALIFICATIONS_BLOB_NAME)
+    csv_string = blob_service.get_str_file(container_name=BLOB_QUALIFICATIONS_CONTAINER_NAME,
+                                           blob_name=BLOB_QUALIFICATIONS_BLOB_NAME)
+    qualification_enricher = QualificationCourseEnricher(csv_string)
 
     collection_link = cosmos_service.get_collection_link()
 

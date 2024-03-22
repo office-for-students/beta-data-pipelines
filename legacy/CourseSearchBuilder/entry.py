@@ -45,7 +45,7 @@ def course_search_builder_main(blob_service: BlobService, dataset_service: DataS
         search.build_synonyms(SEARCH_URL, SEARCH_API_KEY, SEARCH_API_VERSION)
         search.build_index(SEARCH_URL, SEARCH_API_KEY, SEARCH_API_VERSION, version)
 
-        courses = get_collections(COSMOS_COLLECTION_COURSES, version)
+        courses = get_collections(COSMOS_COLLECTION_COURSES, dataset_service, version)
         number_of_courses = len(courses)
 
         logging.info(
@@ -58,7 +58,7 @@ def course_search_builder_main(blob_service: BlobService, dataset_service: DataS
         courses = None
 
         if dataset_service.have_all_builds_succeeded():
-            build_institutions_json_files()
+            build_institutions_json_files(dataset_service)
             build_subjects_json_file(blob_service)
             build_version_json_file(blob_service, dataset_service)
             build_sitemap_xml(blob_service)

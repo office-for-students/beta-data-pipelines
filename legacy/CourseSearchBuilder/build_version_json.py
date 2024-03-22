@@ -9,7 +9,10 @@ from legacy.services.blob import BlobService
 from legacy.services.dataset_service import DataSetService
 
 
-def build_version_json_file(blob_service: BlobService, dataset_service: DataSetService) -> None:
+def build_version_json_file(
+        blob_service: BlobService,
+        dataset_service: DataSetService
+) -> None:
     """
     Calls required functions to generate a version.json file which contains the version of the dataset service
 

@@ -10,11 +10,7 @@ from legacy.services.blob import BlobService
 class QualificationCourseEnricher:
     """Handles enriching courses with Qualification data"""
 
-    def __init__(self, storage_container_name: str, storage_blob_name: str) -> None:
-        blob_service = BlobService()
-
-        csv_string = blob_service.get_str_file(storage_container_name, storage_blob_name)
-
+    def __init__(self, csv_string: str = None) -> None:
         if csv_string:
             rows = csv_string.splitlines()
 

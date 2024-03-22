@@ -11,15 +11,16 @@ from legacy.services.blob import BlobService
 from legacy.services.dataset_service import DataSetService
 
 
-def subject_builder_main() -> None:
+def subject_builder_main(
+        blob_service: BlobService,
+        dataset_service: DataSetService
+) -> None:
     """
     Builds subject dataset using the CSV stored in the subjects blob
 
     :return: None
     """
     msgerror = ""
-
-    dataset_service = DataSetService()
 
     logging.info(f"SubjectBuilder message queue triggered")
 
@@ -32,10 +33,8 @@ def subject_builder_main() -> None:
     )
 
     try:
-        blob_helper = BlobService()
-
         # Read the Blob into a BytesIO object
-        csv_string = blob_helper.get_str_file(BLOB_SUBJECTS_CONTAINER_NAME, BLOB_SUBJECTS_BLOB_NAME)
+        csv_string = blob_service.get_str_file(BLOB_SUBJECTS_CONTAINER_NAME, BLOB_SUBJECTS_BLOB_NAME)
 
         rows = csv_string.splitlines()
         number_of_subjects = len(rows) - 1

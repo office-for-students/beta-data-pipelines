@@ -13,14 +13,15 @@ from constants import BLOB_JSON_FILES_CONTAINER_NAME
 from constants import COSMOS_COLLECTION_INSTITUTIONS
 from legacy.CourseSearchBuilder.get_collections import get_collections
 from legacy.services.blob import BlobService
+from legacy.services.dataset_service import DataSetService
 
 
-def build_institutions_json_files() -> None:
+def build_institutions_json_files(dataset_service: DataSetService) -> None:
     """
     Retrieves a list of institutions and generates two JSON files, one for Welsh institution
     names and one for English. Files are stored as a blob and are not returned by this function.
     """
-    institution_list = get_collections(COSMOS_COLLECTION_INSTITUTIONS)
+    institution_list = get_collections(COSMOS_COLLECTION_INSTITUTIONS, dataset_service)
 
     generate_file(
         institution_list=institution_list,
@@ -68,7 +69,8 @@ def generate_file(
         first_trading_name: str,
         legal_name: str,
         other_names: str,
-        blob_file: str
+        blob_file: str,
+        blob_service: BlobService
 ) -> None:
     """
     Takes parameters relating to the institution dataset and generates a JSON file using institution data
@@ -89,8 +91,10 @@ def generate_file(
     :type other_names: str
     :param blob_file: Path to the blob for the generated file to be stored
     :type blob_file: str
+    :param blob_service: Blob service object used to write file
+    :type blob_service: BlobService
+    :return: None
     """
-    blob_service = BlobService()
     institutions_file = io.StringIO()
     institutions = []
     for val in institution_list:

@@ -13,19 +13,22 @@ from constants import COSMOS_COLLECTION_COURSES
 from constants import COSMOS_COLLECTION_INSTITUTIONS
 from legacy.CourseSearchBuilder.get_collections import get_collections
 from legacy.services.blob import BlobService
+from legacy.services.dataset_service import DataSetService
 
 BASE_URL = "https://discoveruni.gov.uk"
 
 
-def build_sitemap_xml(blob_service: BlobService) -> None:
+def build_sitemap_xml(blob_service: BlobService, dataset_service: DataSetService) -> None:
     """
     Calls all required functions to build the sitemap XML.
 
     :param blob_service: Blob service used to store the sitemap XML
     :type blob_service: BlobService
+    :param dataset_service: Dataset service to get version number for file
+    :type dataset_service: DataSetService
     """
-    institution_list = get_collections(COSMOS_COLLECTION_INSTITUTIONS)
-    course_list = get_collections(COSMOS_COLLECTION_COURSES)
+    institution_list = get_collections(COSMOS_COLLECTION_INSTITUTIONS, dataset_service)
+    course_list = get_collections(COSMOS_COLLECTION_COURSES, dataset_service)
     institution_params, course_params = build_param_lists(institution_list, course_list)
     xml = """<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">"""
     xml_data = build_xml_string(institution_params + course_params, xml)
@@ -37,8 +40,10 @@ def build_sitemap_xml(blob_service: BlobService) -> None:
     )
 
 
-def build_param_lists(institution_list: List[Dict[str, Any]], course_list: List[Dict[str, Any]]
-                      ) -> Tuple[List[Tuple[str]], List[Tuple[str]]]:
+def build_param_lists(
+        institution_list: List[Dict[str, Any]],
+        course_list: List[Dict[str, Any]]
+) -> Tuple[List[Tuple[str]], List[Tuple[str]]]:
     """
     Takes a list of institution data and a list of course data and returns a list of tuples for corresponding
     parameters.

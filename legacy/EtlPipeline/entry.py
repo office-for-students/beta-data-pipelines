@@ -7,8 +7,6 @@ from datetime import datetime
 
 from constants import BLOB_HESA_BLOB_NAME
 from constants import BLOB_HESA_CONTAINER_NAME
-from constants import XML_LOCAL_TEST_XML_FILE
-from constants import XML_USE_LOCAL_TEST_XML_FILE
 from legacy.EtlPipeline import course_docs
 from legacy.services.blob import BlobService
 from legacy.services.dataset_service import DataSetService
@@ -16,8 +14,8 @@ from legacy.services.dataset_service import DataSetService
 
 def etl_pipeline_main(
         blob_service: BlobService,
+        dataset_service: DataSetService
 ) -> None:
-    dataset_service = DataSetService()
 
     try:
 
@@ -38,11 +36,7 @@ def etl_pipeline_main(
         # correctly with large blobs. Tests showed this is not a limitation
         # with Funtions written in C#.
 
-        if XML_USE_LOCAL_TEST_XML_FILE:
-            mock_xml_source_file = open(XML_LOCAL_TEST_XML_FILE, "r")
-            xml_string = mock_xml_source_file.read()
-        else:
-            xml_string = blob_service.get_str_file(BLOB_HESA_CONTAINER_NAME, BLOB_HESA_BLOB_NAME)
+        xml_string = blob_service.get_str_file(BLOB_HESA_CONTAINER_NAME, BLOB_HESA_BLOB_NAME)
 
         version = dataset_service.get_latest_version_number()
 
@@ -50,7 +44,7 @@ def etl_pipeline_main(
 
         dataset_service.update_status("courses", "in progress")
 
-        course_docs.load_course_docs(xml_string, version)
+        course_docs.load_course_docs(xml_string, version, blob_service)
         dataset_service.update_status("courses", "succeeded")
 
         function_end_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")

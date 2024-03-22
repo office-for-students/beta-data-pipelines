@@ -4,9 +4,12 @@ from datetime import datetime
 
 from constants import BLOB_HESA_BLOB_NAME
 from constants import BLOB_HESA_CONTAINER_NAME
-from constants import XML_LOCAL_TEST_XML_FILE
-from constants import XML_USE_LOCAL_TEST_XML_FILE
+from constants import BLOB_WELSH_UNIS_BLOB_NAME
+from constants import BLOB_WELSH_UNIS_CONTAINER_NAME
 from legacy.CreateInst.docs.institution_docs import InstitutionDocs
+from legacy.CreateInst.docs.name_handler import InstitutionProviderNameHandler
+from legacy.CreateInst.institution_docs import get_welsh_uni_names
+from legacy.CreateInst.institution_docs import get_white_list
 from legacy.services import exceptions
 from legacy.services.blob import BlobService
 from legacy.services.dataset_service import DataSetService
@@ -15,9 +18,7 @@ from legacy.services.dataset_service import DataSetService
 # from SharedCode.mail_helper import MailHelper
 
 
-def create_institutions_main():
-    # TODO: apw: Ensure that UseLocalTestXMLFile is set to false in local.settings.json before going live.
-
+def create_institutions_main(blob_service: BlobService):
     # msgerror = ""
 
     # mail_helper = MailHelper()
@@ -41,13 +42,7 @@ def create_institutions_main():
         # where Functions written in Python do not get triggered # correctly with large blobs. Tests showed this is not a limitation
         # with Funtions written in C#.
 
-        blob_service = BlobService()
-
-        if XML_USE_LOCAL_TEST_XML_FILE:
-            mock_xml_source_file = open(XML_LOCAL_TEST_XML_FILE, "r")
-            hesa_xml_file_as_string = mock_xml_source_file.read()
-        else:
-            hesa_xml_file_as_string = blob_service.get_str_file(BLOB_HESA_CONTAINER_NAME, BLOB_HESA_BLOB_NAME)
+        hesa_xml_file_as_string = blob_service.get_str_file(BLOB_HESA_CONTAINER_NAME, BLOB_HESA_BLOB_NAME)
 
         version = dataset_service.get_latest_version_number()
 
@@ -56,7 +51,17 @@ def create_institutions_main():
         logging.info(f"using version number: {version}")
         dataset_service.update_status("institutions", "in progress")
 
-        inst_docs = InstitutionDocs(hesa_xml_file_as_string, version)
+        csv_string = blob_service.get_str_file(BLOB_WELSH_UNIS_CONTAINER_NAME, BLOB_WELSH_UNIS_BLOB_NAME)
+        provider_name_handler = InstitutionProviderNameHandler(
+            white_list=get_white_list(),
+            welsh_uni_names=get_welsh_uni_names(csv_string)
+        )
+
+        inst_docs = InstitutionDocs(
+            xml_string=hesa_xml_file_as_string,
+            version=version,
+            provider_name_handler=provider_name_handler
+        )
         inst_docs.create_institution_docs()
         dataset_service.update_status("institutions", "succeeded")
 

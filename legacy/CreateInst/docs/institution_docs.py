@@ -13,18 +13,17 @@ from legacy.CreateInst.institution_docs import add_tef_data
 from legacy.CreateInst.institution_docs import get_country
 from legacy.CreateInst.institution_docs import get_student_unions
 from legacy.CreateInst.institution_docs import get_total_number_of_courses
-from legacy.CreateInst.institution_docs import get_welsh_uni_names
-from legacy.CreateInst.institution_docs import get_white_list
 from legacy.CreateInst.locations import Locations
 from legacy.services.utils import get_cosmos_service
 from legacy.services.utils import get_uuid
 
 
 class InstitutionDocs:
-    def __init__(self, xml_string: str, version: int) -> None:
+    def __init__(self, xml_string: str, version: int, provider_name_handler: InstitutionProviderNameHandler) -> None:
         self.version = version
         self.root = ET.fromstring(xml_string)
         self.location_lookup = Locations(self.root)
+        self.provider_name_handler = provider_name_handler
 
     def get_institution_element(self, institution: ET) -> Dict[str, Any]:
         """
@@ -58,11 +57,6 @@ class InstitutionDocs:
         if student_unions:
             institution_element["student_unions"] = get_student_unions(self.location_lookup, institution)
 
-        pn_handler = InstitutionProviderNameHandler(
-            white_list=get_white_list(),
-            welsh_uni_names=get_welsh_uni_names()
-        )
-
         legal_name = raw_inst_data.get("LEGAL_NAME", "")
         first_trading_name = raw_inst_data.get("FIRST_TRADING_NAME", "")
         other_names = raw_inst_data.get("OTHER_NAMES", "")
@@ -71,13 +65,13 @@ class InstitutionDocs:
         if first_trading_name:
             institution_element["first_trading_name"] = first_trading_name
             institution_element["pub_ukprn_name"] = first_trading_name
-            institution_element["pub_ukprn_welsh_name"] = pn_handler.get_welsh_uni_name(
+            institution_element["pub_ukprn_welsh_name"] = self.provider_name_handler.get_welsh_uni_name(
                 pub_ukprn=pubukprn,
                 provider_name=institution_element["first_trading_name"]
             )
         else:
             institution_element["pub_ukprn_name"] = raw_inst_data.get("LEGAL_NAME", "")
-            institution_element["pub_ukprn_welsh_name"] = pn_handler.get_welsh_uni_name(
+            institution_element["pub_ukprn_welsh_name"] = self.provider_name_handler.get_welsh_uni_name(
                 pub_ukprn=pubukprn,
                 provider_name=institution_element["legal_name"]
             )

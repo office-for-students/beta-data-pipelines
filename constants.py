@@ -1,5 +1,9 @@
 from decouple import config
 
+# Variables to determine whether to use a local service (used for running locally for testing purposes)
+BLOB_SERVICE = config("BLOB_SERVICE")
+BLOB_TEST_BLOB_DIRECTORY = "blob_test"
+
 INGESTION_API = config("INGESTION_API")
 
 BLOB_ACCOUNT_NAME = config("BLOB_ACCOUNT_NAME")
@@ -47,11 +51,6 @@ SEARCH_API_VERSION = config("SEARCH_API_VERSION")
 SEND_GRID_API_KEY = config("SEND_GRID_API_KEY")
 SEND_GRID_FROM_EMAIL = config("SEND_GRID_FROM_EMAIL")
 SEND_GRID_TO_EMAILS = config("SEND_GRID_TO_EMAILS")
-
-# Local test xml file is to be used for testing the pipeline locally
-# defaults to None, as in production this will not be set
-XML_USE_LOCAL_TEST_XML_FILE = config("XML_USE_LOCAL_TEST_XML_FILE")
-XML_LOCAL_TEST_XML_FILE = config("XML_LOCAL_TEST_XML_FILE", default=None)
 
 MINUTES_WAIT_BEFORE_CREATE_NEW_DATASET = config("MINUTES_WAIT_BEFORE_CREATE_NEW_DATASET")
 

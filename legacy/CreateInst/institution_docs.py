@@ -20,8 +20,6 @@ import xmltodict
 
 from constants import BLOB_WELSH_UNIS_BLOB_NAME
 from constants import BLOB_WELSH_UNIS_CONTAINER_NAME
-from constants import XML_LOCAL_TEST_XML_FILE
-from constants import XML_USE_LOCAL_TEST_XML_FILE
 from legacy.CreateInst.locations import Locations
 from legacy.EtlPipeline.lookups import course_lookup_tables
 from legacy.services import exceptions
@@ -100,37 +98,27 @@ def validate_column_headers(header_row: str) -> bool:
     return valid
 
 
-def get_welsh_uni_names() -> List[str]:
+def get_welsh_uni_names(csv_string: str) -> List[str]:
     """
     Gets Welsh institution names from either a local test XML file or the blob storage.
 
     :return: List of Welsh institution names
     :rtype: List[str]
     """
-    if XML_USE_LOCAL_TEST_XML_FILE:
-        et_test = ET.parse(XML_LOCAL_TEST_XML_FILE)
-        uprn_el = et_test.find('UKPRN')
-        mock_xml_source_file = open(XML_LOCAL_TEST_XML_FILE, "r")
-        csv_string = mock_xml_source_file.read()
-        welsh_uni_names = ["welsh one", "welsh two"]
-        return welsh_uni_names
-    else:
-        blob_service = BlobService()
-        csv_string = blob_service.get_str_file(BLOB_WELSH_UNIS_CONTAINER_NAME, BLOB_WELSH_UNIS_BLOB_NAME)
 
-        _welsh_uni_names = []
-        if csv_string:
-            rows = csv_string.splitlines()
+    _welsh_uni_names = []
+    if csv_string:
+        rows = csv_string.splitlines()
 
-            if not validate_column_headers(rows[0]):
-                logging.error(
-                    "file headers are incorrect, expecting the following: code, welsh_label"
-                )
-                raise exceptions.StopEtlPipelineErrorException
+        if not validate_column_headers(rows[0]):
+            logging.error(
+                "file headers are incorrect, expecting the following: code, welsh_label"
+            )
+            raise exceptions.StopEtlPipelineErrorException
 
-            _welsh_uni_names = rows
+        _welsh_uni_names = rows
 
-        return _welsh_uni_names
+    return _welsh_uni_names
 
 
 def get_white_list() -> List[str]:
