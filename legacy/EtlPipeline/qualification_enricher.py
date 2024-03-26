@@ -4,7 +4,6 @@ from typing import Any
 from typing import Dict
 
 from legacy.services import exceptions
-from legacy.services.blob import BlobService
 
 
 class QualificationCourseEnricher:

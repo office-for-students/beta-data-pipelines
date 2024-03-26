@@ -9,11 +9,7 @@ from typing import Tuple
 
 from constants import BLOB_INSTITUTIONS_SITEMAPS_JSON_FILE_BLOB_NAME
 from constants import BLOB_JSON_FILES_CONTAINER_NAME
-from constants import COSMOS_COLLECTION_COURSES
-from constants import COSMOS_COLLECTION_INSTITUTIONS
-from legacy.CourseSearchBuilder.get_collections import get_collections
 from legacy.services.blob import BlobService
-from legacy.services.dataset_service import DataSetService
 
 BASE_URL = "https://discoveruni.gov.uk"
 

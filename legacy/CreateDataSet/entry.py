@@ -2,14 +2,12 @@
 """ Creates a new DataSet for each new file we get from HESA """
 
 import logging
-from typing import Optional
 
-from . import validators
-from .dataset_creator import DataSetCreator
 from legacy.services.blob import BlobService
 from legacy.services.exceptions import StopEtlPipelineErrorException
 from legacy.services.exceptions import XmlValidationError
-from ..services.cosmosservice import CosmosService
+from . import validators
+from .dataset_creator import DataSetCreator
 from ..services.dataset_service import DataSetService
 
 

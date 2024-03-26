@@ -7,6 +7,7 @@ from typing import Dict
 import defusedxml.ElementTree as ET
 import xmltodict
 
+from constants import COSMOS_COLLECTION_INSTITUTIONS
 from legacy.CreateInst.docs.name_handler import InstitutionProviderNameHandler
 from legacy.CreateInst.institution_docs import add_tef_data
 from legacy.CreateInst.institution_docs import get_country
@@ -135,9 +136,11 @@ class InstitutionDocs:
         :return: None
         """
 
-        collection_link = self.cosmos_service.get_collection_link()
+        collection_link = self.cosmos_service.get_collection_link(COSMOS_COLLECTION_INSTITUTIONS)
         sproc_link = collection_link + "/sprocs/bulkImport"
         partition_key = str(self.version)
+
+        cosmos_container = self.cosmos_service.get_container(COSMOS_COLLECTION_INSTITUTIONS)
 
         institution_count = 0
         new_docs = []
@@ -148,7 +151,7 @@ class InstitutionDocs:
             new_docs.append(self.get_institution_doc(institution))
             if sproc_count == 100:
                 logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-                self.cosmos_service.container.scripts.execute_stored_procedure(sproc_link, params=[new_docs],
+                cosmos_container.scripts.execute_stored_procedure(sproc_link, params=[new_docs],
                                                                                partition_key=partition_key)
                 logging.info(f"Successfully loaded another {sproc_count} documents")
                 # Reset values
@@ -158,7 +161,7 @@ class InstitutionDocs:
 
         if sproc_count > 0:
             logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-            self.cosmos_service.container.scripts.execute_stored_procedure(sproc_link, params=[new_docs],
+            cosmos_container.scripts.execute_stored_procedure(sproc_link, params=[new_docs],
                                                                            partition_key=partition_key)
             logging.info(f"Successfully loaded another {sproc_count} documents")
 

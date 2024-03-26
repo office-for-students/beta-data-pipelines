@@ -246,7 +246,7 @@ def get_course_doc(
         leo3_sector_salaries: LEO3SectorSalaries,
         leo5_sector_salaries: LEO5SectorSalaries,
         g_subject_enricher: SubjectCourseEnricher,
-        subject_codes
+        subject_codes: Dict[str, Any]
 ) -> Dict[str, Any]:
     """
     Performs required lookups to construct a comprehensive dictionary with course data. Adds an outer wrapper
@@ -274,6 +274,8 @@ def get_course_doc(
     :type leo5_sector_salaries: LEO5SectorSalaries
     :param g_subject_enricher: SubjectCourseEnricher object for adding ukprn data
     :type g_subject_enricher: SubjectCourseEnricher
+    :param subject_codes: Subject codes used to build course statistics
+    :type subject_codes: Dict[str, Any]
     :return: Dictionary containing all course data
     :rtype: Dict[str, Any]
     """

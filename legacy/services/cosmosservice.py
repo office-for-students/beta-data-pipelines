@@ -2,11 +2,7 @@ from azure.cosmos import ContainerProxy
 from azure.cosmos import CosmosClient
 from azure.cosmos import DatabaseProxy
 
-from constants import COSMOS_COLLECTION_INSTITUTIONS
 from constants import COSMOS_DATABASE_ID
-from constants import COSMOS_DATABASE_KEY
-from constants import COSMOS_DATABASE_URI
-from constants import KEY_COSMOS_MASTER_KEY
 
 
 # database_id = "discoveruni"
@@ -19,17 +15,6 @@ class CosmosService:
     """
 
     def __init__(self, cosmos_database: DatabaseProxy) -> None:
-        """
-        Initialise CosmosDB class: create CosmosDB client, database and container
-
-        :param cosmosdb_uri: URI for a cosmosdb
-        :type cosmosdb_uri: str
-        :param cosmosdb_key: Access key for cosmosdb
-        :type cosmosdb_key: str
-        :param container_id: e.g. 'datasets' refers to the database document in cosmosdb and is the container_id
-        :type container_id: str
-        :return: None
-        """
         # cosmosdb_uri: str, cosmosdb_key: str
         self.database = cosmos_database
 

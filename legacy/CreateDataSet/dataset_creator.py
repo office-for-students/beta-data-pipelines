@@ -7,11 +7,9 @@ from datetime import timezone
 from typing import Any
 from typing import Dict
 
-from azure.cosmos import ContainerProxy
 from dateutil import parser
 
 from constants import MINUTES_WAIT_BEFORE_CREATE_NEW_DATASET
-from legacy.services.cosmosservice import CosmosService
 # from SharedCode.utils import get_cosmos_client, get_collection_link
 from legacy.services.dataset_service import DataSetService
 from legacy.services.exceptions import DataSetTooEarlyError
@@ -26,6 +24,7 @@ sys.path.insert(0, PARENT_DIR)
 
 class DataSetCreator:
     """Creates a new dataset"""
+
     def __init__(self, dataset_service: DataSetService, test_mode: bool = False) -> None:
         self.dataset_service = dataset_service
         self.test_mode = test_mode

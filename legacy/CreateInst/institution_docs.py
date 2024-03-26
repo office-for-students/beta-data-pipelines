@@ -18,12 +18,9 @@ from typing import Union
 import defusedxml.ElementTree as ET
 import xmltodict
 
-from constants import BLOB_WELSH_UNIS_BLOB_NAME
-from constants import BLOB_WELSH_UNIS_CONTAINER_NAME
 from legacy.CreateInst.locations import Locations
 from legacy.EtlPipeline.lookups import course_lookup_tables
 from legacy.services import exceptions
-from legacy.services.blob import BlobService
 from legacy.services.utils import get_english_welsh_item
 
 CURRENT_DIR = os.path.dirname(
