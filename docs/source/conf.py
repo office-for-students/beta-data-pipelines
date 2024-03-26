@@ -22,9 +22,7 @@ extensions = [
 ]
 
 templates_path = ['_templates']
-exclude_patterns = [
-    '**.ipynb_checkpoints'
-]
+exclude_patterns = []
 
 sys.path.insert(0, pathlib.Path(__file__).parents[2].resolve().as_posix())
 print(pathlib.Path(__file__).parents[2].resolve().as_posix())
