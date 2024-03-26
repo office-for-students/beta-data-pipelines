@@ -104,6 +104,7 @@ async def create_dataset():
     try:
         create_dataset_main(
             blob_service=BLOB_SERVICE,
+            dataset_service=DATASET_SERVICE,
             storage_container_name=BLOB_HESA_CONTAINER_NAME,  # hesa-raw-xml-ingest
             storage_blob_name=BLOB_HESA_BLOB_NAME,  # latest.xml.gz
         )

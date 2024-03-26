@@ -16,9 +16,7 @@ class Locations:
 
         self.lookup_dict = {}
         for location in root.iter("LOCATION"):
-            raw_location_data = xmltodict.parse(ET.tostring(location))[
-                "LOCATION"
-            ]
+            raw_location_data = xmltodict.parse(ET.tostring(location))["LOCATION"]
             lockey = (
                 f"{raw_location_data.get('LOCID')}{raw_location_data['UKPRN']}"
             )

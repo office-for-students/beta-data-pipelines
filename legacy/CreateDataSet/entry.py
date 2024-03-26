@@ -10,11 +10,12 @@ from legacy.services.blob import BlobService
 from legacy.services.exceptions import StopEtlPipelineErrorException
 from legacy.services.exceptions import XmlValidationError
 from ..services.cosmosservice import CosmosService
+from ..services.dataset_service import DataSetService
 
 
 def create_dataset_main(
         blob_service: BlobService,
-        cosmos_service: CosmosService,
+        dataset_service: DataSetService,
         storage_container_name: str,
         storage_blob_name: str
 ) -> None:
@@ -23,8 +24,8 @@ def create_dataset_main(
 
     :param blob_service: Class that contains methods for interacting with Azure Blob Storage
     :type blob_service: BlobService
-    :param cosmos_service: Cosmos database service used to create dataset creator object
-    :type cosmos_service: CosmosService
+    :param dataset_service: Dataset service used to create dataset creator object
+    :type dataset_service: DataSetService
     :param storage_container_name: Azure storage container
     :type storage_container_name: str
     :param storage_blob_name: Azure storage blob name
@@ -43,5 +44,7 @@ def create_dataset_main(
         raise StopEtlPipelineErrorException
 
     # CREATE NEW DATASET
-    data_set_creator = DataSetCreator(cosmos_service=cosmos_service)
+    data_set_creator = DataSetCreator(
+        dataset_service=dataset_service
+    )
     data_set_creator.load_new_dataset_doc()
