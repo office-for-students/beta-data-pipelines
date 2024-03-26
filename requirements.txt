@@ -14,3 +14,4 @@ azure-storage-blob==12.19.1
 python-decouple==3.8
 sendgrid==6.10.0
 Sphinx==7.2.6
+sphinx-rtd-theme==2.0.0

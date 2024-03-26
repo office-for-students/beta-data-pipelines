@@ -10,7 +10,7 @@ OfS Data Pipeline Documentation
    :maxdepth: 2
    :caption: Contents
 
-   installation
+   readme
    contributing
    license
    course_mapping
