@@ -1,20 +1,17 @@
-Documentation
-=============
-The documentation for this project is built using [Sphinx](https://www.sphinx-doc.org/en/master/).
-
-Documentation should be built by installing the requirements and then the following commands:
-
-```
-cd docs
-make clean html
-```
-
 OfS Serverless Data Pipelines
-=============================
+==================
 OfS Serverless Data Ingestion and ETL Pipelines using Azure Functions and Azure Cosmos DB
 
-About the Project
-=================
+### Table of Contents
+
+* [About the Project](#about-the-project)
+* [Getting Started](#getting-started)
+    * [Installation](#installation)
+    * [Configuration Settings](#configuration-settings)
+    * [Running Service](#running-service)
+    * [Running tests](#running-tests)
+
+### About the Project
 
 Project leverages Azure Functions to create a serverless data ingestion and ETL pipeline.
 
@@ -25,8 +22,7 @@ power a search engine.
 
 The project is currently being used to power the [Discover Uni](https://discoveruni.gov.uk/) website.
 
-Getting Started
-===============
+### Getting Started
 
 Code is written in Python 3.11+ and uses:
 
@@ -36,8 +32,7 @@ Code is written in Python 3.11+ and uses:
 - [Python Decouple](https://pypi.org/project/python-decouple/)
 - [Pytest](https://docs.pytest.org/en/6.2.x/)
 
-Installation
-------------
+#### Installation
 
 To get started with the project, follow the steps below:
 
@@ -46,7 +41,7 @@ To get started with the project, follow the steps below:
 * Run the following in terminal:
 
 ```
-git clone <repo>
+    git clone <repo>
 ```
 
 2) Install dependencies
@@ -54,7 +49,7 @@ git clone <repo>
 * Run the following in terminal:
 
 ```
-pip install -r requirements.txt
+    pip install -r requirements.txt
 ```
 
 4) Install Azure CLI
@@ -64,14 +59,10 @@ pip install -r requirements.txt
 brew install azure-cli
 ```
 
-Running Service
----------------
-
-TODO
+#### Running Service
 
 
-Running tests
--------------
+#### Running tests
 
 To run the test suite, run the following commands
 
@@ -86,12 +77,27 @@ Set the -s flag if you would like the print statements to be output as well duri
 pytest -s
 ```
 
-Getting setting
-----------------
+### Contributing
 
-```
-func azure functionapp fetch-app-settings <app-name>
-func settings decrypt
-```
+See [CONTRIBUTING](CONTRIBUTING.md) for details.
+
+### License
+
+See [LICENSE](LICENSE.md) for details.
+
+### Data mappings (XML to JSON)
+
+See [COURSE](docs/COURSE.md) for mappings of course data
+
+See [COURSE STATISTICS](docs/STATISTICS.md) for mappings for course statistics
+
+See [DATASET](docs/DATASET.md) for dataset structure
+
+See [INSTITUTION](docs/INSTITUTION.md) for mappings of institution data
+
+##### Getting setting:
+
+`func azure functionapp fetch-app-settings <app-name>`
+`func settings decrypt`
 
 

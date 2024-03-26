@@ -98,7 +98,7 @@ def get_course_params(course_list: List[Dict[str, Any]]) -> List[Tuple[str]]:
     return course_params
 
 
-def build_xml_string(arg_list: List[Tuple[str]], xml: str) -> str:
+def build_xml_string(arg_list: List[Tuple[str, str, Optional[str], Optional[str]]], xml: str) -> str:
     """
     Takes a list of arguments and XML as a string and returns a sitemap XML.
 

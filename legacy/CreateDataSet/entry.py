@@ -23,6 +23,8 @@ def create_dataset_main(
 
     :param blob_service: Class that contains methods for interacting with Azure Blob Storage
     :type blob_service: BlobService
+    :param cosmos_service: Cosmos database service used to create dataset creator object
+    :type cosmos_service: CosmosService
     :param storage_container_name: Azure storage container
     :type storage_container_name: str
     :param storage_blob_name: Azure storage blob name

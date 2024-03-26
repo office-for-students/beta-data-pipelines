@@ -11,24 +11,24 @@ from constants import COSMOS_DATABASE_URI
 from legacy.services.cosmosservice import CosmosService
 
 
-def get_cosmos_service(container_id: str) -> CosmosService:
-    """
-    Creates and returns a cosmos service object with the appropriate credentials as specified
-    in the environment variables.
-
-    :param container_id: ID of container to create cosmos service for
-    :type container_id: str
-    :return: Cosmos service object
-    :rtype: CosmosService
-    """
-
-    return CosmosService(
-        cosmosdb_uri=COSMOS_DATABASE_URI,
-        cosmosdb_key=COSMOS_DATABASE_KEY,
-        database_id=COSMOS_DATABASE_ID,
-        container_id=container_id
-    )
-
+# def get_cosmos_service(container_id: str) -> CosmosService:
+#     """
+#     Creates and returns a cosmos service object with the appropriate credentials as specified
+#     in the environment variables.
+#
+#     :param container_id: ID of container to create cosmos service for
+#     :type container_id: str
+#     :return: Cosmos service object
+#     :rtype: CosmosService
+#     """
+#
+#     return CosmosService(
+#         cosmosdb_uri=COSMOS_DATABASE_URI,
+#         cosmosdb_key=COSMOS_DATABASE_KEY,
+#         database_id=COSMOS_DATABASE_ID,
+#         container_id=container_id
+#     )
+#
 
 def generate_uuid() -> str:
     """

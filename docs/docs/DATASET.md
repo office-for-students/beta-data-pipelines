@@ -1,6 +1,6 @@
-### Course Data
+# Course Data
 
-#### Cosmos db doc:
+## Cosmos db doc:
 
 ```json5
 {
@@ -31,7 +31,7 @@
 }
 ```
 
-#### JSON field defaults
+## JSON field defaults
 
 | JSON field name                                | Default Value              |
 |------------------------------------------------|----------------------------|

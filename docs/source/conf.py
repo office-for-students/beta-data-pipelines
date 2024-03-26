@@ -18,10 +18,13 @@ release = '1.1.7'
 
 extensions = [
     'sphinx.ext.autodoc',
+    'myst_parser',
 ]
 
 templates_path = ['_templates']
-exclude_patterns = []
+exclude_patterns = [
+    '**.ipynb_checkpoints'
+]
 
 sys.path.insert(0, pathlib.Path(__file__).parents[2].resolve().as_posix())
 print(pathlib.Path(__file__).parents[2].resolve().as_posix())

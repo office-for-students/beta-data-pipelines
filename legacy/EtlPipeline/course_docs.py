@@ -68,6 +68,8 @@ def load_course_docs(xml_string: str, version: int, blob_service: BlobService, c
     :type version: int
     :param blob_service: Blob service to get CSV file with
     :type blob_service: BlobService
+    :param cosmos_service: Cosmos database service used for reading course docs
+    :type cosmos_service: CosmosService
     :return: None
     """
     # cosmos_service = get_cosmos_service(COSMOS_COLLECTION_COURSES)

@@ -8,10 +8,7 @@ from typing import List
 
 from constants import BLOB_JSON_FILES_CONTAINER_NAME
 from constants import BLOB_SUBJECTS_JSON_BLOB_NAME
-from constants import COSMOS_COLLECTION_SUBJECTS
-from legacy.CourseSearchBuilder.get_collections import get_collections
 from legacy.services.blob import BlobService
-from legacy.services.dataset_service import DataSetService
 
 
 def build_subjects_json_file(subjects_list: List[Dict[str, Any]], blob_service: BlobService) -> None:
@@ -19,10 +16,10 @@ def build_subjects_json_file(subjects_list: List[Dict[str, Any]], blob_service: 
     Calls required functions to generate a JSON containing subject data.
     File is saved to a blob and not returned by the function.
 
+    :param subjects_list: List of subjects to write to JSON
+    :type subjects_list: List[Dict[str, Any]]
     :param blob_service: Blob service used to save the file
     :type blob_service: BlobService
-    :param dataset_service: Dataset service to get version number for file
-    :type dataset_service: DataSetService
     :return: None
     """
     subjects_file = io.StringIO()

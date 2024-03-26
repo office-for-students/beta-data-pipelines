@@ -25,7 +25,7 @@ class BlobServiceBase:
         datetime_str = datetime.today().strftime("%Y%m%d-%H%M%S")
         return f"{datetime_str}-{blob_filename}"
 
-    def get_str_file(self, container_name: str, blob_name: str) -> str:
+    def get_str_file(self, container_name: str, blob_name: str) -> None:
         NotImplementedError("This method must be implemented by subclasses")
 
     def write_stream_file(self, container_name: str, blob_name: str, encoded_file: bytes) -> None:
