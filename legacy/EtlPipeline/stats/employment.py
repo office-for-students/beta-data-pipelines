@@ -8,17 +8,13 @@ from legacy.EtlPipeline.stats.shared_utils import SharedUtils
 class Employment:
     """Extracts and transforms the Employment course element"""
 
-    def __init__(self) -> None:
-        self.xml_element_key = "EMPLOYMENT"
-        self.xml_subj_key = "EMPSBJ"
-        self.xml_agg_key = "EMPAGG"
-        self.xml_unavail_reason_key = "EMPUNAVAILREASON"
-
+    def __init__(self, subject_codes) -> None:
         self.shared_utils = SharedUtils(
-            self.xml_element_key,
-            self.xml_subj_key,
-            self.xml_agg_key,
-            self.xml_unavail_reason_key,
+            xml_element_key="EMPLOYMENT",
+            xml_subj_key="EMPSBJ",
+            xml_agg_key="EMPAGG",
+            xml_unavail_reason_key="EMPUNAVAILREASON",
+            subject_codes=subject_codes
         )
 
     @staticmethod

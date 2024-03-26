@@ -34,16 +34,14 @@ class JobList:
 
     """
 
-    def __init__(self) -> None:
+    def __init__(self, subject_codes) -> None:
         self.xml_element_key = "COMMON"
-        self.xml_subj_key = "COMSBJ"
-        self.xml_agg_key = "COMAGG"
-        self.xml_unavail_reason_key = "COMUNAVAILREASON"
         self.shared_utils = SharedUtils(
-            self.xml_element_key,
-            self.xml_subj_key,
-            self.xml_agg_key,
-            self.xml_unavail_reason_key,
+            xml_element_key=self.xml_element_key,
+            xml_subj_key="COMSBJ",
+            xml_agg_key="COMAGG",
+            xml_unavail_reason_key="COMUNAVAILREASON",
+            subject_codes=subject_codes
         )
         self.data_fields_lookup = self.shared_utils.get_lookup(
             "common_data_fields"

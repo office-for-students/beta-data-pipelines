@@ -13,12 +13,17 @@ class Nss:
 
     NUM_QUESTIONS = 28
 
-    def __init__(self) -> None:
+    def __init__(self, subject_codes) -> None:
         self.xml_element_key = "NSS"
 
         self.shared_utils = SharedUtils(
-            self.xml_element_key, "NSSSBJ", "NSSAGG", "NSSUNAVAILREASON"
+            xml_element_key=self.xml_element_key,
+            xml_subj_key="NSSSBJ",
+            xml_agg_key="NSSAGG",
+            xml_unavail_reason_key="NSSUNAVAILREASON",
+            subject_codes=subject_codes
         )
+
         self.question_lookup = self.shared_utils.get_lookup(
             "nss_question_description"
         )

@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from constants import BLOB_AZURE_CONNECT_STRING
 from constants import BLOB_HESA_BLOB_NAME
 from constants import BLOB_HESA_CONTAINER_NAME
-from constants import COSMOS_COLLECTION_INSTITUTIONS
+from constants import COSMOS_COLLECTION_DATASET
 from constants import COSMOS_DATABASE_ID
 from constants import COSMOS_DATABASE_KEY
 from constants import COSMOS_DATABASE_URI
@@ -55,7 +55,11 @@ COSMOS_CLIENT = CosmosClient(
 COSMOS_DATABASE_SERVICE = CosmosService(
     cosmos_database=COSMOS_CLIENT.get_database_client(COSMOS_DATABASE_ID)
 )
-DATASET_SERVICE = DataSetService(cosmos_service=COSMOS_DATABASE_SERVICE)
+DATASET_SERVICE = DataSetService(
+    cosmos_container=COSMOS_DATABASE_SERVICE.get_container(
+        container_id=COSMOS_COLLECTION_DATASET
+    )
+)
 
 
 def send_message(mailer, result, function, error_message=None):
@@ -151,6 +155,7 @@ async def etl_pipeline():
         etl_pipeline_main(
             blob_service=BLOB_SERVICE,
             dataset_service=DATASET_SERVICE,
+            cosmos_service=COSMOS_DATABASE_SERVICE
         )
     except Exception as e:
         message = f"Etl Pipeline failed: {e}"

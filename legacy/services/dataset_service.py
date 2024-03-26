@@ -7,8 +7,7 @@ from typing import Any
 from typing import Dict
 from typing import List
 
-from constants import COSMOS_COLLECTION_DATASET
-from legacy.services.cosmosservice import CosmosService
+from azure.cosmos.aio import ContainerProxy
 
 CURRENT_DIR = os.path.dirname(
     os.path.abspath(inspect.getfile(inspect.currentframe()))
@@ -19,8 +18,8 @@ sys.path.insert(0, PARENT_DIR)
 
 
 class DataSetService:
-    def __init__(self, cosmos_service: CosmosService) -> None:
-        self.container = cosmos_service.get_container(container_id=COSMOS_COLLECTION_DATASET)
+    def __init__(self, cosmos_container: ContainerProxy) -> None:
+        self.container = cosmos_container
 
     def update_status(self, item: str, value: str, updated_at: str = None) -> None:
         """

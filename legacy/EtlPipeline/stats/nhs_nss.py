@@ -11,11 +11,15 @@ class NhsNss:
 
     NUM_QUESTIONS = 6
 
-    def __init__(self) -> None:
+    def __init__(self, subject_codes) -> None:
         self.xml_element_key = "NHSNSS"
 
         self.shared_utils = SharedUtils(
-            self.xml_element_key, "NHSSBJ", "NHSAGG", "NHSUNAVAILREASON"
+            xml_element_key=self.xml_element_key,
+            xml_subj_key="NHSSBJ",
+            xml_agg_key="NHSAGG",
+            xml_unavail_reason_key="NHSUNAVAILREASON",
+            subject_codes=subject_codes
         )
         self.question_description_lookup = self.shared_utils.get_lookup(
             "nhs_question_description"

@@ -25,6 +25,7 @@ import xmltodict
 from constants import BLOB_QUALIFICATIONS_BLOB_NAME
 from constants import BLOB_QUALIFICATIONS_CONTAINER_NAME
 from constants import COSMOS_COLLECTION_COURSES
+from constants import COSMOS_COLLECTION_SUBJECTS
 from course_stats import get_earnings_unavail_text
 from course_stats import get_stats
 from course_subjects import get_subjects
@@ -42,9 +43,11 @@ from legacy.EtlPipeline.mappings.go.voice import GoVoiceMappings
 from legacy.EtlPipeline.mappings.leo.institution import LeoInstitutionMappings
 from legacy.EtlPipeline.mappings.leo.sector import LeoSectorMappings
 from legacy.EtlPipeline.stats.shared_utils import SharedUtils
+from legacy.EtlPipeline.utils import get_subject_lookups
 from legacy.services import utils
 from legacy.services.blob import BlobService
 from legacy.services.cosmosservice import CosmosService
+from legacy.services.dataset_service import DataSetService
 from legacy.services.utils import get_english_welsh_item
 from qualification_enricher import QualificationCourseEnricher
 from subject_enricher import SubjectCourseEnricher
@@ -58,7 +61,13 @@ sys.path.insert(0, CURRENT_DIR)
 sys.path.insert(0, PARENT_DIR)
 
 
-def load_course_docs(xml_string: str, version: int, blob_service: BlobService, cosmos_service: CosmosService) -> None:
+def load_course_docs(
+        xml_string: str,
+        version: int,
+        blob_service: BlobService,
+        cosmos_service: CosmosService,
+        dataset_service: DataSetService
+) -> None:
     """
     Parse HESA XML passed in and create JSON course docs in Cosmos DB.
 
@@ -70,6 +79,8 @@ def load_course_docs(xml_string: str, version: int, blob_service: BlobService, c
     :type blob_service: BlobService
     :param cosmos_service: Cosmos database service used for reading course docs
     :type cosmos_service: CosmosService
+    :param dataset_service: Dataset service to get version number for subject codes
+    :type dataset_service: DataSetService
     :return: None
     """
     # cosmos_service = get_cosmos_service(COSMOS_COLLECTION_COURSES)
@@ -88,6 +99,16 @@ def load_course_docs(xml_string: str, version: int, blob_service: BlobService, c
     logging.info(
         "adding qualification data into memory ahead of building course documents"
     )
+
+    cosmos_container = cosmos_service.get_container(
+        container_id=COSMOS_COLLECTION_SUBJECTS
+    )
+
+    # Exception below would have masked this - leading to no subject codes.
+    version = dataset_service.get_latest_version_number()
+    subj_codes = get_subject_lookups(version=version, cosmos_container=cosmos_container)
+    logging.info("Using database subject codes.")
+
 
     csv_string = blob_service.get_str_file(container_name=BLOB_QUALIFICATIONS_CONTAINER_NAME,
                                            blob_name=BLOB_QUALIFICATIONS_BLOB_NAME)
@@ -141,7 +162,8 @@ def load_course_docs(xml_string: str, version: int, blob_service: BlobService, c
                     go_sector_salaries,
                     leo3_sector_salaries,
                     leo5_sector_salaries,
-                    g_subject_enricher
+                    g_subject_enricher,
+                    subject_codes=subj_codes
                 )
                 enricher.enrich_course(course_doc)
                 subject_enricher.enrich_course(course_doc)
@@ -223,7 +245,8 @@ def get_course_doc(
         go_sector_salaries: GOSectorSalaries,
         leo3_sector_salaries: LEO3SectorSalaries,
         leo5_sector_salaries: LEO5SectorSalaries,
-        g_subject_enricher: SubjectCourseEnricher
+        g_subject_enricher: SubjectCourseEnricher,
+        subject_codes
 ) -> Dict[str, Any]:
     """
     Performs required lookups to construct a comprehensive dictionary with course data. Adds an outer wrapper
@@ -368,7 +391,7 @@ def get_course_doc(
             raw_course_data, lookup.year_abroad, "YEARABROAD"
         )
 
-    course["statistics"] = get_stats(raw_course_data)
+    course["statistics"] = get_stats(raw_course_data, subject_codes=subject_codes)
 
     # Extract the appropriate sector-level earnings data for the current course.
     go_sector_json_array = get_go_sector_json(

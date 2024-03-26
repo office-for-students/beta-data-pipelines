@@ -8,17 +8,13 @@ from legacy.EtlPipeline.stats.shared_utils import SharedUtils
 class Continuation:
     """Extracts and transforms the Continuation course element"""
 
-    def __init__(self) -> None:
-        self.xml_element_key = "CONTINUATION"
-        self.xml_subj_key = "CONTSBJ"
-        self.xml_agg_key = "CONTAGG"
-        self.xml_unavail_reason_key = "CONTUNAVAILREASON"
-
+    def __init__(self, subject_codes) -> None:
         self.shared_utils = SharedUtils(
-            self.xml_element_key,
-            self.xml_subj_key,
-            self.xml_agg_key,
-            self.xml_unavail_reason_key,
+            xml_element_key="CONTINUATION",
+            xml_subj_key="CONTSBJ",
+            xml_agg_key="CONTAGG",
+            xml_unavail_reason_key="CONTUNAVAILREASON",
+            subject_codes=subject_codes
         )
 
     @staticmethod

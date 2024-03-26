@@ -9,14 +9,15 @@ from constants import BLOB_HESA_BLOB_NAME
 from constants import BLOB_HESA_CONTAINER_NAME
 from legacy.EtlPipeline import course_docs
 from legacy.services.blob import BlobService
+from legacy.services.cosmosservice import CosmosService
 from legacy.services.dataset_service import DataSetService
 
 
 def etl_pipeline_main(
         blob_service: BlobService,
-        dataset_service: DataSetService
+        dataset_service: DataSetService,
+        cosmos_service: CosmosService
 ) -> None:
-
     try:
 
         logging.info(
@@ -44,7 +45,13 @@ def etl_pipeline_main(
 
         dataset_service.update_status("courses", "in progress")
 
-        course_docs.load_course_docs(xml_string, version, blob_service)
+        course_docs.load_course_docs(
+            xml_string=xml_string,
+            version=version,
+            blob_service=blob_service,
+            cosmos_service=cosmos_service,
+            dataset_service=dataset_service
+        )
         dataset_service.update_status("courses", "succeeded")
 
         function_end_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")

@@ -8,7 +8,7 @@ from legacy.EtlPipeline.stats.shared_utils import SharedUtils
 class Tariff:
     """Extracts and transforms the Tariff course element"""
 
-    def __init__(self) -> None:
+    def __init__(self, subject_codes) -> None:
         self.xml_element_key = "TARIFF"
         self.xml_subj_key = "TARSBJ"
         self.xml_agg_key = "TARAGG"
@@ -17,10 +17,11 @@ class Tariff:
         self.xml_unavail_reason_key = "TARUNAVAILREASON"
 
         self.shared_utils = SharedUtils(
-            self.xml_element_key,
-            self.xml_subj_key,
-            self.xml_agg_key,
-            self.xml_unavail_reason_key,
+            xml_element_key=self.xml_element_key,
+            xml_subj_key=self.xml_subj_key,
+            xml_agg_key=self.xml_agg_key,
+            xml_unavail_reason_key=self.xml_unavail_reason_key,
+            subject_codes=subject_codes
         )
         self.tariff_description_lookup = self.shared_utils.get_lookup(
             "tariff_description"

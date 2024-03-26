@@ -8,17 +8,13 @@ from legacy.EtlPipeline.stats.shared_utils import SharedUtils
 class JobType:
     """Extracts and transforms the JobType course element"""
 
-    def __init__(self) -> None:
-        self.xml_element_key = "JOBTYPE"
-        self.xml_subj_key = "JOBSBJ"
-        self.xml_agg_key = "JOBAGG"
-        self.xml_unavail_reason_key = "JOBUNAVAILREASON"
-
+    def __init__(self, subject_codes) -> None:
         self.shared_utils = SharedUtils(
-            self.xml_element_key,
-            self.xml_subj_key,
-            self.xml_agg_key,
-            self.xml_unavail_reason_key,
+            xml_element_key="JOBTYPE",
+            xml_subj_key="JOBSBJ",
+            xml_agg_key="JOBAGG",
+            xml_unavail_reason_key="JOBUNAVAILREASON",
+            subject_codes=subject_codes
         )
 
     @staticmethod

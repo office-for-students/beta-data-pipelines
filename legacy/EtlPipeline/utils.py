@@ -2,8 +2,9 @@ from typing import Any
 from typing import Dict
 from typing import Union
 
+from azure.cosmos.aio import ContainerProxy
+
 from constants import COSMOS_COLLECTION_INSTITUTIONS
-from constants import COSMOS_COLLECTION_SUBJECTS
 from legacy.EtlPipeline.stats.shared_utils import SharedUtils
 from legacy.EtlPipeline.subject_enricher import SubjectCourseEnricher
 from legacy.services.cosmosservice import CosmosService
@@ -122,19 +123,18 @@ def get_ukrlp_lookups(cosmos_service: CosmosService, version: int) -> Dict[str, 
     }
 
 
-def get_subject_lookups(cosmos_service: CosmosService, version: int) -> Dict[str, Any]:
+def get_subject_lookups(cosmos_container: ContainerProxy, version: int) -> Dict[str, Any]:
     """
     Returns a dictionary of subject lookups, including the subject code.
 
-    :param cosmos_service: Cosmos service with database to query the subject lookups from
-    :type cosmos_service: CosmosService
+    :param cosmos_container: ContainerProxy
     :param version: Version of dataset to perform lookup on
     :type version: str
     :return: Dictionary of subject lookups containing subject and code
     :rtype: Dict[str, Any]
     """
 
-    container = cosmos_service.get_container(container_id=COSMOS_COLLECTION_SUBJECTS)
+    container = cosmos_container
     query = f"SELECT * from c WHERE c.version = {version}"
 
     lookup_list = list(container.query_items(query, enable_cross_partition_query=True))

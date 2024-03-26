@@ -8,29 +8,16 @@ from typing import Dict
 from typing import List
 from typing import Union
 
-from legacy.EtlPipeline.utils import get_subject_lookups
 from legacy.EtlPipeline.validators import validate_agg
 from legacy.EtlPipeline.validators import validate_unavailable_reason_code
-from legacy.services.dataset_service import DataSetService
-from main import COSMOS_DATABASE_SERVICE
 
 
 class SharedUtils:
     """Functionality required by several stats related classes"""
 
-    try:
-        dataset_service = DataSetService(cosmos_service=COSMOS_DATABASE_SERVICE)  # TODO: warning presented as dsh wasn't assigned, but the catch all
-        # Exception below would have masked this - leading to no subject codes.
-        version = dataset_service.get_latest_version_number()
-        subj_codes = get_subject_lookups(version)
-        logging.info("Using database subject codes.")
-
-    except Exception:
-        logging.info("Using local subject codes.")
-        subj_codes = {}
-
     def __init__(
             self,
+            subject_codes: Dict[str, Dict[str, str]],
             xml_element_key: str,
             xml_subj_key: str,
             xml_agg_key: str,
@@ -44,6 +31,9 @@ class SharedUtils:
         self.subj_code_welsh = self.get_lookup("subj_code_welsh")
         self.unavail_reason_english = self.get_lookup("unavail_reason_english")
         self.unavail_reason_welsh = self.get_lookup("unavail_reason_welsh")
+
+        self.subj_codes = subject_codes
+        logging.info("Using database subject codes.")
 
     @staticmethod
     def get_lookup(lookup_name: str) -> Dict[str, Any]:
@@ -103,8 +93,8 @@ class SharedUtils:
         :return: Subject label for the associated subject
         :rtype: str
         """
-        if SharedUtils.subj_codes != {}:
-            return SharedUtils.subj_codes[code].get("english_name")
+        if self.subj_codes != {}:
+            return self.subj_codes[code].get("english_name")
         return self.subj_code_english.get(code)
 
     def get_welsh_sbj_label(self, code: str) -> str:
@@ -116,8 +106,8 @@ class SharedUtils:
         :return: Subject label for the associated subject
         :rtype: str
         """
-        if SharedUtils.subj_codes != {}:
-            return SharedUtils.subj_codes[code].get("welsh_name")
+        if self.subj_codes != {}:
+            return self.subj_codes[code].get("welsh_name")
         return self.subj_code_welsh.get(code)
 
     def get_json_list(self, raw_course_data: Dict[str, Any], get_key: Callable) -> List[Dict[str, Any]]:
@@ -134,7 +124,7 @@ class SharedUtils:
         """
 
         json_elem_list = []
-        raw_xml_list = SharedUtils.get_raw_list(
+        raw_xml_list = self.get_raw_list(
             raw_course_data, self.xml_element_key
         )
 
