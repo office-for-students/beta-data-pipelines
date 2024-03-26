@@ -3,32 +3,25 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-OfS Data Pipeline
-=================
+OfS Data Pipeline Documentation
+===============================
 
-.. contents::
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents
 
-.. include:: ../../README.md
-    :parser: myst_parser.sphinx_
+   installation
+   contributing
+   license
+   course_mapping
+   course_stats_mapping
+   data_set
+   institution
 
-Contributing
-------------
 
-See :ref:`contributing-docs` for details.
+Indices and tables
+==================
 
-
-License
--------
-
-See :ref:`license-docs` for details.
-
-Data mappings (XML to JSON)
----------------------------
-
-See :ref:`course-mapping` for mappings of course data
-
-See :ref:`course-stats-mapping` for mappings for course statistics
-
-See :ref:`dataset` for dataset structure
-
-See :ref:`institution` for mappings of institution data
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
