@@ -156,3 +156,6 @@ pyproject.toml
 test_course.xml
 
 .azure_config
+
+# local files for testing
+.local
