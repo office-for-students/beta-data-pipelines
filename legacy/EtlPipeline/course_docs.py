@@ -17,6 +17,7 @@ import traceback
 from typing import Any
 from typing import Dict
 from typing import List
+from typing import Type
 from typing import Union
 
 import defusedxml.ElementTree as ET
@@ -41,11 +42,11 @@ from legacy.EtlPipeline.mappings.leo.institution import LeoInstitutionMappings
 from legacy.EtlPipeline.mappings.leo.sector import LeoSectorMappings
 from legacy.EtlPipeline.stats.shared_utils import SharedUtils
 from legacy.EtlPipeline.utils import get_subject_lookups
-from legacy.services import utils
-from legacy.services.blob import BlobService
-from legacy.services.cosmosservice import CosmosService
-from legacy.services.dataset_service import DataSetService
-from legacy.services.utils import get_english_welsh_item
+from services import utils
+from services.blob_service.base import BlobServiceBase
+from services.cosmosservice import CosmosService
+from services.dataset_service import DataSetService
+from services.utils import get_english_welsh_item
 from .qualification_enricher import QualificationCourseEnricher
 from .subject_enricher import SubjectCourseEnricher
 from .ukrlp_enricher import UkRlpCourseEnricher
@@ -64,7 +65,7 @@ sys.path.insert(0, PARENT_DIR)
 def load_course_docs(
         xml_string: str,
         version: int,
-        blob_service: BlobService,
+        blob_service: Type[BlobServiceBase],
         cosmos_service: CosmosService,
         dataset_service: DataSetService
 ) -> None:

@@ -6,7 +6,7 @@ from typing import List
 import requests
 
 from legacy.CourseSearchBuilder import models
-from legacy.services import exceptions
+from services import exceptions
 
 
 class Load:

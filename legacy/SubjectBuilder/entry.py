@@ -1,19 +1,20 @@
 import csv
 import logging
 from datetime import datetime
+from typing import Type
 
 from constants import BLOB_SUBJECTS_BLOB_NAME
 from constants import BLOB_SUBJECTS_CONTAINER_NAME
 from legacy.SubjectBuilder.database import load_collection
 from legacy.SubjectBuilder.validate import column_headers
-from legacy.services import exceptions
-from legacy.services.blob import BlobService
-from legacy.services.cosmosservice import CosmosService
-from legacy.services.dataset_service import DataSetService
+from services import exceptions
+from services.blob_service.base import BlobServiceBase
+from services.cosmosservice import CosmosService
+from services.dataset_service import DataSetService
 
 
 def subject_builder_main(
-        blob_service: BlobService,
+        blob_service: Type['BlobServiceBase'],
         dataset_service: DataSetService,
         cosmos_service: CosmosService
 ) -> None:

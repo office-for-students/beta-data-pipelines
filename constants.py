@@ -1,7 +1,7 @@
 from decouple import config
 
 # Variables to determine whether to use a local service (used for running locally for testing purposes)
-BLOB_SERVICE = config("BLOB_SERVICE")
+BLOB_SERVICE_MODULE = config("BLOB_SERVICE_MODULE")
 BLOB_TEST_BLOB_DIRECTORY = "blob_test"
 
 INGESTION_API = config("INGESTION_API")

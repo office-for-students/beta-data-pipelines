@@ -3,7 +3,7 @@ import logging
 from typing import Any
 from typing import Dict
 
-from legacy.services import exceptions
+from services import exceptions
 
 
 class QualificationCourseEnricher:

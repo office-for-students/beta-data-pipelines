@@ -8,6 +8,7 @@ from fastapi import FastAPI
 from constants import BLOB_AZURE_CONNECT_STRING
 from constants import BLOB_HESA_BLOB_NAME
 from constants import BLOB_HESA_CONTAINER_NAME
+from constants import BLOB_SERVICE_MODULE
 from constants import COSMOS_COLLECTION_DATASET
 from constants import COSMOS_DATABASE_ID
 from constants import COSMOS_DATABASE_KEY
@@ -24,13 +25,12 @@ from legacy.CreateInst.entry import create_institutions_main
 from legacy.EtlPipeline.entry import etl_pipeline_main
 from legacy.PostcodeSearchBuilder.entry import postcode_search_builder_main
 from legacy.SubjectBuilder.entry import subject_builder_main
-from services.blob import BlobService
 from services.cosmosservice import CosmosService
 from services.dataset_service import DataSetService
 from services.exceptions import DataSetTooEarlyError
 from services.exceptions import StopEtlPipelineErrorException
 from services.mail import MailService
-
+from services import blob_service
 app = FastAPI()
 MAIL_SERVICE = MailService(
     send_grid_api_key=SEND_GRID_API_KEY,
@@ -39,18 +39,15 @@ MAIL_SERVICE = MailService(
     enabled=True
 )
 
-BLOB_SERVICE = BlobService(
-    blob_service_client=BlobServiceClient.from_connection_string(BLOB_AZURE_CONNECT_STRING)
+BLOB_SERVICE = blob_service.get_current_provider(
+    provider_path=BLOB_SERVICE_MODULE,
+    service_string=BLOB_AZURE_CONNECT_STRING
 )
 
 COSMOS_CLIENT = CosmosClient(
     url=COSMOS_DATABASE_URI,
     credential={KEY_COSMOS_MASTER_KEY: COSMOS_DATABASE_KEY}
 )
-# COSMOS_SERVICE_INSTITUTIONS = CosmosService(
-#     cosmos_client=COSMOS_CLIENT,
-#     container_id=COSMOS_COLLECTION_INSTITUTIONS,
-# )
 
 COSMOS_DATABASE_SERVICE = CosmosService(
     cosmos_database=COSMOS_CLIENT.get_database_client(COSMOS_DATABASE_ID)

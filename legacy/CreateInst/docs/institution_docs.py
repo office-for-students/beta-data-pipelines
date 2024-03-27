@@ -14,8 +14,8 @@ from legacy.CreateInst.institution_docs import get_country
 from legacy.CreateInst.institution_docs import get_student_unions
 from legacy.CreateInst.institution_docs import get_total_number_of_courses
 from legacy.CreateInst.locations import Locations
-from legacy.services.cosmosservice import CosmosService
-from legacy.services.utils import generate_uuid
+from services.cosmosservice import CosmosService
+from services.utils import generate_uuid
 
 
 class InstitutionDocs:

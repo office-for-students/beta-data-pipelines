@@ -4,7 +4,7 @@ import os
 
 import requests
 
-from legacy.services import exceptions
+from services import exceptions
 
 
 class SynonymMap:

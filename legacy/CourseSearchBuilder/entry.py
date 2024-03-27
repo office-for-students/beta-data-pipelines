@@ -1,6 +1,7 @@
 import logging
 import traceback
 from datetime import datetime
+from typing import Type
 
 from constants import COSMOS_COLLECTION_COURSES
 from constants import COSMOS_COLLECTION_INSTITUTIONS
@@ -8,21 +9,19 @@ from constants import COSMOS_COLLECTION_SUBJECTS
 from constants import SEARCH_API_KEY
 from constants import SEARCH_API_VERSION
 from constants import SEARCH_URL
-from legacy.services.blob import BlobService
-from legacy.services.dataset_service import DataSetService
-# from SharedCode.mail_helper import MailHelper
+from services.cosmosservice import CosmosService
+from services.dataset_service import DataSetService
 from . import search
 from .build_institutions_json import build_institutions_json_files
 from .build_sitemap_xml import build_sitemap_xml
 from .build_subjects_json import build_subjects_json_file
 from .build_version_json import build_version_json_file
 from .get_collections import get_collections
-from ..services.cosmosservice import CosmosService
 from typing import Dict, Any
 
 
 def course_search_builder_main(
-        blob_service: BlobService,
+        blob_service: Type['BlobService'],
         cosmos_service: CosmosService,
         dataset_service: DataSetService
 ) -> Dict[str, Any]:

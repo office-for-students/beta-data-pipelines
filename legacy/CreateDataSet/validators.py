@@ -2,7 +2,7 @@ import logging
 
 import defusedxml.ElementTree as ET
 
-from legacy.services.exceptions import XmlValidationError
+from services.exceptions import XmlValidationError
 
 
 def parse_xml_data(xml_string: str) -> None:

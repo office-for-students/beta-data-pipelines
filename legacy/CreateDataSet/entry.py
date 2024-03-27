@@ -2,17 +2,18 @@
 """ Creates a new DataSet for each new file we get from HESA """
 
 import logging
+from typing import Type
 
-from legacy.services.blob import BlobService
-from legacy.services.exceptions import StopEtlPipelineErrorException
-from legacy.services.exceptions import XmlValidationError
+from services.blob_service.base import BlobServiceBase
+from services.dataset_service import DataSetService
+from services.exceptions import StopEtlPipelineErrorException
+from services.exceptions import XmlValidationError
 from . import validators
 from .dataset_creator import DataSetCreator
-from ..services.dataset_service import DataSetService
 
 
 def create_dataset_main(
-        blob_service: BlobService,
+        blob_service: Type["BlobServiceBase"],
         dataset_service: DataSetService,
         storage_container_name: str,
         storage_blob_name: str

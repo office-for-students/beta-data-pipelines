@@ -2,19 +2,16 @@
 
 import io
 import json
-from typing import TYPE_CHECKING
+from typing import Type
 
 from constants import BLOB_JSON_FILES_CONTAINER_NAME
 from constants import BLOB_VERSION_JSON_FILE_BLOB_NAME
-
-if TYPE_CHECKING:
-    from legacy.services.blob import BlobService
-    from legacy.services.dataset_service import DataSetService
+from services.dataset_service import DataSetService
 
 
 def build_version_json_file(
-        blob_service: 'BlobService',
-        dataset_service: 'DataSetService'
+        blob_service: Type['BlobService'],
+        dataset_service: DataSetService
 ) -> None:
     """
     Calls required functions to generate a version.json file which contains the version of the dataset service

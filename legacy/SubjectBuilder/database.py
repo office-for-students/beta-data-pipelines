@@ -7,7 +7,7 @@ from azure.cosmos import ContainerProxy
 from constants import COSMOS_COLLECTION_SUBJECTS
 from constants import COSMOS_DATABASE_ID
 from . import models
-from ..services.cosmosservice import CosmosService
+from services.cosmosservice import CosmosService
 
 
 def load_collection(rows: Iterable, version: int, cosmos_service: CosmosService) -> None:

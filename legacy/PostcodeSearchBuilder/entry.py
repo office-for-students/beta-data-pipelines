@@ -1,6 +1,7 @@
 import logging
 import traceback
 from datetime import datetime
+from typing import Type
 
 from constants import BLOB_POSTCODES_BLOB_NAME
 from constants import BLOB_POSTCODES_CONTAINER_NAME
@@ -10,10 +11,10 @@ from constants import SEARCH_API_VERSION
 from constants import SEARCH_URL
 from legacy.PostcodeSearchBuilder.search import build_index
 from legacy.PostcodeSearchBuilder.search import load_index
-from legacy.services.blob import BlobService
+from services.blob_service.base import BlobServiceBase
 
 
-def postcode_search_builder_main(blob_service: BlobService) -> None:
+def postcode_search_builder_main(blob_service: Type['BlobServiceBase']) -> None:
     """Create the postcode search index"""
 
     logging.info(f"PostcodeSearchBuilder request triggered")

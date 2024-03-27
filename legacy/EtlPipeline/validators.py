@@ -19,7 +19,7 @@ __credits__ = ["Jillur Quddus", "Nathan Shumoogum"]
 __version__ = "0.1"
 
 from constants import STOP_ETL_PIPELINE_ON_WARNING
-from legacy.services import exceptions
+from services import exceptions
 
 _maintainer__ = "Jillur Quddus"
 __email__ = "jillur.quddus@methods.co.uk"

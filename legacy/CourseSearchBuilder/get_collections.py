@@ -2,9 +2,8 @@ from typing import Any
 from typing import Dict
 from typing import List
 
-from legacy.services.cosmosservice import CosmosService
-from legacy.services.dataset_service import DataSetService
-
+from services.cosmosservice import CosmosService
+from services.dataset_service import DataSetService
 
 def get_collections(
         cosmos_service: CosmosService,

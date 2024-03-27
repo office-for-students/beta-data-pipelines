@@ -11,8 +11,8 @@ from dateutil import parser
 
 from constants import MINUTES_WAIT_BEFORE_CREATE_NEW_DATASET
 # from SharedCode.utils import get_cosmos_client, get_collection_link
-from legacy.services.dataset_service import DataSetService
-from legacy.services.exceptions import DataSetTooEarlyError
+from services.dataset_service import DataSetService
+from services.exceptions import DataSetTooEarlyError
 
 CURRENT_DIR = os.path.dirname(
     os.path.abspath(inspect.getfile(inspect.currentframe()))

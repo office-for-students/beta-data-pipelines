@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import logging
 from datetime import datetime
+from typing import Type
 
 from constants import BLOB_HESA_BLOB_NAME
 from constants import BLOB_HESA_CONTAINER_NAME
@@ -10,17 +11,17 @@ from legacy.CreateInst.docs.institution_docs import InstitutionDocs
 from legacy.CreateInst.docs.name_handler import InstitutionProviderNameHandler
 from legacy.CreateInst.institution_docs import get_welsh_uni_names
 from legacy.CreateInst.institution_docs import get_white_list
-from legacy.services import exceptions
-from legacy.services.blob import BlobService
-from legacy.services.cosmosservice import CosmosService
-from legacy.services.dataset_service import DataSetService
+from services import exceptions
+from services.blob_service.base import BlobServiceBase
+from services.cosmosservice import CosmosService
+from services.dataset_service import DataSetService
 
 
 # from SharedCode.mail_helper import MailHelper
 
 
 def create_institutions_main(
-        blob_service: BlobService,
+        blob_service: Type[BlobServiceBase],
         cosmos_service: CosmosService,
         dataset_service: DataSetService
 ) -> None:

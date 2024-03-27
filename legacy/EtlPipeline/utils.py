@@ -1,5 +1,6 @@
 from typing import Any
 from typing import Dict
+from typing import TYPE_CHECKING
 from typing import Type
 from typing import Union
 
@@ -8,10 +9,14 @@ from azure.cosmos.aio import ContainerProxy
 from constants import COSMOS_COLLECTION_INSTITUTIONS
 from legacy.EtlPipeline.stats.shared_utils import SharedUtils
 
+if TYPE_CHECKING:
+    from legacy.EtlPipeline.subject_enricher import SubjectCourseEnricher
+    from services.cosmosservice import CosmosService
+
 
 # TODO: **House-keeping** g_subject_enricher review why this is setup this way
 
-def get_subject(subject_code: str, subject_enricher: Type["SubjectCourseEnricher"]) -> Dict[str, Any]:
+def get_subject(subject_code: str, subject_enricher: 'SubjectCourseEnricher') -> Dict[str, Any]:
     """
     Takes a subject code and SubjectCourseEnricher, and returns the enriched subject data.
 

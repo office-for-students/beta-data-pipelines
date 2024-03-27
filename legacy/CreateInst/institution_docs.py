@@ -20,8 +20,8 @@ import xmltodict
 
 from legacy.CreateInst.locations import Locations
 from legacy.EtlPipeline.lookups import course_lookup_tables
-from legacy.services import exceptions
-from legacy.services.utils import get_english_welsh_item
+from services import exceptions
+from services.utils import get_english_welsh_item
 
 CURRENT_DIR = os.path.dirname(
     os.path.abspath(inspect.getfile(inspect.currentframe()))
