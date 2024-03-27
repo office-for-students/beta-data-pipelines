@@ -35,6 +35,11 @@ Code is written in Python 3.11+ and uses:
 - [FastApi](https://fastapi.tiangolo.com)
 - [Python Decouple](https://pypi.org/project/python-decouple/)
 - [Pytest](https://docs.pytest.org/en/6.2.x/)
+- [defusedxml](https://pypi.org/project/defusedxml/)
+- [uvicorn](https://www.uvicorn.org)
+- [python-dateutils](https://pypi.org/project/python-dateutil/)
+- [xmltodict](https://pypi.org/project/xmltodict/)
+
 
 Installation
 ------------
