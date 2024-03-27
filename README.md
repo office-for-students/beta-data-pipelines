@@ -1,6 +1,6 @@
 Documentation
 =============
-The documentation for this project is built using [Sphinx](https://www.sphinx-doc.org/en/master/).
+The documentation for this project is built using [Sphinx](#getting-started).
 
 Documentation should be built by installing the requirements and then the following commands:
 
@@ -30,15 +30,18 @@ Getting Started
 
 Code is written in Python 3.11+ and uses:
 
-- [Azure Functions](https://docs.microsoft.com/en-us/azure/azure-functions/)
-- [Azure Cosmos DB](https://docs.microsoft.com/en-us/azure/cosmos-db/)
-- [FastApi](https://fastapi.tiangolo.com)
-- [Python Decouple](https://pypi.org/project/python-decouple/)
-- [Pytest](https://docs.pytest.org/en/6.2.x/)
-- [defusedxml](https://pypi.org/project/defusedxml/)
-- [uvicorn](https://www.uvicorn.org)
-- [python-dateutils](https://pypi.org/project/python-dateutil/)
-- [xmltodict](https://pypi.org/project/xmltodict/)
+- [Sphinx](https://www.sphinx-doc.org/en/master/): Automatic generation of documentation
+- [sphinx-rtd-theme](https://pypi.org/project/sphinx-rtd-theme/): Theme for Sphinx documentation
+- [Azure Functions](https://docs.microsoft.com/en-us/azure/azure-functions/): Access and use of Azure database
+- [Azure Cosmos DB](https://docs.microsoft.com/en-us/azure/cosmos-db/): As above
+- [FastApi](https://fastapi.tiangolo.com): Allows functions to be called as URL endpoints
+- [Python Decouple](https://pypi.org/project/python-decouple/): Allows extraction of .env variables
+- [Pytest](https://docs.pytest.org/en/6.2.x/): For unit testing
+- [defusedxml](https://pypi.org/project/defusedxml/): XML parser for python
+- [uvicorn](https://www.uvicorn.org): ASGI web server implementation
+- [python-dateutils](https://pypi.org/project/python-dateutil/): Provides extensions to the datetime module
+- [xmltodict](https://pypi.org/project/xmltodict/): For converting XML to dictionaries
+- [xmlschema](https://pypi.org/project/xmlschema/): Implementation of XML schema
 
 
 Installation
