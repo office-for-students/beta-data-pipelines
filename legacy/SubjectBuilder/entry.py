@@ -55,16 +55,18 @@ def subject_builder_main(
         dataset_service.update_status("subjects", "in progress")
 
         # add subject docs to new collection
-        load_collection(rows=reader, version=version, cosmos_service=cosmos_service)
+        load_collection(
+            rows=reader,
+            version=version,
+            cosmos_service=cosmos_service
+        )
 
         logging.info(f"Successfully loaded in {number_of_subjects} subject documents")
         dataset_service.update_status("subjects", "succeeded")
 
         function_end_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
 
-        logging.info(
-            f"SubjectBuilder successfully finished on {function_end_datetime}"
-        )
+        logging.info(f"SubjectBuilder successfully finished on {function_end_datetime}")
 
     except Exception as e:
         # Unexpected exception

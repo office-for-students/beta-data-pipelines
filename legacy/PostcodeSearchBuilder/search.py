@@ -20,7 +20,12 @@ def build_index(url: str, api_key: str, api_version: str, index_name: str) -> No
     :return: None
     """
     try:
-        index = Index(url, api_key, api_version, index_name)
+        index = Index(
+            url=url,
+            api_key=api_key,
+            api_version=api_version,
+            index_name=index_name
+        )
 
         index.delete_if_already_exists()
         index.create()
@@ -45,7 +50,12 @@ def load_index(url: str, api_key: str, api_version: str, index_name: str, rows: 
     :return: None
     """
     try:
-        load = Loader(url, api_key, api_version, index_name, rows)
+        load = Loader(
+            url=url,
+            api_key=api_key,
+            api_version=api_version,
+            index_name=index_name,
+            rows=rows)
 
         load.postcode_documents()
     except Exception:

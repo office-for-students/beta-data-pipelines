@@ -32,7 +32,10 @@ def create_dataset_main(
     :return: None
     """
 
-    xml_string = blob_service.get_str_file(storage_container_name, storage_blob_name)
+    xml_string = blob_service.get_str_file(
+        container_name=storage_container_name,
+        blob_name=storage_blob_name
+    )
 
     # BASIC XML Validation
     try:

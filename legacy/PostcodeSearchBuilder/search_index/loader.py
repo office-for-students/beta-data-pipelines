@@ -54,8 +54,7 @@ class Loader:
             if search_postcode:
                 search_postcodes.append(search_postcode)
 
-            if postcode_count % bulk_postcode_count == 0 or \
-                    postcode_count == number_of_docs:
+            if postcode_count % bulk_postcode_count == 0 or postcode_count == number_of_docs:
                 documents['value'] = search_postcodes
 
                 self.bulk_create_postcodes(documents)
@@ -76,10 +75,13 @@ class Loader:
         :type documents: Dict[str, Any]
         """
         try:
-            url = self.url + "/indexes/" + self.index_name + \
-                  "/docs/index" + self.query_string
+            url = self.url + "/indexes/" + self.index_name + "/docs/index" + self.query_string
 
-            response = requests.post(url, headers=self.headers, json=documents)
+            response = requests.post(
+                url,
+                headers=self.headers,
+                json=documents
+            )
 
         except requests.exceptions.RequestException as e:
             logging.exception('unexpected error creating index', exc_info=True)

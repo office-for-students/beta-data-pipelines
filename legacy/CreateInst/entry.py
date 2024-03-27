@@ -23,7 +23,7 @@ def create_institutions_main(
         blob_service: BlobService,
         cosmos_service: CosmosService,
         dataset_service: DataSetService
-):
+) -> None:
 
     try:
         logging.info(
@@ -42,7 +42,10 @@ def create_institutions_main(
         # where Functions written in Python do not get triggered # correctly with large blobs. Tests showed this is not a limitation
         # with Funtions written in C#.
 
-        hesa_xml_file_as_string = blob_service.get_str_file(BLOB_HESA_CONTAINER_NAME, BLOB_HESA_BLOB_NAME)
+        hesa_xml_file_as_string = blob_service.get_str_file(
+            container_name=BLOB_HESA_CONTAINER_NAME,
+            blob_name=BLOB_HESA_BLOB_NAME
+        )
 
         version = dataset_service.get_latest_version_number()
 
@@ -51,7 +54,10 @@ def create_institutions_main(
         logging.info(f"using version number: {version}")
         dataset_service.update_status("institutions", "in progress")
 
-        csv_string = blob_service.get_str_file(BLOB_WELSH_UNIS_CONTAINER_NAME, BLOB_WELSH_UNIS_BLOB_NAME)
+        csv_string = blob_service.get_str_file(
+            container_name=BLOB_WELSH_UNIS_CONTAINER_NAME,
+            blob_name=BLOB_WELSH_UNIS_BLOB_NAME
+        )
         provider_name_handler = InstitutionProviderNameHandler(
             white_list=get_white_list(),
             welsh_uni_names=get_welsh_uni_names(csv_string)
@@ -70,9 +76,7 @@ def create_institutions_main(
 
         function_end_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
 
-        logging.info(
-            f"CreateInst successfully finished on {function_end_datetime}"
-        )
+        logging.info(f"CreateInst successfully finished on {function_end_datetime}")
 
         # msgout.set(msgin.get_body().decode("utf-8") + msgerror)
 
@@ -112,9 +116,7 @@ def create_institutions_main(
         #     f"Data Import {environment} - {function_fail_date} - Failed"
         # )
 
-        logging.error(
-            f"CreateInst failed on {function_fail_datetime}", exc_info=True
-        )
+        logging.error(f"CreateInst failed on {function_fail_datetime}", exc_info=True)
 
         # Raise to Azure
         raise e

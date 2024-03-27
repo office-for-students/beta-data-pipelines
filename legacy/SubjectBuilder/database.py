@@ -2,6 +2,8 @@ import logging
 import time
 from typing import Iterable
 
+from azure.cosmos import ContainerProxy
+
 from constants import COSMOS_COLLECTION_SUBJECTS
 from constants import COSMOS_DATABASE_ID
 from . import models
@@ -20,7 +22,11 @@ def load_collection(rows: Iterable, version: int, cosmos_service: CosmosService)
     :type cosmos_service: CosmosService
     :return: None
     """
-    loader = Loader(rows, version, cosmos_service=cosmos_service)
+    loader = Loader(
+        rows=rows,
+        version=version,
+        cosmos_service=cosmos_service
+    )
     loader.load_subject_documents()
 
 
@@ -34,9 +40,10 @@ class Loader:
     ) -> None:
 
         self.cosmos_service = cosmos_service
-        self.collection_link = self.cosmos_service.get_collection_link(collection_id)
-        self.db_id = COSMOS_DATABASE_ID
         self.collection_id = collection_id
+        self.collection_link = self.cosmos_service.get_collection_link(collection_id)
+        self.container: ContainerProxy = cosmos_service.get_container(container_id=self.collection_id)
+        self.db_id = COSMOS_DATABASE_ID
         self.rows = rows
         self.version = version
 
@@ -50,7 +57,6 @@ class Loader:
         subject_count = 0
         new_docs = []
         sproc_count = 0
-        container = self.cosmos_service.get_container(container_id=self.collection_id)
 
         for row in self.rows:
             subject_count += 1
@@ -66,8 +72,8 @@ class Loader:
             if sproc_count == 100:
                 logging.info(f"Beginning execution of stored procedure for {sproc_count} documents")
 
-                container.scripts.execute_stored_procedure(
-                    sproc_link,
+                self.container.scripts.execute_stored_procedure(
+                    sproc=sproc_link,
                     params=[new_docs],
                     partition_key=partition_key
                 )
@@ -79,13 +85,11 @@ class Loader:
 
         if sproc_count > 0:
             logging.info(f"Beginning execution of stored procedure for {sproc_count} documents")
-            container.scripts.execute_stored_procedure(
-                sproc_link,
+            self.container.scripts.execute_stored_procedure(
+                sproc=sproc_link,
                 params=[new_docs],
                 partition_key=partition_key
             )
             logging.info(f"Successfully loaded another {sproc_count} documents")
 
-        logging.info(
-            f"loaded {subject_count - 1} into {self.collection_id} collection in {self.db_id} database"
-        )
+        logging.info(f"loaded {subject_count - 1} into {self.collection_id} collection in {self.db_id} database")

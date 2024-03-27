@@ -128,9 +128,7 @@ def get_white_list() -> List[str]:
     file_path = os.path.realpath(
         os.path.join(os.getcwd(), os.path.dirname(__file__))
     )
-    with open(
-            os.path.join(file_path, "institution_whitelist.txt")
-    ) as f:
+    with open(os.path.join(file_path, "institution_whitelist.txt")) as f:
         institutions_whitelist = f.readlines()
         return [institution.strip() for institution in institutions_whitelist]
 
@@ -144,7 +142,10 @@ def get_country(code: str) -> Dict[str, str]:
     :return: Country data
     :rtype: Dict[str, Any]
     """
-    country = {"code": code, "name": course_lookup_tables.country_code[code]}
+    country = {
+        "code": code,
+        "name": course_lookup_tables.country_code[code]
+    }
     return country
 
 
@@ -160,9 +161,7 @@ def get_student_unions(location_lookup: Locations, institution: ET) -> List[Dict
     :return: List of student union data
     :rtype: List[Dict[str, Any]]
     """
-    pubukprn = xmltodict.parse(ET.tostring(institution))["INSTITUTION"][
-        "PUBUKPRN"
-    ]
+    pubukprn = xmltodict.parse(ET.tostring(institution))["INSTITUTION"]["PUBUKPRN"]
     student_unions = []
     locations_processed = []
     for course in institution.findall("KISCOURSE"):

@@ -15,6 +15,7 @@ class Index:
         self.query_string = '?api-version=' + api_version
         self.index_name = index_name
         self.url = url
+        self.postcode_schema = None
 
         self.headers = {
             'Content-Type': 'application/json',
@@ -30,8 +31,7 @@ class Index:
         """
 
         try:
-            delete_url = self.url + "/indexes/" + self.index_name + \
-                         self.query_string
+            delete_url = self.url + "/indexes/" + self.index_name + self.query_string
 
             response = requests.delete(delete_url, headers=self.headers)
 
@@ -64,9 +64,11 @@ class Index:
 
         try:
             create_url = self.url + "/indexes" + self.query_string
-            response = requests.post(create_url,
-                                     headers=self.headers,
-                                     json=self.postcode_schema)
+            response = requests.post(
+                create_url,
+                headers=self.headers,
+                json=self.postcode_schema
+            )
 
         except requests.exceptions.RequestException as e:
             logging.exception('unexpected error creating index', exc_info=True)
