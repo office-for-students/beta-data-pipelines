@@ -26,9 +26,6 @@ from constants import BLOB_QUALIFICATIONS_BLOB_NAME
 from constants import BLOB_QUALIFICATIONS_CONTAINER_NAME
 from constants import COSMOS_COLLECTION_COURSES
 from constants import COSMOS_COLLECTION_SUBJECTS
-from course_stats import get_earnings_unavail_text
-from course_stats import get_stats
-from course_subjects import get_subjects
 from legacy.EtlPipeline.lookups import course_lookup_tables as lookup
 from legacy.EtlPipeline.lookups.accreditations import Accreditations
 from legacy.EtlPipeline.lookups.kisaims import KisAims
@@ -49,9 +46,12 @@ from legacy.services.blob import BlobService
 from legacy.services.cosmosservice import CosmosService
 from legacy.services.dataset_service import DataSetService
 from legacy.services.utils import get_english_welsh_item
-from qualification_enricher import QualificationCourseEnricher
-from subject_enricher import SubjectCourseEnricher
-from ukrlp_enricher import UkRlpCourseEnricher
+from .qualification_enricher import QualificationCourseEnricher
+from .subject_enricher import SubjectCourseEnricher
+from .ukrlp_enricher import UkRlpCourseEnricher
+from .course_stats import get_earnings_unavail_text
+from .course_stats import get_stats
+from .course_subjects import get_subjects
 
 CURRENT_DIR = os.path.dirname(
     os.path.abspath(inspect.getfile(inspect.currentframe()))
@@ -85,20 +85,14 @@ def load_course_docs(
     """
     # cosmos_service = get_cosmos_service(COSMOS_COLLECTION_COURSES)
 
-    logging.info(
-        "adding ukrlp data into memory ahead of building course documents"
-    )
+    logging.info("adding ukrlp data into memory ahead of building course documents")
     enricher = UkRlpCourseEnricher(version)
 
-    logging.info(
-        "adding subject data into memory ahead of building course documents"
-    )
+    logging.info("adding subject data into memory ahead of building course documents")
     subject_enricher = SubjectCourseEnricher(version)
     g_subject_enricher = subject_enricher
 
-    logging.info(
-        "adding qualification data into memory ahead of building course documents"
-    )
+    logging.info("adding qualification data into memory ahead of building course documents")
 
     cosmos_container = cosmos_service.get_container(
         container_id=COSMOS_COLLECTION_SUBJECTS
@@ -109,16 +103,19 @@ def load_course_docs(
     subj_codes = get_subject_lookups(version=version, cosmos_container=cosmos_container)
     logging.info("Using database subject codes.")
 
+    csv_string = blob_service.get_str_file(
+        container_name=BLOB_QUALIFICATIONS_CONTAINER_NAME,
+        blob_name=BLOB_QUALIFICATIONS_BLOB_NAME
+    )
+    qualification_enricher = QualificationCourseEnricher(
+        csv_string=csv_string
+    )
 
-    csv_string = blob_service.get_str_file(container_name=BLOB_QUALIFICATIONS_CONTAINER_NAME,
-                                           blob_name=BLOB_QUALIFICATIONS_BLOB_NAME)
-    qualification_enricher = QualificationCourseEnricher(csv_string)
-
-    collection_link = cosmos_service.get_collection_link(COSMOS_COLLECTION_COURSES)
-    container = cosmos_service.get_container(COSMOS_COLLECTION_COURSES)
+    collection_link = cosmos_service.get_collection_link(container_id=COSMOS_COLLECTION_COURSES)
+    container = cosmos_service.get_container(container_id=COSMOS_COLLECTION_COURSES)
 
     # Import the XML dataset
-    root = ET.fromstring(xml_string)
+    root = ET.fromstring(text=xml_string)
 
     sproc_link = collection_link + "/sprocs/bulkImport"
     partition_key = str(version)
@@ -138,9 +135,7 @@ def load_course_docs(
     course_count = 0
     for institution in root.iter("INSTITUTION"):
 
-        raw_inst_data = xmltodict.parse(ET.tostring(institution))[
-            "INSTITUTION"
-        ]
+        raw_inst_data = xmltodict.parse(ET.tostring(institution))["INSTITUTION"]
 
         ukprn = raw_inst_data["UKPRN"]
         logging.info(f"Ingesting course for: ({raw_inst_data['PUBUKPRN']})")
@@ -152,17 +147,17 @@ def load_course_docs(
             try:
                 locids = get_locids(raw_course_data, ukprn)
                 course_doc = get_course_doc(
-                    accreditations,
-                    locations,
-                    locids,
-                    raw_inst_data,
-                    raw_course_data,
-                    kisaims,
-                    version,
-                    go_sector_salaries,
-                    leo3_sector_salaries,
-                    leo5_sector_salaries,
-                    g_subject_enricher,
+                    accreditations=accreditations,
+                    locations=locations,
+                    locids=locids,
+                    raw_inst_data=raw_inst_data,
+                    raw_course_data=raw_course_data,
+                    kisaims=kisaims,
+                    version=version,
+                    go_sector_salaries=go_sector_salaries,
+                    leo3_sector_salaries=leo3_sector_salaries,
+                    leo5_sector_salaries=leo5_sector_salaries,
+                    g_subject_enricher=g_subject_enricher,
                     subject_codes=subj_codes
                 )
                 enricher.enrich_course(course_doc)
@@ -176,7 +171,7 @@ def load_course_docs(
                 if sproc_count >= 5:
                     logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
                     container.scripts.execute_stored_procedure(
-                        sproc_link,
+                        sproc=sproc_link,
                         params=[new_docs],
                         partition_key=partition_key
                     )
@@ -198,7 +193,7 @@ def load_course_docs(
     if sproc_count > 0:
         logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
         container.scripts.execute_stored_procedure(
-            sproc_link,
+            sproc=sproc_link,
             params=[new_docs],
             partition_key=partition_key
         )
@@ -297,27 +292,36 @@ def get_course_doc(
 
     if "ACCREDITATION" in raw_course_data:
         course["accreditations"] = get_accreditations(
-            raw_course_data, accreditations
+            raw_course_data=raw_course_data,
+            acc_lookup=accreditations
         )
 
     if "UKPRNAPPLY" in raw_course_data:
         course["application_provider"] = raw_course_data["UKPRNAPPLY"]
-    country = get_country(raw_inst_data)
+    country = get_country(
+        raw_inst_data=raw_inst_data
+    )
     if country:
         course["country"] = country
     distance_learning = get_code_label_entry(
-        raw_course_data, lookup.distance_learning_lookup, "DISTANCE"
+        lookup_table_raw_xml=raw_course_data,
+        lookup_table_local=lookup.distance_learning_lookup,
+        key="DISTANCE"
     )
     if distance_learning:
         course["distance_learning"] = distance_learning
     foundation_year = get_code_label_entry(
-        raw_course_data, lookup.foundation_year_availability, "FOUNDATION"
+        lookup_table_raw_xml=raw_course_data,
+        lookup_table_local=lookup.foundation_year_availability,
+        key="FOUNDATION"
     )
     if foundation_year:
         course["foundation_year_availability"] = foundation_year
     if "HONOURS" in raw_course_data:
         course["honours_award_provision"] = int(raw_course_data["HONOURS"])
-    course["institution"] = get_institution(raw_inst_data)
+    course["institution"] = get_institution(
+        raw_inst_data=raw_inst_data
+    )
     course["kis_course_id"] = raw_course_data["KISCOURSEID"]
 
     # Handle the institution-level Earnings data.
@@ -325,59 +329,97 @@ def get_course_doc(
     # For single-subject courses, not sure if we get passed an OrderedDict of 1 or something else.
     go_inst_xml_nodes = raw_course_data["GOSALARY"]
     if go_inst_xml_nodes:
-        course["go_salary_inst"] = get_go_inst_json(go_inst_xml_nodes,
-                                                    subject_enricher=g_subject_enricher)  # Returns an array.
+        course["go_salary_inst"] = get_go_inst_json(
+            raw_go_inst_data=go_inst_xml_nodes,
+            subject_enricher=g_subject_enricher
+        )  # Returns an array.
 
     leo3_inst_xml_nodes = raw_course_data["LEO3"]
     if leo3_inst_xml_nodes:
-        course["leo3_inst"] = get_leo3_inst_json(leo3_inst_xml_nodes, subject_enricher=g_subject_enricher)
+        course["leo3_inst"] = get_leo3_inst_json(
+            raw_leo3_inst_data=leo3_inst_xml_nodes,
+            subject_enricher=g_subject_enricher
+        )
 
     leo5_inst_xml_nodes = raw_course_data["LEO5"]
     if leo5_inst_xml_nodes:
-        course["leo5_inst"] = get_leo5_inst_json(leo5_inst_xml_nodes, subject_enricher=g_subject_enricher)
+        course["leo5_inst"] = get_leo5_inst_json(
+            raw_leo5_inst_data=leo5_inst_xml_nodes,
+            subject_enricher=g_subject_enricher
+        )
 
     go_voice_work_xml_nodes = raw_course_data["GOVOICEWORK"]
     if go_voice_work_xml_nodes:
-        course["go_voice_work"] = get_go_voice_work_json(go_voice_work_xml_nodes, subject_enricher=g_subject_enricher)
+        course["go_voice_work"] = get_go_voice_work_json(
+            raw_go_voice_work_data=go_voice_work_xml_nodes,
+            subject_enricher=g_subject_enricher
+        )
 
     length_of_course = get_code_label_entry(
-        raw_course_data, lookup.length_of_course, "NUMSTAGE"
+        lookup_table_raw_xml=raw_course_data,
+        lookup_table_local=lookup.length_of_course,
+        key="NUMSTAGE"
     )
     if length_of_course:
         course["length_of_course"] = length_of_course
-    links = get_links(raw_inst_data, raw_course_data)
+    links = get_links(
+        raw_inst_data=raw_inst_data,
+        raw_course_data=raw_course_data
+    )
     if links:
         course["links"] = links
     location_items = get_location_items(
-        locations, locids, raw_course_data, raw_inst_data["PUBUKPRN"]
+        locations=locations,
+        locids=locids,
+        raw_course_data=raw_course_data,
+        pub_ukprn=raw_inst_data["PUBUKPRN"]
     )
     if location_items:
         course["locations"] = location_items
-    mode = get_code_label_entry(raw_course_data, lookup.mode, "KISMODE")
+    mode = get_code_label_entry(
+        lookup_table_raw_xml=raw_course_data,
+        lookup_table_local=lookup.mode,
+        key="KISMODE"
+    )
     if mode:
         course["mode"] = mode
     nhs_funded = get_code_label_entry(
-        raw_course_data, lookup.nhs_funded, "NHS"
+        lookup_table_raw_xml=raw_course_data,
+        lookup_table_local=lookup.nhs_funded,
+        key="NHS"
     )
     if nhs_funded:
         course["nhs_funded"] = nhs_funded
-    qualification = get_qualification(raw_course_data, kisaims)
+    qualification = get_qualification(
+        lookup_table_raw_xml=raw_course_data,
+        kisaims=kisaims
+    )
     if qualification:
         course["qualification"] = qualification
     sandwich_year = get_code_label_entry(
-        raw_course_data, lookup.sandwich_year, "SANDWICH"
+        lookup_table_raw_xml=raw_course_data,
+        lookup_table_local=lookup.sandwich_year,
+        key="SANDWICH"
     )
     if sandwich_year:
         course["sandwich_year"] = sandwich_year
 
-    course["subjects"] = get_subjects(raw_course_data)
+    course["subjects"] = get_subjects(
+        raw_course_data=raw_course_data
+    )
 
-    title = get_english_welsh_item("TITLE", raw_course_data)
+    title = get_english_welsh_item(
+        key="TITLE",
+        lookup_table=raw_course_data
+    )
     kis_aim_code = raw_course_data["KISAIMCODE"]  # KISAIMCODE is guaranteed to exist and have a non-null value.
-    kis_aim_label = get_kis_aim_label(kis_aim_code, kisaims)
+    kis_aim_label = get_kis_aim_label(
+        code=kis_aim_code,
+        kisaims=kisaims
+    )
     if title and title['english'] and kis_aim_label and title['english'] == kis_aim_label:
-        course[
-            "title"] = title  # TODO: change this statement as appropriate, not sure how yet - awaiting OfS requirement.
+        # TODO: change this statement as appropriate, not sure how yet - awaiting OfS requirement.
+        course["title"] = title
     elif title:
         course["title"] = title
     else:
@@ -386,47 +428,54 @@ def get_course_doc(
     if "UCASPROGID" in raw_course_data:
         course["ucas_programme_id"] = raw_course_data["UCASPROGID"]
     year_abroad = get_code_label_entry(
-        raw_course_data, lookup.year_abroad, "YEARABROAD"
+        lookup_table_raw_xml=raw_course_data,
+        lookup_table_local=lookup.year_abroad,
+        key="YEARABROAD"
     )
     if year_abroad:
         course["year_abroad"] = get_code_label_entry(
-            raw_course_data, lookup.year_abroad, "YEARABROAD"
+            lookup_table_raw_xml=raw_course_data,
+            lookup_table_local=lookup.year_abroad,
+            key="YEARABROAD"
         )
 
-    course["statistics"] = get_stats(raw_course_data, subject_codes=subject_codes)
+    course["statistics"] = get_stats(
+        raw_course_data=raw_course_data,
+        subject_codes=subject_codes
+    )
 
     # Extract the appropriate sector-level earnings data for the current course.
     go_sector_json_array = get_go_sector_json(
-        course["go_salary_inst"],
-        course["leo3_inst"],
-        course["leo5_inst"],
-        go_sector_salaries,
-        outer_wrapper["course_mode"],
-        outer_wrapper["course_level"],
+        go_salary_inst_list=course["go_salary_inst"],
+        leo3_salary_inst_list=course["leo3_inst"],
+        leo5_salary_inst_list=course["leo5_inst"],
+        go_sector_salary_lookup=go_sector_salaries,
+        course_mode=outer_wrapper["course_mode"],
+        course_level=outer_wrapper["course_level"],
         subject_enricher=g_subject_enricher
     )
     if go_sector_json_array:
         course["go_salary_sector"] = go_sector_json_array
 
     leo3_sector_json_array = get_leo3_sector_json(
-        course["leo3_inst"],
-        course["go_salary_inst"],
-        course["leo5_inst"],
-        leo3_sector_salaries,
-        outer_wrapper["course_mode"],
-        outer_wrapper["course_level"],
+        leo3_salary_inst_list=course["leo3_inst"],
+        go_salary_inst_list=course["go_salary_inst"],
+        leo5_salary_inst_list=course["leo5_inst"],
+        leo3_sector_salary_lookup=leo3_sector_salaries,
+        course_mode=outer_wrapper["course_mode"],
+        course_level=outer_wrapper["course_level"],
         subject_enricher=g_subject_enricher
     )
     if leo3_sector_json_array:
         course["leo3_salary_sector"] = leo3_sector_json_array
 
     leo5_sector_json_array = get_leo5_sector_json(
-        course["leo5_inst"],
-        course["go_salary_inst"],
-        course["leo3_inst"],
-        leo5_sector_salaries,
-        outer_wrapper["course_mode"],
-        outer_wrapper["course_level"],
+        leo5_salary_inst_list=course["leo5_inst"],
+        go_salary_inst_list=course["go_salary_inst"],
+        leo3_salary_inst_list=course["leo3_inst"],
+        leo5_sector_salary_lookup=leo5_sector_salaries,
+        course_mode=outer_wrapper["course_mode"],
+        course_level=outer_wrapper["course_level"],
         subject_enricher=g_subject_enricher
     )
     if leo5_sector_json_array:
@@ -455,9 +504,7 @@ def get_accreditations(raw_course_data: Dict[str, Any], acc_lookup: Accreditatio
 
         if "ACCTYPE" in xml_elem:
             json_elem["type"] = xml_elem["ACCTYPE"]
-            accreditations = acc_lookup.get_accreditation_data_for_key(
-                xml_elem["ACCTYPE"]
-            )
+            accreditations = acc_lookup.get_accreditation_data_for_key(xml_elem["ACCTYPE"])
 
             if "ACCURL" in accreditations:
                 json_elem["accreditor_url"] = accreditations["ACCURL"]
@@ -470,7 +517,9 @@ def get_accreditations(raw_course_data: Dict[str, Any], acc_lookup: Accreditatio
             json_elem["url"] = urls
 
         dependent_on = get_code_label_entry(
-            xml_elem, lookup.accreditation_code, "ACCDEPEND"
+            lookup_table_raw_xml=xml_elem,
+            lookup_table_local=lookup.accreditation_code,
+            key="ACCDEPEND"
         )
         if dependent_on:
             json_elem["dependent_on"] = dependent_on
@@ -592,8 +641,15 @@ def get_leo5_inst_json(
         )
 
     else:
-        unavail_text_english, unavail_text_welsh = get_earnings_unavail_text("institution", "leo", "1")
-        leo5 = {"unavail_text_english": unavail_text_english, "unavail_text_welsh": unavail_text_welsh}
+        unavail_text_english, unavail_text_welsh = get_earnings_unavail_text(
+            inst_or_sect="institution",
+            data_source="leo",
+            key_level_3="1"
+        )
+        leo5 = {
+            "unavail_text_english": unavail_text_english,
+            "unavail_text_welsh": unavail_text_welsh
+        }
 
         return [leo5]
 
@@ -694,7 +750,10 @@ def get_links(raw_inst_data: Dict[str, Any], raw_course_data: Dict[str, Any]) ->
     ]
 
     for item_detail in item_details:
-        link_item = get_english_welsh_item(item_detail[0], item_detail[2])
+        link_item = get_english_welsh_item(
+            key=item_detail[0],
+            lookup_table=item_detail[2]
+        )
         if link_item:
             links[item_detail[1]] = link_item
 
@@ -726,11 +785,11 @@ def get_location_items(
     if "COURSELOCATION" not in raw_course_data:
         return location_items
 
-    course_locations = SharedUtils.get_raw_list(
-        raw_course_data, "COURSELOCATION"
-    ) if SharedUtils.get_raw_list(
-        raw_course_data, "COURSELOCATION"
-    ) else []
+    raw_course_locations_list = SharedUtils.get_raw_list(
+        data=raw_course_data,
+        element_key="COURSELOCATION"
+    )
+    course_locations = raw_course_locations_list if raw_course_locations_list else []
     item = {}
     for course_location in course_locations:
         if "LOCID" not in course_location:

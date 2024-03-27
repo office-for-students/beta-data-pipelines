@@ -5,11 +5,14 @@ from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import TYPE_CHECKING
 from typing import Tuple
 
 from constants import BLOB_INSTITUTIONS_SITEMAPS_JSON_FILE_BLOB_NAME
 from constants import BLOB_JSON_FILES_CONTAINER_NAME
-from legacy.services.blob import BlobService
+
+if TYPE_CHECKING:
+    from legacy.services.blob import BlobService
 
 BASE_URL = "https://discoveruni.gov.uk"
 
@@ -17,7 +20,7 @@ BASE_URL = "https://discoveruni.gov.uk"
 def build_sitemap_xml(
         institution_list: List[Dict[str, Any]],
         course_list: List[Dict[str, Any]],
-        blob_service: BlobService
+        blob_service: 'BlobService'
 ) -> None:
     """
     Calls all required functions to build the sitemap XML.

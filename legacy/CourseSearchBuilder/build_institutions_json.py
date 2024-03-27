@@ -6,14 +6,17 @@ import re
 from typing import Any
 from typing import Dict
 from typing import List
+from typing import TYPE_CHECKING
 
 from constants import BLOB_INSTITUTIONS_JSON_FILE_BLOB_NAME_CY
 from constants import BLOB_INSTITUTIONS_JSON_FILE_BLOB_NAME_EN
 from constants import BLOB_JSON_FILES_CONTAINER_NAME
-from legacy.services.blob import BlobService
+
+if TYPE_CHECKING:
+    from legacy.services.blob import BlobService
 
 
-def build_institutions_json_files(institution_list, blob_service: BlobService) -> None:
+def build_institutions_json_files(institution_list, blob_service: 'BlobService') -> None:
     """
     Retrieves a list of institutions and generates two JSON files, one for Welsh institution
     names and one for English. Files are stored as a blob and are not returned by this function.
@@ -67,7 +70,7 @@ def generate_file(
         legal_name: str,
         other_names: str,
         blob_file: str,
-        blob_service: BlobService
+        blob_service: 'BlobService'
 ) -> None:
     """
     Takes parameters relating to the institution dataset and generates a JSON file using institution data

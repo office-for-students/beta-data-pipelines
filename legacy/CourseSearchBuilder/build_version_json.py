@@ -2,16 +2,19 @@
 
 import io
 import json
+from typing import TYPE_CHECKING
 
 from constants import BLOB_JSON_FILES_CONTAINER_NAME
 from constants import BLOB_VERSION_JSON_FILE_BLOB_NAME
-from legacy.services.blob import BlobService
-from legacy.services.dataset_service import DataSetService
+
+if TYPE_CHECKING:
+    from legacy.services.blob import BlobService
+    from legacy.services.dataset_service import DataSetService
 
 
 def build_version_json_file(
-        blob_service: BlobService,
-        dataset_service: DataSetService
+        blob_service: 'BlobService',
+        dataset_service: 'DataSetService'
 ) -> None:
     """
     Calls required functions to generate a version.json file which contains the version of the dataset service
@@ -30,4 +33,8 @@ def build_version_json_file(
     json.dump(version_json, version_file, indent=4)
     encoded_file = version_file.getvalue().encode('utf-8')
 
-    blob_service.write_stream_file(BLOB_JSON_FILES_CONTAINER_NAME, BLOB_VERSION_JSON_FILE_BLOB_NAME, encoded_file)
+    blob_service.write_stream_file(
+        container_name=BLOB_JSON_FILES_CONTAINER_NAME,
+        blob_name=BLOB_VERSION_JSON_FILE_BLOB_NAME,
+        encoded_file=encoded_file
+    )

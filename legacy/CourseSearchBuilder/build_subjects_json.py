@@ -5,13 +5,16 @@ import json
 from typing import Any
 from typing import Dict
 from typing import List
+from typing import TYPE_CHECKING
 
 from constants import BLOB_JSON_FILES_CONTAINER_NAME
 from constants import BLOB_SUBJECTS_JSON_BLOB_NAME
-from legacy.services.blob import BlobService
+
+if TYPE_CHECKING:
+    from legacy.services.blob import BlobService
 
 
-def build_subjects_json_file(subjects_list: List[Dict[str, Any]], blob_service: BlobService) -> None:
+def build_subjects_json_file(subjects_list: List[Dict[str, Any]], blob_service: 'BlobService') -> None:
     """
     Calls required functions to generate a JSON containing subject data.
     File is saved to a blob and not returned by the function.

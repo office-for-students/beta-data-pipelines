@@ -24,12 +24,12 @@ from legacy.CreateInst.entry import create_institutions_main
 from legacy.EtlPipeline.entry import etl_pipeline_main
 from legacy.PostcodeSearchBuilder.entry import postcode_search_builder_main
 from legacy.SubjectBuilder.entry import subject_builder_main
-from legacy.services.blob import BlobService
-from legacy.services.cosmosservice import CosmosService
-from legacy.services.dataset_service import DataSetService
-from legacy.services.exceptions import DataSetTooEarlyError
-from legacy.services.exceptions import StopEtlPipelineErrorException
-from legacy.services.mail import MailService
+from services.blob import BlobService
+from services.cosmosservice import CosmosService
+from services.dataset_service import DataSetService
+from services.exceptions import DataSetTooEarlyError
+from services.exceptions import StopEtlPipelineErrorException
+from services.mail import MailService
 
 app = FastAPI()
 MAIL_SERVICE = MailService(
