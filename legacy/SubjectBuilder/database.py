@@ -7,10 +7,9 @@ from azure.cosmos import ContainerProxy
 from constants import COSMOS_COLLECTION_SUBJECTS
 from constants import COSMOS_DATABASE_ID
 from . import models
-from services.cosmosservice import CosmosService
 
 
-def load_collection(rows: Iterable, version: int, cosmos_service: CosmosService) -> None:
+def load_collection(rows: list[list[str]], version: int, cosmos_service: type['CosmosServiceBase']) -> None:
     """
     Creates a loader class with the given parameters, used to load subjects into the dataset
 
@@ -33,9 +32,9 @@ def load_collection(rows: Iterable, version: int, cosmos_service: CosmosService)
 class Loader:
     def __init__(
             self,
-            rows: Iterable,
+            rows: list[list[str]],
             version: int,
-            cosmos_service: CosmosService,
+            cosmos_service: type['CosmosServiceBase'],
             collection_id: str = COSMOS_COLLECTION_SUBJECTS
     ) -> None:
 

@@ -1,8 +1,14 @@
+import os
+
 from decouple import config
 
 # Variables to determine whether to use a local service (used for running locally for testing purposes)
 BLOB_SERVICE_MODULE = config("BLOB_SERVICE_MODULE")
-BLOB_TEST_BLOB_DIRECTORY = "blob_test"
+DATA_SET_SERVICE_MODULE = config("DATA_SET_SERVICE_MODULE")
+COSMOS_SERVICE_MODULE = config("COSMOS_SERVICE_MODULE")
+COSMOS_CLIENT_MODULE = config("COSMOS_CLIENT_MODULE")
+
+BLOB_TEST_BLOB_DIRECTORY = os.getcwd() + "/.local/blob_local/"
 
 INGESTION_API = config("INGESTION_API")
 

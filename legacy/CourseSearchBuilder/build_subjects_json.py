@@ -9,10 +9,9 @@ from typing import Type
 
 from constants import BLOB_JSON_FILES_CONTAINER_NAME
 from constants import BLOB_SUBJECTS_JSON_BLOB_NAME
-from services.blob_service.base import BlobServiceBase
 
 
-def build_subjects_json_file(subjects_list: List[Dict[str, Any]], blob_service: Type[BlobServiceBase]) -> None:
+def build_subjects_json_file(subjects_list: List[Dict[str, Any]], blob_service: type['BlobServiceBase']) -> None:
     """
     Calls required functions to generate a JSON containing subject data.
     File is saved to a blob and not returned by the function.

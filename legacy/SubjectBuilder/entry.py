@@ -1,6 +1,8 @@
 import csv
 import logging
+import traceback
 from datetime import datetime
+from typing import Any
 from typing import Type
 
 from constants import BLOB_SUBJECTS_BLOB_NAME
@@ -8,21 +10,19 @@ from constants import BLOB_SUBJECTS_CONTAINER_NAME
 from legacy.SubjectBuilder.database import load_collection
 from legacy.SubjectBuilder.validate import column_headers
 from services import exceptions
-from services.blob_service.base import BlobServiceBase
-from services.cosmosservice import CosmosService
-from services.dataset_service import DataSetService
 
 
 def subject_builder_main(
-        blob_service: Type['BlobServiceBase'],
-        dataset_service: DataSetService,
-        cosmos_service: CosmosService
-) -> None:
+        blob_service: type['BlobServiceBase'],
+        dataset_service: type['DataSetServiceBase'],
+        cosmos_service: type['CosmosServiceBase']
+) -> dict[str, Any]:
     """
     Builds subject dataset using the CSV stored in the subjects blob
 
     :return: None
     """
+    response = {}
     msgerror = ""
 
     logging.info(f"SubjectBuilder message queue triggered")
@@ -37,10 +37,16 @@ def subject_builder_main(
 
     try:
         # Read the Blob into a BytesIO object
-        csv_string = blob_service.get_str_file(BLOB_SUBJECTS_CONTAINER_NAME, BLOB_SUBJECTS_BLOB_NAME)
+        csv_string = blob_service.get_str_file(
+            container_name=BLOB_SUBJECTS_CONTAINER_NAME,
+            blob_name=BLOB_SUBJECTS_BLOB_NAME
+        )
 
         rows = csv_string.splitlines()
         number_of_subjects = len(rows) - 1
+        rows_list = []
+        for row in rows:
+            rows_list.append(row.split(","))
 
         # csv header row
         if not column_headers(rows[0]):
@@ -49,7 +55,7 @@ def subject_builder_main(
             )
             raise exceptions.StopEtlPipelineErrorException
 
-        reader = csv.reader(rows)
+        # reader = csv.reader(rows)
         version = dataset_service.get_latest_version_number()
 
         logging.info(f"using version number: {version}")
@@ -57,7 +63,7 @@ def subject_builder_main(
 
         # add subject docs to new collection
         load_collection(
-            rows=reader,
+            rows=rows_list,
             version=version,
             cosmos_service=cosmos_service
         )
@@ -67,7 +73,10 @@ def subject_builder_main(
 
         function_end_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
 
-        logging.info(f"SubjectBuilder successfully finished on {function_end_datetime}")
+        message = f"SubjectBuilder successfully finished on {function_end_datetime}"
+        logging.info(message)
+        response["message"] = message
+        response["statusCode"] = 200
 
     except Exception as e:
         # Unexpected exception
@@ -81,7 +90,13 @@ def subject_builder_main(
         #     f"Data Import {environment} - {function_fail_date} - Failed"
         # )
 
-        logging.error(f"SubjectBuilder failed on {function_fail_datetime} ", exc_info=True)
+        message = f"SubjectBuilder failed on {function_fail_datetime} "
+        logging.error(message, exc_info=True)
+        response["message"] = message
+        response["exception"] = traceback.format_exc()
+        response["statusCode"] = 500
 
         # Raise to Azure
-        raise e
+        # raise e
+
+    return response

@@ -6,12 +6,11 @@ from typing import Type
 
 from constants import BLOB_JSON_FILES_CONTAINER_NAME
 from constants import BLOB_VERSION_JSON_FILE_BLOB_NAME
-from services.dataset_service import DataSetService
 
 
 def build_version_json_file(
-        blob_service: Type['BlobService'],
-        dataset_service: DataSetService
+        blob_service: type['BlobServiceBase'],
+        dataset_service: type['DataSetServiceBase']
 ) -> None:
     """
     Calls required functions to generate a version.json file which contains the version of the dataset service

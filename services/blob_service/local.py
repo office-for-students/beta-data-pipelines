@@ -27,6 +27,10 @@ class BlobServiceLocal(BlobServiceBase):
         with open(file_path, "r") as file:
             file_lines = file.readlines()
 
+        # Format csv to match that of general blob service method
+        for index, line in enumerate(file_lines):
+            file_lines[index] = line.replace("\n", "")
+
         file_string = "\n".join(file_lines)
         return file_string
 

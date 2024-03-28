@@ -27,11 +27,11 @@ class SynonymMap:
         self.get_synonym()
 
         try:
-            update_url = (
-                    self.url + "/synonymmaps/" + self.synonym_name + self.query_string
-            )
+            update_url = (self.url + "/synonymmaps/" + self.synonym_name + self.query_string)
             response = requests.put(
-                update_url, headers=self.headers, json=self.course_synonym_schema
+                url=update_url,
+                headers=self.headers,
+                json=self.course_synonym_schema
             )
 
         except requests.exceptions.RequestException as e:
@@ -93,7 +93,7 @@ class SynonymMap:
         Sets the synonym map schema name using the synonym map json
         """
         cwd = os.path.dirname(os.path.abspath(__file__))
-        with open(os.path.join(cwd, "schemas/course_synonym.json")) as json_file:
+        with open(os.path.join(cwd, "../schemas/course_synonym.json")) as json_file:
             schema = json.load(json_file)
             schema["name"] = self.synonym_name
             schema["synonyms"] = self.get_synonym_list()

@@ -2,12 +2,10 @@ from typing import Any
 from typing import Dict
 from typing import List
 
-from services.cosmosservice import CosmosService
-from services.dataset_service import DataSetService
 
 def get_collections(
-        cosmos_service: CosmosService,
-        dataset_service: DataSetService,
+        cosmos_service: type['CosmosServiceBase'],
+        dataset_service: type['DataSetServiceBase'],
         collection_id: str = None,
         version: int = None
 ) -> List[Dict[str, Any]]:

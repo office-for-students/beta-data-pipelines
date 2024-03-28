@@ -9,9 +9,6 @@ from constants import COSMOS_COLLECTION_SUBJECTS
 from constants import SEARCH_API_KEY
 from constants import SEARCH_API_VERSION
 from constants import SEARCH_URL
-from services.cosmosservice import CosmosService
-from services.dataset_service import DataSetService
-from . import search
 from .build_institutions_json import build_institutions_json_files
 from .build_sitemap_xml import build_sitemap_xml
 from .build_subjects_json import build_subjects_json_file
@@ -19,11 +16,15 @@ from .build_version_json import build_version_json_file
 from .get_collections import get_collections
 from typing import Dict, Any
 
+from .search import build_index
+from .search import build_synonyms
+from .search import load_index
+
 
 def course_search_builder_main(
-        blob_service: Type['BlobService'],
-        cosmos_service: CosmosService,
-        dataset_service: DataSetService
+        blob_service: type['BlobServiceBase'],
+        cosmos_service: type['CosmosServiceBase'],
+        dataset_service: type['DataSetServiceBase']
 ) -> Dict[str, Any]:
     """
     Builds the course search index
@@ -52,8 +53,17 @@ def course_search_builder_main(
 
         version = dataset_service.get_latest_version_number()
 
-        search.build_synonyms(SEARCH_URL, SEARCH_API_KEY, SEARCH_API_VERSION)
-        search.build_index(SEARCH_URL, SEARCH_API_KEY, SEARCH_API_VERSION, version)
+        build_synonyms(
+            url=SEARCH_URL,
+            api_key=SEARCH_API_KEY,
+            api_version=SEARCH_API_VERSION
+        )
+        build_index(
+            url=SEARCH_URL,
+            api_key=SEARCH_API_KEY,
+            api_version=SEARCH_API_VERSION,
+            version=version
+        )
 
         courses = get_collections(
             cosmos_service=cosmos_service,
@@ -69,7 +79,13 @@ def course_search_builder_main(
                         number_of_courses: {number_of_courses}\n"
         )
 
-        search.load_index(SEARCH_URL, SEARCH_API_KEY, SEARCH_API_VERSION, version, courses)
+        load_index(
+            url=SEARCH_URL,
+            api_key=SEARCH_API_KEY,
+            api_version=SEARCH_API_VERSION,
+            version=version,
+            docs=courses
+        )
         dataset_service.update_status("search", "succeeded")
 
         if dataset_service.have_all_builds_succeeded():
@@ -113,9 +129,10 @@ def course_search_builder_main(
 
         function_end_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
 
-        logging.info(
-            f"CourseSearchBuilder successfully finished on {function_end_datetime}"
-        )
+        message = f"CourseSearchBuilder successfully finished on {function_end_datetime}"
+        logging.info(message)
+
+        response["message"] = message
         response["statusCode"] = 200
     except Exception as e:
         # Unexpected exception
@@ -125,9 +142,13 @@ def course_search_builder_main(
         function_fail_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
         function_fail_date = datetime.today().strftime("%d.%m.%Y")
 
-        logging.error(f"CourseSearchBuilder failed on {function_fail_datetime}")
-        logging.error(traceback.format_exc())
+        message = f"CourseSearchBuilder failed on {function_fail_datetime}"
+        exception = traceback.format_exc()
+        logging.error(message)
+        logging.error(exception)
 
+        response["message"] = message
+        response["exception"] = exception
         response["statusCode"] = 500
 
     return response

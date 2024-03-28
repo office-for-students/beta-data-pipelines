@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 import logging
+import traceback
 from datetime import datetime
-from typing import Type
+from typing import Any
 
 from constants import BLOB_HESA_BLOB_NAME
 from constants import BLOB_HESA_CONTAINER_NAME
@@ -12,19 +13,17 @@ from legacy.CreateInst.docs.name_handler import InstitutionProviderNameHandler
 from legacy.CreateInst.institution_docs import get_welsh_uni_names
 from legacy.CreateInst.institution_docs import get_white_list
 from services import exceptions
-from services.blob_service.base import BlobServiceBase
-from services.cosmosservice import CosmosService
-from services.dataset_service import DataSetService
 
 
 # from SharedCode.mail_helper import MailHelper
 
 
 def create_institutions_main(
-        blob_service: Type[BlobServiceBase],
-        cosmos_service: CosmosService,
-        dataset_service: DataSetService
-) -> None:
+        blob_service: type['BlobServiceBase'],
+        cosmos_service: type['CosmosServiceBase'],
+        dataset_service: type['DataSetServiceBase']
+) -> dict[str, Any]:
+    response = {}
 
     try:
         logging.info(
@@ -77,7 +76,11 @@ def create_institutions_main(
 
         function_end_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
 
-        logging.info(f"CreateInst successfully finished on {function_end_datetime}")
+        message = f"CreateInst successfully finished on {function_end_datetime}"
+
+        logging.info(message)
+        response["message"] = message
+        response["statusCode"] = 200
 
         # msgout.set(msgin.get_body().decode("utf-8") + msgerror)
 
@@ -101,9 +104,14 @@ def create_institutions_main(
         #     f"Data Import {environment} - {function_fail_date} - Failed"
         # )
 
-        logging.error(f"CreateInst failed on {function_fail_datetime}")
+        message = f"CreateInst failed on {function_fail_datetime}"
+
+        logging.error(message)
         dataset_service.update_status("institutions", "failed")
-        raise Exception(error_message)
+
+        response["message"] = message + f".\n{error_message}"
+        response["statusCode"] = 500
+        # raise Exception(error_message)
 
     except Exception as e:
         # Unexpected exception
@@ -117,7 +125,15 @@ def create_institutions_main(
         #     f"Data Import {environment} - {function_fail_date} - Failed"
         # )
 
-        logging.error(f"CreateInst failed on {function_fail_datetime}", exc_info=True)
+        message = f"CreateInst failed on {function_fail_datetime}"
+
+        logging.error(message, exc_info=True)
+
+        response["message"] = message
+        response["exception"] = traceback.format_exc()
+        response["statusCode"] = 500
 
         # Raise to Azure
-        raise e
+        # raise e
+
+    return response

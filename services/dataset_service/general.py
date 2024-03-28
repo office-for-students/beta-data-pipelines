@@ -1,25 +1,11 @@
-import datetime
-import inspect
 import logging
-import os
-import sys
+from datetime import datetime
 from typing import Any
-from typing import Dict
-from typing import List
 
-from azure.cosmos.aio import ContainerProxy
-
-CURRENT_DIR = os.path.dirname(
-    os.path.abspath(inspect.getfile(inspect.currentframe()))
-)
-PARENT_DIR = os.path.dirname(CURRENT_DIR)
-sys.path.insert(0, CURRENT_DIR)
-sys.path.insert(0, PARENT_DIR)
+from services.dataset_service.base import DataSetServiceBase
 
 
-class DataSetService:
-    def __init__(self, cosmos_container: ContainerProxy) -> None:
-        self.container = cosmos_container
+class DataSetService(DataSetServiceBase):
 
     def update_status(self, item: str, value: str, updated_at: str = None) -> None:
         """
@@ -39,7 +25,7 @@ class DataSetService:
             dataset_doc["status"] = value
         else:
             dataset_doc["builds"][item]["status"] = value
-        dataset_doc["updated_at"] = datetime.datetime.utcnow().isoformat()
+        dataset_doc["updated_at"] = datetime.utcnow().isoformat()
         if updated_at:
             dataset_doc["updated_at"] = updated_at
         self.container.upsert_item(dataset_doc)
@@ -48,7 +34,7 @@ class DataSetService:
             f"DataSet version {dataset_doc['version']}"
         )
 
-    def get_latest_doc(self) -> Dict[str, Any]:
+    def get_latest_doc(self) -> dict[str, Any]:
         """
         Retrieves the latest dataset document from the database
 
@@ -73,7 +59,7 @@ class DataSetService:
             self.container.query_items(query, enable_cross_partition_query=True))
         return max_version_number_list[0]
 
-    def query_items(self, query: str) -> List[Dict[str, Any]]:
+    def query_items(self, query: str) -> list[dict[str, Any]]:
         """
         Performs the passed query on the database with "enableCrossPartitionQuery" set to true
 
@@ -82,7 +68,7 @@ class DataSetService:
         """
         return list(self.container.query_items(query, enable_cross_partition_query=True))
 
-    def create_item(self, dataset_doc: Dict[str, Any]) -> None:
+    def create_item(self, dataset_doc: dict[str, Any]) -> None:
         """
         Creates an item on the database with the passed dataset document.
 

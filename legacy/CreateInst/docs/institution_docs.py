@@ -14,7 +14,6 @@ from legacy.CreateInst.institution_docs import get_country
 from legacy.CreateInst.institution_docs import get_student_unions
 from legacy.CreateInst.institution_docs import get_total_number_of_courses
 from legacy.CreateInst.locations import Locations
-from services.cosmosservice import CosmosService
 from services.utils import generate_uuid
 
 
@@ -24,7 +23,7 @@ class InstitutionDocs:
             xml_string: str,
             version: int,
             provider_name_handler: InstitutionProviderNameHandler,
-            cosmos_service: CosmosService
+            cosmos_service: type['CosmosServiceBase']
     ) -> None:
         self.version = version
         self.root = ET.fromstring(xml_string)

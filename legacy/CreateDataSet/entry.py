@@ -2,10 +2,10 @@
 """ Creates a new DataSet for each new file we get from HESA """
 
 import logging
+import traceback
+from typing import Any
 from typing import Type
 
-from services.blob_service.base import BlobServiceBase
-from services.dataset_service import DataSetService
 from services.exceptions import StopEtlPipelineErrorException
 from services.exceptions import XmlValidationError
 from . import validators
@@ -13,11 +13,11 @@ from .dataset_creator import DataSetCreator
 
 
 def create_dataset_main(
-        blob_service: Type["BlobServiceBase"],
-        dataset_service: DataSetService,
+        blob_service: type['BlobServiceBase'],
+        dataset_service: type['DataSetServiceBase'],
         storage_container_name: str,
         storage_blob_name: str
-) -> None:
+) -> dict[str, Any]:
     """
     Creates a new DataSet for each new file we get from HESA
 
@@ -33,20 +33,32 @@ def create_dataset_main(
     :return: None
     """
 
-    xml_string = blob_service.get_str_file(
-        container_name=storage_container_name,
-        blob_name=storage_blob_name
-    )
-
-    # BASIC XML Validation
+    response = {}
     try:
-        validators.parse_xml_data(xml_string)
-    except XmlValidationError:
-        logging.error("Error unable to parse the XML data from HESA.")
-        raise StopEtlPipelineErrorException
+        xml_string = blob_service.get_str_file(
+            container_name=storage_container_name,
+            blob_name=storage_blob_name
+        )
 
-    # CREATE NEW DATASET
-    data_set_creator = DataSetCreator(
-        dataset_service=dataset_service
-    )
-    data_set_creator.load_new_dataset_doc()
+        # BASIC XML Validation
+        try:
+            validators.parse_xml_data(xml_string)
+        except XmlValidationError as e:
+            logging.error("Error unable to parse the XML data from HESA.")
+            raise StopEtlPipelineErrorException
+
+        # CREATE NEW DATASET
+        data_set_creator = DataSetCreator(
+            dataset_service=dataset_service
+        )
+        data_set_creator.load_new_dataset_doc()
+
+        response["message"] = "CreateDataSet finished successfully"
+        response["statusCode"] = 200
+
+    except Exception as e:
+        response["message"] = "CreateDataSet failed"
+        response["exception"] = traceback.format_exc()
+        response["statusCode"] = 500
+
+    return response

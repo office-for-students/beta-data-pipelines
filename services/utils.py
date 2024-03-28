@@ -1,9 +1,19 @@
 """Functions shared by Azure Functions"""
 
 import html
+import importlib
 import uuid
 from typing import Any
 from typing import Dict
+
+
+def get_module_path_and_classname(provider_path: str) -> tuple[Any, str]:
+    module_path_list = provider_path.split(".")  # split by the `.`
+    class_name = module_path_list.pop()  # get the last item, for the classname
+    module_import = '.'.join(module_path_list)  # recombine the rest of the array for the module path
+    module = importlib.import_module(module_import)  # importlib lets you dynamically import the correct file
+
+    return module, class_name
 
 
 def generate_uuid() -> str:

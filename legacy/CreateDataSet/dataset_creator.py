@@ -11,7 +11,6 @@ from dateutil import parser
 
 from constants import MINUTES_WAIT_BEFORE_CREATE_NEW_DATASET
 # from SharedCode.utils import get_cosmos_client, get_collection_link
-from services.dataset_service import DataSetService
 from services.exceptions import DataSetTooEarlyError
 
 CURRENT_DIR = os.path.dirname(
@@ -25,7 +24,7 @@ sys.path.insert(0, PARENT_DIR)
 class DataSetCreator:
     """Creates a new dataset"""
 
-    def __init__(self, dataset_service: DataSetService, test_mode: bool = False) -> None:
+    def __init__(self, dataset_service: type['DataSetServiceBase'], test_mode: bool = False) -> None:
         self.dataset_service = dataset_service
         self.test_mode = test_mode
 

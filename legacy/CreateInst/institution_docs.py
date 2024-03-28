@@ -77,7 +77,7 @@ def validate_column_headers(header_row: str) -> bool:
     """
     logging.info(f"Validating header row, headers: {header_row}")
     header_list = header_row.split(",")
-
+    print(header_list)
     try:
         valid = True
         if header_list[0] != "ukprn":
@@ -97,7 +97,7 @@ def validate_column_headers(header_row: str) -> bool:
 
 def get_welsh_uni_names(csv_string: str) -> List[str]:
     """
-    Gets Welsh institution names from either a local test XML file or the blob storage.
+    Gets Welsh institution names from a CSV.
 
     :return: List of Welsh institution names
     :rtype: List[str]
@@ -109,7 +109,7 @@ def get_welsh_uni_names(csv_string: str) -> List[str]:
 
         if not validate_column_headers(rows[0]):
             logging.error(
-                "file headers are incorrect, expecting the following: code, welsh_label"
+                "file headers are incorrect, expecting the following: ukprn, welsh_name"
             )
             raise exceptions.StopEtlPipelineErrorException
 

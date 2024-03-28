@@ -1,6 +1,7 @@
 import logging
 import traceback
 from datetime import datetime
+from typing import Any
 from typing import Type
 
 from constants import BLOB_POSTCODES_BLOB_NAME
@@ -11,11 +12,11 @@ from constants import SEARCH_API_VERSION
 from constants import SEARCH_URL
 from legacy.PostcodeSearchBuilder.search import build_index
 from legacy.PostcodeSearchBuilder.search import load_index
-from services.blob_service.base import BlobServiceBase
 
 
-def postcode_search_builder_main(blob_service: Type['BlobServiceBase']) -> None:
+def postcode_search_builder_main(blob_service: type['BlobServiceBase']) -> dict[str, Any]:
     """Create the postcode search index"""
+    response = {}
 
     logging.info(f"PostcodeSearchBuilder request triggered")
 
@@ -47,14 +48,24 @@ def postcode_search_builder_main(blob_service: Type['BlobServiceBase']) -> None:
         # Add postcode documents to postcode search index
         logging.info(f'attempting to load postcodes to azure search\n\
                         number_of_postcodes: {number_of_postcodes}\n')
-        load_index(SEARCH_URL, SEARCH_API_KEY, SEARCH_API_VERSION, POSTCODE_INDEX_NAME, rows)
+        load_index(
+            url=SEARCH_URL,
+            api_key=SEARCH_API_KEY,
+            api_version=SEARCH_API_VERSION,
+            index_name=POSTCODE_INDEX_NAME,
+            rows=rows
+        )
 
         function_end_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
         function_end_date = datetime.today().strftime("%d.%m.%Y")
 
         # mail_helper.send_message(f"Postcode search builder completed on {function_end_datetime}", f"Postcode Search Builder {environment} - {function_end_date} - Completed")
 
-        logging.info(f"PostcodeSearchBuilder successfully finished on {function_end_datetime}")
+        message = f"PostcodeSearchBuilder successfully finished on {function_end_datetime}"
+        logging.info(message)
+
+        response['message'] = message
+        response['statusCode'] = 200
 
     except Exception as e:
         # Unexpected exception
@@ -63,9 +74,15 @@ def postcode_search_builder_main(blob_service: Type['BlobServiceBase']) -> None:
 
         # mail_helper.send_message(f"Postcode search builder failed on {function_fail_datetime}", f"Postcode Search Builder {environment} - {function_fail_date} - Failed")
 
-        logging.error(f"PostcodeSearchBuilder failed on {function_fail_datetime} ", exc_info=True)
-
+        message = f"PostcodeSearchBuilder failed on {function_fail_datetime} "
+        logging.error(message, exc_info=True)
         logging.error(traceback.format_exc())
 
         # Raise to Azure
-        raise e
+        # raise e
+
+        response['message'] = message
+        response['exception'] = traceback.format_exc()
+        response['statusCode'] = 500
+
+    return response

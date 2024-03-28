@@ -43,9 +43,6 @@ from legacy.EtlPipeline.mappings.leo.sector import LeoSectorMappings
 from legacy.EtlPipeline.stats.shared_utils import SharedUtils
 from legacy.EtlPipeline.utils import get_subject_lookups
 from services import utils
-from services.blob_service.base import BlobServiceBase
-from services.cosmosservice import CosmosService
-from services.dataset_service import DataSetService
 from services.utils import get_english_welsh_item
 from .qualification_enricher import QualificationCourseEnricher
 from .subject_enricher import SubjectCourseEnricher
@@ -65,9 +62,9 @@ sys.path.insert(0, PARENT_DIR)
 def load_course_docs(
         xml_string: str,
         version: int,
-        blob_service: Type[BlobServiceBase],
-        cosmos_service: CosmosService,
-        dataset_service: DataSetService
+        blob_service: type['BlobServiceBase'],
+        cosmos_service: type['CosmosServiceBase'],
+        dataset_service: type['DataSetServiceBase']
 ) -> None:
     """
     Parse HESA XML passed in and create JSON course docs in Cosmos DB.

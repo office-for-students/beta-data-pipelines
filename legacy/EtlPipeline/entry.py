@@ -9,15 +9,12 @@ from typing import Type
 from constants import BLOB_HESA_BLOB_NAME
 from constants import BLOB_HESA_CONTAINER_NAME
 from legacy.EtlPipeline import course_docs
-from services.blob_service.base import BlobServiceBase
-from services.cosmosservice import CosmosService
-from services.dataset_service import DataSetService
 
 
 def etl_pipeline_main(
-        blob_service: Type[BlobServiceBase],
-        dataset_service: DataSetService,
-        cosmos_service: CosmosService
+        blob_service: type['BlobServiceBase'],
+        dataset_service: type['DataSetServiceBase'],
+        cosmos_service: type['CosmosServiceBase']
 ) -> None:
     try:
 
