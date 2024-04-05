@@ -3,9 +3,8 @@ from typing import Dict
 from typing import TYPE_CHECKING
 from typing import Union
 
-from azure.cosmos.aio import ContainerProxy
-
 from constants import COSMOS_COLLECTION_INSTITUTIONS
+from constants import COSMOS_COLLECTION_SUBJECTS
 from legacy.EtlPipeline.stats.shared_utils import SharedUtils
 
 if TYPE_CHECKING:
@@ -38,7 +37,8 @@ def get_go_work_unavail_messages(
         xml_element_key: str,
         xml_agg_key: str,
         xml_unavail_reason_key: str,
-        raw_data_element: Dict[str, Any]
+        raw_data_element: Dict[str, Any],
+        subject_codes: dict[str, dict[str, str]]
 ) -> Union[Dict[str, Any], str]:
     """
     Constructs a SharedUtils object and creates unavailable message data based on the passed parameters.
@@ -51,6 +51,8 @@ def get_go_work_unavail_messages(
     :type xml_unavail_reason_key: str
     :param raw_data_element: Raw data element to generate unavailable message for
     :type raw_data_element: str
+    :param subject_codes: Subject codes for shared utils object
+    :type subject_codes: dict[str, dict[str, str]]
     :return: Dictionary of unavailable message data, or empty string if aggregation code is "14"
     :rtype: Union[Dict[str, Any], str]
     """
@@ -59,6 +61,7 @@ def get_go_work_unavail_messages(
         xml_subj_key="GOWORKSBJ",
         xml_agg_key=xml_agg_key,
         xml_unavail_reason_key=xml_unavail_reason_key,
+        subject_codes=subject_codes
     )
     return shared_utils.get_unavailable(raw_data_element)
 
@@ -94,7 +97,7 @@ def get_earnings_agg_unavail_messages(agg_value: str, subject: Dict[str, Any]) -
     return earnings_agg_unavail_messages
 
 
-def get_ukrlp_lookups(cosmos_service: 'CosmosService', version: int) -> Dict[str, Any]:
+def get_ukrlp_lookups(cosmos_service: type['CosmosService'], version: int) -> Dict[str, Any]:
     """
     Returns a dictionary of UKRLP lookups, including English and Welsh institution names.
 
@@ -125,20 +128,23 @@ def get_ukrlp_lookups(cosmos_service: 'CosmosService', version: int) -> Dict[str
     }
 
 
-def get_subject_lookups(cosmos_container: ContainerProxy, version: int) -> Dict[str, Any]:
+def get_subject_lookups(cosmos_service: type["CosmosService"], version: int) -> Dict[str, Any]:
     """
     Returns a dictionary of subject lookups, including the subject code.
 
-    :param cosmos_container: ContainerProxy
+    :param cosmos_service: Cosmos service to get container from
     :param version: Version of dataset to perform lookup on
     :type version: str
     :return: Dictionary of subject lookups containing subject and code
     :rtype: Dict[str, Any]
     """
 
-    container = cosmos_container
+    container = cosmos_service.get_container(container_id=COSMOS_COLLECTION_SUBJECTS)
     query = f"SELECT * from c WHERE c.version = {version}"
 
     lookup_list = list(container.query_items(query, enable_cross_partition_query=True))
 
-    return {lookup["code"]: lookup for lookup in lookup_list}
+    return {
+        lookup["code"]: lookup
+        for lookup in lookup_list
+    }

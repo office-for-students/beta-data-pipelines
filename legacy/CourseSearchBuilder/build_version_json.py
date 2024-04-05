@@ -2,7 +2,6 @@
 
 import io
 import json
-from typing import Type
 
 from constants import BLOB_JSON_FILES_CONTAINER_NAME
 from constants import BLOB_VERSION_JSON_FILE_BLOB_NAME

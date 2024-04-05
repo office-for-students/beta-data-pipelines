@@ -1,9 +1,7 @@
-import csv
 import logging
 import traceback
 from datetime import datetime
 from typing import Any
-from typing import Type
 
 from constants import BLOB_SUBJECTS_BLOB_NAME
 from constants import BLOB_SUBJECTS_CONTAINER_NAME

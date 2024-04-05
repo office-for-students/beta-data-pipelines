@@ -8,8 +8,8 @@ from legacy.EtlPipeline.utils import get_subject_lookups
 class SubjectCourseEnricher:
     """Handles enriching courses with UKRLP data"""
 
-    def __init__(self, version: int) -> None:
-        self.subject_lookups = get_subject_lookups(version=version)
+    def __init__(self, cosmos_service: type["CosmosService"], version: int) -> None:
+        self.subject_lookups = get_subject_lookups(cosmos_service=cosmos_service, version=version)
 
     def enrich_course(self, course: Dict[str, Any]) -> None:
         """Takes a course and enriches subject object with subject names"""

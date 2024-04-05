@@ -36,6 +36,7 @@ class BaseMappings:
     def map_xml_to_json_array(
             self,
             xml_as_array: List[Dict[str, Any]],
+            subject_codes: dict[str, dict[str, str]],
             mappings: Optional[List[Tuple[str, str]]] = None,
     ) -> List[Dict[str, Any]]:
         """
@@ -44,6 +45,8 @@ class BaseMappings:
 
         :param xml_as_array: XML element to convert to a JSON list
         :type xml_as_array: List[Dict[str, Any]]
+        :param subject_codes: Subject codes for shared utils object
+        :type subject_codes: dict[str, dict[str, str]]
         :param mappings: Optional, if provided will overwrite the default mappings
         :type mappings: Optional[List[Tuple[str, str]]]
         :return: List of JSON dictionaries
@@ -64,7 +67,11 @@ class BaseMappings:
 
                         if json_key in self.unavailable_keys:
                             json_data[json_key] = elem.get(xml_key)
-                            self.custom_unavailable(json_data=json_data, elem=elem, key=json_key)
+                            self.custom_unavailable(
+                                subject_codes=subject_codes,
+                                json_data=json_data,
+                                elem=elem,
+                                key=json_key)
 
                         elif json_key == "subject":
                             json_data[json_key] = get_subject(elem.get(xml_key), self.subject_enricher)
@@ -72,7 +79,7 @@ class BaseMappings:
                         else:
                             json_data[json_key] = elem.get(xml_key)
 
-                self.per_course_unavailable(json_data=json_data)
+                self.per_course_unavailable(json_data=json_data, subject_codes=subject_codes)
 
                 self.final_unavailable(json_data)
 
@@ -80,10 +87,11 @@ class BaseMappings:
 
         return json_array
 
-    def per_course_unavailable(self, json_data: Dict[str, Any]) -> None:
+    def per_course_unavailable(self, json_data: Dict[str, Any], subject_codes: dict[str, dict[str, str]]) -> None:
         pass
 
-    def custom_unavailable(self, json_data: Dict[str, Any], elem: Dict[str, Any], key: str) -> None:
+    def custom_unavailable(self, subject_codes: dict[str, dict[str, str]], json_data: Dict[str, Any],
+                           elem: Dict[str, Any], key: str) -> None:
         # Required if you have set unavailable_keys and that key is found during mapping
         raise NotImplemented
 

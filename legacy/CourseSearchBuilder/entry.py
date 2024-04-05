@@ -1,7 +1,8 @@
 import logging
 import traceback
 from datetime import datetime
-from typing import Type
+from typing import Any
+from typing import Dict
 
 from constants import COSMOS_COLLECTION_COURSES
 from constants import COSMOS_COLLECTION_INSTITUTIONS
@@ -14,8 +15,6 @@ from .build_sitemap_xml import build_sitemap_xml
 from .build_subjects_json import build_subjects_json_file
 from .build_version_json import build_version_json_file
 from .get_collections import get_collections
-from typing import Dict, Any
-
 from .search import build_index
 from .search import build_synonyms
 from .search import load_index

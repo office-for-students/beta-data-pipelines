@@ -37,11 +37,13 @@ class GoInstitutionMappings(BaseMappings):
             (f'{self.mapping_id}PROV_PC_W', "inst_prov_pc_w")
         ]
 
-    def custom_unavailable(self, json_data: Dict[str, Any], elem: Dict[str, Any], key: str = None) -> None:
+    def custom_unavailable(self, subject_codes: dict[str, dict[str, str]], json_data: Dict[str, Any], elem: Dict[str, Any], key: str = None) -> None:
         """
         Takes a JSON as a dictionary and an element containing unavailable reasons, and sets the unavailable
         reason in the JSON
 
+        :param subject_codes: Subject codes for shared utils object
+        :type subject_codes: dict[str, dict[str, str]]
         :param json_data: JSON data to set unavailable reason of
         :type json_data: Dict[str, Any]
         :param elem: Element containing custom unavailable reason
@@ -51,9 +53,10 @@ class GoInstitutionMappings(BaseMappings):
         """
         json_data["unavail_reason"] = elem["GOSALUNAVAILREASON"]
         json_data["unavail_text_english"], json_data["unavail_text_welsh"] = get_earnings_unavail_text(
-            "institution",
-            "go",
-            json_data["unavail_reason"]
+            subject_codes=subject_codes,
+            inst_or_sect="institution",
+            data_source="go",
+            key_level_3=json_data["unavail_reason"]
         )
 
     def final_unavailable(self, json_data: Dict[str, Any]) -> None:

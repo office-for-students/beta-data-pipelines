@@ -66,10 +66,17 @@ def need_nhs_nss(course: Dict[str, Any]) -> bool:
 
 
 # apw for unavail messages
-def get_earnings_unavail_text(inst_or_sect: str, data_source: str, key_level_3: str) -> Tuple[str, str]:
+def get_earnings_unavail_text(
+        subject_codes: dict[str, dict[str, str]],
+        inst_or_sect: str,
+        data_source: str,
+        key_level_3: str
+) -> Tuple[str, str]:
     """
     Returns the relevant unavail reason text in English and Welsh
 
+    :param subject_codes: Subject codes for shared utils object
+    :type subject_codes: dict[str, dict[str, str]]
     :param inst_or_sect: Key for institution or sector for extracting unavailable text
     :type inst_or_sect: str
     :param data_source: Key for data source for extracting unavailable text
@@ -81,10 +88,11 @@ def get_earnings_unavail_text(inst_or_sect: str, data_source: str, key_level_3: 
     """
 
     shared_utils = SharedUtils(
-        data_source,  # xml_element_key
-        "SBJ",
-        "AGG",
-        'UNAVAILREASON',  # xml_unavail_reason_key
+        subject_codes=subject_codes,
+        xml_element_key=data_source,  # xml_element_key
+        xml_subj_key="SBJ",
+        xml_agg_key="AGG",
+        xml_unavail_reason_key='UNAVAILREASON',  # xml_unavail_reason_key
     )
 
     earnings_unavail_reason_lookup_english = shared_utils.get_lookup(

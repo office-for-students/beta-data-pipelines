@@ -24,6 +24,7 @@ class BlobServiceLocal(BlobServiceBase):
         :rtype: str
         """
         file_path = self.blob_path + "/" + container_name + "/" + blob_name
+        print(f"Retrieving string file from {file_path}")
         with open(file_path, "r") as file:
             file_lines = file.readlines()
 

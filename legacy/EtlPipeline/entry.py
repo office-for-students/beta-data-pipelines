@@ -3,8 +3,9 @@
 """ EtlPipeline: Execute the ETL pipeline based on a message queue trigger """
 
 import logging
+import traceback
 from datetime import datetime
-from typing import Type
+from typing import Any
 
 from constants import BLOB_HESA_BLOB_NAME
 from constants import BLOB_HESA_CONTAINER_NAME
@@ -15,7 +16,9 @@ def etl_pipeline_main(
         blob_service: type['BlobServiceBase'],
         dataset_service: type['DataSetServiceBase'],
         cosmos_service: type['CosmosServiceBase']
-) -> None:
+) -> dict[str, Any]:
+    response = {}
+
     try:
 
         logging.info(
@@ -54,9 +57,11 @@ def etl_pipeline_main(
 
         function_end_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
 
-        logging.info(
-            f"EtlPipeline successfully finished on {function_end_datetime}"
-        )
+        message = f"EtlPipeline successfully finished on {function_end_datetime}"
+
+        logging.info(message)
+        response["message"] = message
+        response["statusCode"] = 200
 
     except Exception as e:
 
@@ -73,6 +78,12 @@ def etl_pipeline_main(
         #     f"Data Import {environment} - {function_fail_date} - Failed"
         # )
 
-        logging.error(f"EtlPipeline failed on {function_fail_datetime}")
+        message = f"EtlPipeline failed on {function_fail_datetime}"
+        logging.error(message)
+        response["message"] = message
+        response["exception"] = traceback.format_exc()
+        response["statusCode"] = 500
 
-        raise e
+        # raise e
+
+    return response

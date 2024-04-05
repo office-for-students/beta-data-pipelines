@@ -68,11 +68,13 @@ class LeoInstitutionMappings(BaseMappings):
                     json_data["subject"]
                 )
 
-    def custom_unavailable(self, json_data: Dict[str, Any], key: str, elem: Optional[Dict[str, Any]] = None) -> None:
+    def custom_unavailable(self, subject_codes: dict[str, dict[str, str]], json_data: Dict[str, Any], key: str, elem: Optional[Dict[str, Any]] = None) -> None:
         """
         Takes a JSON as a dictionary and a key used to lookup the level 3 key in the JSON, and sets unavailable
         text for both languages in the JSON dictionary.
 
+        :param subject_codes: Subject codes for shared utils object
+        :type subject_codes: dict[str, dict[str, str]]
         :param json_data: JSON data to set unavailable reason of
         :type json_data: Dict[str, Any]
         :param key: Lookup key for level 3 key in the JSON
@@ -81,6 +83,7 @@ class LeoInstitutionMappings(BaseMappings):
         :return: None
         """
         json_data["unavail_text_english"], json_data["unavail_text_welsh"] = get_earnings_unavail_text(
+            subject_codes=subject_codes,
             inst_or_sect="institution",
             data_source="leo",
             key_level_3=json_data[key]

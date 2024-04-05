@@ -1,5 +1,6 @@
 from typing import Any
 from typing import Dict
+from typing import Type
 from typing import Union
 
 from legacy.EtlPipeline.utils import get_ukrlp_lookups
@@ -8,8 +9,8 @@ from legacy.EtlPipeline.utils import get_ukrlp_lookups
 class UkRlpCourseEnricher:
     """Handles enriching courses with UKRLP data"""
 
-    def __init__(self, version: int) -> None:
-        self.ukrlp_lookups = get_ukrlp_lookups(version)
+    def __init__(self, cosmos_service: Type["CosmosService"], version: int) -> None:
+        self.ukrlp_lookups = get_ukrlp_lookups(cosmos_service, version)
 
     def enrich_course(self, course: Dict[str, Any]) -> None:
         """

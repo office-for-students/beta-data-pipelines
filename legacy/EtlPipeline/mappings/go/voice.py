@@ -35,10 +35,12 @@ class GoVoiceMappings(BaseMappings):
             (f'{self.mapping_id}WORKUNAVAILREASON', "unavailable")
         ]
 
-    def custom_unavailable(self, json_data: Dict[str, Any], elem: Dict[str, Any], key: str) -> None:
+    def custom_unavailable(self, subject_codes: dict[str, dict[str, str]], json_data: Dict[str, Any], elem: Dict[str, Any], key: str) -> None:
         """
         Takes a JSON and a raw data element as dictionaries and sets the appropriate unavailable message
 
+        :param subject_codes: Subject codes for shared utils object
+        :type subject_codes: dict[str, dict[str, str]]
         :param json_data: JSON data
         :type json_data: Dict[str, Any]
         :param elem: Raw data element used to get unavailable message
@@ -50,5 +52,6 @@ class GoVoiceMappings(BaseMappings):
             xml_element_key="GO",
             xml_agg_key='GOWORKAGG',
             xml_unavail_reason_key="GOWORKUNAVAILREASON",
-            raw_data_element=elem
+            raw_data_element=elem,
+            subject_codes=subject_codes
         )

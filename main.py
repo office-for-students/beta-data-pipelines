@@ -151,26 +151,26 @@ async def create_inst():
     return response
 
 
-@app.get("EtlPipeline/")
+@app.get("/EtlPipeline/")
 async def etl_pipeline():
     # send_message(mail_helper, "Started", "Etl Pipeline")
-    logging.info("Etl Pipeline started")
-    error = None
-    try:
-        etl_pipeline_main(
-            blob_service=BLOB_SERVICE,
-            dataset_service=DATASET_SERVICE,
-            cosmos_service=COSMOS_DATABASE_SERVICE
-        )
-    except Exception as e:
-        message = f"Etl Pipeline failed: {e}"
-        error = e
-    else:
-        message = f"Etl Pipeline succeeded"
+    # logging.info("Etl Pipeline started")
+    # error = None
+    # try:
+    response = etl_pipeline_main(
+        blob_service=BLOB_SERVICE,
+        dataset_service=DATASET_SERVICE,
+        cosmos_service=COSMOS_DATABASE_SERVICE
+    )
+    # except Exception as e:
+    #     message = f"Etl Pipeline failed: {e}"
+    #     error = e
+    # else:
+    #     message = f"Etl Pipeline succeeded"
 
-    logging.info(message)
+    # logging.info(message)
     # send_message(mail_helper, "Succeeded" if not error else "Failed", "Etl Pipeline", error_message=error)
-    return {"message": message}
+    return response
 
 
 @app.get("/PostcodeSearchBuilder/")

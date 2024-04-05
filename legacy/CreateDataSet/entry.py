@@ -4,7 +4,6 @@
 import logging
 import traceback
 from typing import Any
-from typing import Type
 
 from services.exceptions import StopEtlPipelineErrorException
 from services.exceptions import XmlValidationError

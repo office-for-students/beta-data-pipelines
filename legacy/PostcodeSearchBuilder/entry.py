@@ -2,7 +2,6 @@ import logging
 import traceback
 from datetime import datetime
 from typing import Any
-from typing import Type
 
 from constants import BLOB_POSTCODES_BLOB_NAME
 from constants import BLOB_POSTCODES_CONTAINER_NAME

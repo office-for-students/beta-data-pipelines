@@ -5,7 +5,6 @@ import json
 from typing import Any
 from typing import Dict
 from typing import List
-from typing import Type
 
 from constants import BLOB_JSON_FILES_CONTAINER_NAME
 from constants import BLOB_SUBJECTS_JSON_BLOB_NAME

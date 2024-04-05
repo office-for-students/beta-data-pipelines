@@ -54,15 +54,27 @@ class GoSalaryMappings(BaseMappings):
             (f'{self.mapping_id}SECRESP_NI', "resp_ni"),
         ]
 
-    def per_course_unavailable(self, json_data: Dict[str, Any]) -> None:
+    def per_course_unavailable(self, json_data: Dict[str, Any], subject_codes: dict[str, dict[str, str]]) -> None:
         """
         Takes a JSON as a dictionary and sets the unavailable texts for both languages.
 
         :param json_data: JSON data as a dictionary
         :type json_data: Dict[str, Any]
+        :param subject_codes: Subject codes for shared utils object
+        :type subject_codes: dict[str, dict[str, str]]
         :return: None
         """
         json_data["unavail_text_region_not_exists_english"], json_data["unavail_text_region_not_exists_welsh"] = \
-            get_earnings_unavail_text("sector", "go", "region_not_exists")
+            get_earnings_unavail_text(
+                subject_codes=subject_codes,
+                inst_or_sect="sector",
+                data_source="go",
+                key_level_3="region_not_exists"
+            )
         json_data["unavail_text_region_not_nation_english"], json_data["unavail_text_region_not_nation_welsh"] = \
-            get_earnings_unavail_text("sector", "go", "region_not_nation")
+            get_earnings_unavail_text(
+                subject_codes=subject_codes,
+                inst_or_sect="sector",
+                data_source="go",
+                key_level_3="region_not_nation"
+            )

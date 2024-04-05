@@ -16,7 +16,7 @@ class QualificationCourseEnricher:
             # csv header row
             if not self.validate_column_headers(rows[0]):
                 logging.error(
-                    "file headers are incorrect, expecting the following: code, english_label, level, welsh_label"
+                    "file headers are incorrect, expecting the following: code, level"
                 )
                 raise exceptions.StopEtlPipelineErrorException
 
