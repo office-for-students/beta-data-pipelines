@@ -5,7 +5,8 @@ from typing import Any
 
 from constants import BLOB_SUBJECTS_BLOB_NAME
 from constants import BLOB_SUBJECTS_CONTAINER_NAME
-from legacy.SubjectBuilder.database import load_collection
+from constants import COSMOS_COLLECTION_SUBJECTS
+from legacy.SubjectBuilder.database import load_subject_documents
 from legacy.SubjectBuilder.validate import column_headers
 from services import exceptions
 
@@ -42,9 +43,7 @@ def subject_builder_main(
 
         rows = csv_string.splitlines()
         number_of_subjects = len(rows) - 1
-        rows_list = []
-        for row in rows:
-            rows_list.append(row.split(","))
+        rows_list = [row.split(",") for row in rows]
 
         # csv header row
         if not column_headers(rows[0]):
@@ -60,10 +59,13 @@ def subject_builder_main(
         dataset_service.update_status("subjects", "in progress")
 
         # add subject docs to new collection
-        load_collection(
+        load_subject_documents(
             rows=rows_list,
             version=version,
-            cosmos_service=cosmos_service
+            collection_link=cosmos_service.get_collection_link(COSMOS_COLLECTION_SUBJECTS),
+            collection_container=cosmos_service.get_container(
+                container_id=COSMOS_COLLECTION_SUBJECTS
+            )
         )
 
         logging.info(f"Successfully loaded in {number_of_subjects} subject documents")
