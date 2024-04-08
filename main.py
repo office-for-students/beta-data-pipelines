@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+from logging.config import fileConfig
 
 from fastapi import FastAPI
 
@@ -31,6 +32,14 @@ from services import cosmos_client
 from services import cosmos_service
 from services import dataset_service
 from services.mail import MailService
+
+# setup loggers
+fileConfig('logging.conf', disable_existing_loggers=False)
+
+# get root logger
+logger = logging.getLogger(__name__)  # the __name__ resolve to "main" since we are at the root of the project.
+                                      # This will get the root logger since no logger in the configuration has this name.
+
 
 app = FastAPI()
 MAIL_SERVICE = MailService(

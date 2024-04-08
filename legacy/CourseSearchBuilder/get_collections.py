@@ -1,36 +1,23 @@
 from typing import Any
 from typing import Dict
 from typing import List
+from typing import Union
 
 
-def get_collections(
-        cosmos_service: type['CosmosServiceBase'],
-        dataset_service: type['DataSetServiceBase'],
-        collection_id: str = None,
-        version: int = None
+def get_collections_as_list(
+        cosmos_container: Union[type['ContainerProxy'], type['ContainerLocal']],
+        query: str,
 ) -> List[Dict[str, Any]]:
     """
-    Takes an ID to get its corresponding collection from Cosmos DB and returns it as a list.
-    If a version is provided, returns collection for that version of the dataset, otherwise
-    uses the latest dataset.
+    Takes a cosmos container and runs the passed query. Returns query result as a list.
 
-    :param collection_id:
-    :param cosmos_service:
-    :param dataset_service: Dataset service to get latest version number
-    :type dataset_service: DataSetService
-    :param version: Provide a version to look up a specific dataset, leave blank to use latest
-    :type version: int
-    :return: List of collections
+    :param cosmos_container: Container to retrieve data from
+    :type cosmos_container: Union[type['ContainerProxy'], type['ContainerLocal']]
+    :param query: Query to run on container
+    :type query: str
+    :return: Query result as a list
     :rtype: List[Dict[str, Any]]
     """
-    if collection_id is None:
-        raise ValueError("Please provide a collection ID")
-
-    if not version:
-        version = dataset_service.get_latest_version_number()
-
-    query = f"SELECT * from c where c.version = {version}"
-    container = cosmos_service.get_container(container_id=collection_id)
-    collections_list = list(container.query_items(query=query, enable_cross_partition_query=True))
+    collections_list = list(cosmos_container.query_items(query=query, enable_cross_partition_query=True))
 
     return collections_list

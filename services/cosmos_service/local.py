@@ -28,7 +28,8 @@ class ContainerLocal:
         print(f"Executing query {query} with cross partition query {'enabled' if enable_cross_partition_query else 'disabled'}")
         if query.startswith("SELECT * from c WHERE c.version = "):
             return self.json_data
-
+        else:
+            return []
 
 class CosmosServiceLocal(CosmosServiceBase):
     """

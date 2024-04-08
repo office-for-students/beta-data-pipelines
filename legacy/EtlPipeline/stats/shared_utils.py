@@ -33,7 +33,6 @@ class SharedUtils:
         self.unavail_reason_welsh = self.get_lookup("unavail_reason_welsh")
 
         self.subj_codes = subject_codes
-        logging.info("Using database subject codes.")
 
     @staticmethod
     def get_lookup(lookup_name: str) -> Dict[str, Any]:

@@ -9,15 +9,14 @@ from constants import COSMOS_COLLECTION_INSTITUTIONS
 from constants import COSMOS_COLLECTION_SUBJECTS
 from constants import SEARCH_API_KEY
 from constants import SEARCH_API_VERSION
+from constants import SEARCH_SERVICE_MODULE
 from constants import SEARCH_URL
+from services import search_service
 from .build_institutions_json import build_institutions_json_files
 from .build_sitemap_xml import build_sitemap_xml
 from .build_subjects_json import build_subjects_json_file
 from .build_version_json import build_version_json_file
-from .get_collections import get_collections
-from .search import build_index
-from .search import build_synonyms
-from .search import load_index
+from .get_collections import get_collections_as_list
 
 
 def course_search_builder_main(
@@ -52,56 +51,40 @@ def course_search_builder_main(
 
         version = dataset_service.get_latest_version_number()
 
-        build_synonyms(
-            url=SEARCH_URL,
-            api_key=SEARCH_API_KEY,
-            api_version=SEARCH_API_VERSION
-        )
-        build_index(
-            url=SEARCH_URL,
-            api_key=SEARCH_API_KEY,
-            api_version=SEARCH_API_VERSION,
-            version=version
+        collection_query = f"SELECT * from c where c.version = {version}"
+        courses_list = get_collections_as_list(
+            cosmos_container=cosmos_service.get_container(container_id=COSMOS_COLLECTION_COURSES),
+            query=collection_query
         )
 
-        courses = get_collections(
-            cosmos_service=cosmos_service,
-            collection_id=COSMOS_COLLECTION_COURSES,
-            dataset_service=dataset_service,
-            version=version
-        )
-
-        number_of_courses = len(courses)
+        number_of_courses = len(courses_list)
 
         logging.info(
             f"attempting to load courses to azure search\n\
                         number_of_courses: {number_of_courses}\n"
         )
 
-        load_index(
+        search_service_obj = search_service.get_current_provider(
+            provider_path=SEARCH_SERVICE_MODULE,
             url=SEARCH_URL,
             api_key=SEARCH_API_KEY,
             api_version=SEARCH_API_VERSION,
             version=version,
-            docs=courses
+            docs=courses_list
         )
+
+        search_service_obj.update_microsoft_search()
+
         dataset_service.update_status("search", "succeeded")
 
         if dataset_service.have_all_builds_succeeded():
-            institution_list = get_collections(
-                cosmos_service=cosmos_service,
-                dataset_service=dataset_service,
-                collection_id=COSMOS_COLLECTION_INSTITUTIONS
+            institution_list = get_collections_as_list(
+                cosmos_container=cosmos_service.get_container(container_id=COSMOS_COLLECTION_INSTITUTIONS),
+                query=collection_query
             )
-            subjects_list = get_collections(
-                cosmos_service=cosmos_service,
-                dataset_service=dataset_service,
-                collection_id=COSMOS_COLLECTION_SUBJECTS
-            )
-            course_list = get_collections(
-                cosmos_service=cosmos_service,
-                dataset_service=dataset_service,
-                collection_id=COSMOS_COLLECTION_COURSES
+            subjects_list = get_collections_as_list(
+                cosmos_container=cosmos_service.get_container(container_id=COSMOS_COLLECTION_SUBJECTS),
+                query=collection_query
             )
 
             build_institutions_json_files(
@@ -114,7 +97,7 @@ def course_search_builder_main(
             )
             build_sitemap_xml(
                 institution_list=institution_list,
-                course_list=course_list,
+                course_list=courses_list,
                 blob_service=blob_service
             )
             build_version_json_file(

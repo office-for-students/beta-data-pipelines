@@ -99,7 +99,6 @@ def load_course_docs(
     # Exception below would have masked this - leading to no subject codes.
     version = dataset_service.get_latest_version_number()
     subj_codes = get_subject_lookups(cosmos_service=cosmos_service, version=version)
-    logging.info("Using database subject codes.")
 
     csv_string = blob_service.get_str_file(
         container_name=BLOB_QUALIFICATIONS_CONTAINER_NAME,
@@ -136,11 +135,11 @@ def load_course_docs(
         raw_inst_data = xmltodict.parse(ET.tostring(institution))["INSTITUTION"]
 
         ukprn = raw_inst_data["UKPRN"]
-        print(f"Ingesting course for: ({raw_inst_data['PUBUKPRN']})")
+        logging.info(f"Ingesting course for: ({raw_inst_data['PUBUKPRN']})")
         for course in institution.findall("KISCOURSE"):
             raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
-            print(f"COURSE COUNT: {course_count}")
-            print(
+            logging.info(f"COURSE COUNT: {course_count}")
+            logging.info(
                 f"Ingesting course for: {raw_inst_data['PUBUKPRN']}/{raw_course_data['KISCOURSEID']}/{raw_course_data['KISMODE']}) | start {version}")
             try:
                 locids = get_locids(raw_course_data, ukprn)
@@ -163,22 +162,22 @@ def load_course_docs(
                 qualification_enricher.enrich_course(course_doc)
                 new_docs.append(course_doc)
                 sproc_count += 1
-                print(f"FINISHED COUNT: {course_count}")
+                logging.info(f"FINISHED COUNT: {course_count}")
                 course_count += 1
 
                 if sproc_count >= 5:
-                    print(f"Begining execution of stored procedure for {sproc_count} documents")
+                    logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
                     container.scripts.execute_stored_procedure(
                         sproc=sproc_link,
                         params=[new_docs],
                         partition_key=partition_key
                     )
-                    print(f"Successfully loaded another {sproc_count} documents")
+                    logging.info(f"Successfully loaded another {sproc_count} documents")
                     # Reset values
                     new_docs = []
                     sproc_count = 0
             except Exception as e:
-                print(f"Exception: {e}")
+                logging.warning(f"Exception: {e}")
                 logging.warning(f"FAILED AT COUNT: {course_count}")
                 logging.warning(
                     f"FAILED: Ingesting course for: {raw_inst_data['PUBUKPRN']}/{raw_course_data['KISCOURSEID']}/{raw_course_data['KISMODE']}) | end {version}")
@@ -190,15 +189,15 @@ def load_course_docs(
                 logging.info(exception_text)
 
     if sproc_count > 0:
-        print(f"Begining execution of stored procedure for {sproc_count} documents")
+        logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
         container.scripts.execute_stored_procedure(
             sproc=sproc_link,
             params=[new_docs],
             partition_key=partition_key
         )
-        print(f"Successfully loaded another {sproc_count} documents")
+        logging.info(f"Successfully loaded another {sproc_count} documents")
 
-    print(f"Processed {course_count} courses")
+    logging.info(f"Processed {course_count} courses")
 
 
 def get_locids(raw_course_data: Dict[str, Any], ukprn: str) -> List[str]:
