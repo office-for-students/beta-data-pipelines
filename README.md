@@ -31,6 +31,7 @@ Getting Started
 Code is written in Python 3.11+ and uses:
 
 - [Sphinx](https://www.sphinx-doc.org/en/master/): Automatic generation of documentation
+- [myst-parser](https://myst-parser.readthedocs.io/en/latest/): Parser to include .md files into .rst files for Sphinx documentation
 - [sphinx-rtd-theme](https://pypi.org/project/sphinx-rtd-theme/): Theme for Sphinx documentation
 - [Azure Functions](https://docs.microsoft.com/en-us/azure/azure-functions/): Access and use of Azure database
 - [Azure Cosmos DB](https://docs.microsoft.com/en-us/azure/cosmos-db/): As above
@@ -72,11 +73,38 @@ pip install -r requirements.txt
 brew install azure-cli
 ```
 
-Running Service
+Running Locally
 ---------------
 
-TODO
+To run the pipeline locally, ensure you have the following additional environment variables set:
 
+| Variable                    | Value                                                | Description                                  |
+|-----------------------------|------------------------------------------------------|----------------------------------------------|
+| BLOB_SERVICE_MODULE         | "services.blob_service.local.BlobServiceLocal"       | Blob service, set to local subclass          |
+| COSMOS_SERVICE_MODULE       | "services.cosmos_service.local.CosmosServiceLocal"   | Cosmos service, set to local subclass        |
+| COSMOS_CLIENT_MODULE        | "services.cosmos_client.local.CosmosClientLocal"     | Cosmos client service, set to local subclass |
+| DATA_SET_SERVICE_MODULE     | "services.dataset_service.local.DataSetServiceLocal" | Dataset service, set to local subclass       |
+| SEARCH_SERVICE_MODULE       | "services.search_service.local.SearchServiceLocal"   | Search service, set to local subclass        |
+| LOCAL_BLOB_PATH             | "/.local/blob_local/"                                | Path to local blobs                          | 
+| LOCAL_COSMOS_CONTAINER_PATH | "/.local/containers/"                                | Path to local cosmos containers              |
+
+Navigate to the root directory and run:
+
+`uvicorn main:app --reload`
+
+Endpoints should be called in the following order:
+
+- /CreateDataSet
+- /CreateInst - ensure the Welsh unis CSV is present (BLOB_WELSH_UNIS_BLOB_NAME)
+- /SubjectBuilder - ensure the subjects CSV is present (BLOB_SUBJECTS_BLOB_NAME)
+- /EtlPipeline - ensure the ingestion XML is present (BLOB_HESA_BLOB_NAME)
+
+Outputs will be visible in the local cosmos container path
+set in the environment variable. If local output directories do not exist when the service is run,
+they will be created according to the environment variables.
+
+N.B. The search endpoints, /CourseSearchBuilder and /PostcodeSearchBuilder
+currently do not provide outputs.
 
 Running tests
 -------------
