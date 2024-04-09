@@ -87,136 +87,64 @@ async def root():
 
 @app.get("/CourseSearchBuilder/")
 async def search_builder():
-    # send_message(mail_helper, "Started", "Search Builder")
     logging.info("Search Builder started")
-    # error = None
-    # try:
     response = course_search_builder_main(
         blob_service=BLOB_SERVICE,
         cosmos_service=COSMOS_DATABASE_SERVICE,
         dataset_service=DATASET_SERVICE
     )
-    # except Exception as e:
-    #     message = f"Search Builder failed: {e}"
-    #     error = e
-    # else:
-    #     message = f"Search Builder succeeded"
-    #
-    # logging.info(message)
-    # send_message(mail_helper, "Succeeded" if not error else "Failed", "Search Builder", error_message=error)
     return response
 
 
 @app.get("/CreateDataSet/")
 async def create_dataset():
-    # send_message(mail_helper, "Started", "Create Dataset")
     logging.info("Create Dataset started")
-    # error = None
-    # try:
     response = create_dataset_main(
         blob_service=BLOB_SERVICE,
         dataset_service=DATASET_SERVICE,
         storage_container_name=BLOB_HESA_CONTAINER_NAME,  # hesa-raw-xml-ingest
         storage_blob_name=BLOB_HESA_BLOB_NAME,  # latest.xml.gz
     )
-    # except DataSetTooEarlyError as e:
-    #     message = f"Create Dataset failed: {e}"
-    #     error = e
-    # except StopEtlPipelineErrorException as e:
-    #     message = f"Create Dataset failed: {e}"
-    #     error = e
-    # except Exception as e:
-    #     message = f"Create Dataset failed: {e}"
-    #     error = e
-    # else:
-    #     message = "Create Dataset succeeded"
-
-    # send_message(mail_helper, "Succeeded" if not error else "Failed", "Create Dataset", error_message=error)
-    # logging.info(message)
-    # return {"message": message}
     return response
 
 
 @app.get("/CreateInst/")
 async def create_inst():
-    # logging.info("Create Institutions started")
-    # send_message(mail_helper, "Started", "Create Institutions")
-    # error = None
-    # try:
+    logging.info("Create Inst started")
     response = create_institutions_main(
         blob_service=BLOB_SERVICE,
         cosmos_service=COSMOS_DATABASE_SERVICE,
         dataset_service=DATASET_SERVICE
     )
-    # except Exception as e:
-    #     message = f"Create Institutions failed: {e}"
-    #     error = e
-    # else:
-    #     message = "Create Institutions succeeded"
-    #
-    # logging.info(message)
-    # send_message(mail_helper, "Succeeded" if not error else "Failed", "Create Institutions", error_message=error)
-    # return {"message": message}
     return response
 
 
 @app.get("/EtlPipeline/")
 async def etl_pipeline():
-    # send_message(mail_helper, "Started", "Etl Pipeline")
-    # logging.info("Etl Pipeline started")
-    # error = None
-    # try:
+    logging.info("Etl Pipeline started")
     response = etl_pipeline_main(
         blob_service=BLOB_SERVICE,
         dataset_service=DATASET_SERVICE,
         cosmos_service=COSMOS_DATABASE_SERVICE
     )
-    # except Exception as e:
-    #     message = f"Etl Pipeline failed: {e}"
-    #     error = e
-    # else:
-    #     message = f"Etl Pipeline succeeded"
-
-    # logging.info(message)
-    # send_message(mail_helper, "Succeeded" if not error else "Failed", "Etl Pipeline", error_message=error)
     return response
 
 
 @app.get("/PostcodeSearchBuilder/")
 async def postcode_search_builder():
-    # send_message(mail_helper, "Started", "Postcode Search Builder")
-    # logging.info("Postcode Search Builder started")
-    # error = None
-    # try:
+    logging.info("Postcode Search Builder started")
     response = postcode_search_builder_main(
         blob_service=BLOB_SERVICE,
     )
-    # except Exception as e:
-    #     message = f"Postcode Search Builder failed: {e}"
-    #     error = e
-    # else:
-    #     message = f"Postcode Search Builder succeeded"
-    # send_message(mail_helper, "Succeeded" if not error else "Failed", "Postcode Search Builder", error_message=error)
-    # return {"message": message}
     return response
 
 
 @app.get("/SubjectBuilder/")
 async def subject_builder():
-    # send_message(mail_helper, "Started", "Subject Builder")
-    # logging.info("Subject Builder started")
-    # error = None
-    # try:
+    logging.info("Subject Builder started")
     response = subject_builder_main(
         blob_service=BLOB_SERVICE,
         cosmos_service=COSMOS_DATABASE_SERVICE,
         dataset_service=DATASET_SERVICE
     )
-    # except Exception as e:
-    #     message = f"Subject Builder failed: {e}"
-    #     error = e
-    # else:
-    #     message = f"Subject Builder succeeded"
-    # send_message(mail_helper, "Succeeded" if not error else "Failed", "Subject Builder", error_message=error)
-    # return {"message": message}
     return response

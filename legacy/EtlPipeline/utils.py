@@ -1,3 +1,4 @@
+import logging
 from typing import Any
 from typing import Dict
 from typing import TYPE_CHECKING
@@ -24,10 +25,20 @@ def get_subject(subject_code: str, subject_enricher: type['SubjectCourseEnricher
     :return: Enriched subject data dictionary
     :rtype: Dict[str, Any]
     """
+    try:
+        english_label = subject_enricher.subject_lookups[subject_code]["english_name"]
+    except KeyError:
+        logging.warning(f"English label for subject code {subject_code} not found")
+        english_label = "Unknown"
+    try:
+        welsh_label = subject_enricher.subject_lookups[subject_code]["welsh_name"]
+    except KeyError:
+        logging.warning(f"Welsh label for subject code {subject_code} not found")
+        welsh_label = "Unknown"
     subject = {
         "code": subject_code,
-        "english_label": subject_enricher.subject_lookups[subject_code]["english_name"],
-        "welsh_label": subject_enricher.subject_lookups[subject_code]["welsh_name"]
+        "english_label": english_label,
+        "welsh_label": welsh_label
     }
 
     return subject

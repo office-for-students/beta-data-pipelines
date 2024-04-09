@@ -46,9 +46,16 @@ def subject_builder_main(
         rows_list = [row.split(",") for row in rows]
 
         # csv header row
-        if not column_headers(rows[0]):
+        try:
+            if not column_headers(rows[0]):
+                logging.error(
+                    "file headers are incorrect, expecting the following: code, english_label, level, welsh_label"
+                )
+                raise exceptions.StopEtlPipelineErrorException
+        except IndexError:
             logging.error(
-                "file headers are incorrect, expecting the following: code, english_label, level, welsh_label"
+                f"Subjects CSV empty or not present, please ensure the subjects CSV '{BLOB_SUBJECTS_BLOB_NAME}' is "
+                f"present inside the container '{BLOB_SUBJECTS_CONTAINER_NAME}'"
             )
             raise exceptions.StopEtlPipelineErrorException
 
@@ -62,7 +69,9 @@ def subject_builder_main(
         load_subject_documents(
             rows=rows_list,
             version=version,
-            collection_link=cosmos_service.get_collection_link(COSMOS_COLLECTION_SUBJECTS),
+            collection_link=cosmos_service.get_collection_link(
+                COSMOS_COLLECTION_SUBJECTS
+            ),
             collection_container=cosmos_service.get_container(
                 container_id=COSMOS_COLLECTION_SUBJECTS
             )

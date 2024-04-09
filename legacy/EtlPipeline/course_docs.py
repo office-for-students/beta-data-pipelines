@@ -22,6 +22,8 @@ from typing import Union
 import defusedxml.ElementTree as ET
 import xmltodict
 
+from constants import BLOB_HESA_BLOB_NAME
+from constants import BLOB_HESA_CONTAINER_NAME
 from constants import BLOB_QUALIFICATIONS_BLOB_NAME
 from constants import BLOB_QUALIFICATIONS_CONTAINER_NAME
 from constants import COSMOS_COLLECTION_COURSES
@@ -40,6 +42,7 @@ from legacy.EtlPipeline.mappings.leo.institution import LeoInstitutionMappings
 from legacy.EtlPipeline.mappings.leo.sector import LeoSectorMappings
 from legacy.EtlPipeline.stats.shared_utils import SharedUtils
 from legacy.EtlPipeline.utils import get_subject_lookups
+from services import exceptions
 from services import utils
 from services.utils import get_english_welsh_item
 from .course_stats import get_earnings_unavail_text
@@ -112,7 +115,14 @@ def load_course_docs(
     container = cosmos_service.get_container(container_id=COSMOS_COLLECTION_COURSES)
 
     # Import the XML dataset
-    root = ET.fromstring(text=xml_string)
+    try:
+        root = ET.fromstring(text=xml_string)
+    except ET.ParseError:
+        logging.error(
+            f"XML file empty or not present, please ensure the ingest XML file '{BLOB_HESA_BLOB_NAME}' is "
+            f"present inside the container '{BLOB_HESA_CONTAINER_NAME}'"
+        )
+        raise exceptions.StopEtlPipelineErrorException
 
     sproc_link = collection_link + "/sprocs/bulkImport"
     partition_key = str(version)
