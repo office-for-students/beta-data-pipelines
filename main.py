@@ -3,6 +3,8 @@ from datetime import datetime
 from logging.config import fileConfig
 
 from fastapi import FastAPI
+from starlette.routing import Mount
+from starlette.staticfiles import StaticFiles
 
 from constants import BLOB_AZURE_CONNECT_STRING
 from constants import BLOB_HESA_BLOB_NAME
@@ -15,6 +17,7 @@ from constants import COSMOS_DATABASE_KEY
 from constants import COSMOS_DATABASE_URI
 from constants import COSMOS_SERVICE_MODULE
 from constants import DATA_SET_SERVICE_MODULE
+from constants import DOCS_SPHINX_DIRECTORY
 from constants import ENVIRONMENT
 from constants import INGESTION_API
 from constants import KEY_COSMOS_MASTER_KEY
@@ -38,10 +41,19 @@ fileConfig('logging.conf', disable_existing_loggers=False)
 
 # get root logger
 logger = logging.getLogger(__name__)  # the __name__ resolve to "main" since we are at the root of the project.
-                                      # This will get the root logger since no logger in the configuration has this name.
+# This will get the root logger since no logger in the configuration has this name.
 
 
-app = FastAPI()
+app = FastAPI(
+    routes=[
+        Mount(
+            path="/sphinx",
+            app=StaticFiles(directory=DOCS_SPHINX_DIRECTORY, html=True),
+            name="sphinx"
+        )
+    ]
+)
+
 MAIL_SERVICE = MailService(
     send_grid_api_key=SEND_GRID_API_KEY,
     from_email=SEND_GRID_FROM_EMAIL,
