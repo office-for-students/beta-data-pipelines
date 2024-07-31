@@ -21,6 +21,7 @@ class QualificationCourseEnricher:
                 raise exceptions.StopEtlPipelineErrorException
 
             self.qualification_levels = rows
+        print("QUALIFICATION LEVELS", self.qualification_levels)
 
     @staticmethod
     def validate_column_headers(header_row: str) -> bool:
@@ -59,9 +60,11 @@ class QualificationCourseEnricher:
         :type course: Dict[str, Any]
         :return: None
         """
-
+        print("BEFORE ENRICHING")
         qualification_code = course["course"]["qualification"]["code"]
+        print("BEFORE AGAIN")
         course["course"]["qualification"]["level"] = self.get_qualification_level(qualification_code)
+        print("AFTER?")
 
     def get_qualification_level(self, code: str) -> str:
         """
@@ -75,6 +78,7 @@ class QualificationCourseEnricher:
         """
         rows = csv.reader(self.qualification_levels)
         for row in rows:
+            print("CODE", code, "ROW", row[0])
             if row[0] == code:
                 return row[1]
         return ""

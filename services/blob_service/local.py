@@ -1,6 +1,6 @@
 import logging
 import os
-
+import csv
 from constants import BLOB_HESA_BLOB_NAME
 from constants import BLOB_HESA_CONTAINER_NAME
 from constants import BLOB_SUBJECTS_BLOB_NAME
@@ -8,6 +8,8 @@ from constants import BLOB_SUBJECTS_CONTAINER_NAME
 from constants import BLOB_TEST_BLOB_DIRECTORY
 from constants import BLOB_WELSH_UNIS_BLOB_NAME
 from constants import BLOB_WELSH_UNIS_CONTAINER_NAME
+from constants import BLOB_QUALIFICATIONS_CONTAINER_NAME
+from constants import BLOB_QUALIFICATIONS_BLOB_NAME
 from services.blob_service.base import BlobServiceBase
 
 
@@ -33,7 +35,11 @@ class BlobServiceLocal(BlobServiceBase):
         :return: Retrieved string file
         :rtype: str
         """
-        file_path = self.blob_path + "/" + container_name + "/" + blob_name
+        file_path = self.blob_path + container_name + "/" + blob_name
+        if blob_name != "latest.xml":
+            self.clean_file_data(file_path)
+            print("DATA CLEANED")
+
         print(f"Retrieving string file from {file_path}")
         try:
             with open(file_path, "r") as file:
@@ -73,8 +79,9 @@ class BlobServiceLocal(BlobServiceBase):
         hesa_container_directory = self.blob_path + BLOB_HESA_CONTAINER_NAME
         subjects_container_directory = self.blob_path + BLOB_SUBJECTS_CONTAINER_NAME
         welsh_unis_container_directory = self.blob_path + BLOB_WELSH_UNIS_CONTAINER_NAME
+        qualification_container_directory = self.blob_path + BLOB_QUALIFICATIONS_CONTAINER_NAME
 
-        for directory in [hesa_container_directory, subjects_container_directory, welsh_unis_container_directory]:
+        for directory in [hesa_container_directory, subjects_container_directory, welsh_unis_container_directory, qualification_container_directory]:
             if not os.path.exists(directory):
                 logging.info(f"Blob directory {directory} does not exist. Creating...")
                 os.makedirs(directory)
@@ -84,6 +91,7 @@ class BlobServiceLocal(BlobServiceBase):
         hesa_blob = hesa_container_directory + "/" + BLOB_HESA_BLOB_NAME
         subjects_blob = subjects_container_directory + "/" + BLOB_SUBJECTS_BLOB_NAME
         welsh_unis_blob = welsh_unis_container_directory + "/" + BLOB_WELSH_UNIS_BLOB_NAME
+        qualifications_blob = qualification_container_directory + "/" + BLOB_QUALIFICATIONS_BLOB_NAME
 
         if not os.path.exists(hesa_blob):
             logging.info(f"Blob {hesa_blob} does not exist. Creating...")
@@ -99,3 +107,8 @@ class BlobServiceLocal(BlobServiceBase):
             logging.info(f"Blob {welsh_unis_blob} does not exist. Creating...")
             with open(welsh_unis_blob, "w") as file:
                 file.write("ukprn,welsh_name")
+
+        if not os.path.exists(qualifications_blob):
+            logging.info(f"Blob {qualifications_blob} does not exist. Creating...")
+            with open(qualifications_blob, "w") as file:
+                file.write("code,level")

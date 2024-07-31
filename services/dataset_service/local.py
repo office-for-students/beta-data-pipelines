@@ -44,7 +44,6 @@ class DataSetServiceLocal(DataSetServiceBase):
         dataset_docs = list(self.container.query_items(query, enable_cross_partition_query=True))
         for doc in dataset_docs:
             if int(doc['version']) == int(latest_version_number):
-                print(f"latest doc retrieved - version {latest_version_number}")
                 return doc
 
         return {"created_at": "2024-01-01T00:00:00.000000+00:00"}

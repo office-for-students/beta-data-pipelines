@@ -77,7 +77,7 @@ def validate_column_headers(header_row: str) -> bool:
     """
     logging.info(f"Validating header row, headers: {header_row}")
     header_list = header_row.split(",")
-    print(header_list)
+
     try:
         valid = True
         if header_list[0] != "ukprn":
@@ -106,7 +106,7 @@ def get_welsh_uni_names(csv_string: str) -> List[str]:
     _welsh_uni_names = []
     if csv_string:
         rows = csv_string.splitlines()
-
+        print("ROWS INSIDE", rows[0])
         if not validate_column_headers(rows[0]):
             logging.error(
                 "file headers are incorrect, expecting the following: ukprn, welsh_name"

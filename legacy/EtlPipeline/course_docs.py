@@ -19,7 +19,7 @@ from typing import Dict
 from typing import List
 from typing import Union
 
-import defusedxml.ElementTree as ET
+# import defusedxml.ElementTree as ET
 import xmltodict
 
 from constants import BLOB_HESA_BLOB_NAME
@@ -51,6 +51,11 @@ from .course_subjects import get_subjects
 from .qualification_enricher import QualificationCourseEnricher
 from .subject_enricher import SubjectCourseEnricher
 from .ukrlp_enricher import UkRlpCourseEnricher
+import defusedxml.ElementTree as defused_ET
+from xml.etree.ElementTree import Element
+import concurrent.futures
+from .utils import clean_file_data
+
 
 CURRENT_DIR = os.path.dirname(
     os.path.abspath(inspect.getfile(inspect.currentframe()))
@@ -82,75 +87,48 @@ def load_course_docs(
     :type dataset_service: DataSetService
     :return: None
     """
-    # cosmos_service = get_cosmos_service(COSMOS_COLLECTION_COURSES)
+    main(xml_string=xml_string, version=version, cosmos_service=cosmos_service, blob_service=blob_service)
 
-    logging.info("adding ukrlp data into memory ahead of building course documents")
-    enricher = UkRlpCourseEnricher(
-        cosmos_service=cosmos_service,
-        version=version
-    )
 
-    logging.info("adding subject data into memory ahead of building course documents")
+
+def process_batch(batch: List[Element], version: int, cosmos_service: 'CosmosServiceBase', root: Any, blob_service) -> None:
+    """Process a batch of course data."""
+    logging.info("Processing batch...")
+    new_docs = []
+
+    accreditations = Accreditations(root)
+    kisaims = KisAims(root)
+    locations = Locations(root)
+    go_sector_salaries = GOSectorSalaries(root)
+    leo3_sector_salaries = LEO3SectorSalaries(root)
+    leo5_sector_salaries = LEO5SectorSalaries(root)
+
     subject_enricher = SubjectCourseEnricher(
         cosmos_service=cosmos_service,
         version=version
     )
     g_subject_enricher = subject_enricher
-
-    logging.info("adding qualification data into memory ahead of building course documents")
-
-    # Exception below would have masked this - leading to no subject codes.
-    version = dataset_service.get_latest_version_number()
     subj_codes = get_subject_lookups(cosmos_service=cosmos_service, version=version)
+    enricher = UkRlpCourseEnricher(
+        cosmos_service=cosmos_service,
+        version=version
+    )
 
     csv_string = blob_service.get_str_file(
-        container_name=BLOB_QUALIFICATIONS_CONTAINER_NAME,
-        blob_name=BLOB_QUALIFICATIONS_BLOB_NAME
-    )
+            container_name=BLOB_QUALIFICATIONS_CONTAINER_NAME,
+            blob_name=BLOB_QUALIFICATIONS_BLOB_NAME
+        )
+
     qualification_enricher = QualificationCourseEnricher(
         csv_string=csv_string
     )
+    print("QUALIFICATION ENRICHER INITIALIZED")
 
-    collection_link = cosmos_service.get_collection_link(container_id=COSMOS_COLLECTION_COURSES)
-    container = cosmos_service.get_container(container_id=COSMOS_COLLECTION_COURSES)
-
-    # Import the XML dataset
-    try:
-        root = ET.fromstring(text=xml_string)
-    except ET.ParseError:
-        logging.error(
-            f"XML file empty or not present, please ensure the ingest XML file '{BLOB_HESA_BLOB_NAME}' is "
-            f"present inside the container '{BLOB_HESA_CONTAINER_NAME}'"
-        )
-        raise exceptions.StopEtlPipelineErrorException
-
-    sproc_link = collection_link + "/sprocs/bulkImport"
-    partition_key = str(version)
-
-    new_docs = []
-    sproc_count = 0
-
-    # Import accreditations, common, kisaims and location nodes
-    accreditations = Accreditations(root)
-    kisaims = KisAims(root)
-    locations = Locations(root)
-
-    go_sector_salaries = GOSectorSalaries(root)
-    leo3_sector_salaries = LEO3SectorSalaries(root)
-    leo5_sector_salaries = LEO5SectorSalaries(root)
-
-    course_count = 0
-    for institution in root.iter("INSTITUTION"):
-
-        raw_inst_data = xmltodict.parse(ET.tostring(institution))["INSTITUTION"]
-
+    for institution in batch:
+        raw_inst_data = xmltodict.parse(defused_ET.tostring(institution))["INSTITUTION"]
         ukprn = raw_inst_data["UKPRN"]
-        logging.info(f"Ingesting course for: ({raw_inst_data['PUBUKPRN']})")
         for course in institution.findall("KISCOURSE"):
-            raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
-            logging.info(f"COURSE COUNT: {course_count}")
-            logging.info(
-                f"Ingesting course for: {raw_inst_data['PUBUKPRN']}/{raw_course_data['KISCOURSEID']}/{raw_course_data['KISMODE']}) | start {version}")
+            raw_course_data = xmltodict.parse(defused_ET.tostring(course))["KISCOURSE"]
             try:
                 locids = get_locids(raw_course_data, ukprn)
                 course_doc = get_course_doc(
@@ -171,43 +149,53 @@ def load_course_docs(
                 subject_enricher.enrich_course(course_doc)
                 qualification_enricher.enrich_course(course_doc)
                 new_docs.append(course_doc)
-                sproc_count += 1
-                logging.info(f"FINISHED COUNT: {course_count}")
-                course_count += 1
-
-                if sproc_count >= 5:
-                    logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-                    container.scripts.execute_stored_procedure(
-                        sproc=sproc_link,
-                        params=[new_docs],
-                        partition_key=partition_key
-                    )
-                    logging.info(f"Successfully loaded another {sproc_count} documents")
-                    # Reset values
-                    new_docs = []
-                    sproc_count = 0
             except Exception as e:
-                logging.warning(f"Exception: {e}")
-                logging.warning(f"FAILED AT COUNT: {course_count}")
-                logging.warning(
-                    f"FAILED: Ingesting course for: {raw_inst_data['PUBUKPRN']}/{raw_course_data['KISCOURSEID']}/{raw_course_data['KISMODE']}) | end {version}")
-                institution_id = raw_inst_data["UKPRN"]
-                course_id = raw_course_data["KISCOURSEID"]
-                course_mode = raw_course_data["KISMODE"]
-                tb = traceback.format_exc()
-                exception_text = f"Failed error: {e} when creating the course document for course with institution_id: {institution_id} course_id: {course_id} course_mode: {course_mode} TRACEBACK: {tb}"
-                logging.info(exception_text)
+                logging.warning(f"Exception processing course: {e}")
 
-    if sproc_count > 0:
-        logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
+    # Insert the batch of documents into the database
+    if new_docs:
+        container = cosmos_service.get_container(container_id=COSMOS_COLLECTION_COURSES)
+        logging.info("Inserting batch into the database...")
+        container_link = cosmos_service.get_collection_link(container_id=COSMOS_COLLECTION_COURSES)
+        sproc_link = container_link + "/sprocs/bulkImport"
+        partition_key = str(version)
         container.scripts.execute_stored_procedure(
             sproc=sproc_link,
             params=[new_docs],
             partition_key=partition_key
         )
-        logging.info(f"Successfully loaded another {sproc_count} documents")
 
-    logging.info(f"Processed {course_count} courses")
+def batch_process(root: Element, batch_size: int = 5) -> List[Element]:
+    """Yield batches of institutions from the root element."""
+    batch = []
+    for institution in root.iter("INSTITUTION"):
+        batch.append(institution)
+        if len(batch) == batch_size:
+            yield batch
+            batch = []
+    if batch:
+        yield batch
+
+def main(xml_string: str, version: int, cosmos_service: 'CosmosServiceBase', blob_service) -> None:
+    """Main function to parse XML and process batches."""
+    logging.info("Starting batch processing...")
+    try:
+        root = defused_ET.fromstring(text=xml_string)
+    except defused_ET.ParseError:
+        logging.error(f"Error parsing XML data.")
+        return
+
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = []
+        for batch in batch_process(root):
+            futures.append(executor.submit(process_batch, batch, version, cosmos_service, root, blob_service))
+
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                future.result()
+            except Exception as e:
+                logging.error(f"Batch processing exception: {e}")
+
 
 
 def get_locids(raw_course_data: Dict[str, Any], ukprn: str) -> List[str]:

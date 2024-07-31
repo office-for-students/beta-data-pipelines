@@ -61,7 +61,6 @@ class ContainerLocal:
             f"Executing query {query} with cross partition query {'enabled' if enable_cross_partition_query else 'disabled'}")
         if query.lower().startswith("select * from c where c.version = "):
             version = query.split(" ")[-1]
-            print(f"VERSION QUERIED = {version}")
             if isinstance(self.json_data, dict):
                 return self.json_data.get(version)
             else:

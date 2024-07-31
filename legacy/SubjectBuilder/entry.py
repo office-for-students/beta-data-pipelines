@@ -9,6 +9,7 @@ from constants import COSMOS_COLLECTION_SUBJECTS
 from legacy.SubjectBuilder.database import load_subject_documents
 from legacy.SubjectBuilder.validate import column_headers
 from services import exceptions
+from legacy.EtlPipeline.utils import process_csv_string
 
 
 def subject_builder_main(
@@ -43,7 +44,8 @@ def subject_builder_main(
 
         rows = csv_string.splitlines()
         number_of_subjects = len(rows) - 1
-        rows_list = [row.split(",") for row in rows]
+        # rows_list = [row.split(",") for row in rows]
+        rows_list = process_csv_string(csv_string)
 
         # csv header row
         try:
@@ -64,7 +66,6 @@ def subject_builder_main(
 
         logging.info(f"using version number: {version}")
         dataset_service.update_status("subjects", "in progress")
-
         # add subject docs to new collection
         load_subject_documents(
             rows=rows_list,

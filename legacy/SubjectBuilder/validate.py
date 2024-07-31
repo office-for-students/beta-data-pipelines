@@ -33,5 +33,4 @@ def column_headers(header_row: str) -> bool:
     except IndexError:
         logging.exception(f"index out of range\nheader_row:{header_row}")
         valid = False
-
     return valid

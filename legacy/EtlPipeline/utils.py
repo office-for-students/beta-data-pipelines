@@ -3,10 +3,11 @@ from typing import Any
 from typing import Dict
 from typing import TYPE_CHECKING
 from typing import Union
-
+import csv
 from constants import COSMOS_COLLECTION_INSTITUTIONS
 from constants import COSMOS_COLLECTION_SUBJECTS
 from legacy.EtlPipeline.stats.shared_utils import SharedUtils
+from io import StringIO
 
 if TYPE_CHECKING:
     from legacy.EtlPipeline.subject_enricher import SubjectCourseEnricher
@@ -159,3 +160,33 @@ def get_subject_lookups(cosmos_service: type["CosmosService"], version: int) -> 
         lookup["code"]: lookup
         for lookup in lookup_list
     }
+
+def clean_file_data(file_path: str) -> str:
+    """
+    clean the csv file data to remove unwanted commas and \ufeff
+    """
+    cleaned_rows = []
+
+    # Read the file and clean data
+    with open(file_path, mode='r', newline='', encoding='utf-8') as infile:
+        reader = csv.reader(infile)
+        for i, row in enumerate(reader):
+            if i == 0 and row:
+                # Check for BOM and remove it
+                row[0] = row[0].lstrip('\ufeff')
+            cleaned_rows.append(cleaned_row)
+
+    # Write the cleaned data to the same file
+    with open(file_path, mode='w', newline='', encoding='utf-8') as outfile:
+        writer = csv.writer(outfile, quoting=csv.QUOTE_ALL)
+        writer.writerows(cleaned_rows)
+
+
+def process_csv_string(csv_string: str):
+    """
+    this is needed as some of the subject labels had commas in them and .split(",") wasn't working fot that reason
+    """
+    csv_file = StringIO(csv_string)
+    reader = csv.reader(csv_file)
+    rows_list = list(reader)
+    return rows_list

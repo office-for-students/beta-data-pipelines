@@ -70,7 +70,7 @@ def etl_pipeline_main(
         # For example, the incoming raw XML is not valid against its XSD
 
         function_fail_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
-        function_fail_date = datetime.today().strftime("%d.%m.%Y")
+
 
         # mail_helper.send_message(
         #     f"Automated data import failed on {function_fail_datetime} at EtlPipeline" + msgin.get_body().decode(
