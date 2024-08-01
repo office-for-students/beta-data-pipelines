@@ -87,7 +87,26 @@ def load_course_docs(
     :type dataset_service: DataSetService
     :return: None
     """
-    main(xml_string=xml_string, version=version, cosmos_service=cosmos_service, blob_service=blob_service)
+    """Main function to parse XML and process batches."""
+
+    logging.info("Starting batch processing...")
+    try:
+        root = defused_ET.fromstring(text=xml_string)
+    except defused_ET.ParseError:
+        logging.error(f"Error parsing XML data.")
+        return
+
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = []
+        for batch in batch_process(root):
+            futures.append(executor.submit(process_batch, batch, version, cosmos_service, root, blob_service))
+
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                future.result()
+            except Exception as e:
+                logging.error(f"Batch processing exception: {e}")
+
 
 
 
@@ -122,7 +141,6 @@ def process_batch(batch: List[Element], version: int, cosmos_service: 'CosmosSer
     qualification_enricher = QualificationCourseEnricher(
         csv_string=csv_string
     )
-    print("QUALIFICATION ENRICHER INITIALIZED")
 
     for institution in batch:
         raw_inst_data = xmltodict.parse(defused_ET.tostring(institution))["INSTITUTION"]
@@ -175,27 +193,6 @@ def batch_process(root: Element, batch_size: int = 5) -> List[Element]:
             batch = []
     if batch:
         yield batch
-
-def main(xml_string: str, version: int, cosmos_service: 'CosmosServiceBase', blob_service) -> None:
-    """Main function to parse XML and process batches."""
-    logging.info("Starting batch processing...")
-    try:
-        root = defused_ET.fromstring(text=xml_string)
-    except defused_ET.ParseError:
-        logging.error(f"Error parsing XML data.")
-        return
-
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        futures = []
-        for batch in batch_process(root):
-            futures.append(executor.submit(process_batch, batch, version, cosmos_service, root, blob_service))
-
-        for future in concurrent.futures.as_completed(futures):
-            try:
-                future.result()
-            except Exception as e:
-                logging.error(f"Batch processing exception: {e}")
-
 
 
 def get_locids(raw_course_data: Dict[str, Any], ukprn: str) -> List[str]:

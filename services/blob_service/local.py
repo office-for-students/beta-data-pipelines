@@ -11,6 +11,7 @@ from constants import BLOB_WELSH_UNIS_CONTAINER_NAME
 from constants import BLOB_QUALIFICATIONS_CONTAINER_NAME
 from constants import BLOB_QUALIFICATIONS_BLOB_NAME
 from services.blob_service.base import BlobServiceBase
+from legacy.EtlPipeline.utils import clean_file_data
 
 
 class BlobServiceLocal(BlobServiceBase):
@@ -35,9 +36,10 @@ class BlobServiceLocal(BlobServiceBase):
         :return: Retrieved string file
         :rtype: str
         """
+        clean_files = ['latest.xml', 'qualification-levels.csv']
         file_path = self.blob_path + container_name + "/" + blob_name
-        if blob_name != "latest.xml":
-            self.clean_file_data(file_path)
+        if blob_name not in clean_files:
+            clean_file_data(file_path)
             print("DATA CLEANED")
 
         print(f"Retrieving string file from {file_path}")

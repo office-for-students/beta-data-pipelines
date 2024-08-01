@@ -60,11 +60,8 @@ class QualificationCourseEnricher:
         :type course: Dict[str, Any]
         :return: None
         """
-        print("BEFORE ENRICHING")
         qualification_code = course["course"]["qualification"]["code"]
-        print("BEFORE AGAIN")
         course["course"]["qualification"]["level"] = self.get_qualification_level(qualification_code)
-        print("AFTER?")
 
     def get_qualification_level(self, code: str) -> str:
         """

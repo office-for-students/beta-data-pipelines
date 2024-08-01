@@ -174,6 +174,7 @@ def clean_file_data(file_path: str) -> str:
             if i == 0 and row:
                 # Check for BOM and remove it
                 row[0] = row[0].lstrip('\ufeff')
+            cleaned_row = [field.strip() for field in row if field.strip() != '']
             cleaned_rows.append(cleaned_row)
 
     # Write the cleaned data to the same file
