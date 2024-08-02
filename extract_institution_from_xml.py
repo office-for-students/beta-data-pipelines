@@ -1,5 +1,5 @@
-import xml.etree.ElementTree as ET
 import argparse
+import xml.etree.ElementTree as ET
 
 
 def extract_institution(input_xml, output_xml, pubukprn=None, kiscourse=None):
@@ -28,6 +28,7 @@ def extract_institution(input_xml, output_xml, pubukprn=None, kiscourse=None):
         ET.ElementTree(output_root).write(output_xml, encoding="utf-8", xml_declaration=True)
     except ET.ParseError as e:
         print(f"Error parsing input XML: {e}")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Extract specified tags from an XML file.")

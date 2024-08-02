@@ -1,7 +1,15 @@
 import logging
 
 
-def column_headers(header_row):
+def column_headers(header_row: str) -> bool:
+    """
+    Validates header rows for subject data. Returns True if all data is valid and False otherwise
+
+    :param header_row: CSV header row to validate
+    :type header_row: str
+    :return: True if the header row is valid, else False
+    :rtype: bool
+    """
     logging.info(f"Validating header row, headers: {header_row}")
     header_list = header_row.split(",")
 
@@ -25,5 +33,4 @@ def column_headers(header_row):
     except IndexError:
         logging.exception(f"index out of range\nheader_row:{header_row}")
         valid = False
-
     return valid

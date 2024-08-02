@@ -1,11 +1,11 @@
 import json
 import unittest
 
-import defusedxml.ElementTree as ET
 import xmltodict
 
-from course_stats import SharedUtils, Tariff
-from testing_utils import get_string
+from legacy.EtlPipeline.course_stats import Tariff
+from legacy.EtlPipeline.stats.shared_utils import SharedUtils
+from legacy.EtlPipeline.tests.test_helpers.testing_utils import get_string
 
 
 class TestVariousHelperMethods(unittest.TestCase):

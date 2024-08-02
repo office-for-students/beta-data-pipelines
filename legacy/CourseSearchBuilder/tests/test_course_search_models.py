@@ -1,23 +1,21 @@
-import unittest
-import os
-import sys
 import inspect
 import json
+import os
+import sys
+import unittest
 
-CURRENTDIR = os.path.dirname(
+from legacy.CourseSearchBuilder.models import build_course_search_doc
+from legacy.CourseSearchBuilder.models import build_length_of_course
+from legacy.CourseSearchBuilder.models import build_locations
+from legacy.CourseSearchBuilder.models import build_subjects
+from legacy.CourseSearchBuilder.models import build_title
+from legacy.CourseSearchBuilder.models import create_sortable_name
+
+CURRENT_DIR = os.path.dirname(
     os.path.abspath(inspect.getfile(inspect.currentframe()))
 )
-PARENTDIR = os.path.dirname(CURRENTDIR)
-sys.path.insert(0, PARENTDIR)
-
-from CourseSearchBuilder.models import (
-    build_course_search_doc,
-    create_sortable_name,
-    build_locations,
-    build_subjects,
-    build_title,
-    build_length_of_course,
-)
+PARENT_DIR = os.path.dirname(CURRENT_DIR)
+sys.path.insert(0, PARENT_DIR)
 
 
 class TestCreateSortableName(unittest.TestCase):

@@ -1,8 +1,12 @@
 import unittest
 from datetime import datetime
 
-from CourseSearchBuilder.build_sitemap_xml import build_course_details_url, build_institution_details_url, \
-    build_xml_string, build_param_lists, get_institution_params, get_course_params
+from legacy.CourseSearchBuilder.build_sitemap_xml import build_course_details_url
+from legacy.CourseSearchBuilder.build_sitemap_xml import build_institution_details_url
+from legacy.CourseSearchBuilder.build_sitemap_xml import build_param_lists
+from legacy.CourseSearchBuilder.build_sitemap_xml import build_xml_string
+from legacy.CourseSearchBuilder.build_sitemap_xml import get_course_params
+from legacy.CourseSearchBuilder.build_sitemap_xml import get_institution_params
 from test_course_search_models import get_json
 
 
@@ -49,7 +53,7 @@ class TestSiteMapXml(unittest.TestCase):
         today = datetime.strftime(datetime.today(), "%Y-%m-%d")
         xml = """
         <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">"""
-        input = [
+        input_list = [
             ("10008071", "AAUNDERGRADUATE5YEAR", "Full-time", "en"),
             ("10008071", "AAUNDERGRADUATE5YEAR", "Full-time", "cy"),
             ("10008071", "en"),
@@ -74,4 +78,4 @@ class TestSiteMapXml(unittest.TestCase):
                 <lastmod>{today}</lastmod>
             </url>
         </urlset>"""
-        self.assertEqual(build_xml_string(input, xml), result, "XML is not equal")
+        self.assertEqual(build_xml_string(input_list, xml), result, "XML is not equal")

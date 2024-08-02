@@ -15,7 +15,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-build/
+docs/build/
 develop-eggs/
 dist/
 downloads/
@@ -156,3 +156,6 @@ pyproject.toml
 test_course.xml
 
 .azure_config
+
+# local files for testing
+.local

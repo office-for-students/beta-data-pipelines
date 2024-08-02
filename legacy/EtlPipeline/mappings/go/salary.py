@@ -1,18 +1,28 @@
+from typing import Any
+from typing import Dict
 from typing import List
 from typing import Tuple
 
-from EtlPipeline.course_stats import get_earnings_unavail_text
-from EtlPipeline.mappings.base import BaseMappings
+from legacy.EtlPipeline.course_stats import get_earnings_unavail_text
+from legacy.EtlPipeline.mappings.base import BaseMappings
+from legacy.EtlPipeline.subject_enricher import SubjectCourseEnricher
 
 
 class GoSalaryMappings(BaseMappings):
+    """GO Mappings for salaries"""
     OPTIONS = ["GO"]
     unavailable_keys = []
 
-    def __init__(self, mapping_id, subject_enricher):
+    def __init__(self, mapping_id: str, subject_enricher: SubjectCourseEnricher):
         super().__init__(mapping_id=mapping_id, subject_enricher=subject_enricher)
 
     def get_mappings(self) -> List[Tuple[str, str]]:
+        """
+        Returns the list of mappings as a list of tuples with the class' mapping ID.
+
+        :return: List of mappings
+        :rtype: List[Tuple[str, str]]
+        """
         return [
             (f'{self.mapping_id}SECSBJ', "subject"),
             ('KISMODE', "mode"),
@@ -44,8 +54,27 @@ class GoSalaryMappings(BaseMappings):
             (f'{self.mapping_id}SECRESP_NI', "resp_ni"),
         ]
 
-    def per_course_unavailable(self, json_data):
+    def per_course_unavailable(self, json_data: Dict[str, Any], subject_codes: dict[str, dict[str, str]]) -> None:
+        """
+        Takes a JSON as a dictionary and sets the unavailable texts for both languages.
+
+        :param json_data: JSON data as a dictionary
+        :type json_data: Dict[str, Any]
+        :param subject_codes: Subject codes for shared utils object
+        :type subject_codes: dict[str, dict[str, str]]
+        :return: None
+        """
         json_data["unavail_text_region_not_exists_english"], json_data["unavail_text_region_not_exists_welsh"] = \
-            get_earnings_unavail_text("sector", "go", "region_not_exists")
+            get_earnings_unavail_text(
+                subject_codes=subject_codes,
+                inst_or_sect="sector",
+                data_source="go",
+                key_level_3="region_not_exists"
+            )
         json_data["unavail_text_region_not_nation_english"], json_data["unavail_text_region_not_nation_welsh"] = \
-            get_earnings_unavail_text("sector", "go", "region_not_nation")
+            get_earnings_unavail_text(
+                subject_codes=subject_codes,
+                inst_or_sect="sector",
+                data_source="go",
+                key_level_3="region_not_nation"
+            )

@@ -14,23 +14,23 @@ import sys
 logging.basicConfig(level=logging.DEBUG)
 
 
-CURRENTDIR = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-PARENTDIR = os.path.dirname(CURRENTDIR)
-GRANDPARENTDIR = os.path.dirname(PARENTDIR)
-GREATGRANDPARENTDIR = os.path.dirname(GRANDPARENTDIR)
-sys.path.insert(0, PARENTDIR)
-sys.path.insert(0, GRANDPARENTDIR)
-sys.path.insert(0, GREATGRANDPARENTDIR)
+CURRENT_DIR = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+PARENT_DIR = os.path.dirname(CURRENT_DIR)
+GRANDPARENT_DIR = os.path.dirname(PARENT_DIR)
+GREAT_GRANDPARENT_DIR = os.path.dirname(GRANDPARENT_DIR)
+sys.path.insert(0, PARENT_DIR)
+sys.path.insert(0, GRANDPARENT_DIR)
+sys.path.insert(0, GREAT_GRANDPARENT_DIR)
 
-from course_docs import create_course_docs
-
-
-def test_create_course_docs():
-
-    with open("kis-test-file.xml", "r") as file:
-        xml_string = file.read()
-
-    create_course_docs(xml_string)
-
-
-test_create_course_docs()
+# from legacy.EtlPipeline.course_docs import create_course_docs
+#
+#
+# def test_create_course_docs():
+#
+#     with open("kis-test-file.xml", "r") as file:
+#         xml_string = file.read()
+#
+#     create_course_docs(xml_string)
+#
+#
+# test_create_course_docs()

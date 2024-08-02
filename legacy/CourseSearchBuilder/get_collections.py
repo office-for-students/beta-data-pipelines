@@ -1,23 +1,23 @@
-from SharedCode.blob_helper import BlobHelper
-from SharedCode.dataset_helper import DataSetHelper
-from SharedCode.utils import get_cosmos_client, get_collection_link
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Union
 
 
-def get_collections(cosmos_field_db_id):
-    version = DataSetHelper().get_latest_version_number()
-    cosmos_db_client = get_cosmos_client()
-    collection_link = get_collection_link(
-        "AzureCosmosDbDatabaseId", cosmos_field_db_id
-    )
+def get_collections_as_list(
+        cosmos_container: Union[type['ContainerProxy'], type['ContainerLocal']],
+        query: str,
+) -> List[Dict[str, Any]]:
+    """
+    Takes a cosmos container and runs the passed query. Returns query result as a list.
 
-    query = f"SELECT * from c where c.version = {version}"
-
-    options = {"enableCrossPartitionQuery": True}
-
-    collections_list = list(cosmos_db_client.QueryItems(collection_link, query, options))
+    :param cosmos_container: Container to retrieve data from
+    :type cosmos_container: Union[type['ContainerProxy'], type['ContainerLocal']]
+    :param query: Query to run on container
+    :type query: str
+    :return: Query result as a list
+    :rtype: List[Dict[str, Any]]
+    """
+    collections_list = list(cosmos_container.query_items(query=query, enable_cross_partition_query=True))
 
     return collections_list
-
-def get_institutions():
-    return get_collections("AzureCosmosDbInstitutionsCollectionId")
-

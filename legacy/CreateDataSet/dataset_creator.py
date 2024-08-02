@@ -2,29 +2,38 @@ import inspect
 import logging
 import os
 import sys
+from datetime import datetime
+from datetime import timezone
+from typing import Any
+from typing import Dict
 
-from datetime import datetime, timezone
 from dateutil import parser
 
-CURRENTDIR = os.path.dirname(
+from constants import MINUTES_WAIT_BEFORE_CREATE_NEW_DATASET
+# from SharedCode.utils import get_cosmos_client, get_collection_link
+from services.exceptions import DataSetTooEarlyError
+
+CURRENT_DIR = os.path.dirname(
     os.path.abspath(inspect.getfile(inspect.currentframe()))
 )
-PARENTDIR = os.path.dirname(CURRENTDIR)
-sys.path.insert(0, CURRENTDIR)
-sys.path.insert(0, PARENTDIR)
-
-# from SharedCode.utils import get_cosmos_client, get_collection_link
-from SharedCode.dataset_helper import DataSetHelper
-
-from SharedCode.exceptions import DataSetTooEarlyError
+PARENT_DIR = os.path.dirname(CURRENT_DIR)
+sys.path.insert(0, CURRENT_DIR)
+sys.path.insert(0, PARENT_DIR)
 
 
 class DataSetCreator:
-    def __init__(self, test_mode=False):
-        self.dsh = DataSetHelper()
+    """Creates a new dataset"""
+
+    def __init__(self, dataset_service: type['DataSetServiceBase'], test_mode: bool = False) -> None:
+        self.dataset_service = dataset_service
         self.test_mode = test_mode
 
-    def load_new_dataset_doc(self):
+    def load_new_dataset_doc(self) -> None:
+        """
+        Creates a new dataset using the dataset service
+
+        :return: None
+        """
         dataset_doc = self.get_next_dataset_doc()
 
         if not self.test_mode:
@@ -32,69 +41,128 @@ class DataSetCreator:
                 if not self.has_enough_time_elaspsed_since_last_dataset_created():
                     raise DataSetTooEarlyError
 
-        self.dsh.create_item(dataset_doc)
+        self.dataset_service.create_item(dataset_doc)
         logging.info(f"Created new version {dataset_doc['version']} DataSet")
 
-    def get_next_dataset_doc(self):
+    def get_next_dataset_doc(self) -> Dict[str, Any]:
+        """
+        Builds a dictionary containing information about the next dataset.
+
+        :return: Data of the next dataset
+        :rtype: Dict[str, Any]
+        """
         next_version_number = self.get_next_dataset_version_number()
-        dataset_doc = {}
-        dataset_doc["builds"] = get_builds_value()
-        dataset_doc["created_at"] = datetime.now(timezone.utc).isoformat()
-        dataset_doc["is_published"] = False
-        dataset_doc["status"] = "in progress"
-        dataset_doc["version"] = next_version_number
+        dataset_doc = {
+            "builds": get_builds_value(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "is_published": False,
+            "status": "in progress",
+            "version": next_version_number,
+        }
         return dataset_doc
 
-    def get_next_dataset_version_number(self):
+    def get_next_dataset_version_number(self) -> int:
+        """
+        Checks the current version number, increases it by one, and returns it.
+
+        :return: Version number of the next dataset
+        :rtype: int
+        """
+        # TODO: Improve this process
         if self.get_number_of_dataset_docs() == 0:
             return 1
 
-        version = int(self.dsh.get_latest_version_number()) + 1
+        version = int(self.dataset_service.get_latest_version_number()) + 1
         return version
-        #return self.dsh.get_latest_version_number() + 1
+        # return self.dsh.get_latest_version_number() + 1
 
-    def get_number_of_dataset_docs(self):
+    def get_number_of_dataset_docs(self) -> int:
+        """
+        Queries the data set and returns the number of documents
+
+        :return: Number of dataset documents
+        :rtype: int
+        """
         query = "SELECT * FROM c "
-        data_set_list = self.dsh.query_items(query)
+        data_set_list = self.dataset_service.query_items(query)
         return len(data_set_list)
 
-    def has_enough_time_elaspsed_since_last_dataset_created(self):
+    def has_enough_time_elaspsed_since_last_dataset_created(self) -> bool:
+        """
+        Checks if enough time has elapsed since the last dataset was created, and returns True if the elapsed
+        time exceeds the environment variable for the time in minutes to wait before creating a new dataset.
+
+        :return: True or False depending on if enough time has elapsed
+        :rtype: bool
+        """
         dt_of_latest_dataset_doc = self.get_datetime_of_latest_dataset_doc()
         time_in_minutes_since_latest_dataset_doc = get_time_in_minutes_since_given_datetime(
             dt_of_latest_dataset_doc
         )
-        time_in_minutes_to_wait = int(
-            os.environ["TimeInMinsToWaitBeforeCreateNewDataSet"]
-        )
+        time_in_minutes_to_wait = int(MINUTES_WAIT_BEFORE_CREATE_NEW_DATASET)
         if time_in_minutes_to_wait > time_in_minutes_since_latest_dataset_doc:
             return False
         return True
 
-    def get_datetime_of_latest_dataset_doc(self):
-        max_version_number = self.dsh.get_latest_version_number()
+    def get_datetime_of_latest_dataset_doc(self) -> datetime:
+        """
+        Returns the datetime of the latest dataset document
+
+        :return: Date and time of latest dataset document
+        :rtype: datetime
+        """
+        max_version_number = self.dataset_service.get_latest_version_number()
         query = f"SELECT * FROM c WHERE c.version = {max_version_number}"
-        latest_doc = self.dsh.query_items(query)[0]
+        latest_doc = self.dataset_service.query_items(query)[0]
         return convert_dt_str_to_dt_object(latest_doc["created_at"])
 
 
-def get_time_in_minutes_since_given_datetime(dt_in_the_past):
-    """ Get time diff from now in minutes for timezone aware dt passed in"""
+def get_time_in_minutes_since_given_datetime(dt_in_the_past: datetime) -> int:
+    """
+    Get time diff from now in minutes for timezone aware dt passed in
+
+    :param dt_in_the_past: Date and time in the past to get the time elapsed from
+    :type dt_in_the_past: datetime
+    :return: Time elapsed in minutes since the past datetime
+    :rtype: int
+    """
     dt_now = datetime.now(timezone.utc)
     return round((dt_now - dt_in_the_past).total_seconds() / 60)
 
 
-def convert_dt_str_to_dt_object(dt_str):
+def convert_dt_str_to_dt_object(dt_str: str) -> datetime:
+    """
+    Converts a datetime string to a datetime object
+
+    :param dt_str: Datetime string to convert
+    :type dt_str: str
+    :return: Converted datetime object
+    :rtype: datetime
+    """
     return parser.isoparse(dt_str)
 
 
-def get_builds_value():
-    builds = {}
-    builds["courses"] = get_initial_build_value()
-    builds["institutions"] = get_initial_build_value()
-    builds["search"] = get_initial_build_value()
-    builds["subjects"] = get_initial_build_value()
+def get_builds_value() -> Dict[str, Dict[str, str]]:
+    """
+    Creates and returns a dictionary for each type of data containing initialised dictionaries.
+
+    :return: Initial dictionary for each type of data
+    :rtype: Dict[str, Dict[str, str]]
+    """
+    builds = {
+        "courses": get_initial_build_value(),
+        "institutions": get_initial_build_value(),
+        "search": get_initial_build_value(),
+        "subjects": get_initial_build_value()
+    }
     return builds
 
 
-def get_initial_build_value():
+def get_initial_build_value() -> Dict[str, str]:
+    """
+    Returns a dictionary of initial values
+
+    :return: Dictionary of initial values
+    :rtype: Dict[str, str]
+    """
     return {"status": "pending"}

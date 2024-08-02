@@ -10,161 +10,203 @@ during development and testing.
 """
 import datetime
 import inspect
-import json
 import logging
 import os
 import sys
-import time
 import traceback
-from typing import Callable
+from typing import Any
+from typing import Dict
 from typing import List
+from typing import Union
 
-import defusedxml.ElementTree as ET
+# import defusedxml.ElementTree as ET
 import xmltodict
 
-from EtlPipeline.mappings.go.institution import GoInstitutionMappings
-from EtlPipeline.mappings.go.salary import GoSalaryMappings
-from EtlPipeline.mappings.go.voice import GoVoiceMappings
-from EtlPipeline.mappings.leo.institution import LeoInstitutionMappings
-from EtlPipeline.mappings.leo.sector import LeoSectorMappings
+from constants import BLOB_HESA_BLOB_NAME
+from constants import BLOB_HESA_CONTAINER_NAME
+from constants import BLOB_QUALIFICATIONS_BLOB_NAME
+from constants import BLOB_QUALIFICATIONS_CONTAINER_NAME
+from constants import COSMOS_COLLECTION_COURSES
+from legacy.EtlPipeline.lookups import course_lookup_tables as lookup
+from legacy.EtlPipeline.lookups.accreditations import Accreditations
+from legacy.EtlPipeline.lookups.kisaims import KisAims
+from legacy.EtlPipeline.lookups.locations import Locations
+from legacy.EtlPipeline.lookups.sector_salaries import GOSectorSalaries
+from legacy.EtlPipeline.lookups.sector_salaries import LEO3SectorSalaries
+from legacy.EtlPipeline.lookups.sector_salaries import LEO5SectorSalaries
+from legacy.EtlPipeline.lookups.sector_salaries import SectorSalaries
+from legacy.EtlPipeline.mappings.go.institution import GoInstitutionMappings
+from legacy.EtlPipeline.mappings.go.salary import GoSalaryMappings
+from legacy.EtlPipeline.mappings.go.voice import GoVoiceMappings
+from legacy.EtlPipeline.mappings.leo.institution import LeoInstitutionMappings
+from legacy.EtlPipeline.mappings.leo.sector import LeoSectorMappings
+from legacy.EtlPipeline.stats.shared_utils import SharedUtils
+from legacy.EtlPipeline.utils import get_subject_lookups
+from services import exceptions
+from services import utils
+from services.utils import get_english_welsh_item
+from .course_stats import get_earnings_unavail_text
+from .course_stats import get_stats
+from .course_subjects import get_subjects
+from .qualification_enricher import QualificationCourseEnricher
+from .subject_enricher import SubjectCourseEnricher
+from .ukrlp_enricher import UkRlpCourseEnricher
+import defusedxml.ElementTree as defused_ET
+from xml.etree.ElementTree import Element
+import concurrent.futures
+from .utils import clean_file_data
 
-CURRENTDIR = os.path.dirname(
+
+CURRENT_DIR = os.path.dirname(
     os.path.abspath(inspect.getfile(inspect.currentframe()))
 )
-PARENTDIR = os.path.dirname(CURRENTDIR)
-sys.path.insert(0, CURRENTDIR)
-sys.path.insert(0, PARENTDIR)
-
-import course_lookup_tables as lookup
-from course_stats import get_stats, SharedUtils, get_earnings_unavail_text
-from accreditations import Accreditations
-from kisaims import KisAims
-from locations import Locations
-from ukrlp_enricher import UkRlpCourseEnricher
-from subject_enricher import SubjectCourseEnricher
-from qualification_enricher import QualificationCourseEnricher
-from course_subjects import get_subjects
-
-from sector_salaries import GOSectorSalaries, LEO3SectorSalaries, LEO5SectorSalaries
-
-from SharedCode import utils
-from SharedCode.utils import get_english_welsh_item
+PARENT_DIR = os.path.dirname(CURRENT_DIR)
+sys.path.insert(0, CURRENT_DIR)
+sys.path.insert(0, PARENT_DIR)
 
 
-def load_course_docs(xml_string, version, cosmos_id, cosmos_subjects_collection_id, cosmos_course_collection_id):
-    """Parse HESA XML passed in and create JSON course docs in Cosmos DB."""
+def load_course_docs(
+        xml_string: str,
+        version: int,
+        blob_service: type['BlobServiceBase'],
+        cosmos_service: type['CosmosServiceBase'],
+        dataset_service: type['DataSetServiceBase']
+) -> None:
+    """
+    Parse HESA XML passed in and create JSON course docs in Cosmos DB.
 
-    cosmosdb_client = utils.get_cosmos_client()
+    :param xml_string: XML dataset to be imported
+    :type xml_string: str
+    :param version: Version of the dataset to be created
+    :type version: int
+    :param blob_service: Blob service to get CSV file with
+    :type blob_service: BlobService
+    :param cosmos_service: Cosmos database service used for reading course docs
+    :type cosmos_service: CosmosService
+    :param dataset_service: Dataset service to get version number for subject codes
+    :type dataset_service: DataSetService
+    :return: None
+    """
+    """Main function to parse XML and process batches."""
 
-    logging.info(
-        "adding ukrlp data into memory ahead of building course documents"
-    )
-    enricher = UkRlpCourseEnricher(version)
+    logging.info("Starting batch processing...")
+    try:
+        root = defused_ET.fromstring(text=xml_string)
+    except defused_ET.ParseError:
+        logging.error(f"Error parsing XML data.")
+        return
 
-    logging.info(
-        "adding subject data into memory ahead of building course documents"
-    )
-    subject_enricher = SubjectCourseEnricher(version, cosmos_id, cosmos_subjects_collection_id)
-    g_subject_enricher = subject_enricher
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = []
+        for batch in batch_process(root):
+            futures.append(executor.submit(process_batch, batch, version, cosmos_service, root, blob_service))
 
-    logging.info(
-        "adding qualification data into memory ahead of building course documents"
-    )
-    storage_container_name = os.environ["AzureStorageQualificationsContainerName"]
-    storage_blob_name = os.environ["AzureStorageQualificationsBlobName"]
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                future.result()
+            except Exception as e:
+                logging.error(f"Batch processing exception: {e}")
 
-    qualification_enricher = QualificationCourseEnricher(storage_container_name, storage_blob_name)
 
-    collection_link = utils.get_collection_link(
-        "AzureCosmosDbDatabaseId", cosmos_course_collection_id
-    )
 
-    # Import the XML dataset
-    root = ET.fromstring(xml_string)
 
-    options = {"partitionKey": str(version)}
-    sproc_link = collection_link + "/sprocs/bulkImport"
-
+def process_batch(batch: List[Element], version: int, cosmos_service: 'CosmosServiceBase', root: Any, blob_service) -> None:
+    """Process a batch of course data."""
+    logging.info("Processing batch...")
     new_docs = []
-    sproc_count = 0
 
-    # Import accreditations, common, kisaims and location nodes
     accreditations = Accreditations(root)
     kisaims = KisAims(root)
     locations = Locations(root)
-
     go_sector_salaries = GOSectorSalaries(root)
     leo3_sector_salaries = LEO3SectorSalaries(root)
     leo5_sector_salaries = LEO5SectorSalaries(root)
 
-    course_count = 0
-    for institution in root.iter("INSTITUTION"):
+    subject_enricher = SubjectCourseEnricher(
+        cosmos_service=cosmos_service,
+        version=version
+    )
+    g_subject_enricher = subject_enricher
+    subj_codes = get_subject_lookups(cosmos_service=cosmos_service, version=version)
+    enricher = UkRlpCourseEnricher(
+        cosmos_service=cosmos_service,
+        version=version
+    )
 
-        raw_inst_data = xmltodict.parse(ET.tostring(institution))[
-            "INSTITUTION"
-        ]
+    csv_string = blob_service.get_str_file(
+            container_name=BLOB_QUALIFICATIONS_CONTAINER_NAME,
+            blob_name=BLOB_QUALIFICATIONS_BLOB_NAME
+        )
 
+    qualification_enricher = QualificationCourseEnricher(
+        csv_string=csv_string
+    )
+
+    for institution in batch:
+        raw_inst_data = xmltodict.parse(defused_ET.tostring(institution))["INSTITUTION"]
         ukprn = raw_inst_data["UKPRN"]
-        logging.info(f"Ingesting course for: ({raw_inst_data['PUBUKPRN']})")
         for course in institution.findall("KISCOURSE"):
-            raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
-            logging.info(f"COURSE COUNT: {course_count}")
-            logging.info(
-                f"Ingesting course for: {raw_inst_data['PUBUKPRN']}/{raw_course_data['KISCOURSEID']}/{raw_course_data['KISMODE']}) | start {version}")
+            raw_course_data = xmltodict.parse(defused_ET.tostring(course))["KISCOURSE"]
             try:
                 locids = get_locids(raw_course_data, ukprn)
                 course_doc = get_course_doc(
-                    accreditations,
-                    locations,
-                    locids,
-                    raw_inst_data,
-                    raw_course_data,
-                    kisaims,
-                    version,
-                    go_sector_salaries,
-                    leo3_sector_salaries,
-                    leo5_sector_salaries,
-                    g_subject_enricher
+                    accreditations=accreditations,
+                    locations=locations,
+                    locids=locids,
+                    raw_inst_data=raw_inst_data,
+                    raw_course_data=raw_course_data,
+                    kisaims=kisaims,
+                    version=version,
+                    go_sector_salaries=go_sector_salaries,
+                    leo3_sector_salaries=leo3_sector_salaries,
+                    leo5_sector_salaries=leo5_sector_salaries,
+                    g_subject_enricher=g_subject_enricher,
+                    subject_codes=subj_codes
                 )
                 enricher.enrich_course(course_doc)
                 subject_enricher.enrich_course(course_doc)
                 qualification_enricher.enrich_course(course_doc)
                 new_docs.append(course_doc)
-                sproc_count += 1
-                logging.info(f"FINISHED COUNT: {course_count}")
-                course_count += 1
-
-                if sproc_count >= 5:
-                    logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-                    cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
-                    logging.info(f"Successfully loaded another {sproc_count} documents")
-                    # Reset values
-                    new_docs = []
-                    sproc_count = 0
             except Exception as e:
-                logging.warning(f"FAILED AT COUNT: {course_count}")
-                logging.warning(f"FAILED: Ingesting course for: {raw_inst_data['PUBUKPRN']}/{raw_course_data['KISCOURSEID']}/{raw_course_data['KISMODE']}) | end {version}")
-                institution_id = raw_inst_data["UKPRN"]
-                course_id = raw_course_data["KISCOURSEID"]
-                course_mode = raw_course_data["KISMODE"]
-                tb = traceback.format_exc()
-                exception_text = f"Failed error: {e} when creating the course document for course with institution_id: {institution_id} course_id: {course_id} course_mode: {course_mode} TRACEBACK: {tb}"
-                logging.info(exception_text)
+                logging.warning(f"Exception processing course: {e}")
+
+    # Insert the batch of documents into the database
+    if new_docs:
+        container = cosmos_service.get_container(container_id=COSMOS_COLLECTION_COURSES)
+        logging.info("Inserting batch into the database...")
+        container_link = cosmos_service.get_collection_link(container_id=COSMOS_COLLECTION_COURSES)
+        sproc_link = container_link + "/sprocs/bulkImport"
+        partition_key = str(version)
+        container.scripts.execute_stored_procedure(
+            sproc=sproc_link,
+            params=[new_docs],
+            partition_key=partition_key
+        )
+
+def batch_process(root: Element, batch_size: int = 5) -> List[Element]:
+    """Yield batches of institutions from the root element."""
+    batch = []
+    for institution in root.iter("INSTITUTION"):
+        batch.append(institution)
+        if len(batch) == batch_size:
+            yield batch
+            batch = []
+    if batch:
+        yield batch
 
 
-    if sproc_count > 0:
-        logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-        cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
-        logging.info(f"Successfully loaded another {sproc_count} documents")
-        # Reset values
-        new_docs = []
-        sproc_count = 0
+def get_locids(raw_course_data: Dict[str, Any], ukprn: str) -> List[str]:
+    """
+    Returns a list of lookup keys for use with the locations class.
+    If the course does not contain a location, returns an empty list.
 
-    logging.info(f"Processed {course_count} courses")
-
-
-def get_locids(raw_course_data, ukprn):
-    """Returns a list of lookup keys for use with the locations class"""
+    :param raw_course_data: Course data dictionary
+    :type raw_course_data: Dict[str, Any]
+    :param ukprn: UKPRN added to each location ID
+    :type ukprn: str
+    :return: List of location IDs for the course provided
+    :rtype: List[str]
+    """
     locids = []
     if "COURSELOCATION" not in raw_course_data:
         return locids
@@ -181,55 +223,98 @@ def get_locids(raw_course_data, ukprn):
 
 
 def get_course_doc(
-        accreditations,
-        locations,
-        locids,
-        raw_inst_data,
-        raw_course_data,
-        kisaims,
-        version,
-        go_sector_salaries,
-        leo3_sector_salaries,
-        leo5_sector_salaries,
-        g_subject_enricher
-):
-    outer_wrapper = {}
-    outer_wrapper["_id"] = utils.get_uuid()
-    outer_wrapper["created_at"] = datetime.datetime.utcnow().isoformat()
-    outer_wrapper["updated_at"] = datetime.datetime.utcnow().isoformat()
-    outer_wrapper["version"] = version
-    outer_wrapper["institution_id"] = raw_inst_data["PUBUKPRN"]
-    outer_wrapper["course_id"] = raw_course_data["KISCOURSEID"]
-    outer_wrapper["course_mode"] = int(raw_course_data["KISMODE"])
-    outer_wrapper["course_level"] = int(raw_course_data["KISLEVEL"])
-    outer_wrapper["partition_key"] = str(version)
+        accreditations: Accreditations,
+        locations: Locations,
+        locids: List[str],
+        raw_inst_data: Dict[str, Any],
+        raw_course_data: Dict[str, Any],
+        kisaims: KisAims,
+        version: int,
+        go_sector_salaries: GOSectorSalaries,
+        leo3_sector_salaries: LEO3SectorSalaries,
+        leo5_sector_salaries: LEO5SectorSalaries,
+        g_subject_enricher: SubjectCourseEnricher,
+        subject_codes: Dict[str, Any]
+) -> Dict[str, Any]:
+    """
+    Performs required lookups to construct a comprehensive dictionary with course data. Adds an outer wrapper
+    containing information such as date updated.
 
-    course = {}
-    course["course_level"] = int(raw_course_data["KISLEVEL"])
+    :param accreditations: Accreditations object containing a lookup dictionary
+    :type accreditations: Accreditations
+    :param locations: Locations object containing a lookup dictionary
+    :type locations: Locations
+    :param locids: List of location IDs as strings
+    :type locids: List[str]
+    :param raw_inst_data: Raw institution data dictionary
+    :type raw_inst_data: Dict[str, Any]
+    :param raw_course_data: Raw course data dictionary
+    :type raw_course_data: Dict[str, Any]
+    :param kisaims: KisAims object containing a lookup dictionary
+    :type kisaims: KisAims
+    :param version: Version of the dataset to be generated
+    :type version: int
+    :param go_sector_salaries: GOSectorSalaries object containing a lookup dictionary
+    :type go_sector_salaries: GOSectorSalaries
+    :param leo3_sector_salaries: LEO3SectorSalaries object containing a lookup dictionary
+    :type leo3_sector_salaries: LEO3SectorSalaries
+    :param leo5_sector_salaries: LEO5SectorSalaries object containing a lookup dictionary
+    :type leo5_sector_salaries: LEO5SectorSalaries
+    :param g_subject_enricher: SubjectCourseEnricher object for adding ukprn data
+    :type g_subject_enricher: SubjectCourseEnricher
+    :param subject_codes: Subject codes used to build course statistics
+    :type subject_codes: Dict[str, Any]
+    :return: Dictionary containing all course data
+    :rtype: Dict[str, Any]
+    """
+    outer_wrapper = {
+        "_id": utils.generate_uuid(),
+        "created_at": datetime.datetime.utcnow().isoformat(),
+        "updated_at": datetime.datetime.utcnow().isoformat(),
+        "version": version,
+        "institution_id": raw_inst_data["PUBUKPRN"],
+        "course_id": raw_course_data["KISCOURSEID"],
+        "course_mode": int(raw_course_data["KISMODE"]),
+        "course_level": int(raw_course_data["KISLEVEL"]),
+        "partition_key": str(version),
+    }
+
+    course = {
+        "course_level": int(raw_course_data["KISLEVEL"])
+    }
 
     if "ACCREDITATION" in raw_course_data:
         course["accreditations"] = get_accreditations(
-            raw_course_data, accreditations
+            raw_course_data=raw_course_data,
+            acc_lookup=accreditations
         )
 
     if "UKPRNAPPLY" in raw_course_data:
         course["application_provider"] = raw_course_data["UKPRNAPPLY"]
-    country = get_country(raw_inst_data)
+    country = get_country(
+        raw_inst_data=raw_inst_data
+    )
     if country:
         course["country"] = country
     distance_learning = get_code_label_entry(
-        raw_course_data, lookup.distance_learning_lookup, "DISTANCE"
+        lookup_table_raw_xml=raw_course_data,
+        lookup_table_local=lookup.distance_learning_lookup,
+        key="DISTANCE"
     )
     if distance_learning:
         course["distance_learning"] = distance_learning
     foundation_year = get_code_label_entry(
-        raw_course_data, lookup.foundation_year_availability, "FOUNDATION"
+        lookup_table_raw_xml=raw_course_data,
+        lookup_table_local=lookup.foundation_year_availability,
+        key="FOUNDATION"
     )
     if foundation_year:
         course["foundation_year_availability"] = foundation_year
     if "HONOURS" in raw_course_data:
         course["honours_award_provision"] = int(raw_course_data["HONOURS"])
-    course["institution"] = get_institution(raw_inst_data)
+    course["institution"] = get_institution(
+        raw_inst_data=raw_inst_data
+    )
     course["kis_course_id"] = raw_course_data["KISCOURSEID"]
 
     # Handle the institution-level Earnings data.
@@ -237,58 +322,101 @@ def get_course_doc(
     # For single-subject courses, not sure if we get passed an OrderedDict of 1 or something else.
     go_inst_xml_nodes = raw_course_data["GOSALARY"]
     if go_inst_xml_nodes:
-        course["go_salary_inst"] = get_go_inst_json(go_inst_xml_nodes, subject_enricher=g_subject_enricher)  # Returns an array.
+        course["go_salary_inst"] = get_go_inst_json(
+            raw_go_inst_data=go_inst_xml_nodes,
+            subject_enricher=g_subject_enricher,
+            subject_codes=subject_codes
+        )  # Returns an array.
 
     leo3_inst_xml_nodes = raw_course_data["LEO3"]
     if leo3_inst_xml_nodes:
-        course["leo3_inst"] = get_leo3_inst_json(leo3_inst_xml_nodes, subject_enricher=g_subject_enricher)
+        course["leo3_inst"] = get_leo3_inst_json(
+            raw_leo3_inst_data=leo3_inst_xml_nodes,
+            subject_enricher=g_subject_enricher,
+            subject_codes=subject_codes
+        )
 
     leo5_inst_xml_nodes = raw_course_data["LEO5"]
     if leo5_inst_xml_nodes:
-        course["leo5_inst"] = get_leo5_inst_json(leo5_inst_xml_nodes, subject_enricher=g_subject_enricher)
+        course["leo5_inst"] = get_leo5_inst_json(
+            raw_leo5_inst_data=leo5_inst_xml_nodes,
+            subject_enricher=g_subject_enricher,
+            subject_codes=subject_codes
+        )
 
     go_voice_work_xml_nodes = raw_course_data["GOVOICEWORK"]
     if go_voice_work_xml_nodes:
-        course["go_voice_work"] = get_go_voice_work_json(go_voice_work_xml_nodes, subject_enricher=g_subject_enricher)
+        course["go_voice_work"] = get_go_voice_work_json(
+            raw_go_voice_work_data=go_voice_work_xml_nodes,
+            subject_enricher=g_subject_enricher,
+            subject_codes=subject_codes
+        )
 
     length_of_course = get_code_label_entry(
-        raw_course_data, lookup.length_of_course, "NUMSTAGE"
+        lookup_table_raw_xml=raw_course_data,
+        lookup_table_local=lookup.length_of_course,
+        key="NUMSTAGE"
     )
     if length_of_course:
         course["length_of_course"] = length_of_course
-    links = get_links(raw_inst_data, raw_course_data)
+    links = get_links(
+        raw_inst_data=raw_inst_data,
+        raw_course_data=raw_course_data
+    )
     if links:
         course["links"] = links
     location_items = get_location_items(
-        locations, locids, raw_course_data, raw_inst_data["PUBUKPRN"]
+        locations=locations,
+        locids=locids,
+        raw_course_data=raw_course_data,
+        pub_ukprn=raw_inst_data["PUBUKPRN"]
     )
     if location_items:
         course["locations"] = location_items
-    mode = get_code_label_entry(raw_course_data, lookup.mode, "KISMODE")
+    mode = get_code_label_entry(
+        lookup_table_raw_xml=raw_course_data,
+        lookup_table_local=lookup.mode,
+        key="KISMODE"
+    )
     if mode:
         course["mode"] = mode
     nhs_funded = get_code_label_entry(
-        raw_course_data, lookup.nhs_funded, "NHS"
+        lookup_table_raw_xml=raw_course_data,
+        lookup_table_local=lookup.nhs_funded,
+        key="NHS"
     )
     if nhs_funded:
         course["nhs_funded"] = nhs_funded
-    qualification = get_qualification(raw_course_data, kisaims)
+    qualification = get_qualification(
+        lookup_table_raw_xml=raw_course_data,
+        kisaims=kisaims
+    )
     if qualification:
         course["qualification"] = qualification
     sandwich_year = get_code_label_entry(
-        raw_course_data, lookup.sandwich_year, "SANDWICH"
+        lookup_table_raw_xml=raw_course_data,
+        lookup_table_local=lookup.sandwich_year,
+        key="SANDWICH"
     )
     if sandwich_year:
         course["sandwich_year"] = sandwich_year
 
-    course["subjects"] = get_subjects(raw_course_data)
+    course["subjects"] = get_subjects(
+        raw_course_data=raw_course_data
+    )
 
-    title = get_english_welsh_item("TITLE", raw_course_data)
+    title = get_english_welsh_item(
+        key="TITLE",
+        lookup_table=raw_course_data
+    )
     kis_aim_code = raw_course_data["KISAIMCODE"]  # KISAIMCODE is guaranteed to exist and have a non-null value.
-    kis_aim_label = get_kis_aim_label(kis_aim_code, kisaims)
+    kis_aim_label = get_kis_aim_label(
+        code=kis_aim_code,
+        kisaims=kisaims
+    )
     if title and title['english'] and kis_aim_label and title['english'] == kis_aim_label:
-        course[
-            "title"] = title  # TODO: change this statement as appropriate, not sure how yet - awaiting OfS requirement.
+        # TODO: change this statement as appropriate, not sure how yet - awaiting OfS requirement.
+        course["title"] = title
     elif title:
         course["title"] = title
     else:
@@ -297,50 +425,58 @@ def get_course_doc(
     if "UCASPROGID" in raw_course_data:
         course["ucas_programme_id"] = raw_course_data["UCASPROGID"]
     year_abroad = get_code_label_entry(
-        raw_course_data, lookup.year_abroad, "YEARABROAD"
+        lookup_table_raw_xml=raw_course_data,
+        lookup_table_local=lookup.year_abroad,
+        key="YEARABROAD"
     )
     if year_abroad:
         course["year_abroad"] = get_code_label_entry(
-            raw_course_data, lookup.year_abroad, "YEARABROAD"
+            lookup_table_raw_xml=raw_course_data,
+            lookup_table_local=lookup.year_abroad,
+            key="YEARABROAD"
         )
 
     course["statistics"] = get_stats(
-        raw_course_data, course["country"]["code"]
+        raw_course_data=raw_course_data,
+        subject_codes=subject_codes
     )
 
     # Extract the appropriate sector-level earnings data for the current course.
     go_sector_json_array = get_go_sector_json(
-        course["go_salary_inst"],
-        course["leo3_inst"],
-        course["leo5_inst"],
-        go_sector_salaries,
-        outer_wrapper["course_mode"],
-        outer_wrapper["course_level"],
-        subject_enricher=g_subject_enricher
+        go_salary_inst_list=course["go_salary_inst"],
+        leo3_salary_inst_list=course["leo3_inst"],
+        leo5_salary_inst_list=course["leo5_inst"],
+        go_sector_salary_lookup=go_sector_salaries,
+        course_mode=outer_wrapper["course_mode"],
+        course_level=outer_wrapper["course_level"],
+        subject_enricher=g_subject_enricher,
+        subject_codes=subject_codes
     )
     if go_sector_json_array:
         course["go_salary_sector"] = go_sector_json_array
 
     leo3_sector_json_array = get_leo3_sector_json(
-        course["leo3_inst"],
-        course["go_salary_inst"],
-        course["leo5_inst"],
-        leo3_sector_salaries,
-        outer_wrapper["course_mode"],
-        outer_wrapper["course_level"],
-        subject_enricher=g_subject_enricher
+        leo3_salary_inst_list=course["leo3_inst"],
+        go_salary_inst_list=course["go_salary_inst"],
+        leo5_salary_inst_list=course["leo5_inst"],
+        leo3_sector_salary_lookup=leo3_sector_salaries,
+        course_mode=outer_wrapper["course_mode"],
+        course_level=outer_wrapper["course_level"],
+        subject_enricher=g_subject_enricher,
+        subject_codes=subject_codes
     )
     if leo3_sector_json_array:
         course["leo3_salary_sector"] = leo3_sector_json_array
 
     leo5_sector_json_array = get_leo5_sector_json(
-        course["leo5_inst"],
-        course["go_salary_inst"],
-        course["leo3_inst"],
-        leo5_sector_salaries,
-        outer_wrapper["course_mode"],
-        outer_wrapper["course_level"],
-        subject_enricher=g_subject_enricher
+        leo5_salary_inst_list=course["leo5_inst"],
+        go_salary_inst_list=course["go_salary_inst"],
+        leo3_salary_inst_list=course["leo3_inst"],
+        leo5_sector_salary_lookup=leo5_sector_salaries,
+        course_mode=outer_wrapper["course_mode"],
+        course_level=outer_wrapper["course_level"],
+        subject_enricher=g_subject_enricher,
+        subject_codes=subject_codes
     )
     if leo5_sector_json_array:
         course["leo5_salary_sector"] = leo5_sector_json_array
@@ -349,7 +485,17 @@ def get_course_doc(
     return outer_wrapper
 
 
-def get_accreditations(raw_course_data, acc_lookup):
+def get_accreditations(raw_course_data: Dict[str, Any], acc_lookup: Accreditations) -> List[Dict[str, Any]]:
+    """
+    Takes a course data dictionary and returns a list of associated accreditations as dictionaries.
+
+    :param raw_course_data: Course data dictionary to extract accreditations from
+    :type raw_course_data: Dict[str, Any]
+    :param acc_lookup: Accreditations object containing a lookup dictionary
+    :type acc_lookup: Accreditations
+    :return: List of accreditations dictionaries
+    :rtype: List[Dict[str, Any]]
+    """
     acc_list = []
     raw_xml_list = SharedUtils.get_raw_list(raw_course_data, "ACCREDITATION")
 
@@ -358,9 +504,7 @@ def get_accreditations(raw_course_data, acc_lookup):
 
         if "ACCTYPE" in xml_elem:
             json_elem["type"] = xml_elem["ACCTYPE"]
-            accreditations = acc_lookup.get_accreditation_data_for_key(
-                xml_elem["ACCTYPE"]
-            )
+            accreditations = acc_lookup.get_accreditation_data_for_key(xml_elem["ACCTYPE"])
 
             if "ACCURL" in accreditations:
                 json_elem["accreditor_url"] = accreditations["ACCURL"]
@@ -373,7 +517,9 @@ def get_accreditations(raw_course_data, acc_lookup):
             json_elem["url"] = urls
 
         dependent_on = get_code_label_entry(
-            xml_elem, lookup.accreditation_code, "ACCDEPEND"
+            lookup_table_raw_xml=xml_elem,
+            lookup_table_local=lookup.accreditation_code,
+            key="ACCDEPEND"
         )
         if dependent_on:
             json_elem["dependent_on"] = dependent_on
@@ -383,7 +529,16 @@ def get_accreditations(raw_course_data, acc_lookup):
     return acc_list
 
 
-def get_country(raw_inst_data):
+def get_country(raw_inst_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Takes institution data and returns a dictionary with that institution's country data.
+    Returns an empty dictionary if the institution does not have a country element.
+
+    :param raw_inst_data: Institution data dictionary
+    :type raw_inst_data: Dict[str, Any]
+    :return: Dictionary containing country data, or an empty dictionary if the institution has no country
+    :rtype: Dict[str, Any]
+    """
     country = {}
     if "COUNTRY" in raw_inst_data:
         code = raw_inst_data["COUNTRY"]
@@ -392,7 +547,25 @@ def get_country(raw_inst_data):
     return country
 
 
-def get_go_inst_json(raw_go_inst_data, subject_enricher):
+def get_go_inst_json(
+        raw_go_inst_data: Dict[str, Any],
+        subject_enricher: SubjectCourseEnricher,
+        subject_codes: dict[str, dict[str, str]]
+) -> List[Dict[str, str]]:
+    """
+    Takes GO institution data and returns as a list of dictionaries.
+    If no data is supplied, returns a dictionary with unavailable texts.
+
+    :param raw_go_inst_data: Data dictionary of LEO5 institution data
+    :type raw_go_inst_data: Dict[str, Any]
+    :param subject_enricher: SubjectCourseEnricher object to add ukprn data
+    :type subject_enricher: SubjectCourseEnricher
+    :param subject_codes: Subject codes for shared utils object
+    :type subject_codes: dict[str, dict[str, str]]
+    :return: List of JSON dictionaries containing GO institution data, or a list with a dictionary containing
+    unavailable texts if no data is supplied
+    :rtype: List[Dict[str, Any]]
+    """
     if raw_go_inst_data:
         if isinstance(raw_go_inst_data, dict):
             raw_go_inst_data = [raw_go_inst_data]
@@ -404,9 +577,15 @@ def get_go_inst_json(raw_go_inst_data, subject_enricher):
 
         return mapper.map_xml_to_json_array(
             xml_as_array=raw_go_inst_data,
+            subject_codes=subject_codes
         )
     else:
-        unavail_text_english, unavail_text_welsh = get_earnings_unavail_text("institution", "go", "1")
+        unavail_text_english, unavail_text_welsh = get_earnings_unavail_text(
+            subject_codes=subject_codes,
+            inst_or_sect="institution",
+            data_source="go",
+            key_level_3="1"
+        )
         go_salary = {
             "unavail_text_english": unavail_text_english,
             "unavail_text_welsh": unavail_text_welsh
@@ -415,7 +594,25 @@ def get_go_inst_json(raw_go_inst_data, subject_enricher):
     return [go_salary]
 
 
-def get_leo3_inst_json(raw_leo3_inst_data, subject_enricher) -> List:
+def get_leo3_inst_json(
+        raw_leo3_inst_data: Dict[str, Any],
+        subject_enricher: SubjectCourseEnricher,
+        subject_codes: dict[str, dict[str, str]]
+) -> List[Dict[str, str]]:
+    """
+    Takes LEO3 institution data and returns as a list of dictionaries.
+    If no data is supplied, returns a dictionary with unavailable texts.
+
+    :param raw_leo3_inst_data: Data dictionary of LEO5 institution data
+    :type raw_leo3_inst_data: Dict[str, Any]
+    :param subject_enricher: SubjectCourseEnricher object to add ukprn data
+    :type subject_enricher: SubjectCourseEnricher
+    :param subject_codes: Subject codes for shared utils object
+    :type subject_codes: dict[str, dict[str, str]]
+    :return: List of JSON dictionaries containing LEO3 institution data, or a list with a dictionary containing
+    unavailable texts if no data is supplied
+    :rtype: List[Dict[str, Any]]
+    """
     if raw_leo3_inst_data:
         if isinstance(raw_leo3_inst_data, dict):
             raw_leo3_inst_data = [raw_leo3_inst_data]
@@ -426,14 +623,38 @@ def get_leo3_inst_json(raw_leo3_inst_data, subject_enricher) -> List:
         )
         return mapper.map_xml_to_json_array(
             xml_as_array=raw_leo3_inst_data,
+            subject_codes=subject_codes
         )
     else:
-        unavail_text_english, unavail_text_welsh = get_earnings_unavail_text("institution", "leo", "1")
+        unavail_text_english, unavail_text_welsh = get_earnings_unavail_text(
+            subject_codes=subject_codes,
+            inst_or_sect="institution",
+            data_source="leo",
+            key_level_3="1"
+        )
         leo3 = {"unavail_text_english": unavail_text_english, "unavail_text_welsh": unavail_text_welsh}
         return [leo3]
 
 
-def get_leo5_inst_json(raw_leo5_inst_data,subject_enricher):
+def get_leo5_inst_json(
+        raw_leo5_inst_data: Dict[str, Any],
+        subject_enricher: SubjectCourseEnricher,
+        subject_codes: dict[str, dict[str, str]]
+) -> List[Dict[str, Any]]:
+    """
+    Takes LEO5 institution data and returns as a list of dictionaries.
+    If no data is supplied, returns a dictionary with unavailable texts.
+
+    :param raw_leo5_inst_data: Data dictionary of LEO5 institution data
+    :type raw_leo5_inst_data: Dict[str, Any]
+    :param subject_enricher: SubjectCourseEnricher object to add ukprn data
+    :type subject_enricher: SubjectCourseEnricher
+    :param subject_codes: Subject codes for shared utils object
+    :type subject_codes: dict[str, dict[str, str]]
+    :return: List of JSON dictionaries containing LEO5 institution data, or a list with a dictionary containing
+    unavailable texts if no data is supplied
+    :rtype: List[Dict[str, Any]]
+    """
     if raw_leo5_inst_data:
         if isinstance(raw_leo5_inst_data, dict):
             raw_leo5_inst_data = [raw_leo5_inst_data]
@@ -441,16 +662,42 @@ def get_leo5_inst_json(raw_leo5_inst_data,subject_enricher):
         mapper = LeoInstitutionMappings("LEO5", subject_enricher=subject_enricher)
         return mapper.map_xml_to_json_array(
             xml_as_array=raw_leo5_inst_data,
+            subject_codes=subject_codes
         )
 
     else:
-        unavail_text_english, unavail_text_welsh = get_earnings_unavail_text("institution", "leo", "1")
-        leo5 = {"unavail_text_english": unavail_text_english, "unavail_text_welsh": unavail_text_welsh}
+        unavail_text_english, unavail_text_welsh = get_earnings_unavail_text(
+            subject_codes=subject_codes,
+            inst_or_sect="institution",
+            data_source="leo",
+            key_level_3="1"
+        )
+        leo5 = {
+            "unavail_text_english": unavail_text_english,
+            "unavail_text_welsh": unavail_text_welsh
+        }
 
         return [leo5]
 
 
-def get_go_voice_work_json(raw_go_voice_work_data, subject_enricher):
+def get_go_voice_work_json(
+        raw_go_voice_work_data: Dict[str, Any],
+        subject_enricher: SubjectCourseEnricher,
+        subject_codes: dict[str, dict[str, str]]
+) -> Union[List[Dict[str, Any]], None]:
+    """
+    Takes go voice data as a dictionary and returns the data as a list of dictionaries.
+    Returns None if no data is supplied
+
+    :param raw_go_voice_work_data: GO voice data as a dictionary
+    :type raw_go_voice_work_data: Dict[str, Any]
+    :param subject_enricher: SubjectCourseEnricher object to add ukprn data
+    :type subject_enricher: SubjectCourseEnricher
+    :param subject_codes: Subject codes for shared utils object
+    :type subject_codes: dict[str, dict[str, str]]
+    :return: List of GO voice data dictionaries, or None if no data is supplied
+    :rtype: Union[List[Dict[str, Any]], None]
+    """
     if raw_go_voice_work_data:
         if isinstance(raw_go_voice_work_data, dict):
             raw_go_voice_work_data = [raw_go_voice_work_data]
@@ -460,10 +707,28 @@ def get_go_voice_work_json(raw_go_voice_work_data, subject_enricher):
         )
         return mapper.map_xml_to_json_array(
             xml_as_array=raw_go_voice_work_data,
+            subject_codes=subject_codes
         )
 
 
-def get_code_label_entry(lookup_table_raw_xml, lookup_table_local, key):
+def get_code_label_entry(
+        lookup_table_raw_xml: Dict[str, Any],
+        lookup_table_local: Dict[int, str],
+        key: str
+) -> Dict[str, Any]:
+    """
+    Takes a code from the XML lookup table and constructs a dictionary pairing them with corresponding codes
+    from the local lookup table, which is then returned.
+
+    :param lookup_table_raw_xml: XML lookup table
+    :type lookup_table_raw_xml: Dict[str, Any]
+    :param lookup_table_local: Local lookup table
+    :type lookup_table_local: Dict[int, str]
+    :param key: Key of code to construct code/label dictionary for
+    :type key: str
+    :return: Code/label dictionary for value of passed key
+    :rtype: Dict[str, Any]
+    """
     entry = {}
     if key in lookup_table_raw_xml:
         code = get_code(lookup_table_raw_xml, key)
@@ -472,7 +737,15 @@ def get_code_label_entry(lookup_table_raw_xml, lookup_table_local, key):
     return entry
 
 
-def get_institution(raw_inst_data):
+def get_institution(raw_inst_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Takes raw institution data as a dictionary and returns a constructed dictionary with ukprn data.
+
+    :param raw_inst_data: Institution data as a dictionary
+    :type raw_inst_data: Dict[str, Any]
+    :return: Constructed dictionary with ukprn data.
+    :rtype: Dict[str, Any]
+    """
     return {
         "pub_ukprn_name": "n/a",
         "pub_ukprn_welsh_name": "n/a",
@@ -483,7 +756,17 @@ def get_institution(raw_inst_data):
     }
 
 
-def get_links(raw_inst_data, raw_course_data):
+def get_links(raw_inst_data: Dict[str, Any], raw_course_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Takes raw course and institution data, and returns a dictionary containing the corresponding URLs for each page.
+
+    :param raw_inst_data: Data dictionary for institution
+    :type raw_inst_data: Dict[str, Any]
+    :param raw_course_data: Data dictionary for course
+    :type raw_inst_data: Dict[str, Any]
+    :return: Dictionary containing URLs for the provided course and institution
+    :rtype: Dict[str, Any]
+    """
     links = {}
 
     item_details = [
@@ -497,23 +780,46 @@ def get_links(raw_inst_data, raw_course_data):
     ]
 
     for item_detail in item_details:
-        link_item = get_english_welsh_item(item_detail[0], item_detail[2])
+        link_item = get_english_welsh_item(
+            key=item_detail[0],
+            lookup_table=item_detail[2]
+        )
         if link_item:
             links[item_detail[1]] = link_item
 
     return links
 
 
-def get_location_items(locations, locids, raw_course_data, pub_ukprn):
+def get_location_items(
+        locations: Locations,
+        locids: List[str],
+        raw_course_data: Dict[str, Any],
+        pub_ukprn: str
+) -> List[Dict[str, Any]]:
+    """
+    Returns a list of location data based on the passed raw course data.
+    If the raw course data does not have a location, returns an empty list.
+
+    :param locations: Locations object with a lookup dictionary
+    :type locations: Locations
+    :param locids: List of location IDs
+    :type locids: List[str]
+    :param raw_course_data: Raw course data to extract location data from
+    :type raw_course_data: Dict[str, Any]
+    :param pub_ukprn: pub_ukprn added to location lookup ID
+    :type pub_ukprn: str
+    :return: List of location data from raw course data
+    :rtype: List[Dict[str, Any]]
+    """
     location_items = []
     if "COURSELOCATION" not in raw_course_data:
         return location_items
 
-    course_locations = SharedUtils.get_raw_list(
-        raw_course_data, "COURSELOCATION"
-    ) if SharedUtils.get_raw_list(
-        raw_course_data, "COURSELOCATION"
-    ) else []
+    raw_course_locations_list = SharedUtils.get_raw_list(
+        data=raw_course_data,
+        element_key="COURSELOCATION"
+    )
+    course_locations = raw_course_locations_list if raw_course_locations_list else []
     item = {}
     for course_location in course_locations:
         if "LOCID" not in course_location:
@@ -559,13 +865,31 @@ def get_location_items(locations, locids, raw_course_data, pub_ukprn):
 
 
 def process_stats(
-        primary_dataset,
-        secondary_dataset,
-        tertiary_dataset,
-        course_mode,
-        course_level,
-        salary_lookup: Callable,
-):
+        primary_dataset: List[Dict[str, Any]],
+        secondary_dataset: List[Dict[str, Any]],
+        tertiary_dataset: List[Dict[str, Any]],
+        course_mode: int,
+        course_level: int,
+        salary_lookup: SectorSalaries,
+) -> List[Dict[str, Any]]:
+    """
+    Processes datasets for construction of sector salary JSONs.
+
+    :param primary_dataset: Primary dataset for JSON construction
+    :type primary_dataset: List[Dict[str, Any]]
+    :param secondary_dataset: Secondary dataset for JSON construction
+    :type secondary_dataset: List[Dict[str, Any]]
+    :param tertiary_dataset: Tertiary dataset for json construction
+    :type tertiary_dataset: List[Dict[str, Any]]
+    :param course_mode: Course mode
+    :type course_mode: int
+    :param course_level: Course level
+    :type course_level: int
+    :param salary_lookup: SectorSalaries object containing lookup dictionaries
+    :type salary_lookup: SectorSalaries
+    :return: List of dictionaries containing JSONs with sector salary data
+    :rtype: List[Dict[str, Any]]
+    """
     xml_array = []
     for index, primary_inst in enumerate(primary_dataset):
         # If the subject is unavailable for the specific source (GO/LEO3/LEO5), use a sibling source instead.
@@ -593,14 +917,37 @@ def process_stats(
 
 
 def get_go_sector_json(
-        go_salary_inst_list,
-        leo3_salary_inst_list,
-        leo5_salary_inst_list,
-        go_sector_salary_lookup,
-        course_mode,
-        course_level,
-        subject_enricher
-):
+        go_salary_inst_list: List[Dict[str, Any]],
+        leo3_salary_inst_list: List[Dict[str, Any]],
+        leo5_salary_inst_list: List[Dict[str, Any]],
+        go_sector_salary_lookup: SectorSalaries,
+        course_mode: int,
+        course_level: int,
+        subject_enricher: SubjectCourseEnricher,
+        subject_codes: dict[str, dict[str, str]]
+) -> List[Dict[str, Any]]:
+    """
+    Builds a JSON list for the GO sector mapping.
+
+    :param go_salary_inst_list: List of institution data for GO salaries
+    :type go_salary_inst_list: List[Dict[str, Any]]
+    :param leo3_salary_inst_list: List of institution data for LEO3 salaries
+    :type leo3_salary_inst_list: List[Dict[str, Any]]
+    :param leo5_salary_inst_list: List of institution data for LEO5 salaries
+    :type leo5_salary_inst_list: List[Dict[str, Any]]
+    :param go_sector_salary_lookup: SectorSalaries object containing lookup dictionaries
+    :type go_sector_salary_lookup: SectorSalaries
+    :param course_mode: Course mode
+    :type course_mode: int
+    :param course_level: Course level
+    :type course_level: int
+    :param subject_enricher: SubjectCourseEnricher object to add UKRLP data
+    :type subject_enricher: SubjectCourseEnricher
+    :param subject_codes: Subject codes for shared utils object
+    :type subject_codes: dict[str, dict[str, str]]
+    :return: List of JSON dictionaries for GO salary data
+    :rtype: List[Dict[str, Any]]
+    """
     go_salary_sector_xml_array = process_stats(
         primary_dataset=go_salary_inst_list,
         secondary_dataset=leo3_salary_inst_list,
@@ -613,18 +960,42 @@ def get_go_sector_json(
     mapper = GoSalaryMappings("GO", subject_enricher)
     return mapper.map_xml_to_json_array(
         xml_as_array=go_salary_sector_xml_array,
+        subject_codes=subject_codes
     )
 
 
 def get_leo3_sector_json(
-        leo3_salary_inst_list,
-        go_salary_inst_list,
-        leo5_salary_inst_list,
-        leo3_sector_salary_lookup,
-        course_mode,
-        course_level,
-        subject_enricher
-):
+        leo3_salary_inst_list: List[Dict[str, Any]],
+        go_salary_inst_list: List[Dict[str, Any]],
+        leo5_salary_inst_list: List[Dict[str, Any]],
+        leo3_sector_salary_lookup: SectorSalaries,
+        course_mode: int,
+        course_level: int,
+        subject_enricher: SubjectCourseEnricher,
+        subject_codes: dict[str, dict[str, str]]
+) -> List[Dict[str, Any]]:
+    """
+    Builds a JSON list for the LEO3 sector mapping.
+
+    :param leo3_salary_inst_list: List of institution data for LEO3 salaries
+    :type leo3_salary_inst_list: List[Dict[str, Any]]
+    :param go_salary_inst_list: List of institution data for GO salaries
+    :type go_salary_inst_list: List[Dict[str, Any]]
+    :param leo5_salary_inst_list: List of institution data for LEO5 salaries
+    :type leo5_salary_inst_list: List[Dict[str, Any]]
+    :param leo3_sector_salary_lookup: SectorSalaries object containing lookup dictionaries
+    :type leo3_sector_salary_lookup: SectorSalaries
+    :param course_mode: Course mode
+    :type course_mode: int
+    :param course_level: Course level
+    :type course_level: int
+    :param subject_enricher: SubjectCourseEnricher object to add UKRLP data
+    :type subject_enricher: SubjectCourseEnricher
+    :param subject_codes: Subject codes for shared utils object
+    :type subject_codes: dict[str, dict[str, str]]
+    :return: List of JSON dictionaries for LEO3 salary data
+    :rtype: List[Dict[str, Any]]
+    """
     leo3_sector_xml_array = process_stats(
         primary_dataset=leo3_salary_inst_list,
         secondary_dataset=go_salary_inst_list,
@@ -637,18 +1008,42 @@ def get_leo3_sector_json(
     mapper = LeoSectorMappings("LEO3", subject_enricher)
     return mapper.map_xml_to_json_array(
         xml_as_array=leo3_sector_xml_array,
+        subject_codes=subject_codes
     )
 
 
 def get_leo5_sector_json(
-        leo5_salary_inst_list,
-        go_salary_inst_list,
-        leo3_salary_inst_list,
-        leo5_sector_salary_lookup,
-        course_mode,
-        course_level,
-        subject_enricher
-):
+        leo5_salary_inst_list: List[Dict[str, Any]],
+        go_salary_inst_list: List[Dict[str, Any]],
+        leo3_salary_inst_list: List[Dict[str, Any]],
+        leo5_sector_salary_lookup: SectorSalaries,
+        course_mode: int,
+        course_level: int,
+        subject_enricher: SubjectCourseEnricher,
+        subject_codes: dict[str, dict[str, str]]
+) -> List[Dict[str, Any]]:
+    """
+    Builds a JSON list for the LEO5 sector mapping.
+
+    :param leo5_salary_inst_list: List of institution data for LEO5 salaries
+    :type leo5_salary_inst_list: List[Dict[str, Any]]
+    :param go_salary_inst_list: List of institution data for GO salaries
+    :type go_salary_inst_list: List[Dict[str, Any]]
+    :param leo3_salary_inst_list: List of institution data for LEO3 salaries
+    :type leo3_salary_inst_list: List[Dict[str, Any]]
+    :param leo5_sector_salary_lookup: SectorSalaries object containing lookup dictionaries
+    :type leo5_sector_salary_lookup: SectorSalaries
+    :param course_mode: Course mode
+    :type course_mode: int
+    :param course_level: Course level
+    :type course_level: int
+    :param subject_enricher: SubjectCourseEnricher object to add UKRLP data
+    :type subject_enricher: SubjectCourseEnricher
+    :param subject_codes: Subject codes for shared utils object
+    :type subject_codes: dict[str, dict[str, str]]
+    :return: List of JSON dictionaries for LEO5 salary data
+    :rtype: List[Dict[str, Any]]
+    """
     leo5_sector_xml_array = process_stats(
         primary_dataset=leo5_salary_inst_list,
         secondary_dataset=go_salary_inst_list,
@@ -661,17 +1056,39 @@ def get_leo5_sector_json(
     mapper = LeoSectorMappings("LEO5", subject_enricher)
     return mapper.map_xml_to_json_array(
         xml_as_array=leo5_sector_xml_array,
+        subject_codes=subject_codes
     )
 
 
-def get_code(lookup_table_raw_xml, key):
+def get_code(lookup_table_raw_xml: Dict[str, Any], key: str) -> Union[int, str]:
+    """
+    Takes a lookup table dictionary and a key, and returns the corresponding code as an integer if it's a digit,
+    otherwise returns the code as a string.
+
+    :param lookup_table_raw_xml: Lookup table dictionary
+    :type lookup_table_raw_xml: Dict[str, Any]
+    :param key: Key to extract code
+    :type key: str
+    :return: Code as an integer if it's a digit, otherwise a string
+    :rtype: Union[int, str]
+    """
     code = lookup_table_raw_xml[key]
     if code.isdigit():
         code = int(code)
     return code
 
 
-def get_qualification(lookup_table_raw_xml, kisaims):
+def get_qualification(lookup_table_raw_xml: Dict[str, Any], kisaims: KisAims) -> Dict[str, Any]:
+    """
+    Takes a lookup table XML and a KisAims object, and if the lookup table contains a KIS aim code element, returns
+    a dictionary with the corresponding code and label. Otherwise returns an empty dictionary.
+
+    :param lookup_table_raw_xml: Lookup table dictionary
+    :type lookup_table_raw_xml: Dict[str, Any]
+    :param kisaims: KisAims object containing lookup dictionary
+    :return: Constructed dictionary containing KIS code data, or an empty dictionary
+    :rtype: Dict[str, Any]
+    """
     entry = {}
     if "KISAIMCODE" in lookup_table_raw_xml:
         code = lookup_table_raw_xml["KISAIMCODE"]
@@ -682,6 +1099,14 @@ def get_qualification(lookup_table_raw_xml, kisaims):
     return entry
 
 
-def get_kis_aim_label(code, kisaims):
+def get_kis_aim_label(code: str, kisaims: KisAims) -> str:
+    """
+    Takes a code and KisAims object and returns the corresponding kis aim label.
+
+    :param code: KIS code
+    :param kisaims: KisAims object containing KIS aims lookup dictionary
+    :return: Corresponding KIS aims label
+    :rtype: str
+    """
     label = kisaims.get_kisaim_label_for_key(code)
     return label

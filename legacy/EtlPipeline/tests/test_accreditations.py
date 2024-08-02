@@ -4,9 +4,9 @@ import unittest
 import defusedxml.ElementTree as ET
 import xmltodict
 
-from course_docs import get_accreditations
-from accreditations import Accreditations
-from testing_utils import get_string
+from legacy.EtlPipeline.lookups.accreditations import Accreditations
+from legacy.EtlPipeline.course_docs import get_accreditations
+from legacy.EtlPipeline.tests.test_helpers.testing_utils import get_string
 
 
 class TestGetAccreditations(unittest.TestCase):

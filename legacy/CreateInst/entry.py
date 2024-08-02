@@ -1,27 +1,29 @@
 #!/usr/bin/env python
 import logging
-import os
+import traceback
 from datetime import datetime
+from typing import Any
 
-import azure.functions as func
+from constants import BLOB_HESA_BLOB_NAME
+from constants import BLOB_HESA_CONTAINER_NAME
+from constants import BLOB_WELSH_UNIS_BLOB_NAME
+from constants import BLOB_WELSH_UNIS_CONTAINER_NAME
+from legacy.CreateInst.docs.institution_docs import InstitutionDocs
+from legacy.CreateInst.docs.name_handler import InstitutionProviderNameHandler
+from legacy.CreateInst.institution_docs import get_welsh_uni_names
+from legacy.CreateInst.institution_docs import get_white_list
+from services import exceptions
 
-from SharedCode import exceptions
-from SharedCode.blob_helper import BlobHelper
-from SharedCode.dataset_helper import DataSetHelper
+
 # from SharedCode.mail_helper import MailHelper
-from .institution_docs import InstitutionDocs
 
 
-def create_institutions():
-    # TODO: apw: Ensure that UseLocalTestXMLFile is set to false in local.settings.json before going live.
-    use_local_test_XML_file = os.environ.get('UseLocalTestXMLFile')
-
-    msgerror = ""
-
-    # mail_helper = MailHelper()
-    environment = os.environ["Environment"]
-
-    dsh = DataSetHelper()
+def create_institutions_main(
+        blob_service: type['BlobServiceBase'],
+        cosmos_service: type['CosmosServiceBase'],
+        dataset_service: type['DataSetServiceBase']
+) -> dict[str, Any]:
+    response = {}
 
     try:
         logging.info(
@@ -40,35 +42,47 @@ def create_institutions():
         # where Functions written in Python do not get triggered # correctly with large blobs. Tests showed this is not a limitation
         # with Funtions written in C#.
 
-        blob_helper = BlobHelper()
+        hesa_xml_file_as_string = blob_service.get_str_file(
+            container_name=BLOB_HESA_CONTAINER_NAME,
+            blob_name=BLOB_HESA_BLOB_NAME
+        )
 
-        storage_container_name = os.environ["AzureStorageHesaContainerName"]
-        storage_blob_name = os.environ["AzureStorageHesaBlobName"]
-
-        if use_local_test_XML_file:
-            mock_xml_source_file = open(os.environ["LocalTestXMLFile"], "r")
-            hesa_xml_file_as_string = mock_xml_source_file.read()
-        else:
-            hesa_xml_file_as_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
-
-        version = dsh.get_latest_version_number()
+        version = dataset_service.get_latest_version_number()
 
         """ LOADING - extract data and load JSON Documents """
 
         logging.info(f"using version number: {version}")
-        dsh.update_status("institutions", "in progress")
+        dataset_service.update_status("institutions", "in progress")
 
-        inst_docs = InstitutionDocs(hesa_xml_file_as_string, version)
+        csv_string = blob_service.get_str_file(
+            container_name=BLOB_WELSH_UNIS_CONTAINER_NAME,
+            blob_name=BLOB_WELSH_UNIS_BLOB_NAME
+        )
+        provider_name_handler = InstitutionProviderNameHandler(
+            white_list=get_white_list(),
+            welsh_uni_names=get_welsh_uni_names(csv_string)
+        )
+
+        inst_docs = InstitutionDocs(
+            xml_string=hesa_xml_file_as_string,
+            version=version,
+            provider_name_handler=provider_name_handler,
+            cosmos_service=cosmos_service
+        )
+        # cosmos_service = get_cosmos_service(COSMOS_COLLECTION_INSTITUTIONS)
+
         inst_docs.create_institution_docs()
-        dsh.update_status("institutions", "succeeded")
+        dataset_service.update_status("institutions", "succeeded")
 
         function_end_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
 
-        logging.info(
-            f"CreateInst successfully finished on {function_end_datetime}"
-        )
+        message = f"CreateInst successfully finished on {function_end_datetime}"
 
-        msgout.set(msgin.get_body().decode("utf-8") + msgerror)
+        logging.info(message)
+        response["message"] = message
+        response["statusCode"] = 200
+
+        # msgout.set(msgin.get_body().decode("utf-8") + msgerror)
 
     except exceptions.StopEtlPipelineWarningException:
 
@@ -90,13 +104,18 @@ def create_institutions():
         #     f"Data Import {environment} - {function_fail_date} - Failed"
         # )
 
-        logging.error(f"CreateInst failed on {function_fail_datetime}")
-        dsh.update_status("institutions", "failed")
-        raise Exception(error_message)
+        message = f"CreateInst failed on {function_fail_datetime}"
+
+        logging.error(message)
+        dataset_service.update_status("institutions", "failed")
+
+        response["message"] = message + f".\n{error_message}"
+        response["statusCode"] = 500
+        # raise Exception(error_message)
 
     except Exception as e:
         # Unexpected exception
-        dsh.update_status("institutions", "failed")
+        dataset_service.update_status("institutions", "failed")
 
         function_fail_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
         function_fail_date = datetime.today().strftime("%d.%m.%Y")
@@ -106,9 +125,15 @@ def create_institutions():
         #     f"Data Import {environment} - {function_fail_date} - Failed"
         # )
 
-        logging.error(
-            f"CreateInst failed on {function_fail_datetime}", exc_info=True
-        )
+        message = f"CreateInst failed on {function_fail_datetime}"
+
+        logging.error(message, exc_info=True)
+
+        response["message"] = message
+        response["exception"] = traceback.format_exc()
+        response["statusCode"] = 500
 
         # Raise to Azure
-        raise e
+        # raise e
+
+    return response

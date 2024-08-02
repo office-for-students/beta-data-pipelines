@@ -1,10 +1,12 @@
 import json
 import unittest
+
 import defusedxml.ElementTree as ET
 
-from inst_test_utils import get_first, get_string
-from CreateInst.locations import Locations
-from institution_docs import get_student_unions
+from legacy.CreateInst.institution_docs import get_student_unions
+from legacy.CreateInst.locations import Locations
+from legacy.CreateInst.tests.test_helpers.inst_test_utils import get_first
+from legacy.CreateInst.tests.test_helpers.inst_test_utils import get_string
 
 
 class TestGetStudentUnions(unittest.TestCase):
@@ -18,7 +20,6 @@ class TestGetStudentUnions(unittest.TestCase):
         get_student_unions(locations, institution)
 
     def test_get_student_unions_nine_courses(self):
-
         # Build a locations lookup
         kis_xml_string = get_string("fixtures/large_test_file.xml")
         kis_root = ET.fromstring(kis_xml_string)
@@ -38,7 +39,6 @@ class TestGetStudentUnions(unittest.TestCase):
         self.assertEqual(expected_student_unions, student_unions)
 
     def test_get_student_unions_413_courses(self):
-
         # Build a locations lookup
         kis_xml_string = get_string("fixtures/large_test_file.xml")
         kis_root = ET.fromstring(kis_xml_string)

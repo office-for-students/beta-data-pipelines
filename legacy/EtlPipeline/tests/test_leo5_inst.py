@@ -4,8 +4,8 @@ from unittest import mock
 
 import xmltodict
 
-from EtlPipeline.course_docs import get_leo5_inst_json
-from EtlPipeline.tests.test_helpers.testing_utils import get_string
+from legacy.EtlPipeline.course_docs import get_leo5_inst_json
+from legacy.EtlPipeline.tests.test_helpers.testing_utils import get_string
 
 
 class TestGetLeo5Inst(unittest.TestCase):

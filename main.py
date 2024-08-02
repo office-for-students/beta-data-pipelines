@@ -1,44 +1,89 @@
 import logging
 from datetime import datetime
-
-from decouple import config
+from logging.config import fileConfig
+import os
+import json
 from fastapi import FastAPI
+from starlette.routing import Mount
+from starlette.staticfiles import StaticFiles
+from constants import LOCAL_COSMOS_CONTAINER_PATH
+from constants import COSMOS_COLLECTION_INSTITUTIONS
+from constants import BLOB_AZURE_CONNECT_STRING
+from constants import BLOB_HESA_BLOB_NAME
+from constants import BLOB_HESA_CONTAINER_NAME
+from constants import BLOB_SERVICE_MODULE
+from constants import COSMOS_CLIENT_MODULE
+from constants import COSMOS_COLLECTION_DATASET
+from constants import COSMOS_DATABASE_ID
+from constants import COSMOS_DATABASE_KEY
+from constants import COSMOS_DATABASE_URI
+from constants import COSMOS_SERVICE_MODULE
+from constants import DATA_SET_SERVICE_MODULE
+from constants import DOCS_SPHINX_DIRECTORY
+from constants import ENVIRONMENT
+from constants import INGESTION_API
+from constants import KEY_COSMOS_MASTER_KEY
+from constants import SEND_GRID_API_KEY
+from constants import SEND_GRID_FROM_EMAIL
+from constants import SEND_GRID_TO_EMAILS
+from legacy.CourseSearchBuilder.entry import course_search_builder_main
+from legacy.CreateDataSet.entry import create_dataset_main
+from legacy.CreateInst.entry import create_institutions_main
+from legacy.EtlPipeline.entry import etl_pipeline_main
+from legacy.SubjectBuilder.entry import subject_builder_main
+from services import blob_service
+from services import cosmos_client
+from services import cosmos_service
+from services import dataset_service
+from services.mail import MailService
 
-from legacy.CourseSearchBuilder.entry import build_search
-from legacy.CreateDataSet.entry import create_dataset as create_dataset_legacy
-from legacy.services.blob_helper import BlobHelper
+# setup loggers
+fileConfig('logging.conf', disable_existing_loggers=False)
 
-from legacy.CreateInst.entry import create_institutions
-from legacy.EtlPipeline.entry import create_courses
-from legacy.services.exceptions import DataSetTooEarlyError
-from legacy.services.exceptions import StopEtlPipelineErrorException
-from mail_helper import MailHelper
+# get root logger
+logger = logging.getLogger(__name__)  # the __name__ resolve to "main" since we are at the root of the project.
+# This will get the root logger since no logger in the configuration has this name.
 
-app = FastAPI()
-mail_helper = MailHelper(
-    send_grid_api_key=config("SendGridAPIKey"),
-    to_emails=config("SendGridToEmailList"),
-    from_email=config("SendGridFromEmail"),
+
+app = FastAPI(
+    routes=[
+        Mount(
+            path="/sphinx",
+            app=StaticFiles(directory=DOCS_SPHINX_DIRECTORY, html=True),
+            name="sphinx"
+        )
+    ]
+)
+
+MAIL_SERVICE = MailService(
+    send_grid_api_key=SEND_GRID_API_KEY,
+    from_email=SEND_GRID_FROM_EMAIL,
+    to_emails=SEND_GRID_TO_EMAILS,
     enabled=True
 )
 
-BLOB_ACCOUNT_NAME = config("BLOB_ACCOUNT_NAME")
-BLOB_ACCOUNT_KEY = config("BLOB_ACCOUNT_KEY")
-BLOB_AZURE_CONNECT_STRING = f"DefaultEndpointsProtocol=https;AccountName={BLOB_ACCOUNT_NAME};AccountKey={BLOB_ACCOUNT_KEY};EndpointSuffix=core.windows.net"
-
-BLOB_HELPER = BlobHelper(
-    azure_storage_connection_string=BLOB_AZURE_CONNECT_STRING
+BLOB_SERVICE = blob_service.get_current_provider(
+    provider_path=BLOB_SERVICE_MODULE,
+    service_string=BLOB_AZURE_CONNECT_STRING
 )
 
-HESA_STORAGE_CONTAINER_NAME = config("BLOB_HESA_CONTAINER_NAME")
-HESA_STORAGE_BLOB_NAME = config("BLOB_HESA_BLOB_NAME")
+COSMOS_CLIENT = cosmos_client.get_current_provider(
+    provider_path=COSMOS_CLIENT_MODULE,
+    url=COSMOS_DATABASE_URI,
+    credential={KEY_COSMOS_MASTER_KEY: COSMOS_DATABASE_KEY}
+)
 
-# Local test xml file is to be used for testing the pipeline locally
-# defaults to None, as in production this will not be set
-LOCAL_TEST_XML_FILE = config("LOCAL_TEST_XML_FILE", default=None)
+COSMOS_DATABASE_SERVICE = cosmos_service.get_current_provider(
+    provider_path=COSMOS_SERVICE_MODULE,
+    cosmos_database=COSMOS_CLIENT.get_database_client(COSMOS_DATABASE_ID)
+)
 
-ENVIRONMENT = config("Environment")  # i.e. dev, pre-prod or prod
-STORAGE_URL = config("StorageUrl")
+DATASET_SERVICE = dataset_service.get_current_provider(
+    provider_path=DATA_SET_SERVICE_MODULE,
+    cosmos_container=COSMOS_DATABASE_SERVICE.get_container(
+        container_id=COSMOS_COLLECTION_DATASET
+    )
+)
 
 
 def send_message(mailer, result, function, error_message=None):
@@ -50,80 +95,92 @@ def send_message(mailer, result, function, error_message=None):
 
 @app.get("/")
 async def root():
-    return {"message": f"Data Pipeline Version: {config('INGESTION_API')}"}
+    return {"message": f"Data Pipeline Version: {INGESTION_API}"}
 
 
-@app.get("CourseSearchBuilder/")
+@app.get("/CourseSearchBuilder/")
 async def search_builder():
-    send_message(mail_helper, "Started", "Search Builder")
     logging.info("Search Builder started")
-    try:
-        response = build_search()
-        logging.info("Search Builder succeeded")
-        send_message(mail_helper, "Succeeded", "Search Builder")
-        return response
-    except Exception as e:
-        logging.error(f"Search Builder failed {e}")
-        send_message(mail_helper, "Failed", "Search Builder", error_message=e)
+    response = course_search_builder_main(
+        blob_service=BLOB_SERVICE,
+        cosmos_service=COSMOS_DATABASE_SERVICE,
+        dataset_service=DATASET_SERVICE
+    )
+    return response
 
 
-@app.get("CreateDataSet/")
+@app.get("/CreateDataSet/")
 async def create_dataset():
     logging.info("Create Dataset started")
-    send_message(mail_helper, "Started", "Create Dataset")
-    try:
-        create_dataset_legacy(
-            blob_service=
-            BLOB_HELPER,
-            HESA_STORAGE_CONTAINER_NAME, # hesa-raw-xml-ingest
-            HESA_STORAGE_BLOB_NAME, # latest.xml.gz
-        )
-        send_message(mail_helper, "Succeeded", "Create Dataset")
-        logging.info("Create Dataset succeeded")
-        return {"message": f"created dataset"}
-    except DataSetTooEarlyError:
-        logging.info(f"Create Dataset failed {e}")
-        send_message(mail_helper, "Failed", "Create Dataset", error_message=e)
-    except StopEtlPipelineErrorException as e:
-        logging.info(f"Create Dataset failed {e}")
-        send_message(mail_helper, "Failed", "Create Dataset", error_message=e)
-    except Exception as e:
-        logging.info(f"Create Dataset failed {e}")
-        send_message(mail_helper, "Failed", "Create Dataset", error_message=e)
+    response = create_dataset_main(
+        blob_service=BLOB_SERVICE,
+        dataset_service=DATASET_SERVICE,
+        storage_container_name=BLOB_HESA_CONTAINER_NAME,  # hesa-raw-xml-ingest
+        storage_blob_name=BLOB_HESA_BLOB_NAME,  # latest.xml.gz
+    )
+    return response
 
 
-
-@app.get("CreateInst/")
+@app.get("/CreateInst/")
 async def create_inst():
-    logging.info("Create Institutions started")
-    send_message(mail_helper, "Started", "Create Institutions")
-    try:
-        create_institutions()
-    except Exception as e:
-        logging.info(f"Create Institutions failed {e}")
-        send_message(mail_helper, "Failed", "Create Institutions", error_message=e)
-
-    return {"message": f"create institution"}
+    logging.info("Create Inst started")
+    response = create_institutions_main(
+        blob_service=BLOB_SERVICE,
+        cosmos_service=COSMOS_DATABASE_SERVICE,
+        dataset_service=DATASET_SERVICE
+    )
+    return response
 
 
-@app.get("EtlPipeline/")
+@app.get("/EtlPipeline/")
 async def etl_pipeline():
     logging.info("Etl Pipeline started")
-
-    create_courses(
-        blob_service=BLOB_HELPER,
-        hesa_container_name=HESA_STORAGE_CONTAINER_NAME,
-        hesa_blob_name=HESA_STORAGE_BLOB_NAME
+    response = etl_pipeline_main(
+        blob_service=BLOB_SERVICE,
+        dataset_service=DATASET_SERVICE,
+        cosmos_service=COSMOS_DATABASE_SERVICE
     )
-
-    return {"message": f"etl pipeline"}
-
-
-@app.get("PostcodeSearchBuilder/")
-async def postcode_search_builder():
-    return {"message": f"post code search builder"}
+    return response
 
 
-@app.get("SubjectBuilder/")
-async def subject_builder(name: str):
-    return {"message": f"subject_builder"}
+
+@app.get("/SubjectBuilder/")
+async def subject_builder():
+    logging.info("Subject Builder started")
+    response = subject_builder_main(
+        blob_service=BLOB_SERVICE,
+        cosmos_service=COSMOS_DATABASE_SERVICE,
+        dataset_service=DATASET_SERVICE
+    )
+    return response
+
+
+@app.get("/countInst/")
+async def subject_builder():
+    '''
+    Get list of all institutions and how many institutions - debugging purposes
+    '''
+
+    file_path = os.getcwd() + LOCAL_COSMOS_CONTAINER_PATH + COSMOS_COLLECTION_INSTITUTIONS + ".json"
+    print(file_path)
+    with open(file_path, 'r') as file:
+        data = json.load(file)['5']
+        all_institutions = []
+        not_duplicated = []
+        for inst in data:
+            all_institutions.append(inst['institution']['legal_name']) # get every one
+            if inst['institution']['legal_name'] not in not_duplicated:
+                not_duplicated.append(inst['institution']['legal_name']) # only get it if its not a duplicate
+        len_all_institutions = len(all_institutions)
+        len_not_duplicate = len(not_duplicated)
+        sorted_all_institutions = sorted(all_institutions)
+        sorted_not_duplicate = sorted(not_duplicated)
+
+    data = {
+        "len_all_institutions": len_all_institutions,
+        "number_of_duplicates": len_all_institutions - len_not_duplicate,
+        "len_not_duplicate": len_not_duplicate,
+        "not_duplicated": sorted_not_duplicate,
+
+    }
+    return data

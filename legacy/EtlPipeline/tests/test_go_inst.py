@@ -1,15 +1,12 @@
 import json
 import unittest
-import xml.etree.ElementPath
-import defusedxml.ElementTree as ET
 from unittest import mock
 
+import defusedxml.ElementTree as ET
 import xmltodict
 
-from EtlPipeline.course_docs import get_go_inst_json
-from EtlPipeline.sector_salaries import GOSectorSalaries
-from EtlPipeline.subject_enricher import SubjectCourseEnricher
-from EtlPipeline.tests.test_helpers.testing_utils import get_string
+from legacy.EtlPipeline.course_docs import get_go_inst_json
+from legacy.EtlPipeline.tests.test_helpers.testing_utils import get_string
 
 
 class TestGetGoInst(unittest.TestCase):
@@ -29,4 +26,4 @@ class TestGetGoInst(unittest.TestCase):
             json_obj = get_go_inst_json(raw_course_xml, subject_enricher)
         print(json_obj)
 
-            # self.assertEqual(json_obj[0], expected_response[0])
+        # self.assertEqual(json_obj[0], expected_response[0])

@@ -4,8 +4,8 @@ from unittest import mock
 
 import xmltodict
 
-from EtlPipeline.course_docs import get_go_voice_work_json
-from .test_helpers.testing_utils import get_string
+from legacy.CreateInst.tests.test_helpers.inst_test_utils import get_string
+from legacy.EtlPipeline.course_docs import get_go_voice_work_json
 
 
 class TestGetGoVoiceWork(unittest.TestCase):

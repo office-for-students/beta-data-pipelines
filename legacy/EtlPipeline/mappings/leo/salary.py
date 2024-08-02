@@ -1,16 +1,23 @@
 from typing import List
 from typing import Tuple
 
-from EtlPipeline.mappings.base import BaseMappings
+from legacy.EtlPipeline.mappings.base import BaseMappings
 
 
 class LeoSalaryMappings(BaseMappings):
+    """LEO mappings for salaries"""
     OPTIONS = ["LEO3", "LEO5"]
 
     def __init__(self, mapping_id, subject_enricher):
         super().__init__(mapping_id=mapping_id, subject_enricher=subject_enricher)
 
     def get_mappings(self) -> List[Tuple[str, str]]:
+        """
+        Returns the list of mappings as a list of tuples with the class' mapping ID.
+
+        :return: List of mappings
+        :rtype: List[Tuple[str, str]]
+        """
         return [
 
             ('KISMODE', "mode"),

@@ -1,18 +1,18 @@
 """Test the course NSS statistics"""
-import json
 import unittest
 
 import defusedxml.ElementTree as ET
 import xmltodict
 
-from EtlPipeline.course_stats import Continuation
-from EtlPipeline.course_stats import Employment
-from EtlPipeline.course_stats import Entry
-from EtlPipeline.course_stats import JobType
-from EtlPipeline.course_stats import Nss
-from EtlPipeline.course_stats import Tariff
-from EtlPipeline.course_stats import get_stats
-from EtlPipeline.tests.test_helpers.testing_utils import get_string
+from legacy.EtlPipeline.course_stats import Continuation
+from legacy.EtlPipeline.course_stats import Employment
+from legacy.EtlPipeline.course_stats import Entry
+from legacy.EtlPipeline.course_stats import JobType
+from legacy.EtlPipeline.course_stats import Nss
+from legacy.EtlPipeline.course_stats import Tariff
+from legacy.EtlPipeline.course_stats import get_stats
+from legacy.EtlPipeline.tests.test_helpers.testing_utils import get_string
+
 
 class TestTotalNumbers(unittest.TestCase):
     def setUp(self) -> None:
@@ -88,6 +88,7 @@ class TestTotalNumbers(unittest.TestCase):
                 total_items.append(get_stats(raw_course_data))
 
         self.assertEqual(len(total_items), self.target)
+
 
 if __name__ == "__main__":
     unittest.main()
