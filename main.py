@@ -30,7 +30,6 @@ from legacy.CourseSearchBuilder.entry import course_search_builder_main
 from legacy.CreateDataSet.entry import create_dataset_main
 from legacy.CreateInst.entry import create_institutions_main
 from legacy.EtlPipeline.entry import etl_pipeline_main
-from legacy.PostcodeSearchBuilder.entry import postcode_search_builder_main
 from legacy.SubjectBuilder.entry import subject_builder_main
 from services import blob_service
 from services import cosmos_client
@@ -143,14 +142,6 @@ async def etl_pipeline():
     )
     return response
 
-
-@app.get("/PostcodeSearchBuilder/")
-async def postcode_search_builder():
-    logging.info("Postcode Search Builder started")
-    response = postcode_search_builder_main(
-        blob_service=BLOB_SERVICE,
-    )
-    return response
 
 
 @app.get("/SubjectBuilder/")
