@@ -26,13 +26,16 @@ class BlobService(BlobServiceBase):
         """
         clean_files = [BLOB_HESA_BLOB_NAME, BLOB_QUALIFICATIONS_BLOB_NAME]  # files that don't need to be cleaned
 
+        # get the files
         blob_client = self.get_service_client().get_blob_client(container=container_name, blob=blob_name)
         response = blob_client.download_blob()
         file_content = io.BytesIO(response.readall())
 
+        # check file type
         file_type = magic.from_buffer(file_content.getvalue(), mime=True)
         print(f'FILE TYPE IS: {file_type}')
 
+        # only clean the problem files
         if blob_name not in clean_files:
             if file_type == 'application/gzip':
                 self.clean_gzip_file(file_content)
@@ -42,12 +45,14 @@ class BlobService(BlobServiceBase):
 
         file_lines = []
         try:
+            # open csv/text file and append to file lines
             if file_type == 'text/csv':
                 file_content.seek(0)
                 with io.TextIOWrapper(file_content, encoding='utf-8') as file:
                     reader = csv.reader(file)
                     for row in reader:
                         file_lines.append(','.join(row))
+            # open gzip file and append to file lines
             elif file_type == 'application/gzip':
                 file_content.seek(0)
                 with gzip.GzipFile(fileobj=file_content, mode='rt', encoding='utf-8') as file:
