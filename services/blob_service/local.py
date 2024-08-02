@@ -12,6 +12,8 @@ from constants import BLOB_QUALIFICATIONS_CONTAINER_NAME
 from constants import BLOB_QUALIFICATIONS_BLOB_NAME
 from services.blob_service.base import BlobServiceBase
 from legacy.EtlPipeline.utils import clean_file_data
+import gzip
+import magic
 
 
 class BlobServiceLocal(BlobServiceBase):
@@ -36,24 +38,53 @@ class BlobServiceLocal(BlobServiceBase):
         :return: Retrieved string file
         :rtype: str
         """
-        clean_files = ['latest.xml', 'qualification-levels.csv']
-        file_path = self.blob_path + container_name + "/" + blob_name
+
+
+        clean_files = [BLOB_HESA_BLOB_NAME, BLOB_QUALIFICATIONS_BLOB_NAME] # files that dont need to be cleaned
+
+        file_path = f'{self.blob_path}{container_name}/{blob_name}.gz'
+        print(f"Retrieving string file from {file_path}")
+
+        file_type = magic.from_file(file_path, mime=True)
+        print(f'FILE TYPE IS: {file_type}')
+
+        # clean bad data
         if blob_name not in clean_files:
-            clean_file_data(file_path)
+            clean_file_data(file_path, file_type)
             print("DATA CLEANED")
 
-        print(f"Retrieving string file from {file_path}")
-        try:
-            with open(file_path, "r") as file:
-                file_lines = file.readlines()
-        except FileNotFoundError:
-            logging.warning(f"File {file_path} not found")
-            return ""
+        file_lines = []
+        if file_type == 'text/csv':
+            try:
+                with open(file_path, 'r', newline='') as file:
+                    reader = csv.reader(file)
+                    for row in reader:
+                        file_lines.append(','.join(row))
+            except Exception as e:
+                logging.error(f"An error occurred while reading the file: {e}")
+                return ""
+        else:
+            try:
+                # Open the GZIP file directly from local path
+                with gzip.open(file_path, "rt", encoding="utf-8") as file:
+                    reader = csv.reader(file)
+                    for row in reader:
+                        file_lines.append(','.join(row))
+            except FileNotFoundError:
+                logging.warning(f"File {file_path} not found")
+                return ""
+            except gzip.BadGzipFile:
+                logging.error(f"File {file_path} not a gzip file or is corrupted")
+                return ""
+            except Exception as e:
+                logging.error(f"An unexpected error occurred while reading the file: {e}")
+                return ""
+
 
         # Format csv to match that of general blob service method
         for index, line in enumerate(file_lines):
             file_lines[index] = line.replace("\n", "")
-
+        # file_lines = [line.replace("\n", "") for line in file_lines]
         file_string = "\n".join(file_lines)
         return file_string
 

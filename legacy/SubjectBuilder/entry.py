@@ -44,7 +44,6 @@ def subject_builder_main(
 
         rows = csv_string.splitlines()
         number_of_subjects = len(rows) - 1
-        # rows_list = [row.split(",") for row in rows]
         rows_list = process_csv_string(csv_string)
 
         # csv header row

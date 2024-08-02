@@ -8,6 +8,7 @@ from constants import COSMOS_COLLECTION_INSTITUTIONS
 from constants import COSMOS_COLLECTION_SUBJECTS
 from legacy.EtlPipeline.stats.shared_utils import SharedUtils
 from io import StringIO
+import gzip
 
 if TYPE_CHECKING:
     from legacy.EtlPipeline.subject_enricher import SubjectCourseEnricher
@@ -161,26 +162,15 @@ def get_subject_lookups(cosmos_service: type["CosmosService"], version: int) -> 
         for lookup in lookup_list
     }
 
-def clean_file_data(file_path: str) -> str:
+def clean_file_data(file_path: str, file_type: str) -> str:
     """
     clean the csv file data to remove unwanted commas and \ufeff
     """
-    cleaned_rows = []
+    if file_type == 'text/csv':
+        clean_csv_file(file_path)
+    else:
+        clean_gzip_file(file_path)
 
-    # Read the file and clean data
-    with open(file_path, mode='r', newline='', encoding='utf-8') as infile:
-        reader = csv.reader(infile)
-        for i, row in enumerate(reader):
-            if i == 0 and row:
-                # Check for BOM and remove it
-                row[0] = row[0].lstrip('\ufeff')
-            cleaned_row = [field.strip() for field in row if field.strip() != '']
-            cleaned_rows.append(cleaned_row)
-
-    # Write the cleaned data to the same file
-    with open(file_path, mode='w', newline='', encoding='utf-8') as outfile:
-        writer = csv.writer(outfile, quoting=csv.QUOTE_ALL)
-        writer.writerows(cleaned_rows)
 
 
 def process_csv_string(csv_string: str):
@@ -191,3 +181,45 @@ def process_csv_string(csv_string: str):
     reader = csv.reader(csv_file)
     rows_list = list(reader)
     return rows_list
+
+def clean_csv_file(file_path:str) -> str:
+    """
+     opens and cleans the csv file
+     file data to remove unwanted commas and \ufeff
+     """
+    cleaned_rows = []
+    with open(file_path, mode='r', newline='', encoding='utf-8') as infile:
+        reader = csv.reader(infile)
+        for i, row in enumerate(reader):
+            if i == 0 and row:
+                # Check for BOM and remove it
+                row[0] = row[0].lstrip('\ufeff')
+            cleaned_row = [field.strip() for field in row]
+            cleaned_rows.append(cleaned_row)
+
+    # Write the cleaned data to the same file
+    with open(file_path, mode='wt', newline='', encoding='utf-8') as outfile:
+        writer = csv.writer(outfile, quoting=csv.QUOTE_ALL)
+        writer.writerows(cleaned_rows)
+
+
+def clean_gzip_file(file_path: str) -> str:
+    """
+    opens and cleans the gzip file
+    file data to remove unwanted commas and \ufeff
+    """
+
+    cleaned_rows = []
+    with gzip.open(file_path, "rt", encoding="utf-8") as infile:
+        reader = csv.reader(infile)
+        for i, row in enumerate(reader):
+            if i == 0 and row:
+                # Check for BOM and remove it
+                row[0] = row[0].lstrip('\ufeff')
+            cleaned_row = [field.strip() for field in row]
+            cleaned_rows.append(cleaned_row)
+
+    # Write the cleaned data to the same file with custom quoting
+    with gzip.open(file_path, mode='w', newline='', encoding='utf-8') as outfile:
+        writer = csv.writer(outfile, quoting=csv.QUOTE_ALL)
+        writer.writerows(cleaned_rows)

@@ -21,7 +21,7 @@ class QualificationCourseEnricher:
                 raise exceptions.StopEtlPipelineErrorException
 
             self.qualification_levels = rows
-        print("QUALIFICATION LEVELS", self.qualification_levels)
+
 
     @staticmethod
     def validate_column_headers(header_row: str) -> bool:
@@ -75,7 +75,7 @@ class QualificationCourseEnricher:
         """
         rows = csv.reader(self.qualification_levels)
         for row in rows:
-            print("CODE", code, "ROW", row[0])
+
             if row[0] == code:
                 return row[1]
         return ""
