@@ -24,21 +24,43 @@ class BlobService(BlobServiceBase):
         :return: Retrieved string file
         :rtype: str
         """
+        clean_files = [BLOB_HESA_BLOB_NAME, BLOB_QUALIFICATIONS_BLOB_NAME]  # files that don't need to be cleaned
+
         blob_client = self.get_service_client().get_blob_client(container=container_name, blob=blob_name)
         response = blob_client.download_blob()
+        file_content = io.BytesIO(response.readall())
 
-        compressed_file = io.BytesIO(response.readall())
+        file_type = magic.from_buffer(file_content.getvalue(), mime=True)
+        print(f'FILE TYPE IS: {file_type}')
 
-        compressed_gzip = gzip.GzipFile(fileobj=compressed_file)
+        if blob_name not in clean_files:
+            if file_type == 'application/gzip':
+                self.clean_gzip_file(file_content)
+            elif file_type == 'text/csv':
+                self.clean_csv_file(file_content)
+            print("DATA CLEANED")
 
-        decompressed_file = compressed_gzip.read()
+        file_lines = []
+        try:
+            if file_type == 'text/csv':
+                file_content.seek(0)
+                with io.TextIOWrapper(file_content, encoding='utf-8') as file:
+                    reader = csv.reader(file)
+                    for row in reader:
+                        file_lines.append(','.join(row))
+            elif file_type == 'application/gzip':
+                file_content.seek(0)
+                with gzip.GzipFile(fileobj=file_content, mode='rt', encoding='utf-8') as file:
+                    reader = csv.reader(file)
+                    for row in reader:
+                        file_lines.append(','.join(row))
+        except Exception as e:
+            logging.error(f"An error occurred while reading the file: {e}")
+            return ""
 
-        compressed_file.close()
-        compressed_gzip.close()
-
-        file_string = decompressed_file.decode("utf-8-sig")
-
+        file_string = "\n".join(line.replace("\n", "") for line in file_lines)
         return file_string
+
 
     def write_stream_file(self, container_name: str, blob_name: str, encoded_file: bytes) -> None:
         """
@@ -55,4 +77,42 @@ class BlobService(BlobServiceBase):
         blob_client = self.get_service_client().get_blob_client(container=container_name, blob=blob_name)
         blob_client.upload_blob(encoded_file, overwrite=True)
 
+    def clean_csv_file(self, file_content: io.BytesIO) -> None:
+        """
+        Cleans the CSV data to remove unwanted BOM and excess whitespace.
+        """
+        cleaned_rows = []
+        file_content.seek(0)
+        reader = csv.reader(io.TextIOWrapper(file_content, encoding='utf-8'))
+        for i, row in enumerate(reader):
+            if i == 0 and row:
+                row[0] = row[0].lstrip('\ufeff')
+            cleaned_row = [field.strip() for field in row]
+            cleaned_rows.append(cleaned_row)
+
+        file_content.seek(0)
+        file_content.truncate(0)
+        writer = csv.writer(io.TextIOWrapper(file_content, encoding='utf-8', write_through=True), quoting=csv.QUOTE_ALL)
+        writer.writerows(cleaned_rows)
+
+
+    def clean_gzip_file(self, file_content: io.BytesIO) -> None:
+        """
+        Cleans the GZIP data to remove unwanted BOM and excess whitespace.
+        """
+        cleaned_rows = []
+        file_content.seek(0)
+        with gzip.GzipFile(fileobj=file_content, mode='rt', encoding='utf-8') as infile:
+            reader = csv.reader(infile)
+            for i, row in enumerate(reader):
+                if i == 0 and row:
+                    row[0] = row[0].lstrip('\ufeff')
+                cleaned_row = [field.strip() for field in row]
+                cleaned_rows.append(cleaned_row)
+
+        file_content.seek(0)
+        file_content.truncate(0)
+        with gzip.GzipFile(fileobj=file_content, mode='wt', encoding='utf-8') as outfile:
+            writer = csv.writer(outfile, quoting=csv.QUOTE_ALL)
+            writer.writerows(cleaned_rows)
 
