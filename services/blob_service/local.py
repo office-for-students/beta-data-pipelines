@@ -100,7 +100,7 @@ class BlobServiceLocal(BlobServiceBase):
         :type encoded_file: bytes
         :return: None
         """
-        file_path = self.blob_path + "/" + container_name + "/" + blob_name
+        file_path = self.blob_path + "/" + container_name + blob_name
         with open(file_path, "w") as file:
             file.write(encoded_file.decode("utf-8-sig"))
 

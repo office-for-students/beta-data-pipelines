@@ -1,11 +1,13 @@
 import logging
 from datetime import datetime
 from logging.config import fileConfig
-
+import os
+import json
 from fastapi import FastAPI
 from starlette.routing import Mount
 from starlette.staticfiles import StaticFiles
-
+from constants import LOCAL_COSMOS_CONTAINER_PATH
+from constants import COSMOS_COLLECTION_INSTITUTIONS
 from constants import BLOB_AZURE_CONNECT_STRING
 from constants import BLOB_HESA_BLOB_NAME
 from constants import BLOB_HESA_CONTAINER_NAME
@@ -160,3 +162,34 @@ async def subject_builder():
         dataset_service=DATASET_SERVICE
     )
     return response
+
+
+@app.get("/countInst/")
+async def subject_builder():
+    '''
+    Get list of all institutions and how many institutions - debugging purposes
+    '''
+
+    file_path = os.getcwd() + LOCAL_COSMOS_CONTAINER_PATH + COSMOS_COLLECTION_INSTITUTIONS + ".json"
+    print(file_path)
+    with open(file_path, 'r') as file:
+        data = json.load(file)['5']
+        all_institutions = []
+        not_duplicated = []
+        for inst in data:
+            all_institutions.append(inst['institution']['legal_name']) # get every one
+            if inst['institution']['legal_name'] not in not_duplicated:
+                not_duplicated.append(inst['institution']['legal_name']) # only get it if its not a duplicate
+        len_all_institutions = len(all_institutions)
+        len_not_duplicate = len(not_duplicated)
+        sorted_all_institutions = sorted(all_institutions)
+        sorted_not_duplicate = sorted(not_duplicated)
+
+    data = {
+        "len_all_institutions": len_all_institutions,
+        "number_of_duplicates": len_all_institutions - len_not_duplicate,
+        "len_not_duplicate": len_not_duplicate,
+        "not_duplicated": sorted_not_duplicate,
+
+    }
+    return data

@@ -122,7 +122,6 @@ def course_search_builder_main(
         dataset_service.update_status("root", "failed")
 
         function_fail_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
-        function_fail_date = datetime.today().strftime("%d.%m.%Y")
 
         message = f"CourseSearchBuilder failed on {function_fail_datetime}"
         exception = traceback.format_exc()
