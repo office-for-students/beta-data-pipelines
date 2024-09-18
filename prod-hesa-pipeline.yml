@@ -103,19 +103,18 @@
                 shutil.copyfileobj(f_in, f_out)
 
         print('Archive complete!')
-
-
-  - task: AzureFileCopy@3
-    displayName: 'Copy kis archive to storage blob'
+  - task: AzureCLI@2
+    displayName: 'Copy KIS archive to storage blob'
     inputs:
-      SourcePath: '$(Agent.TempDirectory)\latest.xml.gz'
       azureSubscription: '$(AzureSubscription)'
-      Destination: 'AzureBlob'
-      storage: '$(AzureStorageAccount)'
-      ContainerName: '$(AzureStorageBlob)'
-
-
-
+      scriptType: 'ps'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        az storage blob upload `
+          --account-name $(AzureStorageAccount) `
+          --container-name $(AzureStorageBlob) `
+          --name latest.xml.gz `
+          --file "$(Agent.TempDirectory)\latest.xml.gz"
   - task: PythonScript@0
     displayName: 'Start Data Import PIpeline'
     inputs:
