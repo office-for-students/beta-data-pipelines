@@ -104,6 +104,15 @@
 
         print('Archive complete!')
   - task: AzureCLI@2
+    displayName: 'Login to Azure'
+    inputs:
+      azureSubscription: '$(AzureSubscription)'
+      scriptType: 'ps'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        # Login to Azure
+        az login --service-principal -u $(servicePrincipalId) -p $(servicePrincipalKey) --tenant $(tenantId)
+  - task: AzureCLI@2
     displayName: 'Copy KIS archive to storage blob'
     inputs:
       azureSubscription: '$(AzureSubscription)'
