@@ -12,7 +12,7 @@
   strategy:
     matrix:
       Python39:
-        python.version: '3.9'
+        python.version: '3.10'
 
   # Build Process Tree
   steps:
@@ -29,7 +29,7 @@
     inputs:
       scriptSource: 'inline'
       script: |
-        """Downlaod the latest archive from HESA"""
+        """Download the latest archive from JISC/HESA"""
         import urllib.request
 
         hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
