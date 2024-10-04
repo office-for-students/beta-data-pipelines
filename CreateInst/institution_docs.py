@@ -221,8 +221,12 @@ class InstitutionDocs:
         institution_element["pub_ukprn_country"] = get_country(
             raw_inst_data["PUBUKPRNCOUNTRY"]
         )
-        if "TEFOutcome" in raw_inst_data:
+        if "TEFOutcome" in raw_inst_data and not isinstance(raw_inst_data["TEFOutcome"], list):
             institution_element["tef_outcome"] = add_tef_data(raw_inst_data["TEFOutcome"])
+        elif isinstance(raw_inst_data.get("TEFOutcome"), list):
+            institution_element["tef_outcome"] = list()
+            for tef_outcome in raw_inst_data.get("TEFOutcome"):
+                institution_element["tef_outcome"].append(add_tef_data(tef_outcome))
         if "QAA_Report_Type" in raw_inst_data or "QAA_URL" in raw_inst_data:
             institution_element["qaa_report_type"] = raw_inst_data.get("QAA_Report_Type")
             institution_element["qaa_url"] = raw_inst_data.get("QAA_URL")
