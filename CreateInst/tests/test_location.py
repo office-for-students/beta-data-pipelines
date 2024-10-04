@@ -1,8 +1,9 @@
 import unittest
 import defusedxml.ElementTree as ET
 
-from inst_test_utils import get_string
+
 from CreateInst.locations import Locations
+from CreateInst.tests.test_helpers.inst_test_utils import get_string
 
 
 class TestLocationLookup(unittest.TestCase):

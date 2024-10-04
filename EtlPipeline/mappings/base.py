@@ -51,14 +51,14 @@ class BaseMappings:
                     if self.in_and_not_na(key=xml_key, data=elem):
 
                         if json_key in self.unavailable_keys:
-                            json_data[json_key] = elem[xml_key]
+                            json_data[json_key] = elem.get(xml_key)
                             self.custom_unavailable(json_data=json_data, elem=elem, key=json_key)
 
                         elif json_key == "subject":
-                            json_data[json_key] = get_subject(elem[xml_key], self.subject_enricher)
+                            json_data[json_key] = get_subject(elem.get(xml_key), self.subject_enricher)
 
                         else:
-                            json_data[json_key] = elem[xml_key]
+                            json_data[json_key] = elem.get(xml_key)
 
                 self.per_course_unavailable(json_data=json_data)
 
@@ -82,6 +82,6 @@ class BaseMappings:
     @staticmethod
     def in_and_not_na(key: str, data: Dict[str, Any]) -> bool:
         if key in data:
-            if data[key].lower() != "na":
+            if data.get(key).lower() != "na":
                 return True
         return False

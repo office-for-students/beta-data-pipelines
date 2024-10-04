@@ -44,10 +44,19 @@ def validate_headers(header: str, xml: str):
     return False
 
 
+def add_tef_data(raw_inst_data):
+    return dict(
+        report_ukprn=raw_inst_data["REPORT_UKPRN"],
+        overall_rating=raw_inst_data["OVERALL_RATING"],
+        student_experience_rating=raw_inst_data["STUDENT_EXPERIENCE_RATING"],
+        student_outcomes_rating=raw_inst_data["STUDENT_OUTCOMES_RATING"],
+        outcome_url=raw_inst_data.get("OUTCOME_URL")
+    )
+
+
 def validate_column_headers(header_row):
     logging.info(f"Validating header row, headers: {header_row}")
     header_list = header_row.split(",")
-    print("HEADER LIST", header_list)
 
     try:
         valid = True
@@ -55,7 +64,7 @@ def validate_column_headers(header_row):
             logging.info(f"got in ukprn: {header_list[0]}")
             valid = False
 
-        #WELSH NAME COMES FROM OFS
+        # WELSH NAME COMES FROM OFS
         if header_list[1] != "welsh_name":
             logging.info(f"got in welsh_name: {header_list[1]}")
             valid = False
@@ -191,7 +200,7 @@ class InstitutionDocs:
         first_trading_name = raw_inst_data.get("FIRST_TRADING_NAME", "")
         other_names = raw_inst_data.get("OTHER_NAMES", "")
 
-        institution_element["legal_name"] = pn_handler.presentable(legal_name)
+        institution_element["legal_name"] = legal_name
         if first_trading_name:
             institution_element["first_trading_name"] = first_trading_name
             institution_element["pub_ukprn_name"] = first_trading_name
@@ -206,14 +215,21 @@ class InstitutionDocs:
                 provider_name=institution_element["legal_name"]
             )
         if other_names:
-            institution_element["other_names"] = pn_handler.presentable(other_names).split("###")
+            institution_element["other_names"] = other_names.split("###")
 
         institution_element["pub_ukprn"] = pubukprn
         institution_element["pub_ukprn_country"] = get_country(
             raw_inst_data["PUBUKPRNCOUNTRY"]
         )
-        if "TEFOutcome" in raw_inst_data:
-            institution_element["tef_outcome"] = raw_inst_data["TEFOutcome"]
+        if "TEFOutcome" in raw_inst_data and not isinstance(raw_inst_data["TEFOutcome"], list):
+            institution_element["tef_outcome"] = add_tef_data(raw_inst_data["TEFOutcome"])
+        elif isinstance(raw_inst_data.get("TEFOutcome"), list):
+            institution_element["tef_outcome"] = list()
+            for tef_outcome in raw_inst_data.get("TEFOutcome"):
+                institution_element["tef_outcome"].append(add_tef_data(tef_outcome))
+        if "QAA_Report_Type" in raw_inst_data or "QAA_URL" in raw_inst_data:
+            institution_element["qaa_report_type"] = raw_inst_data.get("QAA_Report_Type")
+            institution_element["qaa_url"] = raw_inst_data.get("QAA_URL")
         institution_element[
             "total_number_of_courses"
         ] = get_total_number_of_courses(institution)
@@ -271,7 +287,7 @@ class InstitutionDocs:
                 # Reset values
                 new_docs = []
                 sproc_count = 0
-                time.sleep(4)
+                time.sleep(10)
 
         if sproc_count > 0:
             logging.info(f"Begining execution of stored procedure for {sproc_count} documents")

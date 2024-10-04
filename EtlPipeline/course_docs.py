@@ -10,6 +10,7 @@ during development and testing.
 """
 import datetime
 import inspect
+import json
 import logging
 import os
 import sys
@@ -99,12 +100,16 @@ def load_course_docs(xml_string, version):
         raw_inst_data = xmltodict.parse(ET.tostring(institution))[
             "INSTITUTION"
         ]
-        ukprn = raw_inst_data["UKPRN"]
-        for course in institution.findall("KISCOURSE"):
-            try:
-                raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
-                locids = get_locids(raw_course_data, ukprn)
 
+        ukprn = raw_inst_data["UKPRN"]
+        logging.info(f"Ingesting course for: ({raw_inst_data['PUBUKPRN']})")
+        for course in institution.findall("KISCOURSE"):
+            raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
+            logging.info(f"COURSE COUNT: {course_count}")
+            logging.info(
+                f"Ingesting course for: {raw_inst_data['PUBUKPRN']}/{raw_course_data['KISCOURSEID']}/{raw_course_data['KISMODE']}) | start {version}")
+            try:
+                locids = get_locids(raw_course_data, ukprn)
                 course_doc = get_course_doc(
                     accreditations,
                     locations,
@@ -121,33 +126,28 @@ def load_course_docs(xml_string, version):
                 enricher.enrich_course(course_doc)
                 subject_enricher.enrich_course(course_doc)
                 qualification_enricher.enrich_course(course_doc)
-
                 new_docs.append(course_doc)
                 sproc_count += 1
+                logging.info(f"FINISHED COUNT: {course_count}")
                 course_count += 1
 
-                if sproc_count >= 40:
+                if sproc_count >= 5:
                     logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
                     cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
                     logging.info(f"Successfully loaded another {sproc_count} documents")
                     # Reset values
                     new_docs = []
                     sproc_count = 0
-                    time.sleep(3)
             except Exception as e:
-
+                logging.warning(f"FAILED AT COUNT: {course_count}")
+                logging.warning(f"FAILED: Ingesting course for: {raw_inst_data['PUBUKPRN']}/{raw_course_data['KISCOURSEID']}/{raw_course_data['KISMODE']}) | end {version}")
                 institution_id = raw_inst_data["UKPRN"]
                 course_id = raw_course_data["KISCOURSEID"]
                 course_mode = raw_course_data["KISMODE"]
                 tb = traceback.format_exc()
-                exception_text = f"There was an error: {e} when creating the course document for course with institution_id: {institution_id} course_id: {course_id} course_mode: {course_mode} TRACEBACK: {tb}"
+                exception_text = f"Failed error: {e} when creating the course document for course with institution_id: {institution_id} course_id: {course_id} course_mode: {course_mode} TRACEBACK: {tb}"
                 logging.info(exception_text)
 
-                # with open("course_docs_exceptions_{}.txt".format(version), "a") as myfile:
-                #     myfile.write(exception_text + "\n")
-                #     myfile.write(tb + "\n")
-                #     myfile.write(
-                #         "================================================================================================\n")
 
     if sproc_count > 0:
         logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
@@ -165,30 +165,15 @@ def get_locids(raw_course_data, ukprn):
     locids = []
     if "COURSELOCATION" not in raw_course_data:
         return locids
+
     if isinstance(raw_course_data["COURSELOCATION"], list):
         for val in raw_course_data["COURSELOCATION"]:
-            # TODO if UCASCOURSEIDs present, then process accordingly
-            # For example, check distant learning is set True. May
-            # also need to change function name and return type.
-            try:
-                locids.append(f"{val['LOCID']}{ukprn}")
-            except KeyError:
-                # TODO: Handle COURSELOCATION without LOCID.
-                # See KISCOURSEID BADE for an example of this.
-                # Distant learning may provide a UCASCOURSEID
-                # under COURSELOCATION
-                pass
+            locids.append(f"{val.get('LOCID', {})}{ukprn}")
     else:
-        try:
-            locids.append(
-                f"{raw_course_data['COURSELOCATION']['LOCID']}{ukprn}"
-            )
-        except KeyError:
-            # TODO: Handle COURSELOCATION without LOCID.
-            # See KISCOURSEID BADE for an example of this.
-            # Distant learning may provide a UCASCOURSEID
-            # under COURSELOCATION
-            pass
+        locids.append(
+            f"{raw_course_data['COURSELOCATION'].get('LOCID', {})}{ukprn}"
+        )
+
     return locids
 
 
@@ -413,6 +398,7 @@ def get_go_inst_json(raw_go_inst_data, subject_enricher):
             mapping_id="GO",
             subject_enricher=subject_enricher
         )
+
         return mapper.map_xml_to_json_array(
             xml_as_array=raw_go_inst_data,
         )
@@ -479,7 +465,7 @@ def get_code_label_entry(lookup_table_raw_xml, lookup_table_local, key):
     if key in lookup_table_raw_xml:
         code = get_code(lookup_table_raw_xml, key)
         entry["code"] = code
-        entry["label"] = lookup_table_local[code]
+        entry["label"] = lookup_table_local.get(code)
     return entry
 
 
@@ -522,14 +508,16 @@ def get_location_items(locations, locids, raw_course_data, pub_ukprn):
 
     course_locations = SharedUtils.get_raw_list(
         raw_course_data, "COURSELOCATION"
-    )
+    ) if SharedUtils.get_raw_list(
+        raw_course_data, "COURSELOCATION"
+    ) else []
     item = {}
     for course_location in course_locations:
         if "LOCID" not in course_location:
             continue
 
         if "UCASCOURSEID" in course_location:
-            lookup_key = course_location["LOCID"] + pub_ukprn
+            lookup_key = course_location.get("LOCID") + pub_ukprn
             item[lookup_key] = course_location["UCASCOURSEID"]
 
     for locid in locids:
@@ -598,8 +586,7 @@ def process_stats(
 
             if go_sector_salary is not None:
                 xml_array.append(go_sector_salary)
-
-        return xml_array
+    return xml_array
 
 
 def get_go_sector_json(
