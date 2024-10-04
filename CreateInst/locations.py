@@ -49,4 +49,4 @@ class Locations:
                 # f.close()
 
     def get_location(self, key):
-        return self.lookup_dict.get(key)
+        return self.lookup_dict.get(key, {})

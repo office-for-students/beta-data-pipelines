@@ -55,7 +55,7 @@ class Loader:
                 # Reset values
                 new_docs = []
                 sproc_count = 0
-                time.sleep(2)
+                time.sleep(10)
 
         if sproc_count > 0:
             logging.info(f"Begining execution of stored procedure for {sproc_count} documents")

@@ -1,3 +1,5 @@
+from typing import Dict
+
 from SharedCode import utils
 
 
@@ -25,6 +27,7 @@ class UkRlpCourseEnricher:
         course["course"]["institution"][
             "pub_ukprn_welsh_name"
         ] = self.get_ukprn_welsh_name(pub_ukprn)
+        course["course"]["institution"]["pub_ukprn_country"] = self.get_country(pub_ukprn)
 
     def get_ukprn_name(self, ukprn):
         """Returns a name for the ukprn"""
@@ -39,3 +42,10 @@ class UkRlpCourseEnricher:
             return "not available"
 
         return self.ukrlp_lookups[ukprn].get("ukprn_welsh_name", "not available")
+
+    def get_country(self, pub_ukprn) -> Dict[str, str]:
+        """Returns a {code: code, "name": name} for the pub_ukprn country"""
+        if pub_ukprn not in self.ukrlp_lookups:
+            return "not available"
+
+        return self.ukrlp_lookups[pub_ukprn].get("country")

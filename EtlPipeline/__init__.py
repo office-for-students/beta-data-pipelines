@@ -11,7 +11,7 @@ import azure.functions as func
 from EtlPipeline import course_docs
 from SharedCode.blob_helper import BlobHelper
 from SharedCode.dataset_helper import DataSetHelper
-from SharedCode.mail_helper import MailHelper
+# from SharedCode.mail_helper import MailHelper
 
 
 def main(msgin: func.QueueMessage, msgout: func.Out[str]):
@@ -27,7 +27,7 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
 
     msgerror = ""
 
-    mail_helper = MailHelper()
+    # mail_helper = MailHelper()
     environment = os.environ["Environment"]
 
     dsh = DataSetHelper()
@@ -87,11 +87,11 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
         function_fail_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
         function_fail_date = datetime.today().strftime("%d.%m.%Y")
 
-        mail_helper.send_message(
-            f"Automated data import failed on {function_fail_datetime} at EtlPipeline" + msgin.get_body().decode(
-                "utf-8") + msgerror,
-            f"Data Import {environment} - {function_fail_date} - Failed"
-        )
+        # mail_helper.send_message(
+        #     f"Automated data import failed on {function_fail_datetime} at EtlPipeline" + msgin.get_body().decode(
+        #         "utf-8") + msgerror,
+        #     f"Data Import {environment} - {function_fail_date} - Failed"
+        # )
 
         logging.error(f"EtlPipeline failed on {function_fail_datetime}")
 

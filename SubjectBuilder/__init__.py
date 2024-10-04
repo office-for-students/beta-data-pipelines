@@ -9,7 +9,7 @@ import azure.functions as func
 
 from ..SharedCode.dataset_helper import DataSetHelper
 from ..SharedCode.blob_helper import BlobHelper
-from ..SharedCode.mail_helper import MailHelper
+# from ..SharedCode.mail_helper import MailHelper
 
 from . import validate, database, exceptions
 
@@ -23,7 +23,7 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
 
     function_start_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
 
-    mail_helper = MailHelper()
+    # mail_helper = MailHelper()
     environment = os.environ["Environment"]
 
     logging.info(
@@ -83,10 +83,10 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
         function_fail_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
         function_fail_date = datetime.today().strftime("%d.%m.%Y")
 
-        mail_helper.send_message(
-            f"Automated data import failed on {function_fail_datetime} at SubjectBuilder" + msgin.get_body().decode("utf-8") + msgerror,
-            f"Data Import {environment} - {function_fail_date} - Failed"
-        )
+        # mail_helper.send_message(
+        #     f"Automated data import failed on {function_fail_datetime} at SubjectBuilder" + msgin.get_body().decode("utf-8") + msgerror,
+        #     f"Data Import {environment} - {function_fail_date} - Failed"
+        # )
 
         logging.error(f"SubjectBuilder failed on {function_fail_datetime} ", exc_info=True)
 

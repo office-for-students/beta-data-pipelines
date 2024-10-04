@@ -67,6 +67,19 @@ class TestStaticHelperFunctions(unittest.TestCase):
         self.assertEqual(expected_resp, resp)
 
 
+# class TestNewInstitutionData(unittest.TestCase):
+#     def setUp(self) -> None:
+#         self.one_inst_many_courses = get_string("fixtures/one_inst.xml")
+#         self.root = ET.fromstring(self.one_inst_many_courses)
+#
+#     def test_get_total_number_of_courses(self):
+#         institution = get_first(self.root.iter("INSTITUTION"))
+#         expected_number_of_courses = 75
+#         number_of_courses = get_total_number_of_courses(institution)
+#         self.assertEqual(expected_number_of_courses, number_of_courses)
+
+
+
 # TODO: Rework the test below
 # class TestGetInstitutionDoc(unittest.TestCase):
 #     def setUp(self):

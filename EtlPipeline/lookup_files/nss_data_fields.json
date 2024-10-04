@@ -1,6 +1,9 @@
 {
     "NSSAGG": ["aggregation_level", "M"],
     "NSSPOP": ["number_of_students", "M"],
+    "NSSAGGYEAR": ["aggregation_year", "M"],
+    "NSSYEAR1": ["aggregation_year_1", "M"],
+    "NSSYEAR2": ["aggregation_year_1", "O"],
     "Q1": ["question_1", "M"],
     "Q2": ["question_2", "M"],
     "Q3": ["question_3", "M"],
@@ -28,6 +31,15 @@
     "Q25": ["question_25", "M"],
     "Q26": ["question_26", "M"],
     "Q27": ["question_27", "M"],
+    "Q28": ["question_28", "M"],
     "NSSRESP_RATE": ["response_rate", "M"],
+    "NSSCOUNTRYUNAVAILREASON": ["nss_country_unavailable_code", "M"],
+    "NSSCOUNTRYPOP": ["nss_country_population", "O"],
+    "NSSCOUNTRYAGG": ["nss_country_aggregation", "O"],
+    "NSSCOUNTRYAGGYEAR": ["nss_country_aggregation_year", "O"],
+    "NSSCOUNTRYYEAR1": ["nss_country_year_1", "O"],
+    "NSSCOUNTRYYEAR2": ["nss_country_year_2", "O"],
+    "NSSCOUNTRYRESP_RATE": ["nss_country_response_rate", "O"],
+    "NSSCOUNTRYSBJ": ["nss_country_subject", "O"],
     "NSSSBJ": ["subject", "O"]
 }

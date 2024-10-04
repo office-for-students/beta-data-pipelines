@@ -16,6 +16,7 @@ class GoInstitutionMappings(BaseMappings):
         return [
             (f'{self.mapping_id}SALUNAVAILREASON', "unavail_reason"),
             (f'{self.mapping_id}SALPOP', "pop"),
+            (f'{self.mapping_id}SALAGGYEAR', "aggregation_year"),
             (f'{self.mapping_id}SALRESP_RATE', "resp_rate"),
             (f'{self.mapping_id}SALAGG', "agg"),
             (f'{self.mapping_id}SALSBJ', "subject"),

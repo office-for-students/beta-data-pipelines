@@ -10,7 +10,7 @@ from datetime import datetime
 import azure.functions as func
 
 from SharedCode.blob_helper import BlobHelper
-from SharedCode.mail_helper import MailHelper
+# from SharedCode.mail_helper import MailHelper
 
 from . import search
 
@@ -20,13 +20,13 @@ def main(req: func.HttpRequest,) -> None:
 
     logging.info(f"PostcodeSearchBuilder request triggered")
 
-    mail_helper = MailHelper()
+    # mail_helper = MailHelper()
     environment = os.environ["Environment"]
-    mail_helper.send_message(f"Postcode search builder started on {function_start_datetime}", f"Postcode Search Builder {environment} - {function_start_date} - Started")
+    # mail_helper.send_message(f"Postcode search builder started on {function_start_datetime}", f"Postcode Search Builder {environment} - {function_start_date} - Started")
 
-    logging.info(
-        f"PostcodeSearchBuilder function started on {function_start_datetime}"
-    )
+    # logging.info(
+    #     f"PostcodeSearchBuilder function started on {function_start_datetime}"
+    # )
 
     api_key = os.environ['SearchAPIKey']
     search_url = os.environ['SearchURL']
@@ -56,7 +56,7 @@ def main(req: func.HttpRequest,) -> None:
         function_end_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
         function_end_date = datetime.today().strftime("%d.%m.%Y")
 
-        mail_helper.send_message(f"Postcode search builder completed on {function_end_datetime}", f"Postcode Search Builder {environment} - {function_end_date} - Completed")
+        # mail_helper.send_message(f"Postcode search builder completed on {function_end_datetime}", f"Postcode Search Builder {environment} - {function_end_date} - Completed")
 
         logging.info(
             f"PostcodeSearchBuilder successfully finished on {function_end_datetime}"
@@ -67,7 +67,7 @@ def main(req: func.HttpRequest,) -> None:
         function_fail_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
         function_fail_date = datetime.today().strftime("%d.%m.%Y")
 
-        mail_helper.send_message(f"Postcode search builder failed on {function_fail_datetime}", f"Postcode Search Builder {environment} - {function_fail_date} - Failed")
+        # mail_helper.send_message(f"Postcode search builder failed on {function_fail_datetime}", f"Postcode Search Builder {environment} - {function_fail_date} - Failed")
 
         logging.error(f"PostcodeSearchBuilder failed on {function_fail_datetime} ", exc_info=True)
 
