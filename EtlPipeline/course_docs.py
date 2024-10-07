@@ -197,8 +197,8 @@ def get_course_doc(
     outer_wrapper["version"] = version
     outer_wrapper["institution_id"] = raw_inst_data["PUBUKPRN"]
     outer_wrapper["course_id"] = raw_course_data["KISCOURSEID"]
-    outer_wrapper["course_mode"] = int(raw_course_data["KISMODE"])
-    outer_wrapper["course_level"] = int(raw_course_data["KISLEVEL"])
+    outer_wrapper["course_mode"] = f'0{int(raw_course_data["KISMODE"])}'
+    outer_wrapper["course_level"] = f'0{int(raw_course_data["KISLEVEL"])}'
     outer_wrapper["partition_key"] = str(version)
 
     course = {}
