@@ -598,6 +598,8 @@ def get_go_sector_json(
         course_level,
         subject_enricher
 ):
+    course_mode = f'0{course_mode}'
+    course_level = f'0{course_level}'
     go_salary_sector_xml_array = process_stats(
         primary_dataset=go_salary_inst_list,
         secondary_dataset=leo3_salary_inst_list,
