@@ -23,6 +23,8 @@ class SectorSalaries:
             raw_sector_salary_data = xmltodict.parse(
                 ET.tostring(sector_salary)
             )[sector_salary_type]
+            raw_sector_salary_data['KISMODE'] = str(int(raw_sector_salary_data['KISMODE']))
+            raw_sector_salary_data['KISLEVEL'] = str(int(raw_sector_salary_data['KISLEVEL']))
 
             sector_salary_key = (
                 f"{raw_sector_salary_data[sector_salary_key_type]}-{raw_sector_salary_data['KISMODE']}-{raw_sector_salary_data['KISLEVEL']}"
