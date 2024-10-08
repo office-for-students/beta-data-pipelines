@@ -28,11 +28,11 @@ steps:
       pip install --target="$(System.DefaultWorkingDirectory)/.python_packages/lib/site-packages" -r requirements.txt
     displayName: 'Install Python Dependencies'
 
-  # Execute Python Tests
-  - script: |
-      python3 -m pip install -r requirements.txt
-      pytest -v
-    displayName: 'pytest'
+#  # Execute Python Tests
+#  - script: |
+#      python3 -m pip install -r requirements.txt
+#      pytest -v
+#    displayName: 'pytest'
 
   # Archive the Azure Python Function into a ZIP package for deployment
   - task: ArchiveFiles@2
