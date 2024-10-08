@@ -105,6 +105,8 @@ def load_course_docs(xml_string, version):
         logging.info(f"Ingesting course for: ({raw_inst_data['PUBUKPRN']})")
         for course in institution.findall("KISCOURSE"):
             raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
+            raw_course_data['KISMODE'] = int(raw_course_data['KISMODE'])
+            raw_course_data['KISLEVEL'] = int(raw_course_data['KISLEVEL'])
             logging.info(f"COURSE COUNT: {course_count}")
             logging.info(
                 f"Ingesting course for: {raw_inst_data['PUBUKPRN']}/{raw_course_data['KISCOURSEID']}/{raw_course_data['KISMODE']}) | start {version}")
