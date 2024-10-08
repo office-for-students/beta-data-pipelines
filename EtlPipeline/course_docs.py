@@ -105,8 +105,8 @@ def load_course_docs(xml_string, version):
         logging.info(f"Ingesting course for: ({raw_inst_data['PUBUKPRN']})")
         for course in institution.findall("KISCOURSE"):
             raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
-            raw_course_data['KISMODE'] = int(raw_course_data['KISMODE'])
-            raw_course_data['KISLEVEL'] = int(raw_course_data['KISLEVEL'])
+            raw_course_data['KISMODE'] = str(int(raw_course_data['KISMODE']))
+            raw_course_data['KISLEVEL'] = str(int(raw_course_data['KISLEVEL']))
             logging.info(f"COURSE COUNT: {course_count}")
             logging.info(
                 f"Ingesting course for: {raw_inst_data['PUBUKPRN']}/{raw_course_data['KISCOURSEID']}/{raw_course_data['KISMODE']}) | start {version}")
@@ -199,8 +199,8 @@ def get_course_doc(
     outer_wrapper["version"] = version
     outer_wrapper["institution_id"] = raw_inst_data["PUBUKPRN"]
     outer_wrapper["course_id"] = raw_course_data["KISCOURSEID"]
-    outer_wrapper["course_mode"] = raw_course_data["KISMODE"]
-    outer_wrapper["course_level"] = raw_course_data["KISLEVEL"]
+    outer_wrapper["course_mode"] = int(raw_course_data["KISMODE"])
+    outer_wrapper["course_level"] = int(raw_course_data["KISLEVEL"])
     outer_wrapper["partition_key"] = str(version)
 
     course = {}
