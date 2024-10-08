@@ -26,6 +26,8 @@ class TestTotalNumbers(unittest.TestCase):
         for institution in self.xml_root.iter("INSTITUTION"):
             for course in institution.findall("KISCOURSE"):
                 raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
+                raw_course_data['KISMODE'] = int(raw_course_data['KISMODE'])
+                raw_course_data['KISLEVEL'] = int(raw_course_data['KISLEVEL'])
                 total_items.append(nss.get_stats(raw_course_data))
 
         self.assertEqual(len(total_items), self.target)
@@ -36,6 +38,8 @@ class TestTotalNumbers(unittest.TestCase):
         for institution in self.xml_root.iter("INSTITUTION"):
             for course in institution.findall("KISCOURSE"):
                 raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
+                raw_course_data['KISMODE'] = int(raw_course_data['KISMODE'])
+                raw_course_data['KISLEVEL'] = int(raw_course_data['KISLEVEL'])
                 total_items.append(entry.get_stats(raw_course_data))
 
         self.assertEqual(len(total_items), self.target)
@@ -46,6 +50,8 @@ class TestTotalNumbers(unittest.TestCase):
         for institution in self.xml_root.iter("INSTITUTION"):
             for course in institution.findall("KISCOURSE"):
                 raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
+                raw_course_data['KISMODE'] = int(raw_course_data['KISMODE'])
+                raw_course_data['KISLEVEL'] = int(raw_course_data['KISLEVEL'])
                 total_items.append(continuation.get_stats(raw_course_data))
 
         self.assertEqual(len(total_items), self.target)
@@ -56,6 +62,8 @@ class TestTotalNumbers(unittest.TestCase):
         for institution in self.xml_root.iter("INSTITUTION"):
             for course in institution.findall("KISCOURSE"):
                 raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
+                raw_course_data['KISMODE'] = int(raw_course_data['KISMODE'])
+                raw_course_data['KISLEVEL'] = int(raw_course_data['KISLEVEL'])
                 total_items.append(employment.get_stats(raw_course_data))
 
         self.assertEqual(len(total_items), self.target)
@@ -66,6 +74,8 @@ class TestTotalNumbers(unittest.TestCase):
         for institution in self.xml_root.iter("INSTITUTION"):
             for course in institution.findall("KISCOURSE"):
                 raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
+                raw_course_data['KISMODE'] = int(raw_course_data['KISMODE'])
+                raw_course_data['KISLEVEL'] = int(raw_course_data['KISLEVEL'])
                 total_items.append(job_type.get_stats(raw_course_data))
 
         self.assertEqual(len(total_items), self.target)
@@ -76,6 +86,8 @@ class TestTotalNumbers(unittest.TestCase):
         for institution in self.xml_root.iter("INSTITUTION"):
             for course in institution.findall("KISCOURSE"):
                 raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
+                raw_course_data['KISMODE'] = int(raw_course_data['KISMODE'])
+                raw_course_data['KISLEVEL'] = int(raw_course_data['KISLEVEL'])
                 total_items.append(tariff.get_stats(raw_course_data))
 
         self.assertEqual(len(total_items), self.target)
@@ -85,6 +97,8 @@ class TestTotalNumbers(unittest.TestCase):
         for institution in self.xml_root.iter("INSTITUTION"):
             for course in institution.findall("KISCOURSE"):
                 raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
+                raw_course_data['KISMODE'] = int(raw_course_data['KISMODE'])
+                raw_course_data['KISLEVEL'] = int(raw_course_data['KISLEVEL'])
                 total_items.append(get_stats(raw_course_data))
 
         self.assertEqual(len(total_items), self.target)
