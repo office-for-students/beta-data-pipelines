@@ -4,12 +4,13 @@ from typing import List
 from typing import Optional
 from typing import Tuple
 
-from EtlPipeline.course_stats import get_earnings_unavail_text
-from EtlPipeline.mappings.base import BaseMappings
-from EtlPipeline.utils import get_earnings_agg_unavail_messages
+from legacy.EtlPipeline.course_stats import get_earnings_unavail_text
+from legacy.EtlPipeline.mappings.base import BaseMappings
+from legacy.EtlPipeline.utils import get_earnings_agg_unavail_messages
 
 
 class LeoInstitutionMappings(BaseMappings):
+    """LEO mappings for institutions"""
     OPTIONS = ["LEO3", "LEO5"]
     unavailable_keys = ["unavail_reason"]
 
@@ -17,6 +18,12 @@ class LeoInstitutionMappings(BaseMappings):
         super().__init__(mapping_id=mapping_id, subject_enricher=subject_enricher)
 
     def get_mappings(self) -> List[Tuple[str, str]]:
+        """
+        Returns the list of mappings as a list of tuples with the class' mapping ID.
+
+        :return: List of mappings
+        :rtype: List[Tuple[str, str]]
+        """
         return [
             (f"{self.mapping_id}UNAVAILREASON", "unavail_reason"),
             (f'{self.mapping_id}POP', "pop"),
@@ -45,7 +52,15 @@ class LeoInstitutionMappings(BaseMappings):
             (f'{self.mapping_id}PROV_PC_CF', "inst_prov_pc_cf")
         ]
 
-    def final_unavailable(self, json_data):
+    def final_unavailable(self, json_data: Dict[str, Any]) -> None:
+        """
+        Takes a JSON as a dictionary and sets the unavailable reason according to the aggregation and subject levels.
+        Only sets unavailable message if the mapping ID is LEO3.
+
+        :param json_data: JSON to apply unavailable reasons to
+        :type json_data: Dict[str, Any]
+        :return: None
+        """
         if self.mapping_id == "LEO3":
             if 'agg' in json_data and 'subject' in json_data:
                 json_data["earnings_agg_unavail_message"] = get_earnings_agg_unavail_messages(
@@ -53,8 +68,22 @@ class LeoInstitutionMappings(BaseMappings):
                     json_data["subject"]
                 )
 
-    def custom_unavailable(self, json_data: Dict[str, Any], key: str, elem: Optional[List] = None) -> None:
+    def custom_unavailable(self, subject_codes: dict[str, dict[str, str]], json_data: Dict[str, Any], key: str, elem: Optional[Dict[str, Any]] = None) -> None:
+        """
+        Takes a JSON as a dictionary and a key used to lookup the level 3 key in the JSON, and sets unavailable
+        text for both languages in the JSON dictionary.
+
+        :param subject_codes: Subject codes for shared utils object
+        :type subject_codes: dict[str, dict[str, str]]
+        :param json_data: JSON data to set unavailable reason of
+        :type json_data: Dict[str, Any]
+        :param key: Lookup key for level 3 key in the JSON
+        :type key: str
+        :param elem: Not required
+        :return: None
+        """
         json_data["unavail_text_english"], json_data["unavail_text_welsh"] = get_earnings_unavail_text(
+            subject_codes=subject_codes,
             inst_or_sect="institution",
             data_source="leo",
             key_level_3=json_data[key]

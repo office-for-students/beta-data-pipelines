@@ -1,6 +1,6 @@
-### Institution Data
+# Institution Data
 
-#### Cosmos db doc:
+## Cosmos db doc:
 
 ```json5
 {
@@ -104,7 +104,7 @@
 }
 ```
 
-#### Mapping Xml fields to JSON fields
+## Mapping Xml fields to JSON fields
 
 | JSON field name                                  | XML Path                                              | XML field name        |
 |--------------------------------------------------|-------------------------------------------------------|-----------------------|
@@ -152,12 +152,12 @@
 | institution.ukprn_country.code                   | KIS.INSTITUTION.COUNTRY                               | COUNTRY               |
 | institution.ukprn_country.label                  | See Country Code values                               | N/A                   |
 
-### Location Data
+## Location Data
 
 Using the KISCOURSE.COURSELOCATION.LOCID to find unique teaching locations (KIS.LOCATION) for institution, 
 here you can find the student union url for location as well as the name.
 
-### Country Codes Values
+## Country Codes Values
 
 | country.code value | country.name value |
 |--------------------|--------------------|
@@ -166,7 +166,7 @@ here you can find the student union url for location as well as the name.
 | XH                 | Scotland           |
 | XI                 | Wales              |
 
-### Distance Learning Code Values
+## Distance Learning Code Values
 
 | distance_learning.code value | distance_learning.label value                            |
 |------------------------------|----------------------------------------------------------|
@@ -174,7 +174,7 @@ here you can find the student union url for location as well as the name.
 | 1                            | Course is only available through distance learning       |
 | 2                            | Course is optionally available through distance learning |
 
-### Mode Code Values
+## Mode Code Values
 
 | mode.code value | mode.label value |
 |-----------------|------------------|
@@ -182,7 +182,7 @@ here you can find the student union url for location as well as the name.
 | 2               | Part-Time        |
 | 3               | Both             |
 
-### Sandwich Year Code Values
+## Sandwich Year Code Values
 
 | sandwich_year.code value | sandwich_year.label value |
 |--------------------------|---------------------------|
@@ -190,7 +190,7 @@ here you can find the student union url for location as well as the name.
 | 1                        | Optional                  |
 | 2                        | Compulsory                |
 
-### Year Abroad Code Values
+## Year Abroad Code Values
 
 | year_abroad.code value | year_abroad.label value |
 |------------------------|-------------------------|

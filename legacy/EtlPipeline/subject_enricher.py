@@ -1,22 +1,32 @@
-import logging
+from typing import Any
+from typing import Dict
+from typing import List
 
-from SharedCode import utils
+from legacy.EtlPipeline.utils import get_subject_lookups
 
 
 class SubjectCourseEnricher:
     """Handles enriching courses with UKRLP data"""
 
-    def __init__(self, version, cosmos_id, collection_id):
-        self.subject_lookups = utils.get_subject_lookups(version, cosmos_id, collection_id)
+    def __init__(self, cosmos_service: type["CosmosService"], version: int) -> None:
+        self.subject_lookups = get_subject_lookups(cosmos_service=cosmos_service, version=version)
 
-    def enrich_course(self, course):
+    def enrich_course(self, course: Dict[str, Any]) -> None:
         """Takes a course and enriches subject object with subject names"""
 
         subjects = course["course"]["subjects"]
         course["course"]["subjects"] = self.get_subjects(subjects)
 
-    def get_subjects(self, subject_codes):
-        """Returns a subject object containing code, english_name, welsh_name and level"""
+    def get_subjects(self, subject_codes: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """
+        Returns a subject object containing code, english_name, welsh_name and level.
+        If a subject is not found, adds the subject code to the list of subjects.
+
+        :param subject_codes: List of subject codes used for lookup
+        :type subject_codes: List[Dict[str, Any]]
+        :return: List of subject objects
+        :rtype: List[Dict[str, Any]]
+        """
 
         subjects = []
         for subject in subject_codes:

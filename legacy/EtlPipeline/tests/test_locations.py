@@ -4,10 +4,10 @@ import unittest
 import defusedxml.ElementTree as ET
 import xmltodict
 
-
-from course_docs import get_location_items, get_locids
-from locations import Locations
-from testing_utils import get_string
+from legacy.EtlPipeline.course_docs import get_location_items
+from legacy.EtlPipeline.course_docs import get_locids
+from legacy.EtlPipeline.lookups.locations import Locations
+from legacy.EtlPipeline.tests.test_helpers.testing_utils import get_string
 
 
 class TestGetLocations(unittest.TestCase):

@@ -1,4 +1,4 @@
-### Statistics Data
+# Statistics Data
 
 ```json5
 ...
@@ -240,7 +240,7 @@
 ...
 ```
 
-#### Mapping Xml fields to JSON fields (Starting path is KIS.INSTITUTION)
+## Mapping Xml fields to JSON fields (Starting path is KIS.INSTITUTION)
 
 | JSON field name                                               | XML Path                                     |  XML field name   |
 |---------------------------------------------------------------|----------------------------------------------|-------------------|
@@ -364,7 +364,7 @@
 | statistics.tariff.[].unavailable.code                         | ...KISCOURSE.TARIFF.TARUNAVAILREASON         | TARUNAVAILREASON  |
 | statistics.tariff.[].unavailable.reason                       | See aggregation analysis file (DLHE)         | N/A               |
 
-### NSS Question Number mappings
+## NSS Question Number mappings
 
 | question_n | question_n.question value                                                                                                 |
 |------------|---------------------------------------------------------------------------------------------------------------------------|
@@ -396,7 +396,7 @@
 | 26         | The students' union (association or guild) effectively represents students' academic interests                            |
 | 27         | Overall, I am satisfied with the quality of the course                                                                    |
 
-### NHS NSS Question Number mappings
+## NHS NSS Question Number mappings
 
 | question_n | question_n.question value                                                                                 |
 |------------|-----------------------------------------------------------------------------------------------------------|
@@ -407,7 +407,7 @@
 | NHSQ5      | My contribution during placement(s) as part of a clinical team was valued                                 |
 | NHSQ6      | My practice supervisor(s) understood how my placement(s) related to the broader requirements of my course |
 
-### Tariff Code values
+## Tariff Code values
 
 | tariffs.[].code value | tariffs.[].label value            |
 |-----------------------|-----------------------------------|

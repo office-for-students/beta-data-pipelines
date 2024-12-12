@@ -3,23 +3,21 @@
 """ EtlPipeline: Execute the ETL pipeline based on a message queue trigger """
 
 import logging
-import os
+import traceback
 from datetime import datetime
+from typing import Any
 
-from EtlPipeline import course_docs
-from legacy.services.dataset_service import DataSetService
-from legacy.services.blob import BlobService
+from constants import BLOB_HESA_BLOB_NAME
+from constants import BLOB_HESA_CONTAINER_NAME
+from legacy.EtlPipeline import course_docs
 
 
-
-def create_courses(
-        blob_service:BlobService,
-        hesa_container_name:str,
-        hesa_blob_name:str,
-        local_test_xml_file=None
-):
-
-    dsh = DataSetService()
+def etl_pipeline_main(
+        blob_service: type['BlobServiceBase'],
+        dataset_service: type['DataSetServiceBase'],
+        cosmos_service: type['CosmosServiceBase']
+) -> dict[str, Any]:
+    response = {}
 
     try:
 
@@ -40,46 +38,39 @@ def create_courses(
         # correctly with large blobs. Tests showed this is not a limitation
         # with Funtions written in C#.
 
+        xml_string = blob_service.get_str_file(BLOB_HESA_CONTAINER_NAME, BLOB_HESA_BLOB_NAME)
 
-
-
-
-        if local_test_xml_file:
-            mock_xml_source_file = open(local_test_xml_file, "r")
-            xml_string = mock_xml_source_file.read()
-        else:
-            xml_string = blob_service.get_str_file(hesa_container_name, hesa_blob_name)
-
-        version = dsh.get_latest_version_number()
+        version = dataset_service.get_latest_version_number()
 
         """ LOADING - Parse XML and load enriched JSON docs to database """
 
-        dsh.update_status("courses", "in progress")
+        dataset_service.update_status("courses", "in progress")
 
         course_docs.load_course_docs(
-            xml_string,
-            version,
-            "AzureCosmosDbDatabaseId",
-            "AzureCosmosDbSubjectsCollectionId",
-            "AzureCosmosDbCoursesCollectionId"
+            xml_string=xml_string,
+            version=version,
+            blob_service=blob_service,
+            cosmos_service=cosmos_service,
+            dataset_service=dataset_service
         )
-        dsh.update_status("courses", "succeeded")
+        dataset_service.update_status("courses", "succeeded")
 
         function_end_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
 
-        logging.info(
-            f"EtlPipeline successfully finished on {function_end_datetime}"
-        )
+        message = f"EtlPipeline successfully finished on {function_end_datetime}"
 
+        logging.info(message)
+        response["message"] = message
+        response["statusCode"] = 200
 
     except Exception as e:
 
-        dsh.update_status("courses", "failed")
+        dataset_service.update_status("courses", "failed")
         # A WARNING is raised during the ETL Pipeline and StopEtlPipelineOnWarning=True
         # For example, the incoming raw XML is not valid against its XSD
 
         function_fail_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
-        function_fail_date = datetime.today().strftime("%d.%m.%Y")
+
 
         # mail_helper.send_message(
         #     f"Automated data import failed on {function_fail_datetime} at EtlPipeline" + msgin.get_body().decode(
@@ -87,6 +78,12 @@ def create_courses(
         #     f"Data Import {environment} - {function_fail_date} - Failed"
         # )
 
-        logging.error(f"EtlPipeline failed on {function_fail_datetime}")
+        message = f"EtlPipeline failed on {function_fail_datetime}"
+        logging.error(message)
+        response["message"] = message
+        response["exception"] = traceback.format_exc()
+        response["statusCode"] = 500
 
-        raise e
+        # raise e
+
+    return response

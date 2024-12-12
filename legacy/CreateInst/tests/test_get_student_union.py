@@ -1,11 +1,11 @@
 import json
 import unittest
+
 import defusedxml.ElementTree as ET
 
-
-from CreateInst.institution_docs import get_student_union
-from CreateInst.locations import Locations
-from CreateInst.tests.test_helpers.inst_test_utils import get_string
+from legacy.CreateInst.institution_docs import get_student_union
+from legacy.CreateInst.locations import Locations
+from legacy.CreateInst.tests.test_helpers.inst_test_utils import get_string
 
 
 class TestGetStudentUnion(unittest.TestCase):

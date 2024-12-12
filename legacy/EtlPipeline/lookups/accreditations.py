@@ -1,0 +1,35 @@
+from typing import Any
+from typing import Dict
+
+import xmltodict
+import defusedxml.ElementTree as ET
+
+
+class Accreditations:
+    """Provides lookup of raw accreditation data based on ACCTYPE"""
+
+    def __init__(self, root):
+        """Build the accreditations lookup table
+
+        Accreditations are unique on ACCTYPE
+        """
+
+        self.lookup_dict = {}
+        for accreditation in root.iter("ACCREDITATIONTABLE"):
+            raw_accreditation_data = xmltodict.parse(
+                ET.tostring(accreditation)
+            )["ACCREDITATIONTABLE"]
+
+            acckey = f"{raw_accreditation_data['ACCTYPE']}"
+            self.lookup_dict[acckey] = raw_accreditation_data
+
+    def get_accreditation_data_for_key(self, key: str) -> Dict[str, Any]:
+        """
+        Takes a key and returns the accreditation data from the Accreditation object's lookup dict.
+
+        :param key: Key to extract accreditation data with
+        :type key: str
+        :return: Corresponding accreditation data
+        :rtype: Dict[str, Any]
+        """
+        return self.lookup_dict.get(key)

@@ -1,6 +1,6 @@
-### Course Data
+# Course Data
 
-#### Cosmos db doc:
+## Cosmos db doc:
 
 ```json5
 {
@@ -132,7 +132,7 @@
             "label": "string"
         },
         "statistics": {
-            ...See STATISTICS.md
+            ...See Course Mapping Statistics page
         },
         "subjects": [{
             "code": "string",
@@ -153,7 +153,7 @@
 }
 ```
 
-#### Mapping Xml fields to JSON fields
+## Mapping Xml fields to JSON fields
 
 | JSON field name                            | XML Path                                              | XML field name   |
 |--------------------------------------------|-------------------------------------------------------|------------------|
@@ -217,37 +217,37 @@
 | sandwich_year.code                         | KIS.INSTITUTION.KISCOURSE.SANDWICH                    | SANDWICH         |
 | sandwich_year.label                        | See Sandwich Years Code values                        | N/A              |
 | subject.code                               | KIS.INSTITUTION.KISCOURSE.SBJ                         | SBJ              |
-| subject.english                            | See english-and-wesh-subject-codes.csv                | N/A              |
-| subject.welsh                              | See english-and-wesh-subject-codes.csv                | N/A              |
-| statistics.*                               | See [STATISTICS](STATISTICS.md)                       | N/A              |
+| subject.english                            | See english-and-welsh-subject-codes.csv               | N/A              |
+| subject.welsh                              | See english-and-welsh-subject-codes.csv               | N/A              |
+| statistics.*                               | See Course Mapping Statistics page                    | N/A              |
 | title.english                              | KIS.INSTITUTION.KISCOURSE.TITLE                       | TITLE            |
 | title.welsh                                | KIS.INSTITUTION.KISCOURSE.TITLEW                      | TITLEW           |
 | ucas.programme_id                          | KIS.INSTITUTION.KISCOURSE.UCASPROGID                  | UCASPROGID       |
 | year_abroad.code                           | KIS.INSTITUTION.KISCOURSE.YEARABROAD                  | YEARABROAD       |
 | year_abroad.label                          | See Year Abroad Code values                           | N/A              |
 
-### Notes: 
+## Notes: 
 
-#### Accreditation
+### Accreditation
 
 Use the `ACCTYPE` value to match fields accross `KISCOURSE.ACCREDITATION` and `ACCREDITATIONTABLE`.
 
-#### Location
+### Location
 
 Use the `COURSELOCATION.LOCID` and `UKPRN` values to match fields accross `KISCOURSE` to `LOCATION`
 
-#### Qualification
+### Qualification
 
 Use the `KISAIMCODE` value to find `KISAIMLABEL` in the `KISAIM` section
 
-### Accreditation Code Values
+## Accreditation Code Values
 
 | accreditation.[].dependent_on.code value | accreditation.[].dependent_on.label value        |
 |------------------------------------------|--------------------------------------------------|
 | 0                                        | Accreditation is not dependent on student choice |
 | 1                                        | Accreditation is dependent on student choice     |
 
-### Country Codes Values
+## Country Codes Values
 
 | country.code value | country.name value |
 |--------------------|--------------------|
@@ -256,7 +256,7 @@ Use the `KISAIMCODE` value to find `KISAIMLABEL` in the `KISAIM` section
 | XH                 | Scotland           |
 | XI                 | Wales              |
 
-### Distance Learning Code Values
+## Distance Learning Code Values
 
 | distance_learning.code value | distance_learning.label value                            |
 |------------------------------|----------------------------------------------------------|
@@ -264,7 +264,7 @@ Use the `KISAIMCODE` value to find `KISAIMLABEL` in the `KISAIM` section
 | 1                            | Course is only available through distance learning       |
 | 2                            | Course is optionally available through distance learning |
 
-### Foundation Year Availability Code Values
+## Foundation Year Availability Code Values
 
 | foundation_year_availability.code value | foundation_year_availability.label value |
 |-----------------------------------------|------------------------------------------|
@@ -272,7 +272,7 @@ Use the `KISAIMCODE` value to find `KISAIMLABEL` in the `KISAIM` section
 | 1                                       | Optional                                 |
 | 2                                       | Compulsory                               |
 
-### Length of Course Code Values
+## Length of Course Code Values
 
 | length_of_course.code value | length_of_course.label value |
 |-----------------------------|------------------------------|
@@ -284,7 +284,7 @@ Use the `KISAIMCODE` value to find `KISAIMLABEL` in the `KISAIM` section
 | 6                           | 6 stages                     |
 | 7                           | 7 stages                     |
 
-### Mode Code Values
+## Mode Code Values
 
 | mode.code value | mode.label value |
 |-----------------|------------------|
@@ -292,14 +292,14 @@ Use the `KISAIMCODE` value to find `KISAIMLABEL` in the `KISAIM` section
 | 2               | Part-Time        |
 | 3               | Both             |
 
-### NHS Code Values
+## NHS Code Values
 
 | nhs.code value | nhs.label value |
 |----------------|-----------------|
 | 0              | None            |
 | 1              | Any             |
 
-### Sandwich Year Code Values
+## Sandwich Year Code Values
 
 | sandwich_year.code value | sandwich_year.label value |
 |--------------------------|---------------------------|
@@ -307,7 +307,7 @@ Use the `KISAIMCODE` value to find `KISAIMLABEL` in the `KISAIM` section
 | 1                        | Optional                  |
 | 2                        | Compulsory                |
 
-### Year Abroad Code Values
+## Year Abroad Code Values
 
 | year_abroad.code value | year_abroad.label value |
 |------------------------|-------------------------|

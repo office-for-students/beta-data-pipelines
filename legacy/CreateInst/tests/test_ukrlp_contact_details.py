@@ -1,7 +1,7 @@
 import unittest
 
-from CreateInst.institution_docs import InstitutionProviderNameHandler
-from SharedCode.utils import normalise_url
+from legacy.CreateInst.docs.institution_docs import normalise_url
+from legacy.CreateInst.docs.name_handler import InstitutionProviderNameHandler
 
 
 class TestGetStudentUnions(unittest.TestCase):

@@ -1,17 +1,26 @@
 """Module for creating the instituions.json file used by CMS"""
 
-import json
 import io
-import os
-import re
+import json
+from typing import Any
+from typing import Dict
+from typing import List
 
-from CourseSearchBuilder.get_collections import get_collections
-from SharedCode.blob_helper import BlobHelper
+from constants import BLOB_JSON_FILES_CONTAINER_NAME
+from constants import BLOB_SUBJECTS_JSON_BLOB_NAME
 
 
-def build_subjects_json_file(blob_service_client:BlobHelper):
-    blob_helper = BlobHelper()
-    subjects_list = get_collections("AzureCosmosDbSubjectsCollectionId") #subjects
+def build_subjects_json_file(subjects_list: List[Dict[str, Any]], blob_service: type['BlobServiceBase']) -> None:
+    """
+    Calls required functions to generate a JSON containing subject data.
+    File is saved to a blob and not returned by the function.
+
+    :param subjects_list: List of subjects to write to JSON
+    :type subjects_list: List[Dict[str, Any]]
+    :param blob_service: Blob service used to save the file
+    :type blob_service: BlobService
+    :return: None
+    """
     subjects_file = io.StringIO()
 
     subjects = []
@@ -23,17 +32,23 @@ def build_subjects_json_file(blob_service_client:BlobHelper):
     json.dump(subjects, subjects_file, indent=4)
     encoded_file = subjects_file.getvalue().encode('utf-8')
 
-
-    storage_container_name = os.environ["AzureStorageJSONFilesContainerName"]
-    storage_blob_name = os.environ["AzureStorageSubjectsJSONFileBlobName"]
-    blob_helper.write_stream_file(storage_container_name, storage_blob_name, encoded_file)
+    blob_service.write_stream_file(BLOB_JSON_FILES_CONTAINER_NAME, BLOB_SUBJECTS_JSON_BLOB_NAME, encoded_file)
     subjects_file.close()
 
 
-def get_subject_entry(subject):
-    entry = {}
-    entry["code"] = subject["code"]
-    entry["english_name"] = subject["english_name"]
-    entry["welsh_name"] = subject["welsh_name"]
-    entry["level"] = str(subject["level"])
+def get_subject_entry(subject: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Takes a dictionary of subject data and returns a dictionary containing the same keys and subject data
+
+    :param subject: Dictionary containing subject data
+    :type subject: Dict[str, Any]
+    :return: Dictionary of subject data
+    :rtype: Dict[str, Any]
+    """
+    entry = {
+        "code": subject["code"],
+        "english_name": subject["english_name"],
+        "welsh_name": subject["welsh_name"],
+        "level": str(subject["level"])
+    }
     return entry

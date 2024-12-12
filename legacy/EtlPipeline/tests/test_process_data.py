@@ -1,17 +1,15 @@
-import json
 import unittest
+from unittest import mock
 
 import defusedxml.ElementTree as ET
 import xmltodict
 
-from EtlPipeline.course_docs import get_go_inst_json
-from EtlPipeline.course_docs import get_go_sector_json
-from EtlPipeline.course_docs import process_stats
-from EtlPipeline.sector_salaries import GOSectorSalaries
-from EtlPipeline.sector_salaries import LEO3SectorSalaries
-from EtlPipeline.sector_salaries import LEO5SectorSalaries
-from EtlPipeline.tests.test_helpers.testing_utils import get_string
-from unittest import mock
+from legacy.EtlPipeline.course_docs import get_go_inst_json
+from legacy.EtlPipeline.course_docs import get_go_sector_json
+from legacy.EtlPipeline.lookups.sector_salaries import GOSectorSalaries
+from legacy.EtlPipeline.lookups.sector_salaries import LEO3SectorSalaries
+from legacy.EtlPipeline.lookups.sector_salaries import LEO5SectorSalaries
+from legacy.EtlPipeline.tests.test_helpers.testing_utils import get_string
 
 
 class TestProcessData(unittest.TestCase):
@@ -21,7 +19,6 @@ class TestProcessData(unittest.TestCase):
 
     @mock.patch("EtlPipeline.subject_enricher.SubjectCourseEnricher")
     def test_get_go_inst_no_data(self, subject_enricher):
-
         for course in self.xml_root.iter("KISCOURSE"):
             raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
             mode = raw_course_data["KISMODE"]
@@ -32,4 +29,5 @@ class TestProcessData(unittest.TestCase):
             go_sector_salaries = GOSectorSalaries(self.xml_root)
             leo3_sector_salaries = LEO3SectorSalaries(self.xml_root)
             leo5_sector_salaries = LEO5SectorSalaries(self.xml_root)
-            json_obj = get_go_sector_json(go_salary_inst, leo3_salary_inst, leo5_salary_inst, go_sector_salaries, mode, level, subject_enricher)
+            json_obj = get_go_sector_json(go_salary_inst, leo3_salary_inst, leo5_salary_inst, go_sector_salaries, mode,
+                                          level, subject_enricher)

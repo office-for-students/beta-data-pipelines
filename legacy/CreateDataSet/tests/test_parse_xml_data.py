@@ -1,8 +1,8 @@
 import unittest
 
-from CreateDataSet.tests.test_helpers.dataset_test_utils import get_string
-from CreateDataSet.validators import parse_xml_data
-from SharedCode.exceptions import XmlValidationError
+from legacy.CreateDataSet.tests.test_helpers.dataset_test_utils import get_string
+from legacy.CreateDataSet.validators import parse_xml_data
+from services.exceptions import XmlValidationError
 
 
 class TestParseXmlData(unittest.TestCase):

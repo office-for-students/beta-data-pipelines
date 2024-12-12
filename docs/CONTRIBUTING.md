@@ -1,7 +1,7 @@
 Contributing guidelines
 =======================
 
-### Git workflow
+## Git workflow
 
 * Use git-flow - create a feature branch from `develop`, e.g. `feature/new-feature`
 * Pull requests must contain a succinct, clear summary of what the user need is driving this feature change

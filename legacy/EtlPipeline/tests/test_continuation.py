@@ -1,12 +1,10 @@
 import json
 import unittest
 
-import defusedxml.ElementTree as ET
 import xmltodict
 
-from unittest import mock
-from course_stats import Continuation
-from testing_utils import get_string
+from legacy.EtlPipeline.course_stats import Continuation
+from legacy.EtlPipeline.tests.test_helpers.testing_utils import get_string
 
 
 class TestGetContinuationKey(unittest.TestCase):
@@ -19,7 +17,7 @@ class TestGetContinuationKey(unittest.TestCase):
         key = self.continuation.get_key(xml_key)
         self.assertEqual(expected_key, key)
 
-    def test_with_valid_key(self):
+    def test_with_invalid_key(self):
         invalid_xml_key = "invalid_key"
         with self.assertRaises(KeyError):
             self.continuation.get_key(invalid_xml_key)

@@ -1,11 +1,11 @@
-import json
 import unittest
 
 import defusedxml.ElementTree as ET
 import xmltodict
 
-from course_stats import need_nhs_nss
-from testing_utils import get_first, get_string
+from legacy.EtlPipeline.course_stats import need_nhs_nss
+from legacy.EtlPipeline.tests.test_helpers.testing_utils import get_first
+from legacy.EtlPipeline.tests.test_helpers.testing_utils import get_string
 
 
 class TestNeedNhsNss(unittest.TestCase):
