@@ -1,13 +1,10 @@
 Documentation
 =============
-The documentation for this project is built using [Sphinx](#getting-started).
 
-Documentation should be built by installing the requirements and then the following commands:
+Docs are created using the built in functionality of FastAPI and can be accessed via:
 
-```
-cd docs
-make clean html
-```
+http://127.0.0.1:8000/docs
+
 
 OfS Serverless Data Pipelines
 =============================
