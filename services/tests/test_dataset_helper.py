@@ -1,6 +1,9 @@
 import unittest
 from unittest import mock
 
+from services.cosmos_service import get_current_provider
+from services.dataset_service.general import DataSetService
+from azure.cosmos import ContainerProxy
 
 # import SharedCode
 
@@ -14,11 +17,11 @@ class TestDataSetHelper(unittest.TestCase):
         },
         clear=True,
     )
-    @mock.patch("SharedCode.dataset_helper.get_cosmos_client")
+    @mock.patch("services.cosmos_service.get_current_provider")
     def test_initialisation(self, mock_get_cosmos_client):
         mock_get_cosmos_client.return_value = mock.MagicMock()
         try:
-            DataSetService()
+            DataSetService(cosmos_container=mock.MagicMock(ContainerProxy))
         except Exception as e:
             self.fail(
                 f"DataSetHelper initialisation raised unexpected Exception: {e}"
@@ -32,29 +35,25 @@ class TestDataSetHelper(unittest.TestCase):
         },
         clear=True,
     )
-    @mock.patch("SharedCode.dataset_helper.get_cosmos_client")
-    def test_update_status(self, mock_get_cosmos_client):
-        dataset_service = DataSetService()
 
-        latest_dataset_doc = {}
+    def test_update_status(self):
+        dataset_service = DataSetService(cosmos_container=mock.MagicMock(ContainerProxy))
+        dataset_service.container.upsert_item = mock.MagicMock()
+
+        latest_dataset_doc = dict()
         latest_dataset_doc["version"] = 3
         latest_dataset_doc["builds"] = {"courses": {"status": "pending"}}
         latest_dataset_doc["updated_at"] = "dave"
         dataset_service.get_latest_doc = mock.MagicMock(return_value=latest_dataset_doc)
 
-        dataset_service.cosmos_client.UpsertItem = mock.MagicMock()
-
         dataset_service.update_status("courses", "in progress", "dave")
 
-        expected_connection_link = (
-            "dbs/test-db-id/colls/test-dataset-collection-id"
-        )
-        expected_dataset_doc = {}
+        expected_dataset_doc = dict()
         expected_dataset_doc["version"] = 3
         expected_dataset_doc["builds"] = {"courses": {"status": "in progress"}}
         expected_dataset_doc["updated_at"] = "dave"
-        dataset_service.cosmos_client.UpsertItem.assert_called_once_with(
-            expected_connection_link, expected_dataset_doc
+        dataset_service.container.upsert_item.assert_called_once_with(
+             expected_dataset_doc
         )
 
     @mock.patch.dict(
@@ -65,11 +64,11 @@ class TestDataSetHelper(unittest.TestCase):
         },
         clear=True,
     )
-    @mock.patch("SharedCode.dataset_helper.get_cosmos_client")
+
     def test_have_all_builds_succeeded_with_all_pending(
-            self, mock_get_cosmos_client
+            self
     ):
-        dataset_service = DataSetService()
+        dataset_service = DataSetService(cosmos_container=mock.MagicMock(ContainerProxy))
 
         latest_dataset_doc = {}
         latest_dataset_doc["version"] = 3
@@ -90,11 +89,11 @@ class TestDataSetHelper(unittest.TestCase):
         },
         clear=True,
     )
-    @mock.patch("SharedCode.dataset_helper.get_cosmos_client")
+
     def test_have_all_builds_succeeded_with_one_pending(
-            self, mock_get_cosmos_client
+            self
     ):
-        dataset_service = DataSetService()
+        dataset_service = DataSetService(cosmos_container=mock.MagicMock(ContainerProxy))
 
         latest_dataset_doc = {}
         latest_dataset_doc["version"] = 3
@@ -115,11 +114,11 @@ class TestDataSetHelper(unittest.TestCase):
         },
         clear=True,
     )
-    @mock.patch("SharedCode.dataset_helper.get_cosmos_client")
+
     def test_have_all_builds_succeeded_with_two_pending(
-            self, mock_get_cosmos_client
+            self
     ):
-        dataset_service = DataSetService()
+        dataset_service = DataSetService(cosmos_container=mock.MagicMock(ContainerProxy))
 
         latest_dataset_doc = {}
         latest_dataset_doc["version"] = 3
@@ -140,11 +139,11 @@ class TestDataSetHelper(unittest.TestCase):
         },
         clear=True,
     )
-    @mock.patch("SharedCode.dataset_helper.get_cosmos_client")
+
     def test_have_all_builds_succeeded_with_all_succeeded(
-            self, mock_get_cosmos_client
+            self
     ):
-        dataset_service = DataSetService()
+        dataset_service = DataSetService(cosmos_container=mock.MagicMock(ContainerProxy))
 
         latest_dataset_doc = {}
         latest_dataset_doc["version"] = 3

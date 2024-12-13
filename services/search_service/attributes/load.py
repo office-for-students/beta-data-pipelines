@@ -5,7 +5,7 @@ from typing import List
 
 import requests
 
-from legacy.CourseSearchBuilder import models
+from course_search_build import models
 from services import exceptions
 
 

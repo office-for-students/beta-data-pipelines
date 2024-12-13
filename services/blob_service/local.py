@@ -11,7 +11,7 @@ from constants import BLOB_WELSH_UNIS_CONTAINER_NAME
 from constants import BLOB_QUALIFICATIONS_CONTAINER_NAME
 from constants import BLOB_QUALIFICATIONS_BLOB_NAME
 from services.blob_service.base import BlobServiceBase
-from legacy.EtlPipeline.utils import clean_file_data
+from etl_pipeline.utils import clean_file_data
 import gzip
 import magic
 
