@@ -42,12 +42,12 @@ Code is written in Python 3.11+ and uses:
 - [xmlschema](https://pypi.org/project/xmlschema/): Implementation of XML schema
 - [python-magic](https://pypi.org/project/python-magic/): File type identification library
 
-* Installation
-------------
+Installation
+===============
 
 To get started with the project, follow the steps below:
 
-1) Install dependencies
+### Install dependencies
 
 * Run the following in terminal:
 
