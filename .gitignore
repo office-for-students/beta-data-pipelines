@@ -1,5 +1,5 @@
 .DS_Store
-EtlPipeline/host.json
+etl_pipeline/host.json
 .idea/
 .DS_Store
 trash.txt
