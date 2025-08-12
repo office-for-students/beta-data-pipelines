@@ -30,11 +30,11 @@ steps:
     scriptType: 'pscore'
     scriptLocation: 'inlineScript'
     inlineScript: |
-      az storage blob upload \
-        --account-name $(AzureStorageAccount) \
-        --container-name $(AzureStorageBlob) \
-        --name latest.xml.gz \
-        --file $(Agent.TempDirectory)\latest.xml.gz \
+      az storage blob upload
+        --account-name $(AzureStorageAccount)
+        --container-name $(AzureStorageBlob)
+        --name latest.xml.gz
+        --file $(Agent.TempDirectory)\latest.xml.gz
         --overwrite
 
 - task: PythonScript@0
