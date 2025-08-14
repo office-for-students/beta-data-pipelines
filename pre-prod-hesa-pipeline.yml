@@ -8,7 +8,7 @@ pr: none
 
 # Build Agent Resources
 pool:
-  vmImage: 'windows-latest'
+  vmImage: 'ubuntu-latest'
 strategy:
   matrix:
     Python3:
@@ -54,7 +54,7 @@ steps:
       max_retries = 3
       retry_delay = 10
       attempt = 0
-      temp_dir = r'$(Agent.TempDirectory)'
+      temp_dir = '$(Agent.TempDirectory)'
       zip_file_path = os.path.join(temp_dir, 'hesa_data.zip')
       extract_dir = os.path.join(temp_dir, 'extracted_data')
 
@@ -129,14 +129,23 @@ steps:
       print('Processing complete! File ready for upload to blob storage.')
 
 
-- task: AzureFileCopy@3
+- task: AzureCLI@2
   displayName: 'Copy kis archive to storage blob'
   inputs:
-    SourcePath: '$(Agent.TempDirectory)\latest.xml.gz'
     azureSubscription: '$(AzureSubscription)'
-    Destination: 'AzureBlob'
-    storage: '$(AzureStorageAccount)'
-    ContainerName: '$(AzureStorageBlob)'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      # Install Azure CLI storage extension if not already installed
+      az extension add --name storage-preview --allow-preview true --only-show-errors || true
+
+      # Upload the file to blob storage
+      az storage blob upload \
+        --account-name "$(AzureStorageAccount)" \
+        --container-name "$(AzureStorageBlob)" \
+        --file "$(Agent.TempDirectory)/latest.xml.gz" \
+        --name "latest.xml.gz" \
+        --overwrite
 
 
 - task: PythonScript@0
