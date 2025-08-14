@@ -29,10 +29,11 @@ steps:
   inputs:
     scriptSource: 'inline'
     script: |
-      """Download the HESA gzip file, extract the kis*.xml file, and prepare it for storage"""
+      """Download the HESA zip file, extract the kis*.xml file, and prepare it for storage"""
       import urllib.request
       import time
       import gzip
+      import zipfile
       import shutil
       import os
       import glob
@@ -54,14 +55,14 @@ steps:
       retry_delay = 10
       attempt = 0
       temp_dir = r'$(Agent.TempDirectory)'
-      gzip_file_path = os.path.join(temp_dir, 'hesa_data.gz')
+      zip_file_path = os.path.join(temp_dir, 'hesa_data.zip')
       extract_dir = os.path.join(temp_dir, 'extracted_data')
 
       # Create extraction directory if it doesn't exist
       if not os.path.exists(extract_dir):
           os.makedirs(extract_dir)
 
-      # Download the gzip file
+      # Download the zip file
       while attempt < max_retries:
           try:
               print(f'Attempting to fetch file from {url}... Attempt #{attempt + 1}')
@@ -70,7 +71,7 @@ steps:
               hesa_response = urllib.request.urlopen(hesa_request)
 
               print('Beginning file download...')
-              with open(gzip_file_path, 'wb') as f:
+              with open(zip_file_path, 'wb') as f:
                   while True:
                       data = hesa_response.read(1024)
                       if not data:
@@ -89,16 +90,15 @@ steps:
                   print('Max retries reached. Failing the request.')
                   raise
 
-      # Extract the gzip file
-      print('Extracting gzip file...')
+      # Extract the zip file
+      print('Extracting zip file...')
       try:
-          with gzip.open(gzip_file_path, 'rb') as f_in:
-              # Extract to a temporary directory
-              with open(os.path.join(extract_dir, 'extracted_content'), 'wb') as f_out:
-                  shutil.copyfileobj(f_in, f_out)
+          # Extract all contents to the extraction directory
+          with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
+              zip_ref.extractall(extract_dir)
           print('Extraction complete!')
       except Exception as e:
-          print(f'Error extracting gzip file: {e}')
+          print(f'Error extracting zip file: {e}')
           raise
 
       # Find the kis*.xml file
