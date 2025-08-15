@@ -20,7 +20,7 @@ class Loader:
         master_key = "masterKey"
 
         self.cosmos_db_client = cosmos_client.CosmosClient(
-            url_connection=cosmosdb_uri, auth={master_key: cosmos_key}
+            url=cosmosdb_uri, credential=cosmos_key
         )
 
         self.collection_link = "dbs/" + db_id + "/colls/" + collection_id
@@ -29,10 +29,11 @@ class Loader:
         self.rows = rows
         self.version = version
 
-    def load_subject_documents(self):
-        options = {"partitionKey": str(self.version)}
-        sproc_link = self.collection_link + "/sprocs/bulkImport"
+        # Get database and container clients
+        self.database = self.cosmos_db_client.get_database_client(self.db_id)
+        self.container = self.database.get_container_client(self.collection_id)
 
+    def load_subject_documents(self):
         subject_count = 0
         new_docs = []
         sproc_count = 0
@@ -50,7 +51,11 @@ class Loader:
 
             if sproc_count == 100:
                 logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-                self.cosmos_db_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
+                self.container.scripts.execute_stored_procedure(
+                    sproc="bulkImport",
+                    partition_key=str(self.version),
+                    params=[new_docs]
+                )
                 logging.info(f"Successfully loaded another {sproc_count} documents")
                 # Reset values
                 new_docs = []
@@ -59,7 +64,11 @@ class Loader:
 
         if sproc_count > 0:
             logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-            self.cosmos_db_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
+            self.container.scripts.execute_stored_procedure(
+                sproc="bulkImport",
+                partition_key=str(self.version),
+                params=[new_docs]
+            )
             logging.info(f"Successfully loaded another {sproc_count} documents")
 
         logging.info(

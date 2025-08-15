@@ -11,16 +11,17 @@ PARENTDIR = os.path.dirname(CURRENTDIR)
 sys.path.insert(0, CURRENTDIR)
 sys.path.insert(0, PARENTDIR)
 
-from SharedCode.utils import get_cosmos_client, get_collection_link
+from SharedCode.utils import get_cosmos_client
 
 
 class DataSetHelper:
     def __init__(self):
         logging.info("Init for DataSetHelper")
         self.cosmos_client = get_cosmos_client()
-        self.collection_link = get_collection_link(
-            "AzureCosmosDbDatabaseId", "AzureCosmosDbDataSetCollectionId"
-        )
+        self.database_id = os.environ["AzureCosmosDbDatabaseId"]
+        self.container_id = os.environ["AzureCosmosDbDataSetCollectionId"]
+        self.database = self.cosmos_client.get_database_client(self.database_id)
+        self.container = self.database.get_container_client(self.container_id)
 
     def update_status(self, item, value, updated_at=None):
         dataset_doc = self.get_latest_doc()
@@ -31,7 +32,8 @@ class DataSetHelper:
         dataset_doc["updated_at"] = datetime.datetime.utcnow().isoformat()
         if updated_at:
             dataset_doc["updated_at"] = updated_at
-        self.cosmos_client.UpsertItem(self.collection_link, dataset_doc)
+
+        self.container.upsert_item(dataset_doc)
         logging.info(
             f"DataSetHelper: updated '{item}' to '{value}' for "
             f"DataSet version {dataset_doc['version']}"
@@ -40,27 +42,25 @@ class DataSetHelper:
     def get_latest_doc(self):
         latest_version_number = self.get_latest_version_number()
         query = f"SELECT * FROM c WHERE c.version = {latest_version_number}"
-        options = {"enableCrossPartitionQuery": True}
-        the_list = list(self.cosmos_client.QueryItems(self.collection_link, query, options))
+        options = {"enable_cross_partition_query": True}
+        the_list = list(self.container.query_items(query=query, **options))
         the_list_item = the_list[0]
         return the_list_item
 
     def get_latest_version_number(self):
-        query = "SELECT VALUE MAX(c.version) from c "
-        options = {"enableCrossPartitionQuery": True}
+        query = 'SELECT VALUE MAX(c.version) from c '
         max_version_number_list = list(
-            self.cosmos_client.QueryItems(self.collection_link, query, options)
+            self.container.query_items(query=query, enable_cross_partition_query=True)
         )
         return max_version_number_list[0]
 
     def query_items(self, query):
-        options = {"enableCrossPartitionQuery": True}
         return list(
-            self.cosmos_client.QueryItems(self.collection_link, query, options)
+            self.container.query_items(query=query, enable_cross_partition_query=True)
         )
 
     def create_item(self, dataset_doc):
-        self.cosmos_client.CreateItem(self.collection_link, dataset_doc)
+        self.container.create_item(body=dataset_doc)
 
     def have_all_builds_succeeded(self):
         dataset_doc = self.get_latest_doc()
