@@ -57,7 +57,7 @@ def get_ukrlp_lookups(version):
     """Returns a dictionary of UKRLP lookups"""
 
     cosmos_db_client = get_cosmos_client()
-    db_id = os.environ.get("AzureCosmosDbDatabaseId"),
+    db_id = os.environ.get("AzureCosmosDbDatabaseId")
     collection_id = os.environ.get("AzureCosmosDbInstitutionsCollectionId")
 
     database = cosmos_db_client.get_database_client(db_id)

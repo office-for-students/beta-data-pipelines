@@ -68,4 +68,6 @@ class DataSetHelper:
             dataset_doc["builds"][item]["status"] == "succeeded"
             for item in ("courses", "institutions", "search", "subjects")
         ]
+
+        logging.warning(f"Build statuses {build_statuses}")
         return all(build_statuses)
