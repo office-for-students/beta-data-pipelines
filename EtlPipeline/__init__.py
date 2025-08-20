@@ -22,9 +22,6 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
     Azure Functions chained/integrated and orchestrated using Azure Data Factory
     and/or Function App. """
 
-    # TODO: apw: Ensure that UseLocalTestXMLFile is set to false in local.settings.json before going live.
-    use_local_test_XML_file = os.environ.get('UseLocalTestXMLFile')
-
     msgerror = ""
 
     # mail_helper = MailHelper()
@@ -56,11 +53,7 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
         storage_container_name = os.environ["AzureStorageHesaContainerName"]
         storage_blob_name = os.environ["AzureStorageHesaBlobName"]
 
-        if use_local_test_XML_file:
-            mock_xml_source_file = open(os.environ["LocalTestXMLFile"], "r")
-            xml_string = mock_xml_source_file.read()
-        else:
-            xml_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
+        xml_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
 
         version = dsh.get_latest_version_number()
 
