@@ -156,3 +156,7 @@ pyproject.toml
 *.dev.*
 .local
 test_course.xml
+#ignore xml files
+*-*.xml
+kis*.xml
+latest.xml

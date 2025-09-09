@@ -7,6 +7,30 @@ Builds
 master - [![Build Status](https://dev.azure.com/ofsbeta/discoverUni/_apis/build/status/prod/prod-data-pipelines?branchName=master)](https://dev.azure.com/ofsbeta/discoverUni/_build/latest?definitionId=13&branchName=master)
 develop - [![Build Status](https://dev.azure.com/ofsbeta/discoverUni/_apis/build/status/dev/dev-data-pipelines?branchName=develop)](https://dev.azure.com/ofsbeta/discoverUni/_build/latest?definitionId=7&branchName=develop)
 
+## Contents
+
+- [Working with the JISC XML](Working With XML)
+
+### Working with XML
+
+The xml file is very large and to debug data issues, it is easier to look at it course by course. To facilitate this, 
+we've created a script to extract a course data that:
+
+- Extracts a specific course based on institution ID (PUBUKPRN) and course ID (KISCOURSEID)
+- Preserves the XML structure of the course node
+- Adds proper XML declaration to the output file
+- Comprehensive error handling and user feedback
+- Command-line interface with both positional and flag arguments
+- Handles large XML files efficiently
+
+Commands:
+```python course_extractor.py <input.xml> <outpu.xml> <pubukprn> <courseid>```
+
+eg: `python course_extractor.py latest.xml 10000216-532986.xml 10000216 532986`
+
+NB. Following thr file format for the output above if as this pattern is on the gitignore `*-*.xml`
+
+
 ### Installation
 
 As the pipeline azure functions are written in Python using the Azure Python SDK and relevant python package dependencies, install python version 3.6.*, the Azure Python SDK currently does not work the version 3.7*.
@@ -176,4 +200,13 @@ See [INSTITUTION](docs/INSTITUTION.md) for mappings of institution data
 `func azure functionapp fetch-app-settings <app-name>`
 `func settings decrypt`
 
+##### Deployment
 
+Deployment should be done through the corresponding azure pipelines
+
+`<details to follow>` in the mean time pipelines are defined in this repo in their respective `.yml` file
+
+
+To manually deploy a change to the pipeline code run the following command:
+
+`func azure functionapp publish <pre-prod/prod>-data-pipeline`
