@@ -396,6 +396,14 @@ class Nss:
                     xml_elem
                 )
             json_elem_list.append(json_elem)
+
+        # Issue in 2025 data structure changes Q27 is coming through in a different section in the XML.
+        # Check if the value for question 27 is set (will happen if value in the correct place) = if it doesn't exist
+        # add in the value from the other location
+        if json_elem_list[0]["question_27"].get("agree_or_strongly_agree") is None:
+            if raw_course_data.get('NSSCOUNTRY'):
+                json_elem_list[0]["question_27"]["agree_or_strongly_agree"] = raw_course_data.get('NSSCOUNTRY').get("Q27")
+
         return json_elem_list
 
 class NhsNss:
