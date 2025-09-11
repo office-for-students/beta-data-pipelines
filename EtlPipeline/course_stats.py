@@ -400,16 +400,25 @@ class Nss:
         # Issue in 2025 data structure changes Q27 is coming through in a different section in the XML.
         # Check if the value for question 27 is set (will happen if value in the correct place) = if it doesn't exist
         # add in the value from the other location
-        if json_elem_list[0]["question_27"].get("agree_or_strongly_agree") is None:
-            if raw_course_data.get('NSSCOUNTRY'):
-                if raw_course_data.get('NSSCOUNTRY').get("Q27"):
-                    json_elem_list[0]["question_27"]["agree_or_strongly_agree"] = raw_course_data.get('NSSCOUNTRY').get("Q27", "")
-        # Same as above for question 28
 
-        if json_elem_list[0]["question_28"].get("agree_or_strongly_agree") is None:
-            if raw_course_data.get('NSSCOUNTRY'):
-                if raw_course_data.get('NSSCOUNTRY').get("Q28"):
-                    json_elem_list[0]["question_28"]["agree_or_strongly_agree"] = raw_course_data.get('NSSCOUNTRY').get("Q28", "")
+        q_data = raw_course_data.get('NSSCOUNTRY')
+
+        q_data = raw_course_data.get('NSSCOUNTRY')
+
+        if json_elem_list[0].get("question_27"):
+            if json_elem_list[0]["question_27"].get("agree_or_strongly_agree") is None:
+                if not isinstance(q_data, dict):
+                    q27_data = q_data[0]
+                    if q27_data.get("Q27"):
+                        json_elem_list[0]["question_27"]["agree_or_strongly_agree"] = q27_data.get("Q27", "")
+
+        # Same as above for question 28
+        if json_elem_list[0].get("question_28"):
+            if json_elem_list[0]["question_28"].get("agree_or_strongly_agree") is None:
+                if not isinstance(q_data, dict):
+                    q28_data = q_data[0]
+                    if q28_data.get("Q28"):
+                        json_elem_list[0]["question_28"]["agree_or_strongly_agree"] = q28_data.get("Q28", "")
         return json_elem_list
 
 class NhsNss:
