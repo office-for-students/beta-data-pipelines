@@ -18,7 +18,7 @@ def extract_course(input_file, output_file, pubukprn, kiscourseid):
         bool: True if successful, False otherwise
     """
     try:
-        # Check if input file exists
+        # Check if inputfile exists
         if not os.path.exists(input_file):
             print(f"Error: Input file '{input_file}' not found.")
             return False

@@ -258,89 +258,30 @@ class SynonymMap:
             self.course_synonym_schema = schema
 
     def get_synonym_list(self):
-        # Medicine & Dentistry
-        medicine_synonyms = "medicine, medical degree, MBBS, MBChB, BMBS, clinical medicine, medical science, surgery, physician, doctor, general practice, GP, internal medicine => medicine"
-        dentist_synonyms = "dentist, dentistry, BDS, dental surgery, oral science, endodontics, orthodontics, dentofacial orthopedics, oral medicine, oral surgery, maxillofacial surgery, paediatric dentistry, pediatric dentistry, public health dentistry, prosthodontics, prosthodontist, tooth doctor, dental surgeon, dental practitioner, dental hygienist, hygienist, clinical dentistry, dental therapy => dentistry"
-
-        # Nursing & Midwifery
-        midwifery_synonyms = "midwifery, midwife, obstetrics, obstetrical delivery, perinatal, perinatology, fetology, foetology, tocology, maternity care, childbirth, neonatal care, labour ward, delivery suite, postnatal care, antenatal care => midwifery"
-        adult_nursing_synonyms = "adult nursing, registered nurse adult (RNA), general nursing, medical nursing, surgical nursing, adult health, nursing care, palliative care, district nursing => adult nursing"
-        mental_health_nursing_synonyms = "mental health nursing, registered mental health nursing (RMN), mental health nurse, psychiatric nursing, psychiatric nurse, behavioural health, psychiatric care, psychological nursing, dual diagnosis, forensic mental health, community mental health => mental health nursing"
-        dental_nursing_synonyms = "dental nursing, dental nurse, dental hygienist, dental practitioner, oral health care, dental assistant, dental surgery assistant, DSA, orthodontic nursing => dental nursing"
-
-        # Pharmacology & Pharmacy
-        pharmacology_synonyms = "pharmacology, psychopharmacology, pharmacological medicine, pharmacokinetics, pharmacodynamics, clinical pharmacology, molecular pharmacology, drug action, medicinal chemistry, pharmaceutical science, drug discovery, pharmacotherapeutics => pharmacology"
-        toxicology_synonyms = "toxicology, poison science, environmental toxicology, clinical toxicology, forensic toxicology, industrial toxicology, regulatory toxicology, ecotoxicology, toxinology, chemical safety, hazard assessment => toxicology"
-        pharmacy_synonyms = "pharmacy, MPharm, pharmacist, chemist, pharmaceutical science, pharmacy practice, clinical pharmacy, community pharmacy, hospital pharmacy, industrial pharmacy, prescribing, medicines management, pharmacotherapy, pharmaceutics, dispensing => pharmacy"
-
-        # Sciences
-        chemistry_synonyms = "chemistry, chemical science, inorganic chemistry, surface chemistry, geochemistry, natural science, radiochemistry, thermochemistry, organic chemistry, physical chemistry, photochemistry, chemoimmunology, immunochemistry, femtochemistry, analytical chemistry, environmental chemistry, medicinal chemistry, materials chemistry, computational chemistry, forensic chemistry => chemistry"
-        biology_synonyms = "biology, biological science, life science, molecular biology, cell biology, genetics, genomics, microbiology, marine biology, zoology, ecology, conservation biology, evolutionary biology, human biology, biotechnology, biomedical science => biology"
-        physics_synonyms = "physics, physical science, astrophysics, quantum physics, particle physics, theoretical physics, applied physics, medical physics, geophysics, nuclear physics, thermodynamics, condensed matter physics, astrophysics => physics"
-
-        # Mathematics & Computing
-        mathematics_synonyms = "mathematics, maths, math, applied mathematics, pure maths, pure math, pure mathematics, applied maths, applied math, mathematical science, operational research, OR, data science, analytics, quantitative methods, mathematical modelling, computational mathematics, statistics, stat, stats, statistic => mathematics"
-        computer_science_synonyms = "computer science, computing, comp sci, software engineering, informatics, artificial intelligence, AI, machine learning, data science, computer systems, networking, cybersecurity, cyber security, IT, information technology, programming, software development => computer science"
-
-        # Engineering & Technology
-        civil_engineering_synonyms = "civil engineering, construction engineering, structural engineering, transportation engineering, geotechnical engineering, environmental engineering, water engineering, infrastructure engineering, roads, bridges, tunnels, built environment, applied science, engineering science, hydraulic engineering, hydrolic engineering, public works engineering, municipal engineering => civil engineering"
-        mechanical_engineering_synonyms = "mechanical engineering, mech eng, automotive engineering, aerospace engineering, thermofluids, dynamics, mechanics, manufacturing engineering, materials engineering, robotics, mechatronics, industrial engineering => mechanical engineering"
-        electrical_engineering_synonyms = "electrical engineering, electronic engineering, electronics, EEE, electrical and electronic engineering, power systems, microelectronics, telecommunications, telecoms, control systems, robotics => electrical engineering"
-
-        # Business, Economics & Law
-        business_synonyms = "business, business studies, business administration, management, business management, international business, entrepreneurship, enterprise, leadership, strategy, marketing, human resources, HR, finance, accounting, commerce => business"
-        economics_synonyms = "economics, econ, econometrics, microeconomics, macroeconomics, financial economics, development economics, behavioural economics, economic policy, political economy => economics"
-        law_synonyms = "law, LLB, jurisprudence, legal studies, commercial law, criminal law, international law, human rights law, corporate law, solicitor, barrister, legal practice => law"
-
-        # Arts, Humanities & Social Sciences
-        psychology_synonyms = "psychology, psych, clinical psychology, cognitive psychology, developmental psychology, social psychology, forensic psychology, neuropsychology, counselling psychology, psychotherapy, behavioural science => psychology"
-        sociology_synonyms = "sociology, social studies, social policy, criminology, social work, social care, community studies, inequality, social theory, cultural studies => sociology"
-        history_synonyms = "history, historical studies, modern history, ancient history, medieval history, economic history, art history, public history, heritage studies => history"
-        english_literature_synonyms = "english, english literature, literature, literary studies, creative writing, poetry, prose, drama, Shakespeare, literary criticism, comparative literature => english literature"
-
-        # Creative Arts & Design
-        art_design_synonyms = "art, design, fine art, graphic design, illustration, fashion design, textile design, interior design, product design, industrial design, 3D design, animation, visual communication, creative arts, digital arts => art and design"
-        architecture_synonyms = "architecture, architectural studies, built environment, urban design, landscape architecture, interior architecture, architectural technology, RIBA, sustainable design => architecture"
-        music_synonyms = "music, music performance, music composition, music technology, music production, sound engineering, musicology, ethnomusicology, musical theatre, jazz, classical music => music"
-
-        # Education
-        education_synonyms = "education, teaching, teacher training, PGCE, pedagogy, educational studies, childhood studies, early years, primary education, secondary education, further education, educational leadership, special educational needs, SEN => education"
-
-        # Combined & Interdisciplinary
-        biomedical_science_synonyms = "biomedical science, biomedical, medical science, pathology, physiology, pharmacology, immunology, hematology, haematology, clinical science, virology => biomedical science"
-        environmental_science_synonyms = "environmental science, environmental studies, sustainability, climate change, ecology, conservation, geography, earth science, geoscience, natural resources, renewable energy => environmental science"
+        dentist_synonyms = "dentist, dentistry, endodontics, orthodontics, dentofacial orthopedics, oral medicine, pediatric dentistry, public health dentistry, prosthodontist, tooth doctor, dental surgeon, dental practitioner, hygenist, clinical dentistry, preclinical dentistry, pre clinical dentistry, pre-clinical dentistry => dentistry"
+        midwidfery_synonyms = "obstetrics, obstetrical delivery, perinatology, fetology, feotology, tocology => midwifery"
+        dental_nursing_synonyms = (
+            "dentistry, hygenist, dental practitioner => dental nursing"
+        )
+        mental_health_nursing_synonyms = "registered mental health nursing(RMN), mental health nurse, dual diagnosis, mental health => mental health nursing"
+        pharmacology_synonyms = "pharmacology, psychopharmacology, pharmacological medicine, pharmacokenetics, pharmacodynamics, medical speciality, toxicology, substances, drugs => pharmacology"
+        toxicology_synonyms = "pharmacology, pharmacological medicine => toxicology"
+        pharmacy_synonyms = "pharmacy, pharmacist, chemist => pharmacy"
+        chemistry_synonyms = "chemical science, inorganic chemistry, surface chemistry, geochemistry, natural science, radiochemistry, thermochemistry, organic chemistry, physical chemistry, photochemistry, chemoimmunology, immunochemistry, femtochemistry => chemistry"
+        mathematics_synonyms = "stat, stats, statistic, statistics, maths, math, applied mathematics, pure maths, pure math, pure mathematics, applied maths, applied math => mathematics"
+        civil_engineering_synonyms = "construction, roads, bridges, applied science, engineering science, engineering, hydrolic engineering => civil engineering"
 
         synonyms = {
-            medicine_synonyms,
             dentist_synonyms,
-            midwifery_synonyms,
-            adult_nursing_synonyms,
-            mental_health_nursing_synonyms,
+            midwidfery_synonyms,
             dental_nursing_synonyms,
+            mental_health_nursing_synonyms,
             pharmacology_synonyms,
             toxicology_synonyms,
             pharmacy_synonyms,
             chemistry_synonyms,
-            biology_synonyms,
-            physics_synonyms,
             mathematics_synonyms,
-            computer_science_synonyms,
             civil_engineering_synonyms,
-            mechanical_engineering_synonyms,
-            electrical_engineering_synonyms,
-            business_synonyms,
-            economics_synonyms,
-            law_synonyms,
-            psychology_synonyms,
-            sociology_synonyms,
-            history_synonyms,
-            english_literature_synonyms,
-            art_design_synonyms,
-            architecture_synonyms,
-            music_synonyms,
-            education_synonyms,
-            biomedical_science_synonyms,
-            environmental_science_synonyms
         }
 
         return "\n".join(synonyms)
