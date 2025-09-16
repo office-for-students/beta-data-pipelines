@@ -4,8 +4,8 @@ import json
 import logging
 import os
 from collections import OrderedDict
-
-from typing import List
+from typing import Any
+from typing import Optional
 from typing import Tuple
 
 import unicodedata
@@ -323,6 +323,7 @@ class Nss:
         ]
 
     def is_question(self, xml_key):
+        # print("xml_key:", xml_key)
         return xml_key in self.is_question_lookup
 
     def get_question(self, xml_elem, xml_key):
@@ -395,31 +396,40 @@ class Nss:
                 json_elem["unavailable"] = self.shared_utils.get_unavailable(
                     xml_elem
                 )
+
+
+            # Issue in 2025 data structure changes Q27 is coming through in a different section in the XML.
+            # Check if the value for question 27 is set (will happen if value in the correct place) = if it doesn't exist
+            # add in the value from the other location
+
+            q_data = raw_course_data.get('NSSCOUNTRY')
+            if json_elem.get("question_27"):
+                a27 = get_nsscountry_q(q_data, "Q27")
+                if a27 is not None:
+                    json_elem["question_27"]["agree_or_strongly_agree"] = a27
+
+            if json_elem.get("question_28"):
+                a28 = get_nsscountry_q(q_data, "Q28")
+                if a28 is not None:
+                    json_elem["question_28"]["agree_or_strongly_agree"] = a28
+
             json_elem_list.append(json_elem)
-
-        # Issue in 2025 data structure changes Q27 is coming through in a different section in the XML.
-        # Check if the value for question 27 is set (will happen if value in the correct place) = if it doesn't exist
-        # add in the value from the other location
-
-        q_data = raw_course_data.get('NSSCOUNTRY')
-
-        q_data = raw_course_data.get('NSSCOUNTRY')
-
-        if json_elem_list[0].get("question_27"):
-            if json_elem_list[0]["question_27"].get("agree_or_strongly_agree") is None:
-                if not isinstance(q_data, dict):
-                    q27_data = q_data[0]
-                    if q27_data.get("Q27"):
-                        json_elem_list[0]["question_27"]["agree_or_strongly_agree"] = q27_data.get("Q27", "")
-
-        # Same as above for question 28
-        if json_elem_list[0].get("question_28"):
-            if json_elem_list[0]["question_28"].get("agree_or_strongly_agree") is None:
-                if not isinstance(q_data, dict):
-                    q28_data = q_data[0]
-                    if q28_data.get("Q28"):
-                        json_elem_list[0]["question_28"]["agree_or_strongly_agree"] = q28_data.get("Q28", "")
         return json_elem_list
+
+
+def get_nsscountry_q(q_data: Any, question_key: str) -> Optional[str]:
+    response = None
+    try:
+        response = q_data[question_key]
+    except (KeyError, TypeError) as e:
+        if not isinstance(q_data, dict):
+            print("q_data: ", q_data)
+            anser = q_data[0]
+            if anser.get(question_key):
+                response = anser[question_key]
+
+    return response
+
 
 class NhsNss:
     """Extracts and transforms the NHS NSS course element"""
@@ -799,4 +809,4 @@ def get_earnings_unavail_text(inst_or_sect, data_source, key_level_3) -> Tuple[s
     unavail_text_welsh = earnings_unavail_reason_lookup_welsh[inst_or_sect][data_source][key_level_3]
 
     return unicodedata.normalize("NFKD", unavail_text_english), \
-           unicodedata.normalize("NFKD", unavail_text_welsh)
+        unicodedata.normalize("NFKD", unavail_text_welsh)
