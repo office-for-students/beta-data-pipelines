@@ -1,13 +1,10 @@
 Documentation
 =============
-The documentation for this project is built using [Sphinx](#getting-started).
 
-Documentation should be built by installing the requirements and then the following commands:
+Docs are created using the built in functionality of FastAPI and can be accessed via:
 
-```
-cd docs
-make clean html
-```
+http://127.0.0.1:8000/docs
+
 
 OfS Serverless Data Pipelines
 =============================
@@ -43,27 +40,33 @@ Code is written in Python 3.11+ and uses:
 - [python-dateutils](https://pypi.org/project/python-dateutil/): Provides extensions to the datetime module
 - [xmltodict](https://pypi.org/project/xmltodict/): For converting XML to dictionaries
 - [xmlschema](https://pypi.org/project/xmlschema/): Implementation of XML schema
-
+- [python-magic](https://pypi.org/project/python-magic/): File type identification library
 
 Installation
-------------
+===============
 
 To get started with the project, follow the steps below:
 
-1) Clone the repo
-
-* Run the following in terminal:
-
-```
-git clone <repo>
-```
-
-2) Install dependencies
+### Install dependencies
 
 * Run the following in terminal:
 
 ```
 pip install -r requirements.txt
+```
+
+*** Install system dependencies (Magic) ***
+
+* Debian/Ubuntu
+
+```shell
+  sudo apt-get install libmagic1
+```
+
+* Mac/OSX
+
+```shell
+  brew install libmagic
 ```
 
 4) Install Azure CLI
@@ -172,7 +175,6 @@ Below the new environment variable names have been mapped to their historical co
 | POSTCODE_INDEX_NAME                            | PostcodeIndexName                          |
 | ENVIRONMENT                                    | Environment                                |
 | STOP_ETL_PIPELINE_ON_WARNING                   | StopEtlPipelineOnWarning                   |
-"""
 
 Navigate to the root directory and run:
 

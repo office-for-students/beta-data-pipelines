@@ -1,0 +1,16 @@
+[
+    {
+        "unavailable": {
+            "code": 0,
+            "reason_english": "Sorry, there is no data available for this course.\n\nThis may be because the course size is too small. This does not reflect on the quality of the course.",
+            "reason_welsh": "Yn anffodus, nid oes data ar gael ar gyfer y cwrs hwn.\n\nGall hyn fod oherwydd bod maint y cwrs yn rhy fach. Nid yw hyn yn adlewyrchu ansawdd y cwrs."
+        }
+    },
+    {
+        "unavailable": {
+            "code": 1,
+            "reason_english": "Sorry, there is no data available for this course.\n\nThis may be because the course size is too small. This does not reflect on the quality of the course.",
+            "reason_welsh": "Yn anffodus, nid oes data ar gael ar gyfer y cwrs hwn.\n\nGall hyn fod oherwydd bod maint y cwrs yn rhy fach. Nid yw hyn yn adlewyrchu ansawdd y cwrs."
+        }
+    }
+]

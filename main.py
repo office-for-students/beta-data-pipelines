@@ -4,8 +4,6 @@ from logging.config import fileConfig
 import os
 import json
 from fastapi import FastAPI
-from starlette.routing import Mount
-from starlette.staticfiles import StaticFiles
 from constants import LOCAL_COSMOS_CONTAINER_PATH
 from constants import COSMOS_COLLECTION_INSTITUTIONS
 from constants import BLOB_AZURE_CONNECT_STRING
@@ -19,18 +17,17 @@ from constants import COSMOS_DATABASE_KEY
 from constants import COSMOS_DATABASE_URI
 from constants import COSMOS_SERVICE_MODULE
 from constants import DATA_SET_SERVICE_MODULE
-from constants import DOCS_SPHINX_DIRECTORY
 from constants import ENVIRONMENT
 from constants import INGESTION_API
 from constants import KEY_COSMOS_MASTER_KEY
 from constants import SEND_GRID_API_KEY
 from constants import SEND_GRID_FROM_EMAIL
 from constants import SEND_GRID_TO_EMAILS
-from legacy.CourseSearchBuilder.entry import course_search_builder_main
-from legacy.CreateDataSet.entry import create_dataset_main
-from legacy.CreateInst.entry import create_institutions_main
-from legacy.EtlPipeline.entry import etl_pipeline_main
-from legacy.SubjectBuilder.entry import subject_builder_main
+from course_search_build.entry import course_search_builder_main
+from dataset_creation.entry import create_dataset_main
+from institution_creation.entry import create_institutions_main
+from etl_pipeline.entry import etl_pipeline_main
+from subject_build import subject_builder_main
 from services import blob_service
 from services import cosmos_client
 from services import cosmos_service
@@ -45,15 +42,7 @@ logger = logging.getLogger(__name__)  # the __name__ resolve to "main" since we 
 # This will get the root logger since no logger in the configuration has this name.
 
 
-app = FastAPI(
-    routes=[
-        Mount(
-            path="/sphinx",
-            app=StaticFiles(directory=DOCS_SPHINX_DIRECTORY, html=True),
-            name="sphinx"
-        )
-    ]
-)
+app = FastAPI()
 
 MAIL_SERVICE = MailService(
     send_grid_api_key=SEND_GRID_API_KEY,
