@@ -2,7 +2,7 @@
   "version": "2.0",
   "extensionBundle": {
     "id": "Microsoft.Azure.Functions.ExtensionBundle",
-    "version": "1.0"
+    "version": "[2.6.1,]"
   },
   "functionTimeout": "04:00:00",
   "extensions": {

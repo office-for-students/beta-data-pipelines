@@ -1,4 +1,4 @@
-"""Module for creating the instituions.json file used by CMS"""
+"""Module for creating the institutions.json file used by CMS"""
 
 import io
 import json

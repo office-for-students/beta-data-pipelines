@@ -1,3 +1,4 @@
+.vscode
 .DS_Store
 EtlPipeline/host.json
 .idea/
@@ -153,4 +154,10 @@ test-output.xml
 pyproject.toml
 
 *.dev.*
+.local
 test_course.xml
+#ignore xml files
+*-*.xml
+kis*.xml
+latest.xml
+dataset_course_validation

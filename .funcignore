@@ -3,3 +3,10 @@
 local.settings.json
 test
 .env
+.idea
+.local
+dataset_course_validation
+#ignore xml files
+*-*.xml
+kis*.xml
+latest.xml

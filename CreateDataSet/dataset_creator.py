@@ -2,6 +2,7 @@ import inspect
 import logging
 import os
 import sys
+import uuid
 
 from datetime import datetime, timezone
 from dateutil import parser
@@ -26,24 +27,23 @@ class DataSetCreator:
     def load_new_dataset_doc(self):
         dataset_doc = self.get_next_dataset_doc()
 
-        # TODO: apw: Ensure that UseLocalTestXMLFile is set to false in local.settings.json before going live.
-        use_local_test_XML_file = os.environ.get('UseLocalTestXMLFile')
-        if not use_local_test_XML_file:
-            if dataset_doc["version"] != 1:
-                if not self.has_enough_time_elaspsed_since_last_dataset_created():
-                    raise DataSetTooEarlyError
-
+        if dataset_doc["version"] != 1:
+            if not self.has_enough_time_elaspsed_since_last_dataset_created():
+                raise DataSetTooEarlyError
         self.dsh.create_item(dataset_doc)
-        logging.info(f"Created new vertsion {dataset_doc['version']} DataSet")
+        logging.info(f"Created new version {dataset_doc['version']} DataSet")
 
     def get_next_dataset_doc(self):
         next_version_number = self.get_next_dataset_version_number()
-        dataset_doc = {}
-        dataset_doc["builds"] = get_builds_value()
-        dataset_doc["created_at"] = datetime.now(timezone.utc).isoformat()
-        dataset_doc["is_published"] = False
-        dataset_doc["status"] = "in progress"
-        dataset_doc["version"] = next_version_number
+        logging.warning(f"Next dataset version is {next_version_number}")
+        dataset_doc = {
+            "id": str(uuid.uuid4()),
+            "version": next_version_number,
+            "builds": get_builds_value(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "is_published": False,
+            "status": "in progress"
+        }
         return dataset_doc
 
     def get_next_dataset_version_number(self):
@@ -52,7 +52,7 @@ class DataSetCreator:
 
         version = int(self.dsh.get_latest_version_number()) + 1
         return version
-        #return self.dsh.get_latest_version_number() + 1
+        # return self.dsh.get_latest_version_number() + 1
 
     def get_number_of_dataset_docs(self):
         query = "SELECT * FROM c "

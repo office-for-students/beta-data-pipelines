@@ -265,13 +265,12 @@ class InstitutionDocs:
         """Parse HESA XML and create JSON institution docs in Cosmos DB."""
 
         cosmosdb_client = get_cosmos_client()
+        db_id = os.environ.get("AzureCosmosDbDatabaseId")
+        collection_id = os.environ.get("AzureCosmosDbInstitutionsCollectionId")
 
-        collection_link = get_collection_link(
-            "AzureCosmosDbDatabaseId", "AzureCosmosDbInstitutionsCollectionId"
-        )
-
-        options = {"partitionKey": str(self.version)}
-        sproc_link = collection_link + "/sprocs/bulkImport"
+        # Get database and container clients
+        database = cosmosdb_client.get_database_client(db_id)
+        container = database.get_container_client(collection_id)
 
         institution_count = 0
         new_docs = []
@@ -282,7 +281,11 @@ class InstitutionDocs:
             new_docs.append(self.get_institution_doc(institution))
             if sproc_count == 100:
                 logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-                cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
+                container.scripts.execute_stored_procedure(
+                    sproc="bulkImport",
+                    partition_key=str(self.version),
+                    params=[new_docs]
+                )
                 logging.info(f"Successfully loaded another {sproc_count} documents")
                 # Reset values
                 new_docs = []
@@ -291,7 +294,11 @@ class InstitutionDocs:
 
         if sproc_count > 0:
             logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-            cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
+            container.scripts.execute_stored_procedure(
+                sproc="bulkImport",
+                partition_key=str(self.version),
+                params=[new_docs]
+            )
             logging.info(f"Successfully loaded another {sproc_count} documents")
 
         logging.info(f"Processed {institution_count} institutions")
