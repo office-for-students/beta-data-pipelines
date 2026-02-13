@@ -36,12 +36,12 @@
             }
         },
         "1": {
-            "11": "The data displayed is from students on this and other courses in [Subject].\n\nThere was not enough data to publish information specifically for this course. This is because the course has not yet run or has not been running long enough for this data to be available.",
-            "12": "The data displayed is from students on this and other courses in [Subject].\n\nThere was not enough data to publish information specifically for this course. This is because the course has not yet run or has not been running long enough for this data to be available.",
-            "13": "The data displayed is from students on this and other courses in [Subject].\n\nThere was not enough data to publish information specifically for this course. This is because the course has not yet run or has not been running long enough for this data to be available.",
-            "21": "The data displayed is from students on this and other courses in [Subject] over the previous two years.\n\nThere was not enough data to publish information specifically for this course. This is because the course has not yet run or has not been running long enough for this data to be available.",
-            "22": "The data displayed is from students on this and other courses in [Subject] over the previous two years.\n\nThere was not enough data to publish information specifically for this course. This is because the course has not yet run or has not been running long enough for this data to be available.",
-            "23": "The data displayed is from students on this and other courses in [Subject] over the previous two years.\n\nThere was not enough data to publish information specifically for this course. This is because the course has not yet run or has not been running long enough for this data to be available."
+            "11": "The data displayed is from students on other courses in [Subject].\n\nBecause the course is new or has not been running long enough, there was not enough data to publish information specifically for this course. This does not reflect on the quality of the course.",
+            "12": "The data displayed is from students on other courses in [Subject].\n\nBecause the course is new or has not been running long enough, there was not enough data to publish information specifically for this course. This does not reflect on the quality of the course.",
+            "13": "The data displayed is from students on other courses in [Subject].\n\nBecause the course is new or has not been running long enough, there was not enough data to publish information specifically for this course. This does not reflect on the quality of the course.",
+            "21": "The data displayed is from students on other courses in [Subject] over the previous two years.\n\nBecause the course is new or has not been running long enough, there was not enough data to publish information specifically for this course.",
+            "22": "The data displayed is from students on other courses in [Subject] over the previous two years.\n\nBecause the course is new or has not been running long enough, there was not enough data to publish information specifically for this course.",
+            "23": "The data displayed is from students on other courses in [Subject] over the previous two years.\n\nBecause the course is new or has not been running long enough, there was not enough data to publish information specifically for this course."
         },
         "2": {
             "11": "There is no data available for this course.\n\nThis does not reflect on the quality of the course.",
