@@ -36,12 +36,12 @@
             }
         },
         "1": {
-            "11": "Daw'r data a ddangosir gan fyfyrwyr ar y cwrs hwn a chyrsiau [Subject] eraill.\n\nNid oedd digon o ddata i gyhoeddi gwybodaeth yn benodol ar gyfer y cwrs hwn. Mae hyn oherwydd nad yw'r cwrs wedi'i gynnal eto neu nid yw wedi cael ei gynnal yn ddigon hir i’r data hwn fod ar gael.",
-            "12": "Daw'r data a ddangosir gan fyfyrwyr ar y cwrs hwn a chyrsiau [Subject] eraill.\n\nNid oedd digon o ddata i gyhoeddi gwybodaeth yn benodol ar gyfer y cwrs hwn. Mae hyn oherwydd nad yw'r cwrs wedi'i gynnal eto neu nid yw wedi cael ei gynnal yn ddigon hir i’r data hwn fod ar gael.",
-            "13": "Daw'r data a ddangosir gan fyfyrwyr ar y cwrs hwn a chyrsiau [Subject] eraill.\n\nNid oedd digon o ddata i gyhoeddi gwybodaeth yn benodol ar gyfer y cwrs hwn. Mae hyn oherwydd nad yw'r cwrs wedi'i gynnal eto neu nid yw wedi cael ei gynnal yn ddigon hir i’r data hwn fod ar gael.",
-            "21": "Daw'r data a ddangosir gan fyfyrwyr ar y cwrs hwn a chyrsiau [Subject] eraill yn ystod y ddwy flynedd flaenorol.\n\nNid oedd digon o ddata i gyhoeddi gwybodaeth yn benodol ar gyfer y cwrs hwn. Mae hyn oherwydd nad yw'r cwrs wedi'i gynnal eto neu nid yw wedi cael ei gynnal yn ddigon hir i’r data hwn fod ar gael.",
-            "22": "Daw'r data a ddangosir gan fyfyrwyr ar y cwrs hwn a chyrsiau [Subject] eraill yn ystod y ddwy flynedd flaenorol.\n\nNid oedd digon o ddata i gyhoeddi gwybodaeth yn benodol ar gyfer y cwrs hwn. Mae hyn oherwydd nad yw'r cwrs wedi'i gynnal eto neu nid yw wedi cael ei gynnal yn ddigon hir i’r data hwn fod ar gael.",
-            "23": "Daw'r data a ddangosir gan fyfyrwyr ar y cwrs hwn a chyrsiau [Subject] eraill yn ystod y ddwy flynedd flaenorol.\n\nNid oedd digon o ddata i gyhoeddi gwybodaeth yn benodol ar gyfer y cwrs hwn. Mae hyn oherwydd nad yw'r cwrs wedi'i gynnal eto neu nid yw wedi cael ei gynnal yn ddigon hir i’r data hwn fod ar gael."
+            "11": "Mae’r data a ddangosir gan fyfyrwyr eraill ar gyrsiau eraill mewn [Subject].\n\nGan bod y cwrs yn newydd neu heb fod yn rhedeg am yn ddigon hir, nid oedd digon o ddata i gyhoeddi gwybodaeth ar gyfer y cwrs yma’n benodol. Nid yw hyn yn adlewyrchu ar ansawdd y cwrs.",
+            "12": "Mae’r data a ddangosir gan fyfyrwyr eraill ar gyrsiau eraill mewn [Subject].\n\nGan bod y cwrs yn newydd neu heb fod yn rhedeg am yn ddigon hir, nid oedd digon o ddata i gyhoeddi gwybodaeth ar gyfer y cwrs yma’n benodol. Nid yw hyn yn adlewyrchu ar ansawdd y cwrs.",
+            "13": "Mae’r data a ddangosir gan fyfyrwyr eraill ar gyrsiau eraill mewn [Subject].\n\nGan bod y cwrs yn newydd neu heb fod yn rhedeg am yn ddigon hir, nid oedd digon o ddata i gyhoeddi gwybodaeth ar gyfer y cwrs yma’n benodol. Nid yw hyn yn adlewyrchu ar ansawdd y cwrs.",
+            "21": "Mae’r data a ddangosir gan fyfyrwyr ar gyrsiau eraill mewn [Subject] dros y ddwy flynedd flaenorol.\n\nGan bod y cwrs yn newydd neu heb fod yn rhedeg am yn ddigon hir, nid oedd digon o ddata i gyhoeddi gwybodaeth ar gyfer y cwrs yma’n benodol.",
+            "22": "Mae’r data a ddangosir gan fyfyrwyr ar gyrsiau eraill mewn [Subject] dros y ddwy flynedd flaenorol.\n\nGan bod y cwrs yn newydd neu heb fod yn rhedeg am yn ddigon hir, nid oedd digon o ddata i gyhoeddi gwybodaeth ar gyfer y cwrs yma’n benodol.",
+            "23": "Mae’r data a ddangosir gan fyfyrwyr ar gyrsiau eraill mewn [Subject] dros y ddwy flynedd flaenorol.\n\nGan bod y cwrs yn newydd neu heb fod yn rhedeg am yn ddigon hir, nid oedd digon o ddata i gyhoeddi gwybodaeth ar gyfer y cwrs yma’n benodol."
         },
         "2": {
             "11": "Nid oes data ar gael ar gyfer y cwrs hwn.\n\nNid yw hyn yn adlewyrchu ansawdd y cwrs.",
