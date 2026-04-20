@@ -424,9 +424,9 @@ def get_nsscountry_q(q_data: Any, question_key: str) -> Optional[str]:
     except (KeyError, TypeError) as e:
         if not isinstance(q_data, dict):
             print("q_data: ", q_data)
-            anser = q_data[0]
-            if anser.get(question_key):
-                response = anser[question_key]
+            answer = q_data[0]
+            if answer.get(question_key):
+                response = answer[question_key]
 
     return response
 
