@@ -1,9 +1,0 @@
-{
-    "azureFunctions.pythonVenv": ".env",
-    "azureFunctions.deploySubpath": ".",
-    "azureFunctions.scmDoBuildDuringDeployment": true,
-    "azureFunctions.projectLanguage": "Python",
-    "azureFunctions.projectRuntime": "~2",
-    "debug.internalConsoleOptions": "neverOpen",
-    "python.pythonPath": ".env/bin/python3"
-}

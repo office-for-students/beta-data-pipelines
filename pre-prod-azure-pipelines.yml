@@ -8,11 +8,11 @@ pr: none
 
 # Build Agent Resources
 pool:
-  vmImage: 'ubuntu-20.04'
+  vmImage: 'ubuntu-latest'
 strategy:
   matrix:
     Python39:
-      python.version: '3.8'
+      python.version: '3.11'
 
 # Build Process Tree
 steps:
