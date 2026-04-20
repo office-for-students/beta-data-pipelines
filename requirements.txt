@@ -1,3 +1,4 @@
+cryptography==39.0.1
 azure-core==1.35.0
 azure-cosmos==4.9.0
 azure-functions==1.23.0
@@ -7,7 +8,6 @@ pytest==8.4.1
 python-dateutil==2.9.0.post0
 pytz==2025.2
 requests==2.32.4
-sendgrid==6.12.4
 xmldict==0.4.1
 xmljson==0.2.1
 xmlschema==4.1.0
