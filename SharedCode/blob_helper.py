@@ -14,7 +14,7 @@ class BlobHelper:
         self.blob = blob
 
     def create_output_blob(self, destination_container_name):
-        source_url = os.environ["StorageUrl"] + self.blob.name
+        source_url = self.blob_service.url + self.blob.name
         destination_blob_name = self.get_destination_blob_name()
         dest_blob_client = self.blob_service.get_blob_client(destination_container_name, destination_blob_name)
         copy_operation = dest_blob_client.start_copy_from_url(source_url)
