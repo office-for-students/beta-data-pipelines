@@ -8,19 +8,10 @@ import azure.functions as func
 from SharedCode import exceptions
 from SharedCode.blob_helper import BlobHelper
 from SharedCode.dataset_helper import DataSetHelper
-# from SharedCode.mail_helper import MailHelper
 from .institution_docs import InstitutionDocs
 
 
 def main(msgin: func.QueueMessage, msgout: func.Out[str]):
-    # TODO: apw: Ensure that UseLocalTestXMLFile is set to false in local.settings.json before going live.
-    use_local_test_XML_file = os.environ.get('UseLocalTestXMLFile')
-
-    msgerror = ""
-
-    # mail_helper = MailHelper()
-    environment = os.environ["Environment"]
-
     dsh = DataSetHelper()
 
     try:
@@ -45,11 +36,7 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
         storage_container_name = os.environ["AzureStorageHesaContainerName"]
         storage_blob_name = os.environ["AzureStorageHesaBlobName"]
 
-        if use_local_test_XML_file:
-            mock_xml_source_file = open(os.environ["LocalTestXMLFile"], "r")
-            hesa_xml_file_as_string = mock_xml_source_file.read()
-        else:
-            hesa_xml_file_as_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
+        hesa_xml_file_as_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
 
         version = dsh.get_latest_version_number()
 
@@ -68,7 +55,7 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
             f"CreateInst successfully finished on {function_end_datetime}"
         )
 
-        msgout.set(msgin.get_body().decode("utf-8") + msgerror)
+        msgout.set(msgin.get_body().decode("utf-8"))
 
     except exceptions.StopEtlPipelineWarningException:
 
