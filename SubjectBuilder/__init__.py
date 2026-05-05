@@ -44,6 +44,7 @@ def main(msgin: func.QueueMessage, msgout: func.Out[str]):
 
         csv_string = blob_helper.get_str_file(storage_container_name, storage_blob_name)
 
+        logging.warning(f"csv string is {csv_string}")
         rows = csv_string.splitlines()
         number_of_subjects = len(rows) - 1
 
