@@ -3,12 +3,17 @@
     {
       "name": "id",
       "type": "Edm.String",
-      "key": "false"
+      "key": "true"
     },
     {
       "name": "identifier_c",
       "type": "Edm.String",
-      "key": "true"
+      "key": false,
+      "filterable": true,
+      "facetable": true,
+      "searchable": false,
+      "sortable": false,
+      "analyzer": "keyword"
     },
     {
       "name": "course",
