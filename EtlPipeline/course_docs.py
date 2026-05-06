@@ -207,6 +207,8 @@ def get_course_doc(
     outer_wrapper["course_mode"] = int(raw_course_data["KISMODE"])
     outer_wrapper["course_level"] = int(raw_course_data["KISLEVEL"])
     outer_wrapper["partition_key"] = str(version)
+    course_mode = "Full-time" if outer_wrapper["course_mode"] == 1 else "Part-time"
+    outer_wrapper["identifier_c"] = f"{outer_wrapper['institution_id']}/{outer_wrapper['course_id']}/{course_mode}"
 
     course = {}
     course["course_level"] = int(raw_course_data["KISLEVEL"])
