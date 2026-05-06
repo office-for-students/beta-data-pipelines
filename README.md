@@ -182,3 +182,42 @@ Deployment should be done through the corresponding azure pipelines
 To manually deploy a change to the pipeline code run the following command:
 
 `func azure functionapp publish <pre-prod/prod>-data-pipeline`
+
+##### Generating a search index (when debugging):
+
+Update `CourseSearchBuilder/__init__.py`
+
+Change entry to:
+
+`def main(req: func.HttpRequest, msgout: func.Out[str]):`
+
+Update the `CourseSearchBuilder/function.json` to look like the following
+```json
+{
+  "scriptFile": "__init__.py",
+  "bindings": [
+    {
+      "name": "req",
+      "type": "httpTrigger",
+      "direction": "in",
+      "methods": ["get"]
+    },
+    {
+      "name": "msgout",
+      "type": "queue",
+      "direction": "out",
+      "queueName": "data-pipeline-search-queue",
+      "connection": "AzureStorageAccountConnectionString"
+    }
+  ]
+}
+
+```
+then run the function locally
+`func start`
+
+*NB* You'll need ensure you've setup the `local.settings.json` instructions for this are further up in this file. Use the 
+correct environment setting if you're trying to build a new search index for prod or pre-prod or dev.
+
+The index will be created usinh this method but function will time out as it has nothing to respond to when running this way.
+The index should exist in azure and be populated when this occurs other errors need to be investigated.
