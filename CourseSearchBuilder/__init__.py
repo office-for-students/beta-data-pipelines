@@ -1,24 +1,25 @@
+
 import logging
 import traceback
+
 from datetime import datetime
 
 import azure.functions as func
 
 from SharedCode import exceptions
 from SharedCode.dataset_helper import DataSetHelper
-from .build_institutions_json import build_institutions_json_files
+
+
 from .build_institutions_json import build_institutions_json_files
 from .build_search import build_search_index
-from .build_search import build_search_index
-from .build_sitemap_xml import build_sitemap_xml
 from .build_sitemap_xml import build_sitemap_xml
 from .build_subjects_json import build_subjects_json_file
-from .build_subjects_json import build_subjects_json_file
-from .build_version_json import build_version_json_file
 from .build_version_json import build_version_json_file
 
 
-def main(msgin: func.QueueMessage):
+
+
+def main(req: func.HttpRequest, msgout: func.Out[str]):
     dsh = DataSetHelper()
 
     try:
