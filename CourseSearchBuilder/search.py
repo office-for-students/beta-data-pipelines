@@ -11,6 +11,7 @@ def build_index(url, api_key, api_version, version):
     index = Index(url, api_key, api_version, version)
 
     index.delete_if_already_exists()
+    logging.info(" creating index ... {} {} {} {}".format(url, api_key, api_version, version))
     index.create()
 
 
