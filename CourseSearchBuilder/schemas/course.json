@@ -8,12 +8,11 @@
     {
       "name": "identifier_c",
       "type": "Edm.String",
-      "key": false,
-      "filterable": true,
-      "facetable": true,
-      "searchable": false,
-      "sortable": false,
-      "analyzer": "keyword"
+      "key": "false",
+      "filterable": "true",
+      "facetable": "true",
+      "searchable": "false",
+      "sortable": "false"
     },
     {
       "name": "course",
