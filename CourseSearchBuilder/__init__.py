@@ -17,9 +17,7 @@ from .build_subjects_json import build_subjects_json_file
 from .build_version_json import build_version_json_file
 
 
-
-
-def main(req: func.HttpRequest, msgout: func.Out[str]):
+def main(msgin: func.QueueMessage):
     dsh = DataSetHelper()
 
     try:
