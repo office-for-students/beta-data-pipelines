@@ -32,7 +32,7 @@ def build_search_index(dsh: DataSetHelper) -> bool:
 
         dsh.update_status("search", "succeeded")
     except Exception as e:
-        logging.error(e)
+        logging.error(f"failed {e}")
         raise exceptions.StopEtlPipelineErrorException(f"build_search_index: error thrown while creating search index for version: {version} {e} {type(e)}")
 
     return True
