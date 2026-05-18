@@ -388,7 +388,7 @@ class Nss:
                     elif isinstance(raw_xml_list[index], OrderedDict):
                         raw_xml_list[index][key] = value
 
-        for xml_elem in raw_xml_list:
+        for index, xml_elem in enumerate(raw_xml_list):
             json_elem = dict()
             if self.shared_utils.has_data(xml_elem):
                 json_elem.update(self.get_json_data(xml_elem))
@@ -404,12 +404,12 @@ class Nss:
 
             q_data = raw_course_data.get('NSSCOUNTRY')
             if json_elem.get("question_27"):
-                a27 = get_nsscountry_q(q_data, "Q27")
+                a27 = get_nsscountry_q(q_data, "Q27", index)
                 if a27 is not None:
                     json_elem["question_27"]["agree_or_strongly_agree"] = a27
 
             if json_elem.get("question_28"):
-                a28 = get_nsscountry_q(q_data, "Q28")
+                a28 = get_nsscountry_q(q_data, "Q28", index)
                 if a28 is not None:
                     json_elem["question_28"]["agree_or_strongly_agree"] = a28
 
@@ -417,14 +417,14 @@ class Nss:
         return json_elem_list
 
 
-def get_nsscountry_q(q_data: Any, question_key: str) -> Optional[str]:
+def get_nsscountry_q(q_data: Any, question_key: str, subject_index: int) -> Optional[str]:
     response = None
     try:
         response = q_data[question_key]
     except (KeyError, TypeError) as e:
         if not isinstance(q_data, dict):
             print("q_data: ", q_data)
-            answer = q_data[0]
+            answer = q_data[subject_index]
             if answer.get(question_key):
                 response = answer[question_key]
 
