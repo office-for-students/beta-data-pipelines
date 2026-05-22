@@ -23,7 +23,7 @@ length_of_course = {
 }
 
 distance_learning_lookup = {
-    0: "Course is available other than by distance learning",
+    0: "Not available",
     1: "Course is only available through distance learning",
     2: "Course is optionally available through distance learning",
 }
