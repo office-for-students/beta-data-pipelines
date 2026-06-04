@@ -25,63 +25,81 @@ steps:
 
 
 - task: PythonScript@0
-  displayName: 'Download latest HESA archive'
+  displayName: 'Download and Prepare HESA data'
   inputs:
     scriptSource: 'inline'
     script: |
-      """Download the latest archive from HESA with retry logic"""
       import urllib.request
+      import zipfile
+      import gzip
+      import os
       import time
+      import fnmatch
 
-      hdr = {
-          'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
-          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-          'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
-          'Accept-Encoding': 'none',
-          'Accept-Language': 'en-US,en;q=0.8',
-          'Connection': 'keep-alive'
-      }
+      def download_file(url, dest):
+          hdr = {
+              'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
+              'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+              'Connection': 'keep-alive'
+          }
+          max_retries = 3
+          retry_delay = 10
+          for attempt in range(max_retries):
+              try:
+                  print(f'Attempting to fetch file from {url}... Attempt #{attempt + 1}')
+                  req = urllib.request.Request(url, headers=hdr)
+                  with urllib.request.urlopen(req) as response:
+                      print('Beginning file download...')
+                      with open(dest, 'wb') as out_file:
+                          while True:
+                              data = response.read(1024 * 1024)  # 1MB chunks
+                              if not data:
+                                  break
+                              out_file.write(data)
+                  print('Download complete!')
+                  return True
+              except Exception as e:
+                  print(f'Error during download: {e}')
+                  if attempt < max_retries - 1:
+                      print(f'Retrying in {retry_delay} seconds...')
+                      time.sleep(retry_delay)
+                  else:
+                      raise
 
-      url = '$(HesaURL)'
-      max_retries = 3  # Maximum number of retries
-      retry_delay = 10  # Delay between retries in seconds
-      attempt = 0
+      url = r'$(HesaURL)'
+      output_dir = r'$(Agent.TempDirectory)'
+      zip_path = os.path.join(output_dir, 'hesa_data.zip')
+      gz_path = os.path.join(output_dir, 'latest.xml.gz')
 
-      while attempt < max_retries:
-          try:
-              print(f'Attempting to fetch file from {url}... Attempt #{attempt + 1}')
+      # 1. Download
+      try:
+          download_file(url, zip_path)
+      except Exception as e:
+          print(f"Failed to download file: {e}")
+          exit(1)
+
+      # 2. Process ZIP
+      print('Searching for kis*.xml in ZIP...')
+      try:
+          with zipfile.ZipFile(zip_path, 'r') as z:
+              kis_file_info = None
               
-              hesa_request = urllib.request.Request(url, headers=hdr)
-              hesa_response = urllib.request.urlopen(hesa_request)
-
-              print('Beginning file download...')
-              with open(r'$(Agent.TempDirectory)\hesa_data.zip', 'wb') as f:
-                  while True:
-                      data = hesa_response.read(1024)
-                      if not data:
+              # Primary search pattern
+              for info in z.infolist():
+                  if fnmatch.fnmatch(info.filename, '*/on_*/kis*.xml') or \
+                     fnmatch.fnmatch(info.filename, 'on_*/kis*.xml') or \
+                     fnmatch.fnmatch(info.filename, 'kis*.xml'):
+                      print(f'Found matching file in ZIP: {info.filename}')
+                      kis_file_info = info
+                      break
+              
+              # Fallback: search anywhere for kis*.xml
+              if not kis_file_info:
+                  for info in z.infolist():
+                      if fnmatch.fnmatch(os.path.basename(info.filename), 'kis*.xml'):
+                          print(f'Found matching file (fallback): {info.filename}')
+                          kis_file_info = info
                           break
-                      f.write(data)
-
-              print('Download complete!')
-              break  # Exit loop if download is successful
-          except Exception as e:
-              print(f'Error during download attempt {attempt + 1}: {e}')
-              attempt += 1
-              if attempt < max_retries:
-                  print(f'Retrying in {retry_delay} seconds...')
-                  time.sleep(retry_delay)  # Wait before retrying
-              else:
-                  print('Max retries reached. Failing the request.')
-                  raise  # Reraise the exception after maximum retries
-
-
-- task: ExtractFiles@1
-  displayName: Extract Hesa Archive
-  inputs:
-    archiveFilePatterns: '$(Agent.TempDirectory)\hesa_data.zip'
-    destinationFolder: '$(Agent.TempDirectory)\latest_hesa_data'
-    cleanDestinationFolder: false
-
 
 - task: PythonScript@0
   displayName: 'Find latest kis.xml'
