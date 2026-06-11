@@ -1,4 +1,4 @@
-# DevOps Pipeline definition for the OFS Beta Backend Data Pipeline 
+# DevOps Pipeline definition for the OFS Beta Backend Data Pipeline
 
 #Disable CI
 trigger: none
@@ -11,7 +11,7 @@ pool:
   vmImage: 'windows-latest'
 strategy:
   matrix:
-    Python3:
+    Python39:
       python.version: '3.11'
 
 # Build Process Tree
@@ -25,111 +25,132 @@ steps:
 
 
 - task: PythonScript@0
-  displayName: 'Download and Process HESA Data'
+  displayName: 'Download and Prepare HESA data'
   inputs:
     scriptSource: 'inline'
     script: |
-      """Download the HESA gzip file, extract the kis*.xml file, and prepare it for storage"""
       import urllib.request
+      import zipfile
+      import gzip
+      import os
       import time
+      import fnmatch
+
+      def download_file(url, dest):
+          hdr = {
+              'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
+              'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+              'Connection': 'keep-alive'
+          }
+          max_retries = 3
+          retry_delay = 10
+          for attempt in range(max_retries):
+              try:
+                  print(f'Attempting to fetch file from {url}... Attempt #{attempt + 1}')
+                  req = urllib.request.Request(url, headers=hdr)
+                  with urllib.request.urlopen(req) as response:
+                      print('Beginning file download...')
+                      with open(dest, 'wb') as out_file:
+                          while True:
+                              data = response.read(1024 * 1024)  # 1MB chunks
+                              if not data:
+                                  break
+                              out_file.write(data)
+                  print('Download complete!')
+                  return True
+              except Exception as e:
+                  print(f'Error during download: {e}')
+                  if attempt < max_retries - 1:
+                      print(f'Retrying in {retry_delay} seconds...')
+                      time.sleep(retry_delay)
+                  else:
+                      raise
+
+      url = r'$(HesaURL)'
+      output_dir = r'$(Agent.TempDirectory)'
+      zip_path = os.path.join(output_dir, 'hesa_data.zip')
+      gz_path = os.path.join(output_dir, 'latest.xml.gz')
+
+      # 1. Download
+      try:
+          download_file(url, zip_path)
+      except Exception as e:
+          print(f"Failed to download file: {e}")
+          exit(1)
+
+      # 2. Process ZIP
+      print('Searching for kis*.xml in ZIP...')
+      try:
+          with zipfile.ZipFile(zip_path, 'r') as z:
+              kis_file_info = None
+              
+              # Primary search pattern
+              for info in z.infolist():
+                  if fnmatch.fnmatch(info.filename, '*/on_*/kis*.xml') or \
+                     fnmatch.fnmatch(info.filename, 'on_*/kis*.xml') or \
+                     fnmatch.fnmatch(info.filename, 'kis*.xml'):
+                      print(f'Found matching file in ZIP: {info.filename}')
+                      kis_file_info = info
+                      break
+              
+              # Fallback: search anywhere for kis*.xml
+              if not kis_file_info:
+                  for info in z.infolist():
+                      if fnmatch.fnmatch(os.path.basename(info.filename), 'kis*.xml'):
+                          print(f'Found matching file (fallback): {info.filename}')
+                          kis_file_info = info
+                          break
+
+- task: PythonScript@0
+  displayName: 'Find latest kis.xml'
+  inputs:
+    scriptSource: 'inline'
+    script: |
+      """Find the latest kis.xml from the HESA archive"""
+      import glob
+      import shutil
+
+      print('Looking for file...')
+
+      kis_file = None
+      for file in glob.glob(r'$(Agent.TempDirectory)\latest_hesa_data\on_*'):
+          for found_file in glob.glob(file + '\\kis*.xml'):
+              print('Found matching file: ' + found_file)
+              kis_file = found_file
+
+      if not kis_file:
+          for file in glob.glob(r'$(Agent.TempDirectory)\latest_hesa_data\DiscoverUni_*'):
+              for found_file in glob.glob(file + '\\kis*.xml'):
+                  print('Found matching file: ' + found_file)
+                  kis_file = found_file
+
+      if kis_file:
+          print('Moving matching file...')
+          shutil.copy(kis_file, r'$(Agent.TempDirectory)\latest.xml')
+          print('Found latest file!')
+      else:
+          print('No matching file found!')
+          exit(1)
+
+- task: PythonScript@0
+  displayName: 'Archive latest kis xml file'
+  inputs:
+    scriptSource: 'inline'
+    script: |
+      """Archive the latest HESA kis xml file"""
       import gzip
       import shutil
-      import os
-      import glob
-      import tempfile
 
-      # Set up request headers
-      hdr = {
-          'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
-          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-          'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
-          'Accept-Encoding': 'none',
-          'Accept-Language': 'en-US,en;q=0.8',
-          'Connection': 'keep-alive'
-      }
+      print('Archiving file...')
 
-      # Download the file with retry logic
-      url = '$(HesaURL)'
-      max_retries = 3
-      retry_delay = 10
-      attempt = 0
-      temp_dir = r'$(Agent.TempDirectory)'
-      gzip_file_path = os.path.join(temp_dir, 'hesa_data.gz')
-      extract_dir = os.path.join(temp_dir, 'extracted_data')
-
-      # Create extraction directory if it doesn't exist
-      if not os.path.exists(extract_dir):
-          os.makedirs(extract_dir)
-
-      # Download the gzip file
-      while attempt < max_retries:
-          try:
-              print(f'Attempting to fetch file from {url}... Attempt #{attempt + 1}')
-
-              hesa_request = urllib.request.Request(url, headers=hdr)
-              hesa_response = urllib.request.urlopen(hesa_request)
-
-              print('Beginning file download...')
-              with open(gzip_file_path, 'wb') as f:
-                  while True:
-                      data = hesa_response.read(1024)
-                      if not data:
-                          break
-                      f.write(data)
-
-              print('Download complete!')
-              break
-          except Exception as e:
-              print(f'Error during download attempt {attempt + 1}: {e}')
-              attempt += 1
-              if attempt < max_retries:
-                  print(f'Retrying in {retry_delay} seconds...')
-                  time.sleep(retry_delay)
-              else:
-                  print('Max retries reached. Failing the request.')
-                  raise
-
-      # Extract the gzip file
-      print('Extracting gzip file...')
-      try:
-          with gzip.open(gzip_file_path, 'rb') as f_in:
-              # Extract to a temporary directory
-              with open(os.path.join(extract_dir, 'extracted_content'), 'wb') as f_out:
-                  shutil.copyfileobj(f_in, f_out)
-          print('Extraction complete!')
-      except Exception as e:
-          print(f'Error extracting gzip file: {e}')
-          raise
-
-      # Find the kis*.xml file
-      print('Looking for kis*.xml file...')
-      kis_file_path = None
-
-      # Search for kis*.xml in the extracted directory and subdirectories
-      for root, dirs, files in os.walk(extract_dir):
-          for file in files:
-              if file.startswith('kis') and file.endswith('.xml'):
-                  kis_file_path = os.path.join(root, file)
-                  print(f'Found matching file: {kis_file_path}')
-                  break
-          if kis_file_path:
-              break
-
-      if not kis_file_path:
-          raise Exception('No kis*.xml file found in the extracted data')
-
-      # Create the gzipped output file
-      output_file = os.path.join(temp_dir, 'latest.xml.gz')
-      print(f'Creating gzipped output file: {output_file}')
-
-      with open(kis_file_path, 'rb') as f_in:
-          with gzip.open(output_file, 'wb') as f_out:
+      with open(r'$(Agent.TempDirectory)\latest.xml', 'rb') as f_in:
+          with gzip.open(r'$(Agent.TempDirectory)\latest.xml.gz', 'wb') as f_out:
               shutil.copyfileobj(f_in, f_out)
 
-      print('Processing complete! File ready for upload to blob storage.')
+      print('Archive complete!')
 
 
-- task: AzureFileCopy@3
+- task: AzureFileCopy@6
   displayName: 'Copy kis archive to storage blob'
   inputs:
     SourcePath: '$(Agent.TempDirectory)\latest.xml.gz'
@@ -137,6 +158,7 @@ steps:
     Destination: 'AzureBlob'
     storage: '$(AzureStorageAccount)'
     ContainerName: '$(AzureStorageBlob)'
+
 
 
 - task: PythonScript@0
