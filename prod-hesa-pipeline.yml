@@ -63,8 +63,8 @@ steps:
                   if attempt < max_retries - 1:
                       print(f'Retrying in {retry_delay} seconds...')
                       time.sleep(retry_delay)
-                  else:
-                      raise
+                  else:              
+                      raise e
 
       url = r'$(HesaURL)'
       output_dir = r'$(Agent.TempDirectory)'
@@ -118,7 +118,6 @@ steps:
                   for name in z.namelist():
                       print(f'  {name}')
                   exit(1)
-
       except zipfile.BadZipFile:
           print(f"Error: The downloaded file is not a valid ZIP archive.")
           exit(1)
