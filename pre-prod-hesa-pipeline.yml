@@ -128,14 +128,14 @@ steps:
           exit(1)
 
 
-- task: AzureFileCopy@6
+- task: AzureCLI@2
   displayName: 'Copy kis archive to storage blob'
   inputs:
-    SourcePath: '$(Agent.TempDirectory)\latest.xml.gz'
     azureSubscription: '$(AzureSubscription)'
-    Destination: 'AzureBlob'
-    storage: '$(AzureStorageAccount)'
-    ContainerName: '$(AzureStorageBlob)'
+    scriptType: 'pscore'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      az storage blob upload --account-name $(AzureStorageAccount) --container-name $(AzureStorageBlob) --file "$(Agent.TempDirectory)\latest.xml.gz" --name latest.xml.gz --overwrite --auth-mode login
 
 
 
