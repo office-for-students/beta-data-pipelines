@@ -8,13 +8,11 @@ from . import search
 
 
 def build_search_index(dsh: DataSetHelper) -> bool:
+    version = dsh.get_latest_version_number()
     try:
         api_key = os.environ["SearchAPIKey"]
         search_url = os.environ["SearchURL"]
         api_version = os.environ["AzureSearchAPIVersion"]
-
-        version = dsh.get_latest_version_number()
-
         dsh.update_status("search", "in progress")
 
         search.build_synonyms(search_url, api_key, api_version)
@@ -34,6 +32,7 @@ def build_search_index(dsh: DataSetHelper) -> bool:
 
         dsh.update_status("search", "succeeded")
     except Exception as e:
-        raise exceptions.StopEtlPipelineErrorException(f"build_search_index: error thrown while creating search index for version: {version} {e}")
+        logging.error(f"failed {e}")
+        raise exceptions.StopEtlPipelineErrorException(f"build_search_index: error thrown while creating search index for version: {version} {e} {type(e)}")
 
     return True

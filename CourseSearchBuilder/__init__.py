@@ -1,4 +1,4 @@
-import os
+
 import logging
 import traceback
 
@@ -8,8 +8,7 @@ import azure.functions as func
 
 from SharedCode import exceptions
 from SharedCode.dataset_helper import DataSetHelper
-# from SharedCode.mail_helper import MailHelper
-from SharedCode import utils
+
 
 from .build_institutions_json import build_institutions_json_files
 from .build_search import build_search_index
@@ -19,10 +18,6 @@ from .build_version_json import build_version_json_file
 
 
 def main(msgin: func.QueueMessage):
-    msgerror = ""
-    # mail_helper = MailHelper()
-    environment = os.environ["Environment"]
-
     dsh = DataSetHelper()
 
     try:
@@ -48,7 +43,8 @@ def main(msgin: func.QueueMessage):
             dsh.update_status("root", "succeeded")
         else:
             dsh.update_status("root", "failed")
-            raise exceptions.StopEtlPipelineErrorException(f"Build_complete status {build_complete}, All builds are not marked as succeeded")
+            raise exceptions.StopEtlPipelineErrorException(
+                f"Build_complete status {build_complete}, All builds are not marked as succeeded")
 
         function_end_datetime = datetime.today().strftime("%d-%m-%Y %H:%M:%S")
         function_end_date = datetime.today().strftime("%d.%m.%Y")
