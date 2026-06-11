@@ -10,11 +10,9 @@ during development and testing.
 """
 import datetime
 import inspect
-import json
 import logging
 import os
 import sys
-import time
 import traceback
 from typing import Callable
 from typing import List
@@ -71,16 +69,15 @@ def load_course_docs(xml_string, version):
         "adding qualification data into memory ahead of building course documents"
     )
     qualification_enricher = QualificationCourseEnricher()
+    db_id = os.environ.get("AzureCosmosDbDatabaseId")
+    collection_id = os.environ.get("AzureCosmosDbCoursesCollectionId")
 
-    collection_link = utils.get_collection_link(
-        "AzureCosmosDbDatabaseId", "AzureCosmosDbCoursesCollectionId"
-    )
+    # Get database and container clients
+    database = cosmosdb_client.get_database_client(db_id)
+    container = database.get_container_client(collection_id)
 
     # Import the XML dataset
     root = ET.fromstring(xml_string)
-
-    options = {"partitionKey": str(version)}
-    sproc_link = collection_link + "/sprocs/bulkImport"
 
     new_docs = []
     sproc_count = 0
@@ -135,7 +132,11 @@ def load_course_docs(xml_string, version):
 
                 if sproc_count >= 5:
                     logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-                    cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
+                    container.scripts.execute_stored_procedure(
+                        sproc="bulkImport",
+                        partition_key=str(version),
+                        params=[new_docs]
+                    )
                     logging.info(f"Successfully loaded another {sproc_count} documents")
                     # Reset values
                     new_docs = []
@@ -153,7 +154,11 @@ def load_course_docs(xml_string, version):
 
     if sproc_count > 0:
         logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
-        cosmosdb_client.ExecuteStoredProcedure(sproc_link, [new_docs], options)
+        container.scripts.execute_stored_procedure(
+            sproc="bulkImport",
+            partition_key=str(version),
+            params=[new_docs]
+        )
         logging.info(f"Successfully loaded another {sproc_count} documents")
         # Reset values
         new_docs = []
