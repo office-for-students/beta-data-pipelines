@@ -126,7 +126,7 @@ steps:
           exit(1)
 
 
-- task: AzureFileCopy@3
+- task: AzureFileCopy@4
   displayName: 'Copy kis archive to storage blob'
   inputs:
     SourcePath: '$(Agent.TempDirectory)\latest.xml.gz'
@@ -134,7 +134,6 @@ steps:
     Destination: 'AzureBlob'
     storage: '$(AzureStorageAccount)'
     ContainerName: '$(AzureStorageBlob)'
-
 
 
 - task: PythonScript@0

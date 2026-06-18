@@ -150,7 +150,7 @@ steps:
       print('Archive complete!')
 
 
-- task: AzureFileCopy@6
+- task: AzureFileCopy@4
   displayName: 'Copy kis archive to storage blob'
   inputs:
     SourcePath: '$(Agent.TempDirectory)\latest.xml.gz'
