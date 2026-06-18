@@ -118,7 +118,7 @@ steps:
           exit(1)
 
 # 3. Copy to Azure Storage
-- task: AzureFileCopy@6
+- task: AzureFileCopy@3
   displayName: 'Copy kis archive to storage blob'
   inputs:
     SourcePath: '$(Agent.TempDirectory)\latest.xml.gz'
