@@ -1,0 +1,32 @@
+parameters:
+- name: pythonVersion
+  type: string
+  default: '3.13'
+
+steps:
+# 1. Enforce Python Version
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '${{ parameters.pythonVersion }}'
+  displayName: 'Use Python ${{ parameters.pythonVersion }}'
+
+# 2. Install Dependencies
+- script: |
+    pip install --target="$(System.DefaultWorkingDirectory)/.python_packages/lib/site-packages" -r requirements.txt
+  displayName: 'Install Python Dependencies'
+
+# 3. Archive the Azure Python Function
+- task: ArchiveFiles@2
+  displayName: "Archive Files"
+  inputs:
+    rootFolderOrFile: "$(System.DefaultWorkingDirectory)"
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: "$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip"
+    replaceExistingArchive: true
+
+# 4. Publish the ZIP package
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip'
+    ArtifactName: 'drop'
