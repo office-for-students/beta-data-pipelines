@@ -1,51 +1,16 @@
-# DevOps Pipeline definition for the OFS Beta Backend Data Pipeline 
-
-# The code branch that will trigger a build
+# pre-prod-azure-pipelines.yml
 trigger:
   - release/*
 
 pr: none
 
-# Build Agent Resources
 pool:
   vmImage: 'ubuntu-latest'
-strategy:
-  matrix:
-    Python39:
-      python.version: '3.11'
 
-# Build Process Tree
-steps:
+variables:
+- group: pipeline-preprod  # Library group containing pre-prod variables (e.g., PythonVersion)
 
-  # Enforce Python Version (see above)
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '$(python.version)'
-    displayName: 'Use Python $(python.version)'
-
-  # Create a Python Virtual Environment and download required dependencies
-  - script: |
-      pip install --target="$(System.DefaultWorkingDirectory)/.python_packages/lib/site-packages" -r requirements.txt
-    displayName: 'Install Python Dependencies'
-
-#  # Execute Python Tests
-#  - script: |
-#      python3 -m pip install -r requirements.txt
-#      pytest -v
-#    displayName: 'pytest'
-
-  # Archive the Azure Python Function into a ZIP package for deployment
-  - task: ArchiveFiles@2
-    displayName: "Archive Files"
-    inputs:
-      rootFolderOrFile: "$(System.DefaultWorkingDirectory)"
-      includeRootFolder: false
-      archiveType: 'zip'
-      archiveFile: "$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip"
-      replaceExistingArchive: true
-
-  # Publish the ZIP package
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: '$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip'
-      ArtifactName: 'drop'
+extends:
+  template: .azuredevops/azure-template.yml
+  parameters:
+    pythonVersion: '$(PythonVersion)' # Pulls from the variable group
