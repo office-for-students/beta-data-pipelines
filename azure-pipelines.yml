@@ -11,8 +11,8 @@ pool:
   vmImage: 'ubuntu-latest'
 strategy:
   matrix:
-    Python38:
-      python.version: '3.8'
+    Python3:
+      python.version: '3.13'
 
 # Build Process Tree
 steps:
