@@ -10,3 +10,4 @@ dataset_course_validation
 *-*.xml
 kis*.xml
 latest.xml
+.local.settings.json
