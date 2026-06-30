@@ -161,3 +161,5 @@ test_course.xml
 kis*.xml
 latest.xml
 dataset_course_validation
+temp_hesa_data
+run_hesa_pipeline_locally.py
