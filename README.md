@@ -33,7 +33,7 @@ NB. Following thr file format for the output above if as this pattern is on the 
 
 ### Installation
 
-As the pipeline azure functions are written in Python using the Azure Python SDK and relevant python package dependencies, install python version 3.6.*, the Azure Python SDK currently does not work the version 3.7*.
+As the pipeline azure functions are written in Python using the Azure Python SDK and relevant python package dependencies, install python version 3.11.*, the Azure Python SDK currently does not work the version 3.7*.
 
 1) Install [.NET Core SDK 2.2](https://dotnet.microsoft.com/download)
 
@@ -42,24 +42,17 @@ As the pipeline azure functions are written in Python using the Azure Python SDK
 
 #### Macbook setup
 
-2) Install Python 3.6.8 (current latest stable version that works with Azure client)
+2) Install Python 3.11 (current latest stable version that works with Azure client)
 
 Using [Homebrew](https://brew.sh/) to install
 
 * Run the following
 ```
-brew install sashkab/python/python36` or download from [here](https://www.python.org/downloads/release/python-368/)
-pip3.6 install -U pip setuptools
+brew install python@3.11 
+pip3.11 install -U pip setuptools
 ```
 
-3) Setting PATH for Python 3.6, the specifies the location of the Python version to use on device
-
-* Copy and paste the following into your `bash_profile`
-```
-PATH="/usr/local/Cellar/python36/3.6.8_2/bin:${PATH}"
-```
-
-4) Install Azure CLient
+3) Install Azure CLient
 
 Run the following in terminal:
 ```
@@ -73,20 +66,6 @@ brew install azure-cli
 brew tap azure/functions
 brew install azure-functions-core-tools
 ```
-
-6) Setup Visual Studio Code and access Azure
-
-* Install [Visual Studio Code](https://code.visualstudio.com/)
-* Install the following extensions - Visual Studio Code documentation [here](https://code.visualstudio.com/docs/editor/extension-gallery)
-```
-Azure Account
-Azure Functions
-Azure Storage
-Azure Storage Explorer
-Azure Cosmos DB
-```
-* Sign into Azure within Visual Studio Code prior to building first azure function, follow from [Sign in to Azure](https://code.visualstudio.com/docs/python/tutorial-azure-functions#_sign-in-to-azure)
-
 
 ### Configuration Settings
 
@@ -125,15 +104,8 @@ Add the following to your local.settings.json:
 | DatabaseThroughput                         | 400                      | The throughput (RU/s) for subjects collection                                                   |
 | Environment                                |                          | The environment that is running the function                                                    |
 | PostcodeIndexName                          | postcodes                | The name of the search index for postcodes                                                      |
-| UkRlpUrl                                   | {retrieve from ukrlp}    | The url to the UKRLP API service                                                                |
-| UkRlpOfsId                                 | {retrieve from ukrlp}    | The organisation id calling the UKRLP API, unique to each organisation                          |
 | SearchURL                                  | {retrieve from portal}   | The uri to the azure search instance                                                            |
 | SearchAPIKey                               | {retrieve from portal}   | The api key to access the azure search instance                                                 |
-| SendGridAPIKey                             | {retrieve from portal}   | The API key for the SendGrid client                                                             |
-| SendGridEnabled                            |                          | The boolean that defines if automated e-mails are enabled                                       |
-| SendGridFromEmail                          |                          | The address from which SendGrid will send automated e-mails                                     |
-| SendGridFromName                           |                          | The name from used by SendGrid to send automated e-mails                                        |
-| SendGridToEmailList                        |                          | The list used by SendGrid to send automated e-mails, separated by ";"                           |
 | StopEtlPipelineOnWarning                   | false                    | Boolean flag to stop function worker on a warning                                               |
 | StorageUrl                                 | {retrieve from portal}   | The url to the top level storage                                                                |
 | TimeInMinsToWaitBeforeCreateNewDataSet     | 120                      | You may need to reduce this time if you wish to run more frequently -e.g., to retry after a fix |
@@ -146,7 +118,7 @@ Add the following to your local.settings.json:
 To run function on a virtual environment, using terminal do the following:
 ```
 cd ~/{PATH to workspace}
-python3.6 -m venv .env
+python3.11 -m venv .env
 source .env/bin/activate
 func host start
 ```
@@ -154,7 +126,7 @@ func host start
 If you would like to run a single function, using the terminal do the following:
 ```
 cd ~/{PATH to workspace}
-python3.6 -m venv .env
+python3.11 -m venv .env
 source .env/bin/activate
 cd {function name}
 func host start
@@ -210,3 +182,42 @@ Deployment should be done through the corresponding azure pipelines
 To manually deploy a change to the pipeline code run the following command:
 
 `func azure functionapp publish <pre-prod/prod>-data-pipeline`
+
+##### Generating a search index (when debugging):
+
+Update `CourseSearchBuilder/__init__.py`
+
+Change entry to:
+
+`def main(req: func.HttpRequest, msgout: func.Out[str]):`
+
+Update the `CourseSearchBuilder/function.json` to look like the following
+```json
+{
+  "scriptFile": "__init__.py",
+  "bindings": [
+    {
+      "name": "req",
+      "type": "httpTrigger",
+      "direction": "in",
+      "methods": ["get"]
+    },
+    {
+      "name": "msgout",
+      "type": "queue",
+      "direction": "out",
+      "queueName": "data-pipeline-search-queue",
+      "connection": "AzureStorageAccountConnectionString"
+    }
+  ]
+}
+
+```
+then run the function locally
+`func start`
+
+*NB* You'll need ensure you've setup the `local.settings.json` instructions for this are further up in this file. Use the 
+correct environment setting if you're trying to build a new search index for prod or pre-prod or dev.
+
+The index will be created usinh this method but function will time out as it has nothing to respond to when running this way.
+The index should exist in azure and be populated when this occurs other errors need to be investigated.
