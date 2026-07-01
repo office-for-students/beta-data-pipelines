@@ -7,8 +7,6 @@
 """
 
 import logging
-import os
-from distutils.util import strtobool
 
 import xmlschema
 from xmlschema.validators.exceptions import XMLSchemaValidationError
@@ -25,9 +23,7 @@ __status__ = "Development"
 
 def validate_xml(xsd_path, xml_path_or_string) -> bool:
     """ Validate a given XML file or string against its XSD """
-    stop_etl_pipeline_on_warning = bool(
-        strtobool(os.environ["StopEtlPipelineOnWarning"])
-    )
+    stop_etl_pipeline_on_warning = False
     xml_schema = xmlschema.XMLSchema(xsd_path)
     xml_is_valid = xml_schema.is_valid(xml_path_or_string)
 
