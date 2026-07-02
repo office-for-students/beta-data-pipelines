@@ -20,11 +20,11 @@ def build_sitemap_xml() -> None:
     xml_file: StringIO = io.StringIO(xml_data)
     storage_container_name = os.environ["AzureStorageJSONFilesContainerName"]
     storage_blob_name = os.environ["AzureStorageInstitutionsSitemapsBlobName"]
-    blob_helper.write_stream_file(
-        storage_container_name=storage_container_name,
-        storage_blob_name=storage_blob_name,
-        encoded_file=xml_file.read().encode('utf-8')
-    )
+    # blob_helper.write_stream_file(
+    #     storage_container_name=storage_container_name,
+    #     storage_blob_name=storage_blob_name,
+    #     encoded_file=xml_file.read().encode('utf-8')
+    # )
 
 
 def build_param_lists(institution_list: list, course_list: list) -> tuple:
