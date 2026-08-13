@@ -1,6 +1,6 @@
 # pre-prod-azure-pipelines.yml
 trigger:
-  - develop
+  - preprod
 
 pr: none
 
