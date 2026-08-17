@@ -1,6 +1,6 @@
 # prod-azure-pipelines.yml
 trigger:
-  - master
+  - main
 
 pr: none
 
