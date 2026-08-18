@@ -168,11 +168,15 @@ See [DATASET](docs/DATASET.md) for dataset structure
 See [INSTITUTION](docs/INSTITUTION.md) for mappings of institution data
 
 ##### Getting setting:
+```
+func azure functionapp fetch-app-settings <app-name>
+func settings decrypt`
 
-`func azure functionapp fetch-app-settings <app-name>`
-`func settings decrypt`
-
+az functionapp config appsettings list --name <name> --resource-group <resource-group> > local.settings.json`
+```
 ##### Deployment
+
+
 
 Deployment should be done through the corresponding azure pipelines
 
