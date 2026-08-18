@@ -9,6 +9,7 @@ them bubble up. This should help flush out problems
 during development and testing.
 """
 import datetime
+import time
 import inspect
 import logging
 import os
@@ -130,7 +131,7 @@ def load_course_docs(xml_string, version):
                 logging.info(f"FINISHED COUNT: {course_count}")
                 course_count += 1
 
-                if sproc_count >= 5:
+                if sproc_count >= 20:
                     logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
                     container.scripts.execute_stored_procedure(
                         sproc="bulkImport",
@@ -141,6 +142,7 @@ def load_course_docs(xml_string, version):
                     # Reset values
                     new_docs = []
                     sproc_count = 0
+                    time.sleep(2)
             except Exception as e:
                 logging.warning(f"FAILED AT COUNT: {course_count}")
                 logging.warning(f"FAILED: Ingesting course for: {raw_inst_data['PUBUKPRN']}/{raw_course_data['KISCOURSEID']}/{raw_course_data['KISMODE']}) | end {version}")
