@@ -4,7 +4,7 @@
     "id": "Microsoft.Azure.Functions.ExtensionBundle",
     "version": "[2.6.1,]"
   },
-  "functionTimeout": "04:00:00",
+  "functionTimeout": "12:00:00",
   "extensions": {
         "queues": {
             "maxPollingInterval": "00:01:00",
