@@ -91,7 +91,15 @@ def load_course_docs(xml_string, version):
     leo3_sector_salaries = LEO3SectorSalaries(root)
     leo5_sector_salaries = LEO5SectorSalaries(root)
 
+    # ETL Counters
     course_count = 0
+    courses_parsed = 0
+    courses_doc_created = 0
+    courses_enriched = 0
+    courses_appended = 0
+    courses_sent_to_cosmos = 0
+    courses_failed = 0
+
     for institution in root.iter("INSTITUTION"):
 
         raw_inst_data = xmltodict.parse(ET.tostring(institution))[
@@ -101,13 +109,19 @@ def load_course_docs(xml_string, version):
         ukprn = raw_inst_data["UKPRN"]
         logging.info(f"Ingesting course for: ({raw_inst_data['PUBUKPRN']})")
         for course in institution.findall("KISCOURSE"):
-            raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
-            raw_course_data['KISMODE'] = str(int(raw_course_data['KISMODE']))
-            raw_course_data['KISLEVEL'] = str(int(raw_course_data['KISLEVEL']))
-            logging.info(f"COURSE COUNT: {course_count}")
-            logging.info(
-                f"Ingesting course for: {raw_inst_data['PUBUKPRN']}/{raw_course_data['KISCOURSEID']}/{raw_course_data['KISMODE']}) | start {version}")
+            course_count += 1
             try:
+                raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
+
+                courses_parsed += 1
+
+                raw_course_data['KISMODE'] = str(int(raw_course_data['KISMODE']))
+                raw_course_data['KISLEVEL'] = str(int(raw_course_data['KISLEVEL']))
+                logging.info(f"COURSE COUNT: {course_count}")
+                logging.info(
+                    f"Ingesting course for: "
+                    f"{raw_inst_data['PUBUKPRN']}/{raw_course_data['KISCOURSEID']}/{raw_course_data['KISMODE']}) | start {version}")
+
                 locids = get_locids(raw_course_data, ukprn)
                 course_doc = get_course_doc(
                     accreditations,
@@ -122,13 +136,23 @@ def load_course_docs(xml_string, version):
                     leo5_sector_salaries,
                     g_subject_enricher
                 )
+
+                courses_doc_created += 1
+
                 enricher.enrich_course(course_doc)
                 subject_enricher.enrich_course(course_doc)
                 qualification_enricher.enrich_course(course_doc)
+
+                courses_enriched += 1
+
                 new_docs.append(course_doc)
+
+                courses_appended += 1
+
                 sproc_count += 1
                 logging.info(f"FINISHED COUNT: {course_count}")
-                course_count += 1
+
+                # course_count += 1
 
                 if sproc_count >= 5:
                     logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
@@ -137,11 +161,17 @@ def load_course_docs(xml_string, version):
                         partition_key=str(version),
                         params=[new_docs]
                     )
+
+                    courses_sent_to_cosmos += sproc_count
+
                     logging.info(f"Successfully loaded another {sproc_count} documents")
                     # Reset values
                     new_docs = []
                     sproc_count = 0
             except Exception as e:
+
+                courses_failed += 1
+
                 logging.warning(f"FAILED AT COUNT: {course_count}")
                 logging.warning(f"FAILED: Ingesting course for: {raw_inst_data['PUBUKPRN']}/{raw_course_data['KISCOURSEID']}/{raw_course_data['KISMODE']}) | end {version}")
                 institution_id = raw_inst_data["UKPRN"]
@@ -164,7 +194,14 @@ def load_course_docs(xml_string, version):
         new_docs = []
         sproc_count = 0
 
+    # INGESTION SUMMARY
     logging.info(f"Processed {course_count} courses")
+    logging.info(f"Courses parsed: {courses_parsed}")
+    logging.info(f"Course documents created: {courses_doc_created}")
+    logging.info(f"Courses enriched: {courses_enriched}")
+    logging.info(f"Courses appended: {courses_appended}")
+    logging.info(f"Course documents sent: {courses_sent_to_cosmos}")
+    logging.info(f"Courses failed: {courses_failed}")
 
 
 def get_locids(raw_course_data, ukprn):
