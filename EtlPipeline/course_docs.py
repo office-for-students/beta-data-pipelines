@@ -183,6 +183,7 @@ def load_course_docs(xml_string, version):
                 exception_text = f"Failed error: {e} when creating the course document for course with institution_id: {institution_id} course_id: {course_id} course_mode: {course_mode} TRACEBACK: {tb}"
                 logging.info(exception_text)
 
+    logging.info(f"Processed {course_count} courses")
 
     if sproc_count > 0:
         logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
