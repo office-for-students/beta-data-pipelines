@@ -156,7 +156,7 @@ def load_course_docs(xml_string, version):
 
                 # course_count += 1
 
-                if sproc_count >= 40:
+                if sproc_count >= 5:
                     logging.info(f"Begining execution of stored procedure for {sproc_count} documents")
                     container.scripts.execute_stored_procedure(
                         sproc="bulkImport",
