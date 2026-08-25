@@ -112,6 +112,7 @@ def load_course_docs(xml_string, version):
         for course in institution.findall("KISCOURSE"):
             course_count += 1
             try:
+                logging.info(f"TESTING")
                 raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
 
                 courses_parsed += 1
