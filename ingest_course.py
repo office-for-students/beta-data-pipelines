@@ -137,6 +137,9 @@ def ingest_course(
             courses_to_ingest = institution.findall("KISCOURSE")
         else:
             courses_to_ingest = [institution.find(f".//KISCOURSE[KISCOURSEID='{kiscourseid}']")]
+        if courses_to_ingest == [None]:
+            print(f"Error: Course with KISCOURSEID '{kiscourseid}' not found in institution '{pubukprn}'.")
+            return False
 
         for course in courses_to_ingest:
             raw_course_data = xmltodict.parse(ET.tostring(course))["KISCOURSE"]
